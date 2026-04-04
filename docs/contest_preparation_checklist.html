@@ -1,0 +1,80 @@
+
+<style>
+.phase{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin:0 0 12px}
+.phase-title{font-size:16px;font-weight:500;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.phase-time{font-size:12px;color:var(--color-text-secondary);margin:0 0 12px}
+.task{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:14px;line-height:1.5;color:var(--color-text-primary)}
+.task input[type=checkbox]{margin-top:4px;flex-shrink:0}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);font-weight:500}
+.b-infra{background:var(--color-background-info);color:var(--color-text-info)}
+.b-agent{background:#EEEDFE;color:#534AB7}
+.b-strat{background:#E1F5EE;color:#0F6E56}
+.b-harness{background:#FAEEDA;color:#854F0B}
+.sep{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:8px 0}
+.click-hint{font-size:12px;color:var(--color-text-secondary);cursor:pointer;text-decoration:underline;text-decoration-color:var(--color-border-secondary)}
+</style>
+
+<div style="margin-bottom:16px">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+<span class="badge b-infra">인프라</span>
+<span class="badge b-agent">에이전트</span>
+<span class="badge b-strat">전략</span>
+<span class="badge b-harness">하네스</span>
+</div>
+<p style="font-size:13px;color:var(--color-text-secondary);margin:0">D-35h 기준 · 총 4단계 · 각 항목 클릭시 상세 안내 요청</p>
+</div>
+
+<div class="phase">
+<p class="phase-title"><span style="font-size:18px">1</span> 원격 제어 환경 구축</p>
+<p class="phase-time">지금 즉시 · 예상 1~2시간</p>
+<label class="task"><input type="checkbox"><span><span class="badge b-infra">인프라</span> Claude Code Remote Control 활성화 — <code>claude remote-control</code> 또는 <code>/config</code>에서 "Enable Remote Control for all sessions" → true</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-infra">인프라</span> tmux 또는 screen 세션 안에서 Claude Code 실행 — 터미널 종료 방지. <code>tmux new -s contest</code></span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-infra">인프라</span> iOS Claude 앱 설치 + Remote Control 세션 연결 테스트 (QR 코드 스캔)</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-infra">인프라</span> claude.ai/code 웹에서 Remote Control 세션 접속 테스트</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-infra">인프라</span> <code>--dangerously-skip-permissions</code> 또는 <code>--allowedTools</code> 설정 검토 — 자동 승인 범위 결정</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-infra">인프라</span> Max 플랜 사용량 확인 — 멀티 에이전트는 토큰 소모가 매우 빠름</span></label>
+<hr class="sep">
+<span class="click-hint" onclick="sendPrompt('Remote Control 세팅을 단계별로 자세히 알려줘')">상세 가이드 요청 ↗</span>
+</div>
+
+<div class="phase">
+<p class="phase-title"><span style="font-size:18px">2</span> 서브에이전트 설계 및 배치</p>
+<p class="phase-time">D-34h ~ D-30h · 예상 3~4시간</p>
+<label class="task"><input type="checkbox"><span><span class="badge b-agent">에이전트</span> <code>.claude/agents/</code> 폴더 생성 — 프로젝트 레벨 서브에이전트 정의</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-agent">에이전트</span> researcher.md — 웹 검색 + 트렌드 분석 전담. 도구: web search only, read-only</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-agent">에이전트</span> architect.md — 아키텍처 설계 + PRD 작성. 도구: file read/write, no bash</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-agent">에이전트</span> implementer.md — 코드 구현 전담. 도구: full access, flutter/dart 전문</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-agent">에이전트</span> reviewer.md — 코드 리뷰 + 테스트. 도구: read + bash(flutter test, flutter analyze)</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-agent">에이전트</span> designer.md — UI/UX 피드백 + Material 3 가이드라인 준수 확인</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-agent">에이전트</span> Agent Teams 활성화: <code>export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code></span></label>
+<hr class="sep">
+<span class="click-hint" onclick="sendPrompt('서브에이전트 .md 파일 템플릿을 각 역할별로 만들어줘')">에이전트 템플릿 생성 요청 ↗</span>
+</div>
+
+<div class="phase">
+<p class="phase-title"><span style="font-size:18px">3</span> 하네스 엔지니어링 준비</p>
+<p class="phase-time">D-30h ~ D-24h · 예상 4~5시간</p>
+<label class="task"><input type="checkbox"><span><span class="badge b-harness">하네스</span> CLAUDE.md 보강 — 콘테스트 규칙, 심사 기준, 마감 시한, 기술 스택 명시</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-harness">하네스</span> Flutter 프로젝트 스캐폴딩 — <code>flutter create</code> + 기본 구조(features/, core/, shared/) 세팅</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-harness">하네스</span> pubspec.yaml 사전 구성 — 자주 쓰는 패키지(riverpod, go_router, dio 등) 미리 추가</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-harness">하네스</span> CI/린트 파이프라인 — <code>analysis_options.yaml</code> + pre-commit hooks 설정</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-harness">하네스</span> Git worktree 설정 — 멀티 에이전트가 별도 브랜치에서 병렬 작업 가능하도록</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-harness">하네스</span> MCP 서버 점검 — 현재 연결된 MCP가 정상 작동하는지 테스트</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-harness">하네스</span> 테스트 하네스 — <code>flutter test</code> 자동 실행 스크립트 + 결과 리포팅 훅</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-harness">하네스</span> 데모용 빌드 스크립트 — <code>flutter build web</code> 또는 APK 원클릭 배포 준비</span></label>
+<hr class="sep">
+<span class="click-hint" onclick="sendPrompt('Flutter 프로젝트 스캐폴딩과 하네스를 지금 바로 세팅해줘')">하네스 자동 세팅 요청 ↗</span>
+</div>
+
+<div class="phase">
+<p class="phase-title"><span style="font-size:18px">4</span> 사전 리서치 + 전략 문서</p>
+<p class="phase-time">D-24h ~ D-6h · 주제 공개 전</p>
+<label class="task"><input type="checkbox"><span><span class="badge b-strat">전략</span> Claude / Gemini / ChatGPT 3종 검색 — "vibe coding contest 우승 전략 + 최신 트렌드"</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-strat">전략</span> 3개 결과 취합 → Opus 4.6이 비교 분석표 + 종합 전략 문서 작성</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-strat">전략</span> 심사 기준 분석 — 가중치별 우선순위 매핑</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-strat">전략</span> "작동하는 데모 > 완벽한 코드" 원칙 — mock 데이터 전략, 피치 우선 기획</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-strat">전략</span> 주제 공개 후 → 실시간 니즈 검색 → 아이디어 브레인스토밍 → implementation_plan 생성</span></label>
+<label class="task"><input type="checkbox"><span><span class="badge b-strat">전략</span> task 분해 → 서브에이전트 할당 매트릭스 작성</span></label>
+<hr class="sep">
+<span class="click-hint" onclick="sendPrompt('콘테스트 전략 문서 템플릿을 만들어줘 (심사기준 분석 + 트렌드 비교표 포함)')">전략 문서 템플릿 요청 ↗</span>
+</div>

@@ -1,4 +1,13 @@
 {
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(mkdir -p \"C:/Users/JSS/vibe-coding-contest/.claude/agents\")",
+      "Bash(mkdir -p \"C:/Users/JSS/vibe-coding-contest/templates\")",
+      "Bash(mkdir -p \"C:/Users/JSS/vibe-coding-contest/references\")",
+      "Bash(npm -v)"
+    ]
+  },
   "enabledMcpjsonServers": [
     "supabase",
     "playwright",
