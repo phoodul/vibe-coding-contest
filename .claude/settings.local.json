@@ -1,0 +1,10 @@
+{
+  "enabledMcpjsonServers": [
+    "supabase",
+    "playwright",
+    "sequential-thinking",
+    "context7",
+    "firebase",
+    "vercel"
+  ]
+}
