@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       .join("\n");
 
     const { object } = await generateObject({
-      model: anthropic("claude-sonnet-4-5-20250514"),
+      model: anthropic("claude-sonnet-4-5"),
       schema: ExpandedZoneSchema,
       system: ZONE_EXPANSION_PROMPT,
       prompt: `장소: ${locationName}

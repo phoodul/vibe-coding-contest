@@ -74,6 +74,8 @@ export default function PalaceCreatePage() {
           const autoPlacement: Placement[] = nodes.map((node, i) => ({
             nodeId: node.id,
             nodeLabel: node.label,
+            nodeDescription: node.description,
+            subNodes: node.subNodes?.map(s => ({ label: s.label, detail: s.detail })),
             zoneId: allSlots[i % allSlots.length].id,
             zoneName: allSlots[i % allSlots.length].name,
           }));
@@ -89,6 +91,8 @@ export default function PalaceCreatePage() {
     const autoPlacement: Placement[] = nodes.map((node, i) => ({
       nodeId: node.id,
       nodeLabel: node.label,
+      nodeDescription: node.description,
+      subNodes: node.subNodes?.map(s => ({ label: s.label, detail: s.detail })),
       zoneId: zones[i % zones.length].id,
       zoneName: zones[i % zones.length].name,
     }));

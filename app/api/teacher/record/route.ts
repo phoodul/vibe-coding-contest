@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 - 특기사항: ${special}`;
 
   const result = streamText({
-    model: anthropic("claude-sonnet-4-5-20250514"),
+    model: anthropic("claude-sonnet-4-5"),
     system: RECORD_SYSTEM_PROMPT,
     prompt,
   });

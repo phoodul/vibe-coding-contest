@@ -162,19 +162,33 @@ export default function NewPalacePage() {
                 </p>
               </div>
 
-              {/* Child nodes */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {/* Child nodes (소단원) */}
+              <div className="space-y-4">
                 {mindMap.childNodes.map((node, i) => (
-                  <GlassCard key={node.id} className="p-4" hover={false}>
+                  <GlassCard key={node.id} className="p-5" hover={false}>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="w-6 h-6 rounded-full bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-xs flex items-center justify-center font-bold">
+                      <span className="w-7 h-7 rounded-full bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-xs flex items-center justify-center font-bold">
                         {i + 1}
                       </span>
-                      <h4 className="font-semibold text-sm">{node.label}</h4>
+                      <h4 className="font-semibold">{node.label}</h4>
                     </div>
-                    <p className="text-xs text-[var(--muted-foreground)]">
+                    <p className="text-sm text-[var(--muted-foreground)] mb-3 ml-9">
                       {node.description}
                     </p>
+                    {node.subNodes && node.subNodes.length > 0 && (
+                      <div className="ml-9 space-y-2">
+                        {node.subNodes.map((sub) => (
+                          <div key={sub.id} className="p-3 rounded-lg bg-white/5">
+                            <span className="text-xs font-semibold text-[var(--accent-cyan)]">
+                              {sub.label}
+                            </span>
+                            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                              {sub.detail}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </GlassCard>
                 ))}
               </div>

@@ -1,8 +1,14 @@
+export interface MindMapSubNode {
+  id: string;
+  label: string;
+  detail: string;
+}
+
 export interface MindMapNode {
   id: string;
   label: string;
   description: string;
-  children?: MindMapNode[];
+  subNodes?: MindMapSubNode[];
 }
 
 export interface MindMap {

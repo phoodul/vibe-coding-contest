@@ -1,6 +1,8 @@
 export interface Placement {
   nodeId: string;
   nodeLabel: string;
+  nodeDescription?: string;
+  subNodes?: { label: string; detail: string }[];
   zoneId: string;
   zoneName: string;
   memoryStory?: string;
