@@ -31,20 +31,68 @@ export default function PalaceCreatePage() {
     }
   }, []);
 
-  function handleSelectLocation(loc: PalaceLocation) {
+  async function handleSelectLocation(loc: PalaceLocation) {
     setSelectedLocation(loc);
-    // Auto-assign nodes to zones
-    if (mindMap) {
-      const nodes = mindMap.childNodes;
-      const zones = loc.zones;
-      const autoPlacement: Placement[] = nodes.map((node, i) => ({
-        nodeId: node.id,
-        nodeLabel: node.label,
-        zoneId: zones[i % zones.length].id,
-        zoneName: zones[i % zones.length].name,
-      }));
-      setPlacements(autoPlacement);
+    if (!mindMap) return;
+
+    const nodes = mindMap.childNodes;
+    const zones = loc.zones;
+
+    // If more nodes than zones, expand with sub-locations (props)
+    if (nodes.length > zones.length) {
+      setStep("placement");
+      try {
+        const res = await fetch("/api/palace/expand", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            locationName: loc.name,
+            zones: loc.zones,
+            nodeCount: nodes.length,
+          }),
+        });
+        if (res.ok) {
+          const { expandedZones } = await res.json();
+          // Build expanded placement slots
+          const allSlots: { id: string; name: string; parentZone: string }[] = [];
+          for (const zone of zones) {
+            allSlots.push({ id: zone.id, name: zone.name, parentZone: zone.name });
+            const expanded = expandedZones?.find(
+              (ez: { parentZoneId: string }) => ez.parentZoneId === zone.id
+            );
+            if (expanded) {
+              for (const sub of expanded.subLocations) {
+                allSlots.push({
+                  id: `${zone.id}_${sub.id}`,
+                  name: `${zone.name} → ${sub.name}`,
+                  parentZone: zone.name,
+                });
+              }
+            }
+          }
+          // Assign nodes to slots
+          const autoPlacement: Placement[] = nodes.map((node, i) => ({
+            nodeId: node.id,
+            nodeLabel: node.label,
+            zoneId: allSlots[i % allSlots.length].id,
+            zoneName: allSlots[i % allSlots.length].name,
+          }));
+          setPlacements(autoPlacement);
+          return;
+        }
+      } catch {
+        // Fallback to simple round-robin if expansion fails
+      }
     }
+
+    // Simple assignment when zones >= nodes
+    const autoPlacement: Placement[] = nodes.map((node, i) => ({
+      nodeId: node.id,
+      nodeLabel: node.label,
+      zoneId: zones[i % zones.length].id,
+      zoneName: zones[i % zones.length].name,
+    }));
+    setPlacements(autoPlacement);
     setStep("placement");
   }
 
