@@ -10,7 +10,7 @@
 
 본 보고서는 바이브코딩 2026 공모전(총 상금 600만원) 주제 공개 전, **코드를 한 줄도 작성하지 않은 상태에서** 수행한 사전 준비의 전 과정을 기록한다.
 
-핵심 전략은 **"주제가 공개되는 순간, 기획만 하면 바로 구현에 돌입할 수 있는 상태를 만드는 것"**이다. 이를 위해 3개 AI 모델(Gemini, Claude Opus 4.6, ChatGPT)을 교차 활용하여 전략을 수립하고, Claude Code CLI를 중심으로 5개 전문 서브에이전트, 7개 커스텀 스킬, 6개 MCP 서버, 4개 문서 템플릿, 3개 기술 레퍼런스 시트를 사전 구축했다.
+핵심 전략은 **"주제가 공개되는 순간, 기획만 하면 바로 구현에 돌입할 수 있는 상태를 만드는 것"**이다. 이를 위해 3개 AI 모델(Gemini, Claude Opus 4.6, ChatGPT)을 교차 활용하여 전략을 수립하고, Claude Code CLI를 중심으로 5개 전문 서브에이전트, 7개 커스텀 스킬(웹 전용), 6개 MCP 서버, 4개 문서 템플릿, 3개 기술 레퍼런스 시트를 사전 구축했다.
 
 **결과:** 33개 파일, 5개 커밋으로 구성된 "코드 없는 전투 준비"가 완성되었다. 주제 공개 후 Day 1에는 기획과 설계에만 집중할 수 있는 상태다.
 
@@ -144,8 +144,8 @@ AI의 행동을 프로젝트에 최적화하는 룰을 사전 정의했다:
 | `explain-code` | "이게 뭐야", "설명해줘" | 비유 → 다이어그램 → 워크스루 → Gotcha 4단계 설명 |
 | `git-workflow` | "커밋해줘", "PR 작성" | Conventional Commits + GitHub Flow 자동화 |
 | `modern-glass-bento` | "모던 디자인", "바이브코딩" | 벤토 그리드 + 글래스모피즘 6대 요소 체크리스트 기반 UI 생성 |
-| `flutter-dev` | Flutter 관련 작업 | 크로스플랫폼 대안 스택 대비 |
-| `flutter-testing` | 테스트 관련 작업 | Unit/Widget/Integration 테스트 가이드 |
+| `nextjs-dev` | Next.js 15 개발 | App Router, Server/Client Components, Shadcn/ui |
+| `web-testing` | 웹 테스트 작업 | Vitest 단위 + Playwright E2E 테스트 가이드 |
 
 ### 4-4. 서브에이전트 5개 — 역할 분리 아키텍처
 
@@ -262,8 +262,8 @@ vibe-coding-contest/
 │   └── skills/                        # 커스텀 스킬 7개
 │       ├── code-review/
 │       ├── explain-code/
-│       ├── flutter-dev/
-│       ├── flutter-testing/
+│       ├── nextjs-dev/
+│       ├── web-testing/
 │       ├── git-workflow/
 │       └── modern-glass-bento/
 ├── templates/                         # 문서 템플릿 4개

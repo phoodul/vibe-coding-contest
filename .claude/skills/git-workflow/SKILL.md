@@ -28,8 +28,8 @@ description: Git 워크플로우 및 커밋 컨벤션 가이드. Conventional Co
 | `style` | 코드 포맷팅 (동작 변경 없음) | `style: trailing comma 적용` |
 | `refactor` | 리팩토링 (기능 변경 없음) | `refactor(user): Repository 패턴 적용` |
 | `test` | 테스트 추가/수정 | `test(login): 로그인 실패 케이스 추가` |
-| `chore` | 빌드, 설정 변경 | `chore: flutter 3.24로 업그레이드` |
-| `perf` | 성능 개선 | `perf(list): ListView.builder로 전환` |
+| `chore` | 빌드, 설정 변경 | `chore: next.js 15.2로 업그레이드` |
+| `perf` | 성능 개선 | `perf(list): 가상 스크롤로 전환` |
 | `ci` | CI/CD 설정 | `ci: GitHub Actions 워크플로우 추가` |
 
 ### 규칙
@@ -62,21 +62,26 @@ main (항상 배포 가능)
 2. 관련 파일만 선택적 스테이징: `git add <files>`
 3. 논리적 단위로 커밋 분리 (한 커밋 = 한 변경 목적)
 4. Conventional Commit 형식으로 메시지 작성
-5. 커밋 전 `flutter analyze` 통과 확인
+5. 커밋 전 `npm run build` 통과 확인 (TypeScript + 빌드 에러 0)
 
-## .gitignore (Flutter 프로젝트)
+## .gitignore (Next.js 프로젝트)
 
 ```gitignore
-# Flutter/Dart
-.dart_tool/
-.packages
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build
 build/
-.flutter-plugins
-.flutter-plugins-dependencies
+dist/
 
 # IDE
 .idea/
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 *.iml
 
 # OS
@@ -86,10 +91,21 @@ Thumbs.db
 # 환경 변수 (절대 커밋하지 않는다)
 .env
 .env.*
-*.keystore
-*.jks
-google-services.json
-GoogleService-Info.plist
+!.env.example
+
+# Vercel
+.vercel
+
+# Supabase
+.supabase/
+supabase/.temp/
+
+# Debug
+npm-debug.log*
+.pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
 ```
 
 ## PR(Pull Request) 작성 템플릿
