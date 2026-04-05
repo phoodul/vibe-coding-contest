@@ -1,0 +1,242 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================
+   바이브코딩 2026 — 디자인 시스템
+   Layer, Depth, Rhythm
+   ============================================================= */
+
+/* ─── Shadcn/ui 테마 변수 (다크 테마 기본) ─── */
+@layer base {
+  :root {
+    --background: 240 10% 4%;
+    --foreground: 240 5% 96%;
+    --card: 240 6% 8%;
+    --card-foreground: 240 5% 96%;
+    --popover: 240 6% 8%;
+    --popover-foreground: 240 5% 96%;
+    --primary: 263 70% 66%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 14%;
+    --secondary-foreground: 240 5% 96%;
+    --muted: 240 4% 14%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 263 70% 66%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 350 89% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 263 70% 66%;
+    --radius: 0.75rem;
+
+    /* ─── 커스텀 디자인 토큰 ─── */
+    --bg-dark: #0a0a0f;
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.12);
+    --text-primary: #f0f0f5;
+    --text-secondary: rgba(240, 240, 245, 0.55);
+    --text-tertiary: rgba(240, 240, 245, 0.35);
+
+    /* 액센트 */
+    --violet: #8b5cf6;
+    --cyan: #06b6d4;
+    --emerald: #10b981;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+  }
+}
+
+/* ─── 글로벌 리셋 ─── */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-dark text-text-primary font-body antialiased;
+    min-height: 100vh;
+  }
+
+  /* 스크롤바 커스텀 (다크 테마) */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* =============================================================
+   글래스모피즘 카드 시스템
+   필수 3요소: 반투명 배경 + backdrop-filter + 미묘한 border
+   ============================================================= */
+@layer components {
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 28px;
+    overflow: hidden;
+    position: relative;
+    transition:
+      transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+      border-color 0.3s ease,
+      box-shadow 0.4s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--glass-highlight);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  }
+
+  /* Shine 슬라이드 효과 (hover 시 빛 줄기) */
+  .glass-card .shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.04),
+      transparent
+    );
+    transition: left 0.6s ease;
+    pointer-events: none;
+  }
+
+  .glass-card:hover .shine {
+    left: 120%;
+  }
+}
+
+/* =============================================================
+   Mesh Gradient 배경 (글래스 효과의 전제조건)
+   ============================================================= */
+@layer components {
+  .mesh-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.3;
+    animation: float 20s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .orb-violet {
+    width: 500px;
+    height: 500px;
+    background: var(--violet);
+    top: -10%;
+    left: -5%;
+  }
+
+  .orb-cyan {
+    width: 400px;
+    height: 400px;
+    background: var(--cyan);
+    top: 50%;
+    right: -10%;
+    animation-delay: -5s;
+  }
+
+  .orb-rose {
+    width: 350px;
+    height: 350px;
+    background: var(--rose);
+    bottom: -5%;
+    left: 30%;
+    animation-delay: -10s;
+  }
+
+  .orb-emerald {
+    width: 300px;
+    height: 300px;
+    background: var(--emerald);
+    top: 30%;
+    left: 50%;
+    animation-delay: -15s;
+  }
+}
+
+/* =============================================================
+   Noise 텍스처 오버레이
+   ============================================================= */
+@layer components {
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+}
+
+/* =============================================================
+   Staggered 애니메이션
+   카드에 .stagger-N 클래스 적용
+   ============================================================= */
+@layer utilities {
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.15s; }
+  .stagger-3 { animation-delay: 0.2s; }
+  .stagger-4 { animation-delay: 0.25s; }
+  .stagger-5 { animation-delay: 0.3s; }
+  .stagger-6 { animation-delay: 0.35s; }
+  .stagger-7 { animation-delay: 0.4s; }
+  .stagger-8 { animation-delay: 0.45s; }
+}
+
+/* =============================================================
+   벤토 그리드 레이아웃
+   ============================================================= */
+@layer components {
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .span-2 { grid-column: span 2; }
+  .span-3 { grid-column: span 3; }
+  .row-2 { grid-row: span 2; }
+
+  @media (max-width: 900px) {
+    .bento-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .span-3 { grid-column: span 2; }
+  }
+
+  @media (max-width: 540px) {
+    .bento-grid {
+      grid-template-columns: 1fr;
+    }
+    .span-2, .span-3 { grid-column: span 1; }
+    .row-2 { grid-row: span 1; }
+  }
+}

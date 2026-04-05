@@ -42,6 +42,17 @@ allowedTools:
 - AI: Vercel AI SDK + Claude 4.6 Opus
 - Deploy: Vercel
 - Animation: Framer Motion
+- Testing: Vitest (단위) + Playwright (E2E)
+- Quality: ESLint + Prettier + Lefthook (pre-commit) + Commitlint
+
+## 프로젝트 기본 구조 (사전 세팅 완료)
+설계 시 아래 구조가 이미 존재함을 전제한다:
+- `hooks/` — 커스텀 React hooks
+- `types/` — 공용 TypeScript 타입
+- `__tests__/` — Vitest 단위/컴포넌트 테스트
+- `e2e/` — Playwright E2E 테스트
+- `middleware.ts` — Supabase Auth 세션 갱신 (루트)
+- `lib/supabase/` — client.ts, server.ts, middleware.ts (사전 작성됨)
 
 ## 출력 형식 (implementation_plan.md)
 ```markdown

@@ -79,7 +79,19 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-## 5. Environment Config Handling
+## 5. Token Efficiency (7일 대회 토큰 관리)
+
+**토큰은 유한한 자원이다. 모든 응답에서 토큰 낭비를 최소화하라.**
+
+- 설명이 아닌 코드로 답하라. 코드 앞뒤의 해설은 최소화.
+- 이미 읽은 파일을 다시 읽지 마라. 한 대화에서 같은 파일을 2번 이상 Read하지 않는다.
+- 전체 파일을 출력하지 마라. 변경된 부분만 Edit으로 보여줘라.
+- 500줄 이상 파일을 읽을 때는 offset/limit으로 필요한 부분만 읽어라.
+- 서브에이전트는 작업 범위를 명확히 좁혀서 호출하라. "전체 코드 리뷰" 대신 "이 파일의 보안 점검".
+- Glob/Grep으로 정확히 찾을 수 있는 것을 Agent(Explore)로 돌리지 마라.
+- 한 응답에서 독립적인 도구 호출은 반드시 병렬로 실행하라.
+
+## 6. Environment Config Handling
 
 **Handling Package Release Age Errors:**
 Global configs for `npm`, `pnpm`, `uv`, and `bun` are set to enforce a `minimum-release-age` of 7 days and `ignore-scripts=true`.

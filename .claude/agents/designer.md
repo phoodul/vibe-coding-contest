@@ -1,5 +1,6 @@
 ---
 name: Designer
+model: opus
 description: UI/UX 디자인 피드백 + 디자인 시스템 관리 전담 에이전트. 시각적 품질과 Vibe Factor를 높인다.
 allowedTools:
   - Read

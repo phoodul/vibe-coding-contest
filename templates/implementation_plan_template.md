@@ -56,6 +56,7 @@ components/
 ├── ui/                 # Shadcn/ui 컴포넌트
 ├── layout/             # Header, Footer, Sidebar
 └── shared/             # 공용 컴포넌트
+hooks/                  # 커스텀 React hooks (useDebounce, useMediaQuery 등)
 lib/
 ├── supabase/
 │   ├── client.ts       # 브라우저 클라이언트
@@ -63,7 +64,13 @@ lib/
 │   └── middleware.ts   # Auth 미들웨어
 ├── ai/
 │   └── agent.ts        # AI 에이전트 설정
-└── utils.ts
+└── utils.ts            # cn() 헬퍼
+types/                  # 공용 TypeScript 타입
+__tests__/              # Vitest 단위/컴포넌트 테스트
+├── unit/
+└── components/
+e2e/                    # Playwright E2E 테스트
+middleware.ts           # Supabase Auth 세션 갱신 (루트)
 ```
 
 ---

@@ -14,3 +14,6 @@
 10. skills를 claude에 부탁해서 만들었다.
 11. frontendstyle.md 파일을 만들어서 최신 트렌드를 정리했다.
 12. frontend design에 관한 skill을 만들어 추가했다.
+13. 4월 5일 web 배포를 위해 flutter 기반을 포기하고, harness engineering과 agentic angineering을 위한 사전구축 작업에 몰두했다. 
+14. 필요한 hook과 middleware를 미리 설정해두기로 했다. 
+15. 

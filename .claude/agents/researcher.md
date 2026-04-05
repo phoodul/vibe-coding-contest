@@ -1,5 +1,6 @@
 ---
 name: Researcher
+model: opus
 description: 웹 검색 + 트렌드 분석 + 문서 조사 전담 에이전트. 구현 전 리서치 단계에서 사용한다.
 allowedTools:
   - WebSearch

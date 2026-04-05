@@ -1,5 +1,6 @@
 ---
 name: Reviewer
+model: opus
 description: 코드 리뷰 + 보안 점검 + 테스트 전담 에이전트. 구현 완료 후 품질 검증에 사용한다.
 allowedTools:
   - Read
