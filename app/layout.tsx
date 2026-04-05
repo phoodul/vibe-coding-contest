@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
-import { Outfit, Noto_Sans_KR, Geist } from "next/font/google";
+import { Outfit, Noto_Sans_KR } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 const notoSansKR = Noto_Sans_KR({
   subsets: ["latin"],
@@ -23,13 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={cn("dark", "font-sans", geist.variable)}>
+    <html lang="ko" className="dark">
       <body
-        className={`${geist.variable} ${notoSansKR.variable} font-sans antialiased`}
+        className={`${outfit.variable} ${notoSansKR.variable} font-sans antialiased`}
       >
         <div className="mesh-gradient" />
         <div className="noise-overlay" />
         {children}
+        <Toaster />
       </body>
     </html>
   );
