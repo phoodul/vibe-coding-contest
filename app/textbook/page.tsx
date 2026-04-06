@@ -14,6 +14,8 @@ import { findThinkersInText } from "@/lib/data/thinkers";
 import { ThinkerAvatar } from "@/components/shared/thinker-avatar";
 import { CellDiagram } from "@/components/biology/cell-diagram";
 import { DnaDiagram } from "@/components/biology/dna-diagram";
+import { NeuronDiagram } from "@/components/biology/neuron-diagram";
+import { EcosystemPyramid } from "@/components/biology/ecosystem-pyramid";
 import type { Textbook, TextbookChapter, TextbookSection, TextbookContent } from "@/lib/data/textbooks/ethics-index";
 
 const TEXTBOOKS = [
@@ -114,6 +116,12 @@ export default function TextbookPage() {
               </GlassCard>
               <GlassCard className="p-4" hover={false}>
                 <DnaDiagram />
+              </GlassCard>
+              <GlassCard className="p-4" hover={false}>
+                <NeuronDiagram />
+              </GlassCard>
+              <GlassCard className="p-4" hover={false}>
+                <EcosystemPyramid />
               </GlassCard>
             </div>
           </AnimatedContainer>
