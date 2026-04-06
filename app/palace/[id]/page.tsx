@@ -10,17 +10,19 @@ import { NarratorControls } from "@/components/shared/narrator-controls";
 import { Button } from "@/components/ui/button";
 import { ALL_LOCATIONS } from "@/lib/data/locations";
 import { useNarrator } from "@/hooks/use-narrator";
-import { MapPin, RotateCcw, Eye, CheckCircle2, Volume2, ChevronDown, ArrowRight } from "lucide-react";
+import { MapPin, RotateCcw, Eye, CheckCircle2, Volume2, ChevronDown, ArrowRight, Footprints } from "lucide-react";
 import type { HierarchicalPlacement, SubPlacement } from "@/types/palace";
 import { loadPalace, incrementReview, type FullPalace } from "@/lib/db/palaces";
 import { findThinkersInText } from "@/lib/data/thinkers";
+import { PalaceScene } from "@/components/palace/palace-scene";
+import { PalaceWalkthrough } from "@/components/palace/palace-walkthrough";
 import { ThinkerAvatar } from "@/components/shared/thinker-avatar";
 
 export default function PalaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
   const [palace, setPalace] = useState<FullPalace | null>(null);
-  const [mode, setMode] = useState<"view" | "review" | "narrator" | "complete">("view");
+  const [mode, setMode] = useState<"view" | "walkthrough" | "review" | "narrator" | "complete">("view");
   const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
   const [reviewItems, setReviewItems] = useState<{ zoneLabel: string; position: string; conceptLabel: string; story: string }[]>([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
@@ -326,20 +328,39 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
     );
   }
 
-  // ===== VIEW MODE =====
+  // ===== WALKTHROUGH MODE =====
+  if (mode === "walkthrough" && location) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen pt-24 px-6 pb-12 max-w-4xl mx-auto">
+          <PalaceWalkthrough
+            location={location}
+            placements={palace.hierarchicalPlacements}
+            onClose={() => setMode("view")}
+          />
+        </main>
+      </>
+    );
+  }
+
+  // ===== VIEW MODE — 시각적 공간 뷰 =====
   return (
     <>
       <Header />
       <main className="min-h-screen pt-24 px-6 pb-12 max-w-4xl mx-auto">
         <AnimatedContainer>
-          <div className="flex items-start justify-between mb-8">
+          <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold mb-1">{location?.emoji} {palace.unitTitle}</h1>
               <p className="text-[var(--muted-foreground)]">
                 {location?.name} · {palace.nodeCount}개 개념 · 복습 {palace.reviewCount}회
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap justify-end">
+              <Button onClick={() => setMode("walkthrough")} variant="outline" className="border-[var(--accent-emerald)]/30 text-[var(--accent-emerald)]">
+                <Footprints className="w-4 h-4 mr-2" /> 궁전 걷기
+              </Button>
               <Button onClick={startNarrator} variant="outline" className="border-[var(--accent-cyan)]/30 text-[var(--accent-cyan)]">
                 <Volume2 className="w-4 h-4 mr-2" /> 나레이터
               </Button>
@@ -350,76 +371,23 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
           </div>
         </AnimatedContainer>
 
-        {/* Hierarchical Palace View */}
-        <StaggerContainer className="space-y-4">
-          {palace.hierarchicalPlacements?.map((placement) => (
-            <StaggerItem key={placement.topicId}>
-              <GlassCard className="overflow-hidden" hover={false}>
-                <button
-                  onClick={() => setExpandedTopic(expandedTopic === placement.topicId ? null : placement.topicId)}
-                  className="w-full p-5 flex items-center gap-3 text-left hover:bg-white/5 transition-colors"
-                >
-                  <MapPin className="w-5 h-5 text-[var(--accent-cyan)] shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-sm text-[var(--accent-cyan)] font-medium">{placement.zoneName}</span>
-                    <h3 className="font-semibold">{placement.topicLabel}</h3>
-                    <span className="text-xs text-[var(--muted-foreground)]">{placement.subPlacements.length}개 개념</span>
-                  </div>
-                  <ChevronDown className={`w-5 h-5 text-[var(--muted-foreground)] transition-transform ${expandedTopic === placement.topicId ? "rotate-180" : ""}`} />
-                </button>
-
-                {expandedTopic === placement.topicId && (
-                  <div className="border-t border-white/5 px-5 py-4 space-y-3">
-                    {placement.subPlacements.map((sub, i) => (
-                      <div
-                        key={sub.conceptId}
-                        className="p-4 rounded-lg bg-white/5 cursor-pointer glass-hover"
-                        onClick={() => {
-                          // Find narrator index for this sub-placement
-                          let idx = 0;
-                          for (const p of palace.hierarchicalPlacements) {
-                            for (const s of p.subPlacements) {
-                              if (s.conceptId === sub.conceptId) {
-                                setMode("narrator");
-                                setTimeout(() => narrator.goTo(idx), 100);
-                                return;
-                              }
-                              idx++;
-                            }
-                          }
-                        }}
-                      >
-                        <div className="flex items-start gap-2 mb-2">
-                          <span className="w-5 h-5 rounded-full bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-[10px] flex items-center justify-center font-bold shrink-0 mt-0.5">
-                            {i + 1}
-                          </span>
-                          <div className="flex-1">
-                            <span className="text-sm font-semibold">{sub.conceptLabel}</span>
-                            <span className="text-xs text-[var(--accent-emerald)] ml-2">📍 {sub.position}</span>
-                          </div>
-                          <Volume2 className="w-3.5 h-3.5 text-[var(--muted-foreground)] shrink-0 mt-1" />
-                        </div>
-                        <p className="text-xs text-[var(--muted-foreground)] ml-7 leading-relaxed line-clamp-2">
-                          {sub.story}
-                        </p>
-                        {(() => {
-                          const thinkers = findThinkersInText(sub.story);
-                          return thinkers.length > 0 ? (
-                            <div className="ml-7 mt-2 flex flex-wrap gap-1.5">
-                              {thinkers.map((t) => (
-                                <ThinkerAvatar key={t.id} thinker={t} />
-                              ))}
-                            </div>
-                          ) : null;
-                        })()}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </GlassCard>
-            </StaggerItem>
+        {/* 시각적 궁전 — 구역별 공간 씬 */}
+        <div className="space-y-6">
+          {palace.hierarchicalPlacements?.map((placement, i) => (
+            <AnimatedContainer key={placement.topicId} delay={i * 0.1}>
+              <div className="mb-2 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-xs flex items-center justify-center font-bold">
+                  {i + 1}
+                </span>
+                <h3 className="font-semibold">{placement.topicLabel}</h3>
+                <span className="text-xs text-[var(--muted-foreground)]">· {placement.zoneName}</span>
+              </div>
+              {location && (
+                <PalaceScene location={location} placement={placement} />
+              )}
+            </AnimatedContainer>
           ))}
-        </StaggerContainer>
+        </div>
       </main>
     </>
   );
