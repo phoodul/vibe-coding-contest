@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
@@ -19,7 +20,7 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
   const { id } = use(params);
   const router = useRouter();
   const [palace, setPalace] = useState<FullPalace | null>(null);
-  const [mode, setMode] = useState<"view" | "review" | "narrator">("view");
+  const [mode, setMode] = useState<"view" | "review" | "narrator" | "complete">("view");
   const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
   const [reviewItems, setReviewItems] = useState<{ zoneLabel: string; position: string; conceptLabel: string; story: string }[]>([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
@@ -80,7 +81,7 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
           setPalace({ ...palace, reviewCount: newCount });
         });
       }
-      setMode("view");
+      setMode("complete");
     }
   }
 
@@ -96,6 +97,104 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
   }
 
   const location = LOCATIONS.find((l) => l.key === palace.locationKey);
+
+  // ===== COMPLETE MODE =====
+  if (mode === "complete") {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen pt-24 px-6 pb-12 max-w-2xl mx-auto">
+          <AnimatedContainer>
+            <GlassCard className="p-10 text-center relative overflow-hidden" hover={false}>
+              {/* Animated background particles */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 rounded-full"
+                    style={{
+                      background: ["var(--accent-violet)", "var(--accent-cyan)", "var(--accent-emerald)", "#f59e0b"][i % 4],
+                      left: `${10 + (i * 7) % 80}%`,
+                      top: `${20 + (i * 13) % 60}%`,
+                    }}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{
+                      opacity: [0, 1, 0],
+                      scale: [0, 1.5, 0],
+                      y: [0, -40 - (i * 10)],
+                    }}
+                    transition={{
+                      duration: 2,
+                      delay: i * 0.15,
+                      repeat: Infinity,
+                      repeatDelay: 1,
+                    }}
+                  />
+                ))}
+              </div>
+
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                className="text-6xl mb-4"
+              >
+                🎉
+              </motion.div>
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-2xl font-bold mb-2"
+              >
+                복습 완료!
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-[var(--muted-foreground)] mb-2"
+              >
+                {allReviewItems.length}개 개념을 모두 복습했습니다
+              </motion.p>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 }}
+                className="text-sm mb-6"
+              >
+                <span className="text-[var(--accent-emerald)] font-semibold">
+                  총 {palace.reviewCount}회
+                </span> 복습 달성
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="flex gap-3 justify-center"
+              >
+                <Button
+                  onClick={() => { setMode("review"); setCurrentReviewIndex(0); setIsRevealed(false); }}
+                  variant="outline"
+                  className="border-white/10"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  한 번 더
+                </Button>
+                <Button
+                  onClick={() => setMode("view")}
+                  className="bg-gradient-to-r from-[var(--accent-violet)] to-[var(--accent-cyan)] text-white"
+                >
+                  궁전으로 돌아가기
+                </Button>
+              </motion.div>
+            </GlassCard>
+          </AnimatedContainer>
+        </main>
+      </>
+    );
+  }
 
   // ===== NARRATOR MODE =====
   if (mode === "narrator") {

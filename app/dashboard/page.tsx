@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Brain, GraduationCap, BookOpen, FileText, PenTool, Trophy, Layers, RotateCcw } from "lucide-react";
 import { Header } from "@/components/layout/header";
@@ -11,6 +11,32 @@ import {
   StaggerItem,
 } from "@/components/shared/animated-container";
 import { loadPalaces, type SavedPalace } from "@/lib/db/palaces";
+
+function AnimatedNumber({ value }: { value: number }) {
+  const [display, setDisplay] = useState(0);
+  const ref = useRef(0);
+
+  useEffect(() => {
+    if (value === 0) return;
+    const duration = 600;
+    const start = performance.now();
+    const from = ref.current;
+
+    function tick(now: number) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(from + (value - from) * eased);
+      setDisplay(current);
+      if (progress < 1) requestAnimationFrame(tick);
+      else ref.current = value;
+    }
+
+    requestAnimationFrame(tick);
+  }, [value]);
+
+  return <>{display}</>;
+}
 
 const studentFeatures = [
   {
@@ -85,7 +111,7 @@ export default function DashboardPage() {
               ].map((stat) => (
                 <GlassCard key={stat.label} className="p-4 text-center" hover={false}>
                   <stat.icon className="w-5 h-5 mx-auto mb-1" style={{ color: stat.color }} />
-                  <p className="text-2xl font-bold">{stat.value}</p>
+                  <p className="text-2xl font-bold"><AnimatedNumber value={stat.value} /></p>
                   <p className="text-xs text-[var(--muted-foreground)]">{stat.label}</p>
                 </GlassCard>
               ))}
