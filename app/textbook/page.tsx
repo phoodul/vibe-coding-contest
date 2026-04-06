@@ -1,28 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { Button } from "@/components/ui/button";
-import { ETHICS_TEXTBOOK, getEthicsStats } from "@/lib/data/textbooks/ethics";
-import { BIOLOGY_TEXTBOOK, getBiologyStats } from "@/lib/data/textbooks/biology";
-import { KOREAN_TEXTBOOK, getKoreanStats } from "@/lib/data/textbooks/korean";
-import { Brain, BookOpen, ChevronDown, ChevronRight, Sparkles, Upload } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Brain, BookOpen, ChevronDown, ChevronRight, Sparkles, Upload, Loader2 } from "lucide-react";
 import { findThinkersInText } from "@/lib/data/thinkers";
 import { ThinkerAvatar } from "@/components/shared/thinker-avatar";
-import { CellDiagram } from "@/components/biology/cell-diagram";
-import { DnaDiagram } from "@/components/biology/dna-diagram";
-import { NeuronDiagram } from "@/components/biology/neuron-diagram";
-import { EcosystemPyramid } from "@/components/biology/ecosystem-pyramid";
 import type { Textbook, TextbookChapter, TextbookSection, TextbookContent } from "@/lib/data/textbooks/ethics-index";
 
-const TEXTBOOKS = [
-  { key: "ethics", label: "⚖️ 생활과 윤리", textbook: ETHICS_TEXTBOOK, stats: getEthicsStats },
-  { key: "biology", label: "🧬 생명과학Ⅰ", textbook: BIOLOGY_TEXTBOOK, stats: getBiologyStats },
-  { key: "korean", label: "📝 언어와 매체", textbook: KOREAN_TEXTBOOK, stats: getKoreanStats },
+// 동적 임포트 — 선택한 탭의 교과서만 로드
+const loaders: Record<string, () => Promise<{ textbook: Textbook; stats: () => { chapters: number; sections: number; contents: number; estimatedPages: number } }>> = {
+  ethics: async () => {
+    const { ETHICS_TEXTBOOK, getEthicsStats } = await import("@/lib/data/textbooks/ethics");
+    return { textbook: ETHICS_TEXTBOOK, stats: getEthicsStats };
+  },
+  biology: async () => {
+    const { BIOLOGY_TEXTBOOK, getBiologyStats } = await import("@/lib/data/textbooks/biology");
+    return { textbook: BIOLOGY_TEXTBOOK, stats: getBiologyStats };
+  },
+  korean: async () => {
+    const { KOREAN_TEXTBOOK, getKoreanStats } = await import("@/lib/data/textbooks/korean");
+    return { textbook: KOREAN_TEXTBOOK, stats: getKoreanStats };
+  },
+};
+
+// 생물 일러스트 동적 임포트
+const CellDiagram = lazy(() => import("@/components/biology/cell-diagram").then(m => ({ default: m.CellDiagram })));
+const DnaDiagram = lazy(() => import("@/components/biology/dna-diagram").then(m => ({ default: m.DnaDiagram })));
+const NeuronDiagram = lazy(() => import("@/components/biology/neuron-diagram").then(m => ({ default: m.NeuronDiagram })));
+const EcosystemPyramid = lazy(() => import("@/components/biology/ecosystem-pyramid").then(m => ({ default: m.EcosystemPyramid })));
+
+const TABS = [
+  { key: "ethics", label: "⚖️ 생활과 윤리" },
+  { key: "biology", label: "🧬 생명과학Ⅰ" },
+  { key: "korean", label: "📝 언어와 매체" },
 ];
 
 export default function TextbookPage() {
@@ -30,10 +46,18 @@ export default function TextbookPage() {
   const [selectedSubject, setSelectedSubject] = useState("ethics");
   const [expandedChapter, setExpandedChapter] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [textbook, setTextbook] = useState<Textbook | null>(null);
+  const [stats, setStats] = useState<{ chapters: number; sections: number; contents: number; estimatedPages: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const current = TEXTBOOKS.find((t) => t.key === selectedSubject)!;
-  const textbook = current.textbook;
-  const stats = current.stats();
+  useEffect(() => {
+    setIsLoading(true);
+    loaders[selectedSubject]().then(({ textbook: tb, stats: statsFn }) => {
+      setTextbook(tb);
+      setStats(statsFn());
+      setIsLoading(false);
+    });
+  }, [selectedSubject]);
 
   function handleCreatePalace(section: TextbookSection, chapter: TextbookChapter) {
     // Store section data for palace creation
@@ -78,7 +102,7 @@ export default function TextbookPage() {
 
           {/* Subject Tabs */}
           <div className="flex gap-2 mb-6">
-            {TEXTBOOKS.map((t) => (
+            {TABS.map((t) => (
               <Button
                 key={t.key}
                 variant={selectedSubject === t.key ? "default" : "outline"}
@@ -97,39 +121,54 @@ export default function TextbookPage() {
             ))}
           </div>
 
-          <h2 className="text-xl font-semibold mb-1">{textbook.title}</h2>
-          <div className="flex gap-4 text-xs text-[var(--muted-foreground)] mb-8">
-            <span>{stats.chapters}개 단원</span>
-            <span>·</span>
-            <span>{stats.sections}개 중단원</span>
-            <span>·</span>
-            <span>{stats.contents}개 핵심 개념</span>
-            <span>·</span>
-            <span>약 {stats.estimatedPages}페이지</span>
-          </div>
+          {isLoading || !textbook || !stats ? (
+            <div className="space-y-3 mb-8">
+              <Skeleton className="h-7 w-64 bg-white/5" />
+              <Skeleton className="h-4 w-48 bg-white/5" />
+            </div>
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold mb-1">{textbook.title}</h2>
+              <div className="flex gap-4 text-xs text-[var(--muted-foreground)] mb-8">
+                <span>{stats.chapters}개 단원</span>
+                <span>·</span>
+                <span>{stats.sections}개 중단원</span>
+                <span>·</span>
+                <span>{stats.contents}개 핵심 개념</span>
+                <span>·</span>
+                <span>약 {stats.estimatedPages}페이지</span>
+              </div>
+            </>
+          )}
         </AnimatedContainer>
 
         {/* Biology illustrations */}
         {selectedSubject === "biology" && (
           <AnimatedContainer delay={0.1} className="mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <GlassCard className="p-4" hover={false}>
-                <CellDiagram />
-              </GlassCard>
-              <GlassCard className="p-4" hover={false}>
-                <DnaDiagram />
-              </GlassCard>
-              <GlassCard className="p-4" hover={false}>
-                <NeuronDiagram />
-              </GlassCard>
-              <GlassCard className="p-4" hover={false}>
-                <EcosystemPyramid />
-              </GlassCard>
-            </div>
+            <Suspense fallback={<div className="grid grid-cols-1 md:grid-cols-2 gap-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 rounded-2xl bg-white/5" />)}</div>}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <GlassCard className="p-4" hover={false}>
+                  <CellDiagram />
+                </GlassCard>
+                <GlassCard className="p-4" hover={false}>
+                  <DnaDiagram />
+                </GlassCard>
+                <GlassCard className="p-4" hover={false}>
+                  <NeuronDiagram />
+                </GlassCard>
+                <GlassCard className="p-4" hover={false}>
+                  <EcosystemPyramid />
+                </GlassCard>
+              </div>
+            </Suspense>
           </AnimatedContainer>
         )}
 
         {/* Chapters */}
+        {isLoading && (
+          <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl bg-white/5" />)}</div>
+        )}
+        {!isLoading && textbook && (
         <StaggerContainer className="space-y-3">
           {textbook.chapters.map((chapter) => (
             <StaggerItem key={chapter.id}>
@@ -241,6 +280,7 @@ export default function TextbookPage() {
             </StaggerItem>
           ))}
         </StaggerContainer>
+        )}
 
         {/* Other subjects */}
         <AnimatedContainer delay={0.2} className="mt-8">
