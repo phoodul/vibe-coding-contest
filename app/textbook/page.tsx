@@ -12,6 +12,8 @@ import { BIOLOGY_TEXTBOOK, getBiologyStats } from "@/lib/data/textbooks/biology"
 import { Brain, BookOpen, ChevronDown, ChevronRight, Sparkles, Upload } from "lucide-react";
 import { findThinkersInText } from "@/lib/data/thinkers";
 import { ThinkerAvatar } from "@/components/shared/thinker-avatar";
+import { CellDiagram } from "@/components/biology/cell-diagram";
+import { DnaDiagram } from "@/components/biology/dna-diagram";
 import type { Textbook, TextbookChapter, TextbookSection, TextbookContent } from "@/lib/data/textbooks/ethics-index";
 
 const TEXTBOOKS = [
@@ -102,6 +104,20 @@ export default function TextbookPage() {
             <span>약 {stats.estimatedPages}페이지</span>
           </div>
         </AnimatedContainer>
+
+        {/* Biology illustrations */}
+        {selectedSubject === "biology" && (
+          <AnimatedContainer delay={0.1} className="mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <GlassCard className="p-4" hover={false}>
+                <CellDiagram />
+              </GlassCard>
+              <GlassCard className="p-4" hover={false}>
+                <DnaDiagram />
+              </GlassCard>
+            </div>
+          </AnimatedContainer>
+        )}
 
         {/* Chapters */}
         <StaggerContainer className="space-y-3">
