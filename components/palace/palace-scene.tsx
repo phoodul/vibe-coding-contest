@@ -27,7 +27,7 @@ export function PalaceScene({
   const zone = location.zones.find((z) => z.id === placement.zoneId);
 
   // 소품에 개념 배정
-  const assignments = assignItemsToProps(placement.subPlacements.length, location.key);
+  const assignments = assignItemsToProps(placement.subPlacements.length, placement.zoneId);
 
   // 소품별로 그룹화 (같은 소품에 배치된 개념들)
   const propGroups = new Map<string, { prop: PropAssignment; items: { sub: SubPlacement; assignment: PropAssignment; index: number }[] }>();
