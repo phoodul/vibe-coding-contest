@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
+import { MindMapTree } from "@/components/shared/mindmap-tree";
 import { Button } from "@/components/ui/button";
 import { SUBJECTS, getUnitsBySubject, type CurriculumUnit } from "@/lib/data/curriculum";
-import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
-import type { MindMap } from "@/types/mindmap";
+import { Sparkles, ArrowRight, Loader2, ChevronRight } from "lucide-react";
+import type { MindMap, MindMapNode } from "@/types/mindmap";
 
 export default function NewPalacePage() {
   const router = useRouter();
@@ -16,6 +18,7 @@ export default function NewPalacePage() {
   const [selectedUnit, setSelectedUnit] = useState<CurriculumUnit | null>(null);
   const [mindMap, setMindMap] = useState<MindMap | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedNode, setSelectedNode] = useState<MindMapNode | null>(null);
 
   const units = selectedSubject ? getUnitsBySubject(selectedSubject) : [];
 
@@ -151,58 +154,70 @@ export default function NewPalacePage() {
         {mindMap && (
           <AnimatedContainer delay={0} className="mb-8">
             <h2 className="text-lg font-semibold mb-4">3. 생성된 마인드맵</h2>
-            <GlassCard className="p-6">
-              {/* Center node */}
-              <div className="text-center mb-6">
-                <div className="inline-block px-6 py-3 rounded-2xl bg-gradient-to-r from-[var(--accent-violet)] to-[var(--accent-cyan)] text-white font-bold text-lg">
-                  {mindMap.centerNode.label}
-                </div>
-                <p className="text-sm text-[var(--muted-foreground)] mt-2">
-                  {mindMap.centerNode.description}
-                </p>
-              </div>
 
-              {/* Child nodes (소단원) */}
-              <div className="space-y-4">
-                {mindMap.childNodes.map((node, i) => (
-                  <GlassCard key={node.id} className="p-5" hover={false}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="w-7 h-7 rounded-full bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-xs flex items-center justify-center font-bold">
-                        {i + 1}
-                      </span>
-                      <h4 className="font-semibold">{node.label}</h4>
-                    </div>
-                    <p className="text-sm text-[var(--muted-foreground)] mb-3 ml-9">
-                      {node.description}
+            {/* SVG 시각화 */}
+            <GlassCard className="p-6 mb-4">
+              <p className="text-sm text-[var(--muted-foreground)] text-center mb-3">
+                노드를 클릭하면 상세 내용을 볼 수 있습니다
+              </p>
+              <MindMapTree
+                mindMap={mindMap}
+                onNodeClick={(node) => setSelectedNode(
+                  selectedNode?.id === node.id ? null : node
+                )}
+              />
+            </GlassCard>
+
+            {/* 선택된 노드 상세 패널 */}
+            <AnimatePresence mode="wait">
+              {selectedNode && (
+                <motion.div
+                  key={selectedNode.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                  className="mb-4"
+                >
+                  <GlassCard className="p-5 ring-1 ring-[var(--accent-violet)]/30">
+                    <h3 className="font-semibold text-lg mb-1">{selectedNode.label}</h3>
+                    <p className="text-sm text-[var(--muted-foreground)] mb-4">
+                      {selectedNode.description}
                     </p>
-                    {node.subNodes && node.subNodes.length > 0 && (
-                      <div className="ml-9 space-y-2">
-                        {node.subNodes.map((sub) => (
-                          <div key={sub.id} className="p-3 rounded-lg bg-white/5">
-                            <span className="text-xs font-semibold text-[var(--accent-cyan)]">
-                              {sub.label}
-                            </span>
-                            <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
-                              {sub.detail}
-                            </p>
+                    {selectedNode.subNodes && selectedNode.subNodes.length > 0 && (
+                      <div className="space-y-2">
+                        {selectedNode.subNodes.map((sub) => (
+                          <div
+                            key={sub.id}
+                            className="flex items-start gap-2 p-3 rounded-lg bg-white/5"
+                          >
+                            <ChevronRight className="w-4 h-4 mt-0.5 text-[var(--accent-cyan)] shrink-0" />
+                            <div>
+                              <span className="text-sm font-medium text-[var(--accent-cyan)]">
+                                {sub.label}
+                              </span>
+                              <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                                {sub.detail}
+                              </p>
+                            </div>
                           </div>
                         ))}
                       </div>
                     )}
                   </GlassCard>
-                ))}
-              </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              {/* Proceed button */}
-              <Button
-                size="lg"
-                onClick={handleProceedToPalace}
-                className="w-full mt-6 bg-gradient-to-r from-[var(--accent-emerald)] to-[var(--accent-cyan)] hover:opacity-90 text-white font-semibold py-5 rounded-xl"
-              >
-                기억의 궁전에 배치하기
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </GlassCard>
+            {/* Proceed button */}
+            <Button
+              size="lg"
+              onClick={handleProceedToPalace}
+              className="w-full bg-gradient-to-r from-[var(--accent-emerald)] to-[var(--accent-cyan)] hover:opacity-90 text-white font-semibold py-5 rounded-xl"
+            >
+              기억의 궁전에 배치하기
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
           </AnimatedContainer>
         )}
       </main>

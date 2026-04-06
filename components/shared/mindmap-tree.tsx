@@ -13,8 +13,8 @@ export function MindMapTree({ mindMap, onNodeClick }: MindMapTreeProps) {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const nodes = mindMap.childNodes;
   const centerX = 400;
-  const centerY = 300;
-  const radius = 220;
+  const centerY = 350;
+  const radius = 240;
 
   function getNodePosition(index: number, total: number) {
     const angle = (index / total) * Math.PI * 2 - Math.PI / 2;
@@ -22,6 +22,22 @@ export function MindMapTree({ mindMap, onNodeClick }: MindMapTreeProps) {
       x: centerX + radius * Math.cos(angle),
       y: centerY + radius * Math.sin(angle),
     };
+  }
+
+  // Split label into two lines at the nearest space to midpoint
+  function splitLabel(label: string): [string, string] {
+    const mid = Math.ceil(label.length / 2);
+    const spaceAfter = label.indexOf(" ", mid);
+    const spaceBefore = label.lastIndexOf(" ", mid);
+    let splitAt = mid;
+    if (spaceBefore > 0 && spaceAfter > 0) {
+      splitAt = (mid - spaceBefore <= spaceAfter - mid) ? spaceBefore : spaceAfter;
+    } else if (spaceBefore > 0) {
+      splitAt = spaceBefore;
+    } else if (spaceAfter > 0) {
+      splitAt = spaceAfter;
+    }
+    return [label.slice(0, splitAt).trim(), label.slice(splitAt).trim()];
   }
 
   // Color palette for nodes
@@ -33,9 +49,9 @@ export function MindMapTree({ mindMap, onNodeClick }: MindMapTreeProps) {
   return (
     <div className="w-full overflow-x-auto">
       <svg
-        viewBox="0 0 800 600"
+        viewBox="0 0 800 700"
         className="w-full max-w-3xl mx-auto"
-        style={{ minHeight: 400 }}
+        style={{ minHeight: 420 }}
       >
         {/* Connection lines */}
         {nodes.map((node, i) => {
@@ -86,9 +102,9 @@ export function MindMapTree({ mindMap, onNodeClick }: MindMapTreeProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: si * 0.05 }}
                 >
-                  <circle cx={sx} cy={sy} r={24} fill={colors[i % colors.length]} fillOpacity={0.15} stroke={colors[i % colors.length]} strokeWidth={1} />
-                  <text x={sx} y={sy} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={8} fontWeight={500}>
-                    {sub.label.length > 6 ? sub.label.slice(0, 6) + "…" : sub.label}
+                  <circle cx={sx} cy={sy} r={28} fill={colors[i % colors.length]} fillOpacity={0.15} stroke={colors[i % colors.length]} strokeWidth={1} />
+                  <text x={sx} y={sy} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={9} fontWeight={500}>
+                    {sub.label.length > 8 ? sub.label.slice(0, 8) + "…" : sub.label}
                   </text>
                 </motion.g>
               </g>
@@ -121,28 +137,36 @@ export function MindMapTree({ mindMap, onNodeClick }: MindMapTreeProps) {
               <circle
                 cx={pos.x}
                 cy={pos.y}
-                r={isSelected ? 36 : 32}
+                r={isSelected ? 42 : 38}
                 fill={`${color}20`}
                 stroke={color}
                 strokeWidth={isSelected ? 2.5 : 1.5}
               />
-              {/* Node label */}
-              <text
-                x={pos.x}
-                y={pos.y - 4}
-                textAnchor="middle"
-                dominantBaseline="central"
-                fill="white"
-                fontSize={10}
-                fontWeight={600}
-              >
-                {node.label.length > 8 ? node.label.slice(0, 8) + "…" : node.label}
-              </text>
+              {/* Node label - 2줄 지원 */}
+              {(() => {
+                const [line1, line2] = node.label.length <= 5
+                  ? [node.label, ""]
+                  : splitLabel(node.label);
+                return line2 ? (
+                  <>
+                    <text x={pos.x} y={pos.y - 7} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={10} fontWeight={600}>
+                      {line1.length > 10 ? line1.slice(0, 10) + "…" : line1}
+                    </text>
+                    <text x={pos.x} y={pos.y + 7} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={10} fontWeight={600}>
+                      {line2.length > 10 ? line2.slice(0, 10) + "…" : line2}
+                    </text>
+                  </>
+                ) : (
+                  <text x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={11} fontWeight={600}>
+                    {line1}
+                  </text>
+                );
+              })()}
               {/* Sub count badge */}
               {node.subNodes && node.subNodes.length > 0 && (
                 <>
-                  <circle cx={pos.x} cy={pos.y + 14} r={8} fill={color} fillOpacity={0.6} />
-                  <text x={pos.x} y={pos.y + 14} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={7} fontWeight={700}>
+                  <circle cx={pos.x} cy={pos.y + 22} r={9} fill={color} fillOpacity={0.6} />
+                  <text x={pos.x} y={pos.y + 22} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={8} fontWeight={700}>
                     {node.subNodes.length}
                   </text>
                 </>
@@ -160,14 +184,14 @@ export function MindMapTree({ mindMap, onNodeClick }: MindMapTreeProps) {
           {/* Center glow */}
           <circle cx={centerX} cy={centerY} r={60} fill="url(#centerGlow)" />
           {/* Center circle */}
-          <circle cx={centerX} cy={centerY} r={48} fill="#1a1a2e" stroke="url(#centerGradient)" strokeWidth={3} />
+          <circle cx={centerX} cy={centerY} r={52} fill="#1a1a2e" stroke="url(#centerGradient)" strokeWidth={3} />
           {/* Center label */}
-          <text x={centerX} y={centerY - 6} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={12} fontWeight={700}>
-            {mindMap.centerNode.label.length > 10
-              ? mindMap.centerNode.label.slice(0, 10) + "…"
+          <text x={centerX} y={centerY - 8} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={13} fontWeight={700}>
+            {mindMap.centerNode.label.length > 12
+              ? mindMap.centerNode.label.slice(0, 12) + "…"
               : mindMap.centerNode.label}
           </text>
-          <text x={centerX} y={centerY + 12} textAnchor="middle" dominantBaseline="central" fill="#71717a" fontSize={8}>
+          <text x={centerX} y={centerY + 10} textAnchor="middle" dominantBaseline="central" fill="#71717a" fontSize={9}>
             {nodes.length}개 소단원
           </text>
         </motion.g>
