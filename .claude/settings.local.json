@@ -23,7 +23,24 @@
       "Bash(curl -s -X POST http://localhost:3000/api/teacher/feedback -H \"Content-Type: application/json\" -d '{\"title\":\"테스트\",\"rubric\":\"잘 썼는지 평가\",\"studentAnswer\":\"세포는 생명의 기본 단위이다\"}')",
       "mcp__supabase__list_projects",
       "mcp__playwright__browser_resize",
-      "Bash(wc -c lib/data/textbooks/ethics-ch*.ts)"
+      "Bash(wc -c lib/data/textbooks/ethics-ch*.ts)",
+      "mcp__supabase__list_tables",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Bash(ls *.png)",
+      "Bash(node -e ':*)",
+      "Bash(wc -c lib/data/textbooks/biology-ch*.ts)",
+      "Bash(wc -l /c/Users/JSS/vibe-coding-contest/lib/data/textbooks/ethics-ch*.ts)",
+      "Bash(wc -l /c/Users/JSS/vibe-coding-contest/lib/data/textbooks/biology-ch*.ts)",
+      "Bash(find /c/Users/JSS/vibe-coding-contest/components -name \"*.tsx\" -exec grep -l \"aria\\\\|role\\\\|tabindex\" {} \\\\;)",
+      "Bash(grep -rn \"button\\\\|onClick\\\\|href=\" /c/Users/JSS/vibe-coding-contest/app/palace/[id]/page.tsx)",
+      "mcp__vercel__list_teams",
+      "mcp__vercel__list_projects",
+      "mcp__vercel__get_project",
+      "Bash(grep -l \"NEXT_PUBLIC_SUPABASE\" .env*)",
+      "mcp__vercel__get_deployment_build_logs",
+      "Bash(wc -c lib/data/textbooks/korean-ch*.ts)",
+      "mcp__vercel__get_runtime_logs"
     ]
   },
   "enabledMcpjsonServers": [
