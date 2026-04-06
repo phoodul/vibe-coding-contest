@@ -9,6 +9,7 @@ import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/s
 import { Button } from "@/components/ui/button";
 import { ETHICS_TEXTBOOK, getEthicsStats } from "@/lib/data/textbooks/ethics";
 import { BIOLOGY_TEXTBOOK, getBiologyStats } from "@/lib/data/textbooks/biology";
+import { KOREAN_TEXTBOOK, getKoreanStats } from "@/lib/data/textbooks/korean";
 import { Brain, BookOpen, ChevronDown, ChevronRight, Sparkles, Upload } from "lucide-react";
 import { findThinkersInText } from "@/lib/data/thinkers";
 import { ThinkerAvatar } from "@/components/shared/thinker-avatar";
@@ -21,6 +22,7 @@ import type { Textbook, TextbookChapter, TextbookSection, TextbookContent } from
 const TEXTBOOKS = [
   { key: "ethics", label: "⚖️ 생활과 윤리", textbook: ETHICS_TEXTBOOK, stats: getEthicsStats },
   { key: "biology", label: "🧬 생명과학Ⅰ", textbook: BIOLOGY_TEXTBOOK, stats: getBiologyStats },
+  { key: "korean", label: "📝 언어와 매체", textbook: KOREAN_TEXTBOOK, stats: getKoreanStats },
 ];
 
 export default function TextbookPage() {
