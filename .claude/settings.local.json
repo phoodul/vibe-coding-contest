@@ -10,7 +10,17 @@
       "Bash(npm install:*)",
       "mcp__vercel__list_deployments",
       "Bash(curl -s -X POST http://localhost:3000/api/mindmap/generate -H \"Content-Type: application/json\" -d '{\"subject\":\"biology\",\"unitTitle\":\"세포와 세포 분열\",\"standards\":[\"세포의 구조\\(세포막, 핵, 미토콘드리아, 리보솜 등\\)와 기능을 설명한다\",\"체세포 분열의 과정\\(전기, 중기, 후기, 말기\\)을 설명한다\",\"감수 분열의 과정과 유전적 다양성과의 관계를 이해한다\"]}')",
-      "Bash(python -m json.tool)"
+      "Bash(python -m json.tool)",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_fill_form",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_console_messages",
+      "Bash(npm list:*)",
+      "Bash(curl -s -X POST http://localhost:3000/api/teacher/feedback -H \"Content-Type: application/json\" -d '{\"title\":\"테스트\",\"rubric\":\"잘 썼는지 평가\",\"studentAnswer\":\"세포는 생명의 기본 단위이다\"}')"
     ]
   },
   "enabledMcpjsonServers": [

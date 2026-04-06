@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useCompletion } from "@ai-sdk/react";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer } from "@/components/shared/animated-container";
@@ -18,17 +17,39 @@ export default function RecordPage() {
   const [club, setClub] = useState("");
   const [volunteer, setVolunteer] = useState("");
   const [special, setSpecial] = useState("");
+  const [completion, setCompletion] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  const { completion, isLoading, complete } = useCompletion({
-    api: "/api/teacher/record",
-  });
 
   async function handleGenerate() {
     if (!studentName) return;
-    await complete("", {
-      body: { studentName, attendance, performance, club, volunteer, special },
-    });
+    setIsLoading(true);
+    setCompletion("");
+
+    try {
+      const res = await fetch("/api/teacher/record", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentName, attendance, performance, club, volunteer, special }),
+      });
+
+      if (!res.ok || !res.body) throw new Error("Failed");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let text = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += decoder.decode(value, { stream: true });
+        setCompletion(text);
+      }
+    } catch (error) {
+      console.error("Record generation failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleCopy() {
@@ -49,7 +70,6 @@ export default function RecordPage() {
         </AnimatedContainer>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Input */}
           <AnimatedContainer delay={0.1}>
             <GlassCard className="p-6 space-y-4" hover={false}>
               <div>
@@ -132,7 +152,6 @@ export default function RecordPage() {
             </GlassCard>
           </AnimatedContainer>
 
-          {/* Output */}
           <AnimatedContainer delay={0.2}>
             <GlassCard className="p-6" hover={false}>
               <div className="flex items-center justify-between mb-4">

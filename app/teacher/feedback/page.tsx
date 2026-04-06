@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useCompletion } from "@ai-sdk/react";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer } from "@/components/shared/animated-container";
@@ -15,17 +14,39 @@ export default function FeedbackPage() {
   const [title, setTitle] = useState("");
   const [rubric, setRubric] = useState("");
   const [studentAnswer, setStudentAnswer] = useState("");
+  const [completion, setCompletion] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  const { completion, isLoading, complete } = useCompletion({
-    api: "/api/teacher/feedback",
-  });
 
   async function handleGenerate() {
     if (!rubric || !studentAnswer) return;
-    await complete("", {
-      body: { title, rubric, studentAnswer },
-    });
+    setIsLoading(true);
+    setCompletion("");
+
+    try {
+      const res = await fetch("/api/teacher/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, rubric, studentAnswer }),
+      });
+
+      if (!res.ok || !res.body) throw new Error("Failed");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let text = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        text += decoder.decode(value, { stream: true });
+        setCompletion(text);
+      }
+    } catch (error) {
+      console.error("Feedback generation failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleCopy() {
@@ -46,7 +67,6 @@ export default function FeedbackPage() {
         </AnimatedContainer>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Input */}
           <AnimatedContainer delay={0.1}>
             <GlassCard className="p-6 space-y-4" hover={false}>
               <div>
@@ -63,7 +83,7 @@ export default function FeedbackPage() {
                 <Label htmlFor="rubric">루브릭 (채점 기준)</Label>
                 <Textarea
                   id="rubric"
-                  placeholder="예:&#10;1. 주제 이해도 (30점): 주제를 정확히 파악하고 핵심을 서술&#10;2. 논리적 구성 (30점): 서론-본론-결론의 구조&#10;3. 근거 제시 (20점): 구체적 사례나 데이터 활용&#10;4. 표현력 (20점): 문장의 명확성과 어휘의 적절성"
+                  placeholder={"예:\n1. 주제 이해도 (30점): 주제를 정확히 파악하고 핵심을 서술\n2. 논리적 구성 (30점): 서론-본론-결론의 구조\n3. 근거 제시 (20점): 구체적 사례나 데이터 활용\n4. 표현력 (20점): 문장의 명확성과 어휘의 적절성"}
                   value={rubric}
                   onChange={(e) => setRubric(e.target.value)}
                   className="mt-1.5 min-h-[150px] bg-white/5 border-white/10"
@@ -99,7 +119,6 @@ export default function FeedbackPage() {
             </GlassCard>
           </AnimatedContainer>
 
-          {/* Output */}
           <AnimatedContainer delay={0.2}>
             <GlassCard className="p-6" hover={false}>
               <div className="flex items-center justify-between mb-4">
