@@ -26,6 +26,8 @@ export default function EnglishVillagePage() {
       import("@/lib/data/english/village-home-school").then((m) => [m.HOME_LOCATION, m.SCHOOL_LOCATION]),
       import("@/lib/data/english/village-services").then((m) => [m.HOSPITAL_LOCATION, m.RESTAURANT_LOCATION, m.SHOPPING_MALL_LOCATION]),
       import("@/lib/data/english/village-world").then((m) => [m.TRANSPORTATION_LOCATION, m.CITY_LOCATION, m.NATURE_LOCATION]),
+      import("@/lib/data/english/village-daily-entertainment").then((m) => [m.DAILY_LIFE_LOCATION, m.ENTERTAINMENT_LOCATION]),
+      import("@/lib/data/english/village-academic").then((m) => [m.MEDIA_SOCIETY_LOCATION, m.SCIENCE_TECH_LOCATION, m.ACADEMIC_LOCATION]),
     ]).then((results) => {
       setLocations(results.flat());
       setIsLoading(false);
