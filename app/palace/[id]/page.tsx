@@ -10,20 +10,8 @@ import { Button } from "@/components/ui/button";
 import { LOCATIONS } from "@/lib/data/locations";
 import { useNarrator } from "@/hooks/use-narrator";
 import { MapPin, RotateCcw, Eye, CheckCircle2, Volume2, ChevronDown, ArrowRight } from "lucide-react";
-import type { MindMap } from "@/types/mindmap";
 import type { HierarchicalPlacement, SubPlacement } from "@/types/palace";
-
-interface FullPalace {
-  id: string;
-  locationKey: string;
-  unitTitle: string;
-  subject: string;
-  nodeCount: number;
-  reviewCount: number;
-  createdAt: string;
-  mindMap: MindMap;
-  hierarchicalPlacements: HierarchicalPlacement[];
-}
+import { loadPalace, incrementReview, type FullPalace } from "@/lib/db/palaces";
 
 export default function PalaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -36,8 +24,9 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
   const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`palace_${id}`);
-    if (saved) setPalace(JSON.parse(saved));
+    loadPalace(id).then((data) => {
+      if (data) setPalace(data);
+    });
   }, [id]);
 
   // Flatten all sub-placements for narrator
@@ -85,15 +74,9 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
       setIsRevealed(false);
     } else {
       if (palace) {
-        const updated = { ...palace, reviewCount: palace.reviewCount + 1 };
-        setPalace(updated);
-        localStorage.setItem(`palace_${id}`, JSON.stringify(updated));
-        const list = JSON.parse(localStorage.getItem("palaces") || "[]");
-        const idx = list.findIndex((p: { id: string }) => p.id === id);
-        if (idx >= 0) {
-          list[idx].reviewCount = updated.reviewCount;
-          localStorage.setItem("palaces", JSON.stringify(list));
-        }
+        incrementReview(id).then((newCount) => {
+          setPalace({ ...palace, reviewCount: newCount });
+        });
       }
       setMode("view");
     }

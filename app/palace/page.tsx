@@ -9,16 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Brain, RotateCcw, Clock, AlertCircle } from "lucide-react";
 import { LOCATIONS } from "@/lib/data/locations";
 import { getReviewUrgency, formatTimeUntilReview } from "@/lib/data/spaced-repetition";
-
-interface SavedPalace {
-  id: string;
-  locationKey: string;
-  unitTitle: string;
-  subject: string;
-  nodeCount: number;
-  reviewCount: number;
-  createdAt: string;
-}
+import { loadPalaces, type SavedPalace } from "@/lib/db/palaces";
 
 const urgencyStyles = {
   overdue: { bg: "bg-red-500/20", text: "text-red-400", label: "복습 필요!" },
@@ -31,10 +22,7 @@ export default function PalaceListPage() {
   const [palaces, setPalaces] = useState<SavedPalace[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("palaces");
-    if (saved) {
-      setPalaces(JSON.parse(saved));
-    }
+    loadPalaces().then(setPalaces);
   }, []);
 
   // Sort: overdue/due first

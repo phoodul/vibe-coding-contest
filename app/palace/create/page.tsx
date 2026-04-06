@@ -11,6 +11,7 @@ import { Sparkles, Loader2, MapPin, ArrowRight, ChevronDown } from "lucide-react
 import type { MindMap } from "@/types/mindmap";
 import type { HierarchicalPlacement } from "@/types/palace";
 import type { CurriculumUnit } from "@/lib/data/curriculum";
+import { savePalace } from "@/lib/db/palaces";
 
 export default function PalaceCreatePage() {
   const router = useRouter();
@@ -72,38 +73,25 @@ export default function PalaceCreatePage() {
     }
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!mindMap || !selectedLocation || !unit) return;
 
-    const palace = {
-      id: crypto.randomUUID(),
-      locationKey: selectedLocation.key,
-      unitTitle: unit.unitTitle,
-      subject: unit.subject,
-      nodeCount: hierarchicalPlacements.reduce((sum, p) => sum + p.subPlacements.length, 0),
-      reviewCount: 0,
-      createdAt: new Date().toISOString(),
-      mindMap,
-      hierarchicalPlacements,
-    };
+    try {
+      const id = await savePalace({
+        locationKey: selectedLocation.key,
+        unitTitle: unit.unitTitle,
+        subject: unit.subject,
+        mindMap,
+        hierarchicalPlacements,
+      });
 
-    const existing = JSON.parse(localStorage.getItem("palaces") || "[]");
-    existing.push({
-      id: palace.id,
-      locationKey: palace.locationKey,
-      unitTitle: palace.unitTitle,
-      subject: palace.subject,
-      nodeCount: palace.nodeCount,
-      reviewCount: 0,
-      createdAt: palace.createdAt,
-    });
-    localStorage.setItem("palaces", JSON.stringify(existing));
-    localStorage.setItem(`palace_${palace.id}`, JSON.stringify(palace));
+      sessionStorage.removeItem("pendingMindMap");
+      sessionStorage.removeItem("pendingUnit");
 
-    sessionStorage.removeItem("pendingMindMap");
-    sessionStorage.removeItem("pendingUnit");
-
-    router.push(`/palace/${palace.id}`);
+      router.push(`/palace/${id}`);
+    } catch (error) {
+      console.error("Failed to save palace:", error);
+    }
   }
 
   if (!mindMap) {

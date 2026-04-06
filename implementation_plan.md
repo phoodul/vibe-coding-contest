@@ -1,23 +1,31 @@
-# MindMapTree SVG 시각화 통합
+# Supabase DB 연동 — localStorage → Supabase 전환
 
-## 목표
-palace/new 페이지의 텍스트 카드 기반 마인드맵 → SVG 방사형 시각화로 교체
+## 전략
+- 로그인 사용자: Supabase 사용
+- 비로그인 사용자: localStorage 폴백 (데모 접근성 보장)
+
+## Supabase 테이블 (이미 존재)
+- `mind_maps`: id, user_id, subject, unit_title, nodes(JSONB)
+- `palaces`: id, user_id, mind_map_id, location_key, unit_title, subject, placements(JSONB), review_count
 
 ## 변경사항
 
-### 1. palace/new/page.tsx
-- MindMapTree 컴포넌트 import
-- `selectedNodeIndex` 상태 추가
-- Step 4(마인드맵 표시) 영역을 SVG + 노드 상세 패널로 교체
-  - 상단: MindMapTree SVG (시각적 임팩트)
-  - 하단: 클릭한 노드의 상세 정보 (description, subNodes)
-  - 하단: 궁전 배치 버튼
+### 1. lib/db/palaces.ts (신규)
+- `savePalace()` — mindmap + palace 저장
+- `loadPalaces()` — 목록 로드
+- `loadPalace(id)` — 상세 로드 (mind_maps join)
+- `incrementReview(id)` — 복습 카운트 증가
 
-### 2. MindMapTree 개선 (필요시)
-- 한국어 텍스트 잘림 개선
-- 반응형 개선
+### 2. palace/create/page.tsx
+- handleSave()에서 localStorage 대신 savePalace() 사용
+
+### 3. palace/page.tsx
+- useEffect에서 loadPalaces() 사용
+
+### 4. palace/[id]/page.tsx
+- useEffect에서 loadPalace(id) 사용
+- nextReview()에서 incrementReview(id) 사용
 
 ## 검증
-- 마인드맵 생성 후 SVG 시각화 확인
-- 노드 클릭 시 상세 패널 표시 확인
-- 궁전 배치하기 버튼 동작 확인
+- 비로그인: localStorage 폴백 동작 확인
+- 로그인: Supabase 저장/로드 확인
