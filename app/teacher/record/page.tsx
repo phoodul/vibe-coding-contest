@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Loader2, Copy, Check } from "lucide-react";
+import { MarkdownRenderer } from "@/components/shared/markdown-renderer";
 
 export default function RecordPage() {
   const [studentName, setStudentName] = useState("");
@@ -173,8 +174,8 @@ export default function RecordPage() {
                 )}
               </div>
               {completion ? (
-                <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap">
-                  {completion}
+                <div className="max-w-none">
+                  <MarkdownRenderer content={completion} />
                 </div>
               ) : (
                 <div className="text-[var(--muted-foreground)] text-sm text-center py-12">

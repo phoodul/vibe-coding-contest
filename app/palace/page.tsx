@@ -6,8 +6,9 @@ import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { Button } from "@/components/ui/button";
-import { Plus, Brain, RotateCcw } from "lucide-react";
+import { Plus, Brain, RotateCcw, Clock, AlertCircle } from "lucide-react";
 import { LOCATIONS } from "@/lib/data/locations";
+import { getReviewUrgency, formatTimeUntilReview } from "@/lib/data/spaced-repetition";
 
 interface SavedPalace {
   id: string;
@@ -19,6 +20,13 @@ interface SavedPalace {
   createdAt: string;
 }
 
+const urgencyStyles = {
+  overdue: { bg: "bg-red-500/20", text: "text-red-400", label: "복습 필요!" },
+  due: { bg: "bg-amber-500/20", text: "text-amber-400", label: "복습 시간" },
+  upcoming: { bg: "bg-blue-500/10", text: "text-blue-400", label: "" },
+  done: { bg: "bg-emerald-500/20", text: "text-emerald-400", label: "복습 완료" },
+};
+
 export default function PalaceListPage() {
   const [palaces, setPalaces] = useState<SavedPalace[]>([]);
 
@@ -28,6 +36,14 @@ export default function PalaceListPage() {
       setPalaces(JSON.parse(saved));
     }
   }, []);
+
+  // Sort: overdue/due first
+  const sortedPalaces = [...palaces].sort((a, b) => {
+    const urgencyOrder = { overdue: 0, due: 1, upcoming: 2, done: 3 };
+    const uA = urgencyOrder[getReviewUrgency(a.createdAt, a.reviewCount)];
+    const uB = urgencyOrder[getReviewUrgency(b.createdAt, b.reviewCount)];
+    return uA - uB;
+  });
 
   return (
     <>
@@ -70,8 +86,12 @@ export default function PalaceListPage() {
           </AnimatedContainer>
         ) : (
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {palaces.map((palace) => {
+            {sortedPalaces.map((palace) => {
               const location = LOCATIONS.find((l) => l.key === palace.locationKey);
+              const urgency = getReviewUrgency(palace.createdAt, palace.reviewCount);
+              const timeUntil = formatTimeUntilReview(palace.createdAt, palace.reviewCount);
+              const style = urgencyStyles[urgency];
+
               return (
                 <StaggerItem key={palace.id}>
                   <Link href={`/palace/${palace.id}`}>
@@ -85,9 +105,19 @@ export default function PalaceListPage() {
                           <p className="text-sm text-[var(--muted-foreground)]">
                             {location?.name} · {palace.nodeCount}개 개념
                           </p>
-                          <div className="flex items-center gap-2 mt-2 text-xs text-[var(--muted-foreground)]">
-                            <RotateCcw className="w-3 h-3" />
-                            복습 {palace.reviewCount}회
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className="flex items-center gap-1 text-xs text-[var(--muted-foreground)]">
+                              <RotateCcw className="w-3 h-3" />
+                              복습 {palace.reviewCount}회
+                            </span>
+                            <span className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${style.bg} ${style.text}`}>
+                              {urgency === "overdue" || urgency === "due" ? (
+                                <AlertCircle className="w-3 h-3" />
+                              ) : (
+                                <Clock className="w-3 h-3" />
+                              )}
+                              {style.label || timeUntil}
+                            </span>
                           </div>
                         </div>
                       </div>
