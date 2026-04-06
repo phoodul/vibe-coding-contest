@@ -8,7 +8,7 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { NarratorControls } from "@/components/shared/narrator-controls";
 import { Button } from "@/components/ui/button";
-import { LOCATIONS } from "@/lib/data/locations";
+import { ALL_LOCATIONS } from "@/lib/data/locations";
 import { useNarrator } from "@/hooks/use-narrator";
 import { MapPin, RotateCcw, Eye, CheckCircle2, Volume2, ChevronDown, ArrowRight } from "lucide-react";
 import type { HierarchicalPlacement, SubPlacement } from "@/types/palace";
@@ -96,7 +96,7 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
     );
   }
 
-  const location = LOCATIONS.find((l) => l.key === palace.locationKey);
+  const location = ALL_LOCATIONS.find((l) => l.key === palace.locationKey);
 
   // ===== COMPLETE MODE =====
   if (mode === "complete") {

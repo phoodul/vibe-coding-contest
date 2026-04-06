@@ -6,7 +6,7 @@ import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { Button } from "@/components/ui/button";
-import { LOCATIONS, type PalaceLocation } from "@/lib/data/locations";
+import { LOCATIONS, BIO_ISLAND_LOCATIONS, type PalaceLocation } from "@/lib/data/locations";
 import { Sparkles, Loader2, MapPin, ArrowRight, ChevronDown } from "lucide-react";
 import type { MindMap } from "@/types/mindmap";
 import type { HierarchicalPlacement } from "@/types/palace";
@@ -126,6 +126,35 @@ export default function PalaceCreatePage() {
               <MapPin className="w-5 h-5 text-[var(--accent-violet)]" />
               장소를 선택하면 AI가 계층적 배치를 자동 생성합니다
             </h2>
+            {/* 바이오 아일랜드 */}
+            <p className="text-xs text-[var(--accent-emerald)] font-medium mb-2 mt-2">🏝️ 바이오 아일랜드 — 생명과학 전용</p>
+            <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+              {BIO_ISLAND_LOCATIONS.map((loc) => (
+                <StaggerItem key={loc.key}>
+                  <GlassCard
+                    className="p-0 cursor-pointer text-center overflow-hidden ring-1 ring-[var(--accent-emerald)]/20"
+                    onClick={() => handleSelectAndGenerate(loc)}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div
+                      className="h-16 flex items-center justify-center opacity-60"
+                      style={{ background: loc.gradient }}
+                    >
+                      <span className="text-3xl drop-shadow-lg">{loc.emoji}</span>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-medium text-sm">{loc.name}</h3>
+                      <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                        {loc.zones.length}개 구역
+                      </p>
+                    </div>
+                  </GlassCard>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+
+            {/* 일반 장소 */}
+            <p className="text-xs text-[var(--muted-foreground)] font-medium mb-2">🏛️ 한국 명소</p>
             <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {LOCATIONS.map((loc) => (
                 <StaggerItem key={loc.key}>

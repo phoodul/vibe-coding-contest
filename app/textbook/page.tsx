@@ -8,16 +8,26 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { Button } from "@/components/ui/button";
 import { ETHICS_TEXTBOOK, getEthicsStats } from "@/lib/data/textbooks/ethics";
+import { BIOLOGY_TEXTBOOK, getBiologyStats } from "@/lib/data/textbooks/biology";
 import { Brain, BookOpen, ChevronDown, ChevronRight, Sparkles, Upload } from "lucide-react";
 import { findThinkersInText } from "@/lib/data/thinkers";
 import { ThinkerAvatar } from "@/components/shared/thinker-avatar";
-import type { TextbookChapter, TextbookSection, TextbookContent } from "@/lib/data/textbooks/ethics-index";
+import type { Textbook, TextbookChapter, TextbookSection, TextbookContent } from "@/lib/data/textbooks/ethics-index";
+
+const TEXTBOOKS = [
+  { key: "ethics", label: "⚖️ 생활과 윤리", textbook: ETHICS_TEXTBOOK, stats: getEthicsStats },
+  { key: "biology", label: "🧬 생명과학Ⅰ", textbook: BIOLOGY_TEXTBOOK, stats: getBiologyStats },
+];
 
 export default function TextbookPage() {
   const router = useRouter();
+  const [selectedSubject, setSelectedSubject] = useState("ethics");
   const [expandedChapter, setExpandedChapter] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const stats = getEthicsStats();
+
+  const current = TEXTBOOKS.find((t) => t.key === selectedSubject)!;
+  const textbook = current.textbook;
+  const stats = current.stats();
 
   function handleCreatePalace(section: TextbookSection, chapter: TextbookChapter) {
     // Store section data for palace creation
@@ -40,7 +50,7 @@ export default function TextbookPage() {
     };
 
     const unit = {
-      subject: "ethics",
+      subject: selectedSubject,
       unitTitle: `${chapter.title} — ${section.title}`,
       standards: section.contents.map((c) => c.label),
     };
@@ -55,13 +65,33 @@ export default function TextbookPage() {
       <Header />
       <main className="min-h-screen pt-24 px-6 pb-12 max-w-4xl mx-auto">
         <AnimatedContainer>
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-4">
             <BookOpen className="w-8 h-8 text-[var(--accent-violet)]" />
-            <h1 className="text-3xl font-bold">{ETHICS_TEXTBOOK.title}</h1>
+            <h1 className="text-3xl font-bold">교과서 열람</h1>
           </div>
-          <p className="text-[var(--muted-foreground)] mb-2">
-            {ETHICS_TEXTBOOK.subject} — 교과서 수준 시험 대비 콘텐츠
-          </p>
+
+          {/* Subject Tabs */}
+          <div className="flex gap-2 mb-6">
+            {TEXTBOOKS.map((t) => (
+              <Button
+                key={t.key}
+                variant={selectedSubject === t.key ? "default" : "outline"}
+                onClick={() => {
+                  setSelectedSubject(t.key);
+                  setExpandedChapter(null);
+                  setExpandedSection(null);
+                }}
+                className={selectedSubject === t.key
+                  ? "bg-[var(--accent-violet)] text-white"
+                  : "border-white/10 text-[var(--muted-foreground)]"
+                }
+              >
+                {t.label}
+              </Button>
+            ))}
+          </div>
+
+          <h2 className="text-xl font-semibold mb-1">{textbook.title}</h2>
           <div className="flex gap-4 text-xs text-[var(--muted-foreground)] mb-8">
             <span>{stats.chapters}개 단원</span>
             <span>·</span>
@@ -75,7 +105,7 @@ export default function TextbookPage() {
 
         {/* Chapters */}
         <StaggerContainer className="space-y-3">
-          {ETHICS_TEXTBOOK.chapters.map((chapter) => (
+          {textbook.chapters.map((chapter) => (
             <StaggerItem key={chapter.id}>
               <GlassCard className="overflow-hidden" hover={false}>
                 {/* Chapter header */}

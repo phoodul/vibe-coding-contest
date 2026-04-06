@@ -1,31 +1,24 @@
-# Supabase DB 연동 — localStorage → Supabase 전환
+# 생명과학I 교과서 콘텐츠 + 생물 비주얼
 
-## 전략
-- 로그인 사용자: Supabase 사용
-- 비로그인 사용자: localStorage 폴백 (데모 접근성 보장)
+## 목표
+200~300페이지 분량의 생명과학I 교과서 콘텐츠 작성 + 생물 이미지/SVG 활용
 
-## Supabase 테이블 (이미 존재)
-- `mind_maps`: id, user_id, subject, unit_title, nodes(JSONB)
-- `palaces`: id, user_id, mind_map_id, location_key, unit_title, subject, placements(JSONB), review_count
+## 교과서 구조 (5장)
+1. 생명 과학의 이해 (~30p)
+2. 세포의 특성 (~50p)
+3. 세포 분열과 유전 (~60p)
+4. 항상성과 몸의 조절 (~60p)
+5. 생태계와 상호 작용 (~50p)
 
-## 변경사항
+## 파일 구조
+- lib/data/textbooks/biology-index.ts
+- lib/data/textbooks/biology-ch1~5.ts
+- lib/data/textbooks/biology.ts
+- components/biology/ (SVG 일러스트)
+- lib/data/locations.ts (생물 테마 장소 추가)
 
-### 1. lib/db/palaces.ts (신규)
-- `savePalace()` — mindmap + palace 저장
-- `loadPalaces()` — 목록 로드
-- `loadPalace(id)` — 상세 로드 (mind_maps join)
-- `incrementReview(id)` — 복습 카운트 증가
+## 생물 테마 궁전 장소
+- 세포 내부, DNA 나선, 인체 내부, 숲 생태계, 현미경 실험실
 
-### 2. palace/create/page.tsx
-- handleSave()에서 localStorage 대신 savePalace() 사용
-
-### 3. palace/page.tsx
-- useEffect에서 loadPalaces() 사용
-
-### 4. palace/[id]/page.tsx
-- useEffect에서 loadPalace(id) 사용
-- nextReview()에서 incrementReview(id) 사용
-
-## 검증
-- 비로그인: localStorage 폴백 동작 확인
-- 로그인: Supabase 저장/로드 확인
+## SVG 일러스트
+- 세포 구조도, 뉴런, DNA, 생태 피라미드

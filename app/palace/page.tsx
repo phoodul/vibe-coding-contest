@@ -7,7 +7,7 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { Button } from "@/components/ui/button";
 import { Plus, Brain, RotateCcw, Clock, AlertCircle } from "lucide-react";
-import { LOCATIONS } from "@/lib/data/locations";
+import { ALL_LOCATIONS } from "@/lib/data/locations";
 import { getReviewUrgency, formatTimeUntilReview } from "@/lib/data/spaced-repetition";
 import { loadPalaces, type SavedPalace } from "@/lib/db/palaces";
 
@@ -75,7 +75,7 @@ export default function PalaceListPage() {
         ) : (
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {sortedPalaces.map((palace) => {
-              const location = LOCATIONS.find((l) => l.key === palace.locationKey);
+              const location = ALL_LOCATIONS.find((l) => l.key === palace.locationKey);
               const urgency = getReviewUrgency(palace.createdAt, palace.reviewCount);
               const timeUntil = formatTimeUntilReview(palace.createdAt, palace.reviewCount);
               const style = urgencyStyles[urgency];

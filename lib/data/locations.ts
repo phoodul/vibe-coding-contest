@@ -157,6 +157,84 @@ export const LOCATIONS: PalaceLocation[] = [
   },
 ];
 
+// === 바이오 아일랜드 — 생명과학 전용 기억의 궁전 ===
+export const BIO_ISLAND_LOCATIONS: PalaceLocation[] = [
+  {
+    key: "cell_dome",
+    name: "세포 돔",
+    description: "거대한 투명 돔 안에 세포의 내부 구조를 실물 크기로 재현한 체험관",
+    emoji: "🔬",
+    gradient: "linear-gradient(135deg, #00695C 0%, #26A69A 50%, #80CBC4 100%)",
+    zones: [
+      { id: "cell_membrane_gate", name: "인지질 이중층 입구", description: "유동 모자이크 모델로 구현된 세포막, 채널 단백질이 문 역할", position: { x: 50, y: 90 } },
+      { id: "nucleus_tower", name: "핵 관제탑", description: "이중막으로 둘러싸인 중앙 타워, DNA 설계도가 보관된 사령부", position: { x: 50, y: 50 } },
+      { id: "mitochondria_plant", name: "미토콘드리아 발전소", description: "ATP를 생산하는 발전소, 크리스타(주름) 형태의 내막 구조", position: { x: 25, y: 65 } },
+      { id: "ribosome_factory", name: "리보솜 공장", description: "mRNA 설계도를 읽어 단백질을 조립하는 나노 공장", position: { x: 75, y: 35 } },
+      { id: "er_corridor", name: "소포체 복도", description: "거친면 소포체(리보솜 부착)와 매끈면 소포체(지질 합성)의 미로", position: { x: 30, y: 35 } },
+      { id: "golgi_logistics", name: "골지체 물류센터", description: "단백질을 가공·포장·분류하여 목적지로 보내는 물류 허브", position: { x: 70, y: 65 } },
+    ],
+  },
+  {
+    key: "dna_tower",
+    name: "DNA 나선탑",
+    description: "높이 100m의 이중나선 형태 타워, 각 층에서 유전의 비밀을 탐험",
+    emoji: "🧬",
+    gradient: "linear-gradient(135deg, #4A148C 0%, #7B1FA2 50%, #CE93D8 100%)",
+    zones: [
+      { id: "helix_stairs", name: "나선 계단", description: "A-T, G-C 염기쌍이 계단 난간을 이루는 이중나선 구조", position: { x: 50, y: 85 } },
+      { id: "mendel_garden", name: "멘델의 완두콩 정원", description: "우열의 원리, 분리·독립의 법칙을 실험하는 온실 정원", position: { x: 25, y: 65 } },
+      { id: "chromosome_gallery", name: "염색체 전시관", description: "46개 염색체 모형, 상동 염색체와 성염색체를 비교 전시", position: { x: 75, y: 65 } },
+      { id: "pedigree_gallery", name: "가계도 갤러리", description: "ABO 혈액형, 색맹, 혈우병 등 사람의 유전 가계도 전시", position: { x: 50, y: 40 } },
+      { id: "mutation_lab", name: "돌연변이 연구소", description: "유전자·염색체 이상을 연구하는 최첨단 실험실", position: { x: 50, y: 15 } },
+    ],
+  },
+  {
+    key: "division_plaza",
+    name: "분열의 광장",
+    description: "세포 분열의 전 과정을 실시간으로 보여주는 원형 야외 광장",
+    emoji: "🔄",
+    gradient: "linear-gradient(135deg, #E65100 0%, #FF9800 50%, #FFE0B2 100%)",
+    zones: [
+      { id: "interphase_garden", name: "간기 정원", description: "G1→S(DNA 복제)→G2 단계를 꽃밭으로 표현한 준비 정원", position: { x: 50, y: 85 } },
+      { id: "spindle_fountain", name: "방추사 분수", description: "중심체에서 뻗어나온 방추사가 물줄기로 표현된 분수", position: { x: 30, y: 60 } },
+      { id: "mitosis_hall", name: "체세포 분열관", description: "전기→중기→후기→말기, 2n→2n 과정을 순서대로 체험", position: { x: 70, y: 60 } },
+      { id: "meiosis_hall", name: "감수 분열관", description: "감수1분열(상동 염색체 분리)→감수2분열(염색분체 분리), 2n→n", position: { x: 50, y: 35 } },
+      { id: "gamete_hatchery", name: "생식세포 부화장", description: "정자와 난자가 만들어지는 과정, 수정과 발생의 시작점", position: { x: 50, y: 15 } },
+    ],
+  },
+  {
+    key: "homeostasis_center",
+    name: "항상성 센터",
+    description: "인체를 모방한 거대 건축물, 신경·호르몬·면역 시스템을 체험",
+    emoji: "🏥",
+    gradient: "linear-gradient(135deg, #B71C1C 0%, #E53935 50%, #EF9A9A 100%)",
+    zones: [
+      { id: "neuron_comm_tower", name: "신경 통신탑", description: "뉴런의 구조(가지돌기→세포체→축삭)를 타워 형태로 재현", position: { x: 50, y: 85 } },
+      { id: "synapse_bridge", name: "시냅스 다리", description: "신경전달물질이 시냅스 틈을 건너는 과정을 보여주는 현수교", position: { x: 30, y: 65 } },
+      { id: "hormone_post", name: "호르몬 우체국", description: "혈액을 통해 호르몬 '편지'를 표적 기관에 배달하는 우체국", position: { x: 70, y: 65 } },
+      { id: "immune_fortress", name: "면역 요새", description: "1차 방어(피부·점막)→2차 방어(식세포)→3차 방어(림프구)의 다층 성벽", position: { x: 50, y: 40 } },
+      { id: "glucose_control", name: "혈당 조절실", description: "인슐린과 글루카곤이 시소처럼 혈당을 조절하는 제어실", position: { x: 50, y: 15 } },
+    ],
+  },
+  {
+    key: "ecosystem_park",
+    name: "생태계 자연공원",
+    description: "섬의 야외 구역, 숲·호수·동굴에서 생태계의 모든 상호작용을 체험",
+    emoji: "🌳",
+    gradient: "linear-gradient(135deg, #1B5E20 0%, #388E3C 40%, #2196F3 100%)",
+    zones: [
+      { id: "canopy_viewpoint", name: "숲 캐노피 전망대", description: "수관층에서 생산자→소비자→분해자의 먹이사슬을 내려다보는 전망대", position: { x: 50, y: 85 } },
+      { id: "food_web_trail", name: "먹이그물 트레일", description: "복잡하게 얽힌 먹이 관계를 따라 걷는 숲속 탐방로", position: { x: 30, y: 65 } },
+      { id: "carbon_cycle_lake", name: "탄소순환 호수", description: "광합성·호흡·분해로 탄소가 순환하는 과정을 보여주는 호수", position: { x: 70, y: 50 } },
+      { id: "nitrogen_cave", name: "질소 고정 동굴", description: "뿌리혹박테리아가 질소를 고정하는 지하 동굴 생태계", position: { x: 30, y: 35 } },
+      { id: "biodiversity_reserve", name: "생물다양성 보호구역", description: "유전적·종·생태계 다양성을 보전하는 섬의 핵심 보호구역", position: { x: 60, y: 15 } },
+    ],
+  },
+];
+
+// 전체 장소 목록 (기본 + 바이오 아일랜드)
+export const ALL_LOCATIONS = [...LOCATIONS, ...BIO_ISLAND_LOCATIONS];
+
 export function getLocation(key: string): PalaceLocation | undefined {
-  return LOCATIONS.find((l) => l.key === key);
+  return ALL_LOCATIONS.find((l) => l.key === key);
 }
