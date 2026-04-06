@@ -10,7 +10,8 @@ import { NarratorControls } from "@/components/shared/narrator-controls";
 import { Button } from "@/components/ui/button";
 import { ALL_LOCATIONS } from "@/lib/data/locations";
 import { useNarrator } from "@/hooks/use-narrator";
-import { MapPin, RotateCcw, Eye, CheckCircle2, Volume2, ChevronDown, ArrowRight, Footprints } from "lucide-react";
+import { MapPin, RotateCcw, Eye, CheckCircle2, Volume2, ChevronDown, ArrowRight, Footprints, Loader2, Zap } from "lucide-react";
+import { toast } from "sonner";
 import type { HierarchicalPlacement, SubPlacement } from "@/types/palace";
 import { loadPalace, incrementReview, type FullPalace } from "@/lib/db/palaces";
 import { findThinkersInText } from "@/lib/data/thinkers";
@@ -22,7 +23,12 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
   const { id } = use(params);
   const router = useRouter();
   const [palace, setPalace] = useState<FullPalace | null>(null);
-  const [mode, setMode] = useState<"view" | "walkthrough" | "review" | "narrator" | "complete">("view");
+  const [mode, setMode] = useState<"view" | "walkthrough" | "review" | "narrator" | "complete" | "quiz">("view");
+  const [quizQuestions, setQuizQuestions] = useState<{ id: string; question: string; options: string[]; correctIndex: number; explanation: string }[]>([]);
+  const [quizIndex, setQuizIndex] = useState(0);
+  const [quizAnswer, setQuizAnswer] = useState<number | null>(null);
+  const [quizScore, setQuizScore] = useState(0);
+  const [isQuizLoading, setIsQuizLoading] = useState(false);
   const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
   const [reviewItems, setReviewItems] = useState<{ zoneLabel: string; position: string; conceptLabel: string; story: string }[]>([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
@@ -68,6 +74,33 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
     setMode("review");
   }
 
+  async function startQuiz() {
+    if (!palace) return;
+    setIsQuizLoading(true);
+    try {
+      const concepts = palace.hierarchicalPlacements.flatMap((p) =>
+        p.subPlacements.map((s) => ({ label: s.conceptLabel, story: s.story }))
+      );
+      const res = await fetch("/api/quiz/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ concepts, unitTitle: palace.unitTitle, count: 5 }),
+      });
+      if (!res.ok) throw new Error("Quiz generation failed");
+      const data = await res.json();
+      setQuizQuestions(data.questions);
+      setQuizIndex(0);
+      setQuizAnswer(null);
+      setQuizScore(0);
+      setMode("quiz");
+    } catch (error) {
+      console.error("Quiz error:", error);
+      toast.error("퀴즈 생성에 실패했습니다.");
+    } finally {
+      setIsQuizLoading(false);
+    }
+  }
+
   function startNarrator() {
     setMode("narrator");
     narrator.play(0);
@@ -99,6 +132,92 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
   }
 
   const location = ALL_LOCATIONS.find((l) => l.key === palace.locationKey);
+
+  // ===== QUIZ MODE =====
+  if (mode === "quiz" && quizQuestions.length > 0) {
+    const q = quizQuestions[quizIndex];
+    const isLast = quizIndex >= quizQuestions.length - 1;
+    const answered = quizAnswer !== null;
+
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen pt-24 px-6 pb-12 max-w-2xl mx-auto">
+          <AnimatedContainer>
+            <div className="flex justify-between text-sm text-[var(--muted-foreground)] mb-4">
+              <span>AI 퀴즈 · {palace.unitTitle}</span>
+              <span>{quizIndex + 1} / {quizQuestions.length}</span>
+            </div>
+
+            <GlassCard className="p-6 mb-4" hover={false}>
+              <h3 className="font-semibold text-lg mb-6">{q.question}</h3>
+              <div className="space-y-3">
+                {q.options.map((opt, oi) => {
+                  const isCorrect = oi === q.correctIndex;
+                  const isChosen = quizAnswer === oi;
+                  let style = "bg-white/5 hover:bg-white/10 border-white/10";
+                  if (answered) {
+                    if (isCorrect) style = "bg-[var(--accent-emerald)]/20 border-[var(--accent-emerald)]/50";
+                    else if (isChosen) style = "bg-red-500/20 border-red-500/50";
+                    else style = "bg-white/5 border-white/5 opacity-50";
+                  }
+                  return (
+                    <button
+                      key={oi}
+                      onClick={() => {
+                        if (answered) return;
+                        setQuizAnswer(oi);
+                        if (oi === q.correctIndex) setQuizScore((s) => s + 1);
+                      }}
+                      className={`w-full text-left p-4 rounded-xl border transition-all ${style}`}
+                      disabled={answered}
+                    >
+                      <span className="font-medium mr-2 text-[var(--muted-foreground)]">{["①", "②", "③", "④"][oi]}</span>
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {answered && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10"
+                >
+                  <p className="text-sm font-semibold mb-1">
+                    {quizAnswer === q.correctIndex ? "✅ 정답!" : "❌ 오답"}
+                  </p>
+                  <p className="text-sm text-[var(--muted-foreground)]">{q.explanation}</p>
+                </motion.div>
+              )}
+            </GlassCard>
+
+            {answered && (
+              <Button
+                onClick={() => {
+                  if (isLast) {
+                    setMode("complete");
+                  } else {
+                    setQuizIndex((i) => i + 1);
+                    setQuizAnswer(null);
+                  }
+                }}
+                className="w-full bg-gradient-to-r from-[var(--accent-violet)] to-[var(--accent-cyan)] text-white"
+              >
+                {isLast ? `퀴즈 완료 (${quizScore}/${quizQuestions.length})` : "다음 문제"}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
+
+            <Button variant="ghost" className="mt-2 w-full text-[var(--muted-foreground)]" onClick={() => setMode("view")}>
+              퀴즈 중단
+            </Button>
+          </AnimatedContainer>
+        </main>
+      </>
+    );
+  }
 
   // ===== COMPLETE MODE =====
   if (mode === "complete") {
@@ -185,10 +304,19 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
                   한 번 더
                 </Button>
                 <Button
-                  onClick={() => setMode("view")}
-                  className="bg-gradient-to-r from-[var(--accent-violet)] to-[var(--accent-cyan)] text-white"
+                  onClick={startQuiz}
+                  disabled={isQuizLoading}
+                  className="bg-gradient-to-r from-[var(--accent-emerald)] to-[var(--accent-cyan)] text-white"
                 >
-                  궁전으로 돌아가기
+                  {isQuizLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Zap className="w-4 h-4 mr-2" />}
+                  AI 퀴즈
+                </Button>
+                <Button
+                  onClick={() => setMode("view")}
+                  variant="outline"
+                  className="border-white/10"
+                >
+                  궁전으로
                 </Button>
               </motion.div>
             </GlassCard>
@@ -410,6 +538,10 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
               </Button>
               <Button onClick={startReview} className="bg-gradient-to-r from-[var(--accent-violet)] to-[var(--accent-cyan)] text-white">
                 <RotateCcw className="w-4 h-4 mr-2" /> 복습
+              </Button>
+              <Button onClick={startQuiz} disabled={isQuizLoading} variant="outline" className="border-[var(--accent-emerald)]/30 text-[var(--accent-emerald)]">
+                {isQuizLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Zap className="w-4 h-4 mr-2" />}
+                AI 퀴즈
               </Button>
             </div>
           </div>
