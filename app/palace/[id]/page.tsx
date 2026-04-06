@@ -198,24 +198,50 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
     );
   }
 
-  // ===== NARRATOR MODE =====
-  if (mode === "narrator") {
+  // ===== NARRATOR MODE — 공간 시각화 + 음성 가이드 =====
+  if (mode === "narrator" && location) {
     const currentItem = narratorItems[narrator.currentIndex];
+    // 현재 나레이터 항목이 속한 구역 찾기
+    let currentPlacementIdx = 0;
+    let currentSubIdx = 0;
+    let count = 0;
+    for (let pi = 0; pi < palace.hierarchicalPlacements.length; pi++) {
+      for (let si = 0; si < palace.hierarchicalPlacements[pi].subPlacements.length; si++) {
+        if (count === narrator.currentIndex) {
+          currentPlacementIdx = pi;
+          currentSubIdx = si;
+        }
+        count++;
+      }
+    }
+    const currentPlacement = palace.hierarchicalPlacements[currentPlacementIdx];
+    const currentSub = currentPlacement?.subPlacements[currentSubIdx];
+
     return (
       <>
         <Header />
-        <main className="min-h-screen pt-24 px-6 pb-12 max-w-3xl mx-auto">
+        <main className="min-h-screen pt-24 px-6 pb-12 max-w-4xl mx-auto">
           <AnimatedContainer>
-            <GlassCard className="p-8 mb-6" hover={false}>
-              <p className="text-xs text-[var(--accent-emerald)] mb-2 text-center">
-                📍 {currentItem?.label.split("—")[0]?.trim()}
-              </p>
-              <div className="text-center mb-4">
-                <span className="inline-block px-4 py-2 rounded-xl bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] font-semibold">
-                  {currentItem?.label.split("—")[1]?.trim()}
+            {/* 공간 씬 — 현재 구역, 현재 마커 하이라이트 */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="px-3 py-1 rounded-full bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-sm font-semibold">
+                  {currentPlacement?.topicLabel}
+                </span>
+                <span className="text-xs text-[var(--muted-foreground)]">
+                  {narrator.currentIndex + 1} / {narrator.totalItems}
                 </span>
               </div>
-              <p className="text-sm leading-relaxed text-center">
+              <PalaceScene
+                location={location}
+                placement={currentPlacement}
+                highlightId={currentSub?.conceptId}
+              />
+            </div>
+
+            {/* 나레이터 텍스트 */}
+            <GlassCard className="p-6 mb-4" hover={false}>
+              <p className="text-sm leading-relaxed">
                 {currentItem?.text}
               </p>
             </GlassCard>
