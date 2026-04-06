@@ -37,7 +37,7 @@ const features = [
   {
     icon: MapPin,
     title: "기억의 궁전 배치",
-    description: "경복궁, 한옥마을 등 실제 장소에 개념을 배치하고 기억 스토리를 만듭니다",
+    description: "경복궁, 바이오 아일랜드 등 15개 장소에 개념을 배치하고 기억 스토리를 만듭니다",
     gradient: "from-cyan-500 to-blue-600",
   },
   {
@@ -61,7 +61,7 @@ const features = [
   {
     icon: GraduationCap,
     title: "교육과정 기반",
-    description: "2022 개정 교육과정 성취기준에 맞춘 정확한 학습 내용을 제공합니다",
+    description: "3과목 475페이지 교과서 콘텐츠와 PDF 업로드로 모든 과목을 지원합니다",
     gradient: "from-indigo-500 to-violet-600",
   },
 ];
@@ -114,7 +114,7 @@ export default function Home() {
             className="text-lg sm:text-xl text-[var(--muted-foreground)] mb-10 max-w-2xl mx-auto"
           >
             2,500년 역사의 가장 강력한 기억법을 AI가 디지털로 구현합니다.
-            학생은 기억의 궁전으로 학습하고, 교사는 AI로 평가합니다.
+            생활과 윤리 · 생명과학Ⅰ · 언어와 매체 교과서를 기억의 궁전으로 학습하고, PDF를 업로드하면 어떤 과목이든 마인드맵으로 변환됩니다.
           </motion.p>
 
           <motion.div custom={3} variants={fadeUp} className="flex gap-4 justify-center">
