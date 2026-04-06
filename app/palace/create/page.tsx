@@ -6,7 +6,7 @@ import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { Button } from "@/components/ui/button";
-import { LOCATIONS, BIO_ISLAND_LOCATIONS, type PalaceLocation } from "@/lib/data/locations";
+import { LOCATIONS, BIO_ISLAND_LOCATIONS, KOREAN_LANG_LOCATIONS, type PalaceLocation } from "@/lib/data/locations";
 import { Sparkles, Loader2, MapPin, ArrowRight, ChevronDown } from "lucide-react";
 import type { MindMap } from "@/types/mindmap";
 import type { HierarchicalPlacement } from "@/types/palace";
@@ -133,6 +133,33 @@ export default function PalaceCreatePage() {
                 <StaggerItem key={loc.key}>
                   <GlassCard
                     className="p-0 cursor-pointer text-center overflow-hidden ring-1 ring-[var(--accent-emerald)]/20"
+                    onClick={() => handleSelectAndGenerate(loc)}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div
+                      className="h-16 flex items-center justify-center opacity-60"
+                      style={{ background: loc.gradient }}
+                    >
+                      <span className="text-3xl drop-shadow-lg">{loc.emoji}</span>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-medium text-sm">{loc.name}</h3>
+                      <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                        {loc.zones.length}개 구역
+                      </p>
+                    </div>
+                  </GlassCard>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+
+            {/* 언어의 궁전 */}
+            <p className="text-xs text-[var(--accent-violet)] font-medium mb-2 mt-2">📜 언어의 궁전 — 국어 전용</p>
+            <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+              {KOREAN_LANG_LOCATIONS.map((loc) => (
+                <StaggerItem key={loc.key}>
+                  <GlassCard
+                    className="p-0 cursor-pointer text-center overflow-hidden ring-1 ring-[var(--accent-violet)]/20"
                     onClick={() => handleSelectAndGenerate(loc)}
                     whileTap={{ scale: 0.95 }}
                   >

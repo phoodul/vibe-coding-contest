@@ -232,8 +232,84 @@ export const BIO_ISLAND_LOCATIONS: PalaceLocation[] = [
   },
 ];
 
-// 전체 장소 목록 (기본 + 바이오 아일랜드)
-export const ALL_LOCATIONS = [...LOCATIONS, ...BIO_ISLAND_LOCATIONS];
+// === 언어의 궁전 — 언어와 매체 전용 기억의 궁전 ===
+export const KOREAN_LANG_LOCATIONS: PalaceLocation[] = [
+  {
+    key: "phoneme_fortress",
+    name: "음운의 성",
+    description: "음소에서 음절까지, 소리의 세계를 탐험하는 성채. 각 방마다 자음과 모음이 살아 숨쉰다",
+    emoji: "🔤",
+    gradient: "linear-gradient(135deg, #1565C0 0%, #42A5F5 50%, #90CAF9 100%)",
+    zones: [
+      { id: "consonant_hall", name: "자음의 전당", description: "19개 자음이 조음 위치와 방법에 따라 배열된 거대한 홀. 예송·평음·경음이 벽면을 장식", position: { x: 30, y: 85 } },
+      { id: "vowel_garden", name: "모음의 정원", description: "10개 단모음이 혀 높이와 위치에 따라 심어진 정원. 하늘(ㆍ), 땅(ㅡ), 사람(ㅣ)의 원리", position: { x: 70, y: 85 } },
+      { id: "syllable_tower", name: "음절 탑", description: "초성+중성+종성이 층층이 쌓이는 탑. 겹받침이 꼭대기를 장식", position: { x: 50, y: 65 } },
+      { id: "change_bridge", name: "교체의 다리", description: "음운이 다른 음운으로 바뀌는 다리. 비음화, 유음화, 구개음화, 된소리되기의 4개 아치", position: { x: 30, y: 40 } },
+      { id: "reduction_gate", name: "탈락과 축약의 문", description: "자음군 단순화로 받침이 하나 사라지는 문, 거센소리되기로 두 소리가 하나로 합쳐지는 관문", position: { x: 70, y: 40 } },
+      { id: "addition_plaza", name: "첨가의 광장", description: "사이시옷이 솟아나고 'ㄴ'이 끼어드는 광장. 담요→담뇨, 색연필→생년필", position: { x: 50, y: 15 } },
+    ],
+  },
+  {
+    key: "morpheme_workshop",
+    name: "형태소 공방",
+    description: "어근과 접사가 결합하여 새로운 단어를 만드는 공방. 품사가 분류되고 문장이 조립된다",
+    emoji: "🔨",
+    gradient: "linear-gradient(135deg, #E65100 0%, #FF9800 50%, #FFE0B2 100%)",
+    zones: [
+      { id: "root_workbench", name: "어근 작업대", description: "자립 형태소와 의존 형태소, 실질 형태소와 형식 형태소가 정리된 작업대", position: { x: 50, y: 85 } },
+      { id: "affix_shelf", name: "접사 선반", description: "접두사(풋-, 맨-, 헛-)와 접미사(-이, -음, -기, -답다)가 줄지어 꽂힌 선반", position: { x: 25, y: 65 } },
+      { id: "derivation_bench", name: "파생어 조립대", description: "어근+접사를 결합하여 파생어를 만드는 곳. 품사가 바뀌는 마법의 작업대", position: { x: 75, y: 65 } },
+      { id: "compound_forge", name: "합성어 용광로", description: "어근+어근이 녹아 합성어가 되는 용광로. 통사적/비통사적 합성어 구분", position: { x: 50, y: 40 } },
+      { id: "pos_cabinet", name: "품사 분류함", description: "체언·용언·수식언·관계언·독립언, 9품사가 서랍별로 정리된 거대 캐비닛", position: { x: 50, y: 15 } },
+    ],
+  },
+  {
+    key: "sentence_palace",
+    name: "문장의 궁전",
+    description: "주어가 옥좌에 앉고 서술어가 판결을 내리는 궁전. 안은문장이 중첩되는 장엄한 구조",
+    emoji: "🏛️",
+    gradient: "linear-gradient(135deg, #4A148C 0%, #7B1FA2 50%, #CE93D8 100%)",
+    zones: [
+      { id: "subject_throne", name: "주어의 옥좌", description: "문장의 주인공이 앉는 자리. '이/가' 표지를 달고 서술어를 향해 명령한다", position: { x: 50, y: 85 } },
+      { id: "predicate_court", name: "서술어의 대전", description: "동사와 형용사가 판결을 내리는 법정. 주성분을 몇 개 요구하는지(자릿수)가 핵심", position: { x: 50, y: 60 } },
+      { id: "object_courtyard", name: "목적어의 뜰", description: "'을/를'을 달고 서술어의 행위 대상이 되는 뜰. 보어도 이곳에 산다", position: { x: 25, y: 45 } },
+      { id: "modifier_corridor", name: "수식어의 회랑", description: "관형어와 부사어가 꾸며주는 길고 아름다운 복도. 필수적 부사어는 VIP석", position: { x: 75, y: 45 } },
+      { id: "embedded_chamber", name: "안은문장의 방", description: "명사절·관형절·부사절·서술절·인용절이 중첩되는 미로 같은 내실", position: { x: 30, y: 20 } },
+      { id: "connected_hall", name: "이어진문장의 홀", description: "대등적 연결(-고, -지만)과 종속적 연결(-면, -므로)로 문장이 이어지는 대홀", position: { x: 70, y: 20 } },
+    ],
+  },
+  {
+    key: "jiphyeonjeon",
+    name: "집현전",
+    description: "세종대왕과 학자들이 훈민정음을 창제한 역사적 공간. 국어의 과거와 현재를 잇는 시간의 전당",
+    emoji: "📜",
+    gradient: "linear-gradient(135deg, #5D4037 0%, #8D6E63 40%, #D4A574 100%)",
+    zones: [
+      { id: "hunminjeongeum_room", name: "훈민정음 해례본실", description: "초성·중성·종성 창제 원리(발음기관 상형, 천지인, 초성 재활용)를 기록한 보물의 방", position: { x: 50, y: 85 } },
+      { id: "medieval_archive", name: "중세국어 서고", description: "아래아(ㆍ), 방점, 이어적기, 모음조화가 살아 있는 고문서가 가득한 서고", position: { x: 25, y: 60 } },
+      { id: "modern_transition", name: "근대국어 자료실", description: "아래아 소실, 구개음화, 두음법칙이 진행되는 언어 변화를 추적하는 방", position: { x: 75, y: 60 } },
+      { id: "spelling_lecture", name: "한글 맞춤법 강의실", description: "'소리대로 적되 어법에 맞도록' 원칙을 배우는 강의실. 사이시옷, 띄어쓰기 코너", position: { x: 30, y: 30 } },
+      { id: "standard_library", name: "표준어 도서관", description: "표준어 규정, 외래어 표기법, 로마자 표기법 참고서가 정리된 도서관", position: { x: 70, y: 30 } },
+    ],
+  },
+  {
+    key: "media_square",
+    name: "매체의 광장",
+    description: "인쇄에서 AI까지, 매체의 진화를 체험하는 미래형 광장. 미디어 리터러시의 중심지",
+    emoji: "📱",
+    gradient: "linear-gradient(135deg, #0D47A1 0%, #1976D2 40%, #00BCD4 100%)",
+    zones: [
+      { id: "print_pavilion", name: "인쇄 매체관", description: "신문의 역피라미드 구조, 잡지의 시각 편집, 책의 선형적 서사를 전시하는 파빌리온", position: { x: 25, y: 80 } },
+      { id: "broadcast_studio", name: "방송 스튜디오", description: "카메라 앵글·편집·자막으로 의미를 구성하는 영상 언어의 제작 현장", position: { x: 75, y: 80 } },
+      { id: "sns_cafe", name: "SNS 카페", description: "해시태그, 이모티콘, 밈이 소통의 도구가 되는 쌍방향 소통 공간", position: { x: 50, y: 55 } },
+      { id: "factcheck_center", name: "팩트체크 센터", description: "가짜 뉴스를 판별하고 출처를 검증하는 미디어 리터러시 훈련소", position: { x: 30, y: 30 } },
+      { id: "ai_media_lab", name: "AI 매체 연구소", description: "AI 생성 콘텐츠, 딥페이크, 챗봇 언어를 연구하고 디지털 시민성을 배우는 미래 연구소", position: { x: 70, y: 30 } },
+    ],
+  },
+];
+
+// 전체 장소 목록 (기본 + 바이오 아일랜드 + 언어의 궁전)
+export const ALL_LOCATIONS = [...LOCATIONS, ...BIO_ISLAND_LOCATIONS, ...KOREAN_LANG_LOCATIONS];
 
 export function getLocation(key: string): PalaceLocation | undefined {
   return ALL_LOCATIONS.find((l) => l.key === key);
