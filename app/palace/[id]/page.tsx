@@ -361,7 +361,7 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
                   <Eye className="w-5 h-5 mr-2" /> 정답 확인
                 </Button>
               )}
-            </GlassCard>
+            </div>
 
             <Button variant="ghost" className="mt-4 w-full text-[var(--muted-foreground)]" onClick={() => setMode("view")}>
               복습 중단
