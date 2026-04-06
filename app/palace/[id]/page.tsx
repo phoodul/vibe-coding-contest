@@ -276,22 +276,37 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
     );
   }
 
-  // ===== REVIEW MODE =====
-  if (mode === "review" && allReviewItems.length > 0) {
+  // ===== REVIEW MODE — 공간 기반 복습 =====
+  if (mode === "review" && allReviewItems.length > 0 && location) {
     const current = allReviewItems[currentReviewIndex];
     const progress = ((currentReviewIndex + (isRevealed ? 1 : 0)) / allReviewItems.length) * 100;
+
+    // 현재 복습 항목이 속한 구역 찾기
+    let reviewPlacement = palace.hierarchicalPlacements[0];
+    let reviewSubId = "";
+    let count = 0;
+    for (const p of palace.hierarchicalPlacements) {
+      for (const s of p.subPlacements) {
+        if (count === currentReviewIndex) {
+          reviewPlacement = p;
+          reviewSubId = s.conceptId;
+        }
+        count++;
+      }
+    }
 
     return (
       <>
         <Header />
-        <main className="min-h-screen pt-24 px-6 pb-12 max-w-2xl mx-auto">
+        <main className="min-h-screen pt-24 px-6 pb-12 max-w-4xl mx-auto">
           <AnimatedContainer>
-            <div className="mb-6">
+            {/* 진행률 */}
+            <div className="mb-4">
               <div className="flex justify-between text-sm text-[var(--muted-foreground)] mb-2">
-                <span>복습 진행</span>
+                <span>궁전 복습 — {current.zoneLabel}</span>
                 <span>{currentReviewIndex + 1} / {allReviewItems.length}</span>
               </div>
-              <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-[var(--accent-violet)] to-[var(--accent-cyan)] transition-all duration-500"
                   style={{ width: `${progress}%` }}
@@ -299,30 +314,33 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
               </div>
             </div>
 
-            <GlassCard className="p-8 text-center" hover={false}>
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <MapPin className="w-4 h-4 text-[var(--accent-cyan)]" />
-                <span className="text-[var(--accent-cyan)] font-medium">{current.zoneLabel}</span>
-              </div>
-              <p className="text-xs text-[var(--accent-emerald)] mb-6">📍 {current.position}</p>
-              <p className="text-[var(--muted-foreground)] mb-6">이 위치에 어떤 개념이 있었나요?</p>
+            {/* 공간 씬 — 라벨 숨김 모드 (복습) */}
+            <PalaceScene
+              location={location}
+              placement={reviewPlacement}
+              hideLabels={!isRevealed}
+              highlightId={isRevealed ? reviewSubId : undefined}
+            />
 
+            {/* 복습 질문/정답 */}
+            <div className="mt-4 text-center">
               {isRevealed ? (
                 <AnimatedContainer delay={0}>
-                  <div className="px-4 py-3 rounded-xl bg-[var(--accent-violet)]/20 mb-4">
-                    <h3 className="text-lg font-bold text-[var(--accent-violet)]">{current.conceptLabel}</h3>
-                  </div>
-                  <p className="text-sm leading-relaxed text-left mb-4">{current.story}</p>
-                  {(() => {
-                    const thinkers = findThinkersInText(current.story);
-                    return thinkers.length > 0 ? (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {thinkers.map((t) => (
-                          <ThinkerAvatar key={t.id} thinker={t} size="md" />
-                        ))}
-                      </div>
-                    ) : null;
-                  })()}
+                  <GlassCard className="p-5 mb-4 border-[var(--accent-violet)]/20" hover={false}>
+                    <h3 className="text-lg font-bold text-[var(--accent-violet)] mb-2">{current.conceptLabel}</h3>
+                    <p className="text-xs text-[var(--accent-emerald)] mb-2">📍 {current.position}</p>
+                    <p className="text-sm leading-relaxed text-left">{current.story}</p>
+                    {(() => {
+                      const thinkers = findThinkersInText(current.story);
+                      return thinkers.length > 0 ? (
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {thinkers.map((t) => (
+                            <ThinkerAvatar key={t.id} thinker={t} size="md" />
+                          ))}
+                        </div>
+                      ) : null;
+                    })()}
+                  </GlassCard>
                   <Button
                     onClick={nextReview}
                     className="w-full bg-gradient-to-r from-[var(--accent-emerald)] to-[var(--accent-cyan)] text-white font-semibold"
