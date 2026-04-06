@@ -8,6 +8,7 @@ import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/s
 import { Button } from "@/components/ui/button";
 import { LOCATIONS, BIO_ISLAND_LOCATIONS, KOREAN_LANG_LOCATIONS, type PalaceLocation } from "@/lib/data/locations";
 import { Sparkles, Loader2, MapPin, ArrowRight, ChevronDown } from "lucide-react";
+import { toast } from "sonner";
 import type { MindMap } from "@/types/mindmap";
 import type { HierarchicalPlacement } from "@/types/palace";
 import type { CurriculumUnit } from "@/lib/data/curriculum";
@@ -67,6 +68,7 @@ export default function PalaceCreatePage() {
       setStep("result");
     } catch (error) {
       console.error("Palace generation failed:", error);
+      toast.error("궁전 배치 생성에 실패했습니다. 다시 시도해주세요.");
       setStep("location");
     } finally {
       setIsGenerating(false);
@@ -91,6 +93,7 @@ export default function PalaceCreatePage() {
       router.push(`/palace/${id}`);
     } catch (error) {
       console.error("Failed to save palace:", error);
+      toast.error("궁전 저장에 실패했습니다.");
     }
   }
 

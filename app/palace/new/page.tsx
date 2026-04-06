@@ -10,6 +10,7 @@ import { MindMapTree } from "@/components/shared/mindmap-tree";
 import { Button } from "@/components/ui/button";
 import { SUBJECTS, getUnitsBySubject, type CurriculumUnit } from "@/lib/data/curriculum";
 import { Sparkles, ArrowRight, Loader2, ChevronRight, Upload, BookOpen } from "lucide-react";
+import { toast } from "sonner";
 import type { MindMap, MindMapNode } from "@/types/mindmap";
 
 export default function NewPalacePage() {
@@ -45,6 +46,7 @@ export default function NewPalacePage() {
       setMindMap(data);
     } catch (error) {
       console.error("Mindmap generation failed:", error);
+      toast.error("마인드맵 생성에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsGenerating(false);
     }
@@ -75,6 +77,7 @@ export default function NewPalacePage() {
       });
     } catch (error) {
       console.error("PDF mindmap generation failed:", error);
+      toast.error("PDF 분석에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsGenerating(false);
     }

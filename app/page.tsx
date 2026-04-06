@@ -76,7 +76,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 text-center">
+      <section className="relative min-h-[80vh] flex flex-col items-center justify-center px-6 text-center">
         <motion.div
           initial="hidden"
           animate="visible"
