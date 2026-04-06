@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { Button } from "@/components/ui/button";
 import { ETHICS_TEXTBOOK, getEthicsStats } from "@/lib/data/textbooks/ethics";
-import { Brain, BookOpen, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
+import { Brain, BookOpen, ChevronDown, ChevronRight, Sparkles, Upload } from "lucide-react";
+import { findThinkersInText } from "@/lib/data/thinkers";
+import { ThinkerAvatar } from "@/components/shared/thinker-avatar";
 import type { TextbookChapter, TextbookSection, TextbookContent } from "@/lib/data/textbooks/ethics-index";
 
 export default function TextbookPage() {
@@ -152,6 +155,16 @@ export default function TextbookPage() {
                                 <p className="text-xs text-[var(--foreground)]/80 leading-relaxed whitespace-pre-line">
                                   {content.detail}
                                 </p>
+                                {(() => {
+                                  const thinkers = findThinkersInText(content.detail);
+                                  return thinkers.length > 0 ? (
+                                    <div className="mt-2 flex flex-wrap gap-1.5">
+                                      {thinkers.map((t) => (
+                                        <ThinkerAvatar key={t.id} thinker={t} />
+                                      ))}
+                                    </div>
+                                  ) : null;
+                                })()}
                               </div>
                             ))}
                             <Button
@@ -172,6 +185,29 @@ export default function TextbookPage() {
             </StaggerItem>
           ))}
         </StaggerContainer>
+
+        {/* Other subjects */}
+        <AnimatedContainer delay={0.2} className="mt-8">
+          <GlassCard className="p-6 text-center" hover={false}>
+            <p className="text-sm text-[var(--muted-foreground)] mb-3">
+              다른 과목은 AI 마인드맵 생성 또는 PDF 업로드로 학습할 수 있습니다
+            </p>
+            <div className="flex gap-3 justify-center">
+              <Link href="/palace/new">
+                <Button size="sm" className="bg-gradient-to-r from-[var(--accent-violet)] to-[var(--accent-cyan)] text-white">
+                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                  AI 마인드맵
+                </Button>
+              </Link>
+              <Link href="/palace/new">
+                <Button size="sm" variant="outline" className="border-white/10">
+                  <Upload className="w-3.5 h-3.5 mr-1.5" />
+                  PDF 업로드
+                </Button>
+              </Link>
+            </div>
+          </GlassCard>
+        </AnimatedContainer>
       </main>
     </>
   );
