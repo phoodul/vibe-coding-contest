@@ -12,15 +12,22 @@ import {
 
 const studentFeatures = [
   {
+    href: "/textbook",
+    icon: BookOpen,
+    title: "교과서 열람",
+    description: "생활과 윤리 교과서 전체 내용을 확인하고 기억의 궁전을 만드세요",
+    gradient: "from-indigo-500 to-violet-600",
+  },
+  {
     href: "/palace/new",
     icon: Brain,
     title: "기억의 궁전 만들기",
-    description: "교과서 단원을 마인드맵으로 만들고 기억의 궁전에 저장하세요",
+    description: "과목과 단원을 선택하면 AI가 마인드맵을 생성합니다",
     gradient: "from-violet-500 to-purple-600",
   },
   {
     href: "/palace",
-    icon: BookOpen,
+    icon: GraduationCap,
     title: "내 궁전 목록",
     description: "저장한 기억의 궁전을 복습하세요",
     gradient: "from-cyan-500 to-blue-600",
