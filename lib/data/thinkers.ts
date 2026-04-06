@@ -233,3 +233,8 @@ export function getThinker(id: string): Thinker | undefined {
 export function getThinkersBySchool(school: string): Thinker[] {
   return THINKERS.filter((t) => t.school.includes(school));
 }
+
+/** story 텍스트에서 언급된 사상가를 찾아 반환 */
+export function findThinkersInText(text: string): Thinker[] {
+  return THINKERS.filter((t) => text.includes(t.name));
+}

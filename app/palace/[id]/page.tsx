@@ -12,6 +12,8 @@ import { useNarrator } from "@/hooks/use-narrator";
 import { MapPin, RotateCcw, Eye, CheckCircle2, Volume2, ChevronDown, ArrowRight } from "lucide-react";
 import type { HierarchicalPlacement, SubPlacement } from "@/types/palace";
 import { loadPalace, incrementReview, type FullPalace } from "@/lib/db/palaces";
+import { findThinkersInText } from "@/lib/data/thinkers";
+import { ThinkerAvatar } from "@/components/shared/thinker-avatar";
 
 export default function PalaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -183,7 +185,17 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
                   <div className="px-4 py-3 rounded-xl bg-[var(--accent-violet)]/20 mb-4">
                     <h3 className="text-lg font-bold text-[var(--accent-violet)]">{current.conceptLabel}</h3>
                   </div>
-                  <p className="text-sm leading-relaxed text-left mb-6">{current.story}</p>
+                  <p className="text-sm leading-relaxed text-left mb-4">{current.story}</p>
+                  {(() => {
+                    const thinkers = findThinkersInText(current.story);
+                    return thinkers.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {thinkers.map((t) => (
+                          <ThinkerAvatar key={t.id} thinker={t} size="md" />
+                        ))}
+                      </div>
+                    ) : null;
+                  })()}
                   <Button
                     onClick={nextReview}
                     className="w-full bg-gradient-to-r from-[var(--accent-emerald)] to-[var(--accent-cyan)] text-white font-semibold"
@@ -291,6 +303,16 @@ export default function PalaceDetailPage({ params }: { params: Promise<{ id: str
                         <p className="text-xs text-[var(--muted-foreground)] ml-7 leading-relaxed line-clamp-2">
                           {sub.story}
                         </p>
+                        {(() => {
+                          const thinkers = findThinkersInText(sub.story);
+                          return thinkers.length > 0 ? (
+                            <div className="ml-7 mt-2 flex flex-wrap gap-1.5">
+                              {thinkers.map((t) => (
+                                <ThinkerAvatar key={t.id} thinker={t} />
+                              ))}
+                            </div>
+                          ) : null;
+                        })()}
                       </div>
                     ))}
                   </div>
