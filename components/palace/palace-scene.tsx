@@ -26,10 +26,9 @@ export function PalaceScene({
   const [selectedSub, setSelectedSub] = useState<SubPlacement | null>(null);
   const zone = location.zones.find((z) => z.id === placement.zoneId);
 
-  // 소품에 개념 배정
   const assignments = assignItemsToProps(placement.subPlacements.length, placement.zoneId);
 
-  // 소품별로 그룹화 (같은 소품에 배치된 개념들)
+  // 소품별 그룹화
   const propGroups = new Map<string, { prop: PropAssignment; items: { sub: SubPlacement; assignment: PropAssignment; index: number }[] }>();
   placement.subPlacements.forEach((sub, i) => {
     const assignment = assignments[i];
@@ -46,40 +45,55 @@ export function PalaceScene({
 
   return (
     <div className="space-y-3">
-      {/* 구역 시각 씬 */}
+      {/* === 공간 씬 === */}
       <div
-        className="relative w-full rounded-2xl overflow-hidden border border-white/10"
+        className="relative w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
         style={{ aspectRatio: "16/9", background: location.gradient }}
       >
-        {/* 배경 패턴 */}
-        <div className="absolute inset-0 opacity-[0.07]" style={{
+        {/* 깊이감을 주는 레이어 */}
+        <div className="absolute inset-0" style={{
+          background: "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%)",
+        }} />
+        <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
-          backgroundSize: "30px 30px",
+          backgroundSize: "24px 24px",
         }} />
 
-        {/* 장소/구역 라벨 */}
-        <div className="absolute top-3 left-3 z-10">
-          <p className="text-[10px] text-white/40 font-medium">{location.name}</p>
-          <h3 className="text-sm font-bold text-white drop-shadow-lg">{zone?.name || placement.zoneName}</h3>
+        {/* 장소 라벨 */}
+        <div className="absolute top-3 left-3 z-20">
+          <p className="text-[9px] text-white/40 font-medium tracking-wider uppercase">{location.name}</p>
+          <h3 className="text-base font-bold text-white drop-shadow-lg">{zone?.name || placement.zoneName}</h3>
+          <p className="text-[9px] text-white/30 mt-0.5 max-w-48">{zone?.description}</p>
         </div>
-        <span className="absolute top-3 right-3 text-4xl opacity-20 select-none">{location.emoji}</span>
+        <span className="absolute top-3 right-3 text-5xl opacity-15 select-none drop-shadow-2xl z-10">{location.emoji}</span>
 
-        {/* 소품별 렌더링 */}
-        {Array.from(propGroups.values()).map(({ prop, items }) => (
+        {/* === 소품 + 개념 마커 렌더링 === */}
+        {Array.from(propGroups.values()).map(({ prop, items }, groupIdx) => (
           <div key={prop.propId}>
-            {/* 소품 이모지 (가구/구조물) */}
+            {/* 소품 시각화 — 반투명 영역 + 이모지 */}
             <motion.div
-              className="absolute flex flex-col items-center pointer-events-none"
-              style={{ left: `${prop.propPosition.x}%`, top: `${prop.propPosition.y}%`, transform: "translate(-50%, -50%)" }}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 0.35, scale: 1 }}
-              transition={{ duration: 0.5 }}
+              className="absolute pointer-events-none z-10"
+              style={{
+                left: `${prop.propPosition.x}%`,
+                top: `${prop.propPosition.y}%`,
+                transform: "translate(-50%, -50%)",
+              }}
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: groupIdx * 0.15, duration: 0.4 }}
             >
-              <span className="text-3xl drop-shadow-lg">{prop.propEmoji}</span>
-              <span className="text-[8px] text-white/40 mt-0.5">{prop.propName}</span>
+              {/* 소품 배경 영역 */}
+              <div className="relative flex flex-col items-center">
+                <div className="w-14 h-14 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10 flex items-center justify-center shadow-lg">
+                  <span className="text-2xl drop-shadow-lg">{prop.propEmoji}</span>
+                </div>
+                <span className="text-[8px] text-white/50 mt-1 font-medium bg-black/30 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                  {prop.propName}
+                </span>
+              </div>
             </motion.div>
 
-            {/* 소품 위의 개념 마커들 */}
+            {/* 개념 마커들 — 소품 슬롯 위치에 배치 */}
             {items.map(({ sub, assignment, index }) => {
               const isHighlighted = highlightId === sub.conceptId;
               const isSelected = selectedSub?.conceptId === sub.conceptId;
@@ -87,45 +101,50 @@ export function PalaceScene({
               return (
                 <motion.button
                   key={sub.conceptId}
-                  className="absolute flex flex-col items-center gap-0.5 group z-10"
+                  className="absolute flex flex-col items-center gap-0.5 group z-20"
                   style={{
                     left: `${assignment.absolutePosition.x}%`,
                     top: `${assignment.absolutePosition.y}%`,
                     transform: "translate(-50%, -50%)",
                   }}
                   onClick={() => handleClick(sub, index)}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 + index * 0.08, type: "spring", stiffness: 300 }}
-                  whileHover={{ scale: 1.15 }}
-                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ delay: 0.4 + index * 0.06, type: "spring", stiffness: 400, damping: 15 }}
+                  whileHover={{ scale: 1.2, y: -3 }}
+                  whileTap={{ scale: 0.9 }}
                 >
-                  {/* 마커 핀 */}
+                  {/* 연결선 (소품→마커) */}
+                  <svg className="absolute w-1 h-4 -top-4 left-1/2 -translate-x-1/2 pointer-events-none opacity-30">
+                    <line x1="2" y1="0" x2="2" y2="16" stroke="white" strokeWidth="1" strokeDasharray="2 2" />
+                  </svg>
+
+                  {/* 마커 */}
                   <motion.div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shadow-lg transition-colors ${
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shadow-xl transition-all ${
                       isHighlighted
-                        ? "bg-[var(--accent-cyan)] text-white ring-2 ring-[var(--accent-cyan)]"
+                        ? "bg-[var(--accent-cyan)] text-white ring-2 ring-[var(--accent-cyan)] ring-offset-1 ring-offset-black/50"
                         : isSelected
-                        ? "bg-[var(--accent-violet)] text-white ring-2 ring-[var(--accent-violet)]"
-                        : "bg-white/90 text-gray-800 group-hover:bg-white"
+                        ? "bg-[var(--accent-violet)] text-white ring-2 ring-[var(--accent-violet)] ring-offset-1 ring-offset-black/50"
+                        : "bg-white text-gray-800 group-hover:bg-[var(--accent-violet)] group-hover:text-white"
                     }`}
-                    animate={isHighlighted ? { scale: [1, 1.2, 1] } : {}}
-                    transition={isHighlighted ? { duration: 1, repeat: Infinity } : {}}
+                    animate={isHighlighted ? { boxShadow: ["0 0 0 0 rgba(6,182,212,0.4)", "0 0 0 12px rgba(6,182,212,0)", "0 0 0 0 rgba(6,182,212,0.4)"] } : {}}
+                    transition={isHighlighted ? { duration: 1.5, repeat: Infinity } : {}}
                   >
                     {index + 1}
                   </motion.div>
 
-                  {/* 슬롯 라벨 (소품 위 위치) */}
-                  <span className="text-[7px] text-white/50 bg-black/30 px-1 py-px rounded whitespace-nowrap">
+                  {/* 슬롯 위치 */}
+                  <span className="text-[7px] text-white/40 whitespace-nowrap">
                     {assignment.slotLabel}
                   </span>
 
                   {/* 개념 라벨 */}
                   {!hideLabels && (
-                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded whitespace-nowrap max-w-20 truncate ${
+                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap max-w-24 truncate backdrop-blur-sm transition-colors ${
                       isHighlighted || isSelected
-                        ? "bg-[var(--accent-violet)]/80 text-white"
-                        : "bg-black/50 text-white/90"
+                        ? "bg-[var(--accent-violet)]/90 text-white"
+                        : "bg-black/60 text-white/90 group-hover:bg-[var(--accent-violet)]/70"
                     }`}>
                       {sub.conceptLabel}
                     </span>
@@ -137,37 +156,50 @@ export function PalaceScene({
         ))}
       </div>
 
-      {/* 소품-개념 매핑 요약 (접이식) */}
-      <div className="text-xs text-[var(--muted-foreground)] flex flex-wrap gap-2">
+      {/* === 소품-개념 매핑 범례 === */}
+      <div className="flex flex-wrap gap-1.5">
         {Array.from(propGroups.values()).map(({ prop, items }) => (
-          <span key={prop.propId} className="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-full">
-            <span>{prop.propEmoji}</span>
-            <span>{prop.propName}:</span>
-            <span className="text-white/70">{items.map(i => i.sub.conceptLabel).join(", ")}</span>
-          </span>
+          <button
+            key={prop.propId}
+            onClick={() => items[0] && handleClick(items[0].sub, items[0].index)}
+            className="flex items-center gap-1.5 bg-white/5 hover:bg-white/10 px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer border border-white/5"
+          >
+            <span className="text-sm">{prop.propEmoji}</span>
+            <span className="text-white/50">{prop.propName}:</span>
+            <span className="text-white/80 font-medium truncate max-w-32">
+              {items.map((i) => i.sub.conceptLabel).join(" · ")}
+            </span>
+          </button>
         ))}
       </div>
 
-      {/* 선택된 개념 상세 패널 */}
+      {/* === 선택된 개념 상세 === */}
       <AnimatePresence mode="wait">
         {selectedSub && (
           <motion.div
             key={selectedSub.conceptId}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15 }}
-            className="p-4 rounded-xl glass border border-white/10"
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="p-5 rounded-xl glass border border-[var(--accent-violet)]/20 shadow-xl"
           >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-[var(--accent-emerald)] text-xs">📍 {selectedSub.position}</span>
+              <span className="text-lg">
+                {propGroups.get(
+                  assignments[placement.subPlacements.indexOf(selectedSub)]?.propId
+                )?.prop.propEmoji || "📍"}
+              </span>
+              <span className="text-xs text-[var(--accent-emerald)]">
+                {selectedSub.position}
+              </span>
             </div>
-            <h4 className="font-semibold text-[var(--accent-cyan)] mb-1">{selectedSub.conceptLabel}</h4>
+            <h4 className="font-bold text-[var(--accent-cyan)] text-lg mb-2">{selectedSub.conceptLabel}</h4>
             <p className="text-sm text-[var(--foreground)]/80 leading-relaxed">{selectedSub.story}</p>
             {(() => {
               const thinkers = findThinkersInText(selectedSub.story);
               return thinkers.length > 0 ? (
-                <div className="mt-2 flex flex-wrap gap-1.5">
+                <div className="mt-3 flex flex-wrap gap-1.5">
                   {thinkers.map((t) => (
                     <ThinkerAvatar key={t.id} thinker={t} />
                   ))}
