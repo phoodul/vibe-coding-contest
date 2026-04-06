@@ -7,9 +7,9 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { AnimatedContainer, StaggerContainer, StaggerItem } from "@/components/shared/animated-container";
 import { Button } from "@/components/ui/button";
 import { LOCATIONS, type PalaceLocation } from "@/lib/data/locations";
-import { Sparkles, Loader2, MapPin, ArrowRight } from "lucide-react";
-import type { MindMap, MindMapNode } from "@/types/mindmap";
-import type { Placement } from "@/types/palace";
+import { Sparkles, Loader2, MapPin, ArrowRight, ChevronDown } from "lucide-react";
+import type { MindMap } from "@/types/mindmap";
+import type { HierarchicalPlacement } from "@/types/palace";
 import type { CurriculumUnit } from "@/lib/data/curriculum";
 
 export default function PalaceCreatePage() {
@@ -17,10 +17,10 @@ export default function PalaceCreatePage() {
   const [mindMap, setMindMap] = useState<MindMap | null>(null);
   const [unit, setUnit] = useState<CurriculumUnit | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<PalaceLocation | null>(null);
-  const [placements, setPlacements] = useState<Placement[]>([]);
-  const [stories, setStories] = useState<{ nodeId: string; zoneId: string; story: string }[]>([]);
-  const [isGeneratingStories, setIsGeneratingStories] = useState(false);
-  const [step, setStep] = useState<"location" | "placement" | "stories">("location");
+  const [hierarchicalPlacements, setHierarchicalPlacements] = useState<HierarchicalPlacement[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [step, setStep] = useState<"location" | "generating" | "result">("location");
+  const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
 
   useEffect(() => {
     const savedMap = sessionStorage.getItem("pendingMindMap");
@@ -31,97 +31,44 @@ export default function PalaceCreatePage() {
     }
   }, []);
 
-  async function handleSelectLocation(loc: PalaceLocation) {
-    setSelectedLocation(loc);
+  async function handleSelectAndGenerate(loc: PalaceLocation) {
     if (!mindMap) return;
-
-    const nodes = mindMap.childNodes;
-    const zones = loc.zones;
-
-    // If more nodes than zones, expand with sub-locations (props)
-    if (nodes.length > zones.length) {
-      setStep("placement");
-      try {
-        const res = await fetch("/api/palace/expand", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            locationName: loc.name,
-            zones: loc.zones,
-            nodeCount: nodes.length,
-          }),
-        });
-        if (res.ok) {
-          const { expandedZones } = await res.json();
-          // Build expanded placement slots
-          const allSlots: { id: string; name: string; parentZone: string }[] = [];
-          for (const zone of zones) {
-            allSlots.push({ id: zone.id, name: zone.name, parentZone: zone.name });
-            const expanded = expandedZones?.find(
-              (ez: { parentZoneId: string }) => ez.parentZoneId === zone.id
-            );
-            if (expanded) {
-              for (const sub of expanded.subLocations) {
-                allSlots.push({
-                  id: `${zone.id}_${sub.id}`,
-                  name: `${zone.name} → ${sub.name}`,
-                  parentZone: zone.name,
-                });
-              }
-            }
-          }
-          // Assign nodes to slots
-          const autoPlacement: Placement[] = nodes.map((node, i) => ({
-            nodeId: node.id,
-            nodeLabel: node.label,
-            nodeDescription: node.description,
-            subNodes: node.subNodes?.map(s => ({ label: s.label, detail: s.detail })),
-            zoneId: allSlots[i % allSlots.length].id,
-            zoneName: allSlots[i % allSlots.length].name,
-          }));
-          setPlacements(autoPlacement);
-          return;
-        }
-      } catch {
-        // Fallback to simple round-robin if expansion fails
-      }
-    }
-
-    // Simple assignment when zones >= nodes
-    const autoPlacement: Placement[] = nodes.map((node, i) => ({
-      nodeId: node.id,
-      nodeLabel: node.label,
-      nodeDescription: node.description,
-      subNodes: node.subNodes?.map(s => ({ label: s.label, detail: s.detail })),
-      zoneId: zones[i % zones.length].id,
-      zoneName: zones[i % zones.length].name,
-    }));
-    setPlacements(autoPlacement);
-    setStep("placement");
-  }
-
-  async function handleGenerateStories() {
-    if (!selectedLocation || placements.length === 0) return;
-    setIsGeneratingStories(true);
+    setSelectedLocation(loc);
+    setStep("generating");
+    setIsGenerating(true);
 
     try {
+      // Send topics with their sub-nodes for hierarchical placement
+      const topics = mindMap.childNodes.map((node) => ({
+        id: node.id,
+        label: node.label,
+        description: node.description,
+        subNodes: node.subNodes || [],
+      }));
+
       const res = await fetch("/api/palace/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          placements,
-          locationName: selectedLocation.name,
+          topics,
+          locationName: loc.name,
+          zones: loc.zones.map((z) => ({
+            id: z.id,
+            name: z.name,
+            description: z.description,
+          })),
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to generate stories");
-      const data = await res.json();
-      setStories(data);
-      setStep("stories");
+      if (!res.ok) throw new Error("Failed to generate placements");
+      const data: HierarchicalPlacement[] = await res.json();
+      setHierarchicalPlacements(data);
+      setStep("result");
     } catch (error) {
-      console.error("Story generation failed:", error);
+      console.error("Palace generation failed:", error);
+      setStep("location");
     } finally {
-      setIsGeneratingStories(false);
+      setIsGenerating(false);
     }
   }
 
@@ -133,22 +80,24 @@ export default function PalaceCreatePage() {
       locationKey: selectedLocation.key,
       unitTitle: unit.unitTitle,
       subject: unit.subject,
-      nodeCount: mindMap.childNodes.length,
+      nodeCount: hierarchicalPlacements.reduce((sum, p) => sum + p.subPlacements.length, 0),
       reviewCount: 0,
       createdAt: new Date().toISOString(),
       mindMap,
-      placements: placements.map((p) => {
-        const story = stories.find((s) => s.nodeId === p.nodeId);
-        return { ...p, memoryStory: story?.story || "" };
-      }),
+      hierarchicalPlacements,
     };
 
-    // Save to localStorage for now
     const existing = JSON.parse(localStorage.getItem("palaces") || "[]");
-    existing.push(palace);
+    existing.push({
+      id: palace.id,
+      locationKey: palace.locationKey,
+      unitTitle: palace.unitTitle,
+      subject: palace.subject,
+      nodeCount: palace.nodeCount,
+      reviewCount: 0,
+      createdAt: palace.createdAt,
+    });
     localStorage.setItem("palaces", JSON.stringify(existing));
-
-    // Save full palace data
     localStorage.setItem(`palace_${palace.id}`, JSON.stringify(palace));
 
     sessionStorage.removeItem("pendingMindMap");
@@ -178,7 +127,7 @@ export default function PalaceCreatePage() {
         <AnimatedContainer>
           <h1 className="text-3xl font-bold mb-2">기억의 궁전 만들기</h1>
           <p className="text-[var(--muted-foreground)] mb-8">
-            {unit?.unitTitle} — {mindMap.childNodes.length}개 개념을 장소에 배치합니다
+            {unit?.unitTitle} — {mindMap.childNodes.length}개 대주제, 각 하위 개념을 구역 내 구체적 위치에 배치합니다
           </p>
         </AnimatedContainer>
 
@@ -187,14 +136,14 @@ export default function PalaceCreatePage() {
           <AnimatedContainer delay={0.1}>
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-[var(--accent-violet)]" />
-              장소를 선택하세요
+              장소를 선택하면 AI가 계층적 배치를 자동 생성합니다
             </h2>
             <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {LOCATIONS.map((loc) => (
                 <StaggerItem key={loc.key}>
                   <GlassCard
                     className="p-4 cursor-pointer text-center"
-                    onClick={() => handleSelectLocation(loc)}
+                    onClick={() => handleSelectAndGenerate(loc)}
                     whileTap={{ scale: 0.95 }}
                   >
                     <span className="text-3xl block mb-2">{loc.emoji}</span>
@@ -209,42 +158,95 @@ export default function PalaceCreatePage() {
           </AnimatedContainer>
         )}
 
-        {/* Step 2: Placement Preview */}
-        {step === "placement" && selectedLocation && (
+        {/* Step 2: Generating */}
+        {step === "generating" && (
+          <AnimatedContainer delay={0}>
+            <GlassCard className="p-12 text-center" hover={false}>
+              <Loader2 className="w-10 h-10 mx-auto mb-4 animate-spin text-[var(--accent-violet)]" />
+              <h3 className="text-lg font-semibold mb-2">
+                {selectedLocation?.emoji} {selectedLocation?.name}에 배치 중...
+              </h3>
+              <p className="text-sm text-[var(--muted-foreground)]">
+                AI가 각 하위 개념을 구역 내 구체적 위치에 배치하고 기억 스토리를 생성하고 있습니다
+              </p>
+            </GlassCard>
+          </AnimatedContainer>
+        )}
+
+        {/* Step 3: Result — Hierarchical Placements */}
+        {step === "result" && selectedLocation && (
           <AnimatedContainer delay={0}>
             <h2 className="text-lg font-semibold mb-4">
-              {selectedLocation.emoji} {selectedLocation.name} — 개념 배치
+              {selectedLocation.emoji} {selectedLocation.name} — 계층적 배치 완료
             </h2>
 
-            <GlassCard className="p-6 mb-6" hover={false}>
-              <div className="space-y-3">
-                {placements.map((p, i) => (
-                  <div
-                    key={p.nodeId}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-white/5"
-                  >
-                    <span className="w-7 h-7 rounded-full bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-xs flex items-center justify-center font-bold shrink-0">
-                      {i + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <span className="font-medium text-sm">{p.nodeLabel}</span>
-                    </div>
-                    <ArrowRight className="w-4 h-4 text-[var(--muted-foreground)] shrink-0" />
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <MapPin className="w-3.5 h-3.5 text-[var(--accent-cyan)]" />
-                      <span className="text-sm text-[var(--accent-cyan)]">{p.zoneName}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+            <StaggerContainer className="space-y-4 mb-6">
+              {hierarchicalPlacements.map((placement) => (
+                <StaggerItem key={placement.topicId}>
+                  <GlassCard className="overflow-hidden" hover={false}>
+                    {/* Topic header (zone level) */}
+                    <button
+                      onClick={() =>
+                        setExpandedTopic(
+                          expandedTopic === placement.topicId ? null : placement.topicId
+                        )
+                      }
+                      className="w-full p-5 flex items-center gap-3 text-left hover:bg-white/5 transition-colors"
+                    >
+                      <MapPin className="w-5 h-5 text-[var(--accent-cyan)] shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-semibold text-[var(--accent-cyan)]">
+                            {placement.zoneName}
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-[var(--muted-foreground)]" />
+                          <span className="font-semibold text-sm">{placement.topicLabel}</span>
+                        </div>
+                        <span className="text-xs text-[var(--muted-foreground)]">
+                          {placement.subPlacements.length}개 하위 개념 배치됨
+                        </span>
+                      </div>
+                      <ChevronDown
+                        className={`w-5 h-5 text-[var(--muted-foreground)] transition-transform ${
+                          expandedTopic === placement.topicId ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    {/* Sub-placements (within zone) */}
+                    {expandedTopic === placement.topicId && (
+                      <div className="border-t border-white/5 px-5 py-4 space-y-3">
+                        {placement.subPlacements.map((sub, i) => (
+                          <div key={sub.conceptId} className="p-4 rounded-lg bg-white/5">
+                            <div className="flex items-start gap-2 mb-2">
+                              <span className="w-5 h-5 rounded-full bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-[10px] flex items-center justify-center font-bold shrink-0 mt-0.5">
+                                {i + 1}
+                              </span>
+                              <div>
+                                <span className="text-sm font-semibold">{sub.conceptLabel}</span>
+                                <span className="text-xs text-[var(--accent-emerald)] ml-2">
+                                  📍 {sub.position}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-xs text-[var(--foreground)]/80 leading-relaxed ml-7">
+                              {sub.story}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </GlassCard>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
 
             <div className="flex gap-3">
               <Button
                 variant="outline"
                 onClick={() => {
                   setSelectedLocation(null);
-                  setPlacements([]);
+                  setHierarchicalPlacements([]);
                   setStep("location");
                 }}
                 className="border-white/10"
@@ -252,64 +254,12 @@ export default function PalaceCreatePage() {
                 다른 장소 선택
               </Button>
               <Button
-                onClick={handleGenerateStories}
-                disabled={isGeneratingStories}
-                className="flex-1 bg-gradient-to-r from-[var(--accent-violet)] to-[var(--accent-cyan)] text-white font-semibold"
+                onClick={handleSave}
+                className="flex-1 bg-gradient-to-r from-[var(--accent-emerald)] to-[var(--accent-cyan)] text-white font-semibold"
               >
-                {isGeneratingStories ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    기억 연결 스토리 생성 중...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    기억 연결 스토리 생성
-                  </>
-                )}
+                궁전 저장하고 복습하기
               </Button>
             </div>
-          </AnimatedContainer>
-        )}
-
-        {/* Step 3: Stories */}
-        {step === "stories" && selectedLocation && (
-          <AnimatedContainer delay={0}>
-            <h2 className="text-lg font-semibold mb-4">
-              {selectedLocation.emoji} 기억 연결 스토리
-            </h2>
-
-            <StaggerContainer className="space-y-4 mb-6">
-              {placements.map((p) => {
-                const story = stories.find((s) => s.nodeId === p.nodeId);
-                return (
-                  <StaggerItem key={p.nodeId}>
-                    <GlassCard className="p-5" hover={false}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="px-2.5 py-1 rounded-lg bg-[var(--accent-violet)]/20 text-[var(--accent-violet)] text-xs font-bold">
-                          {p.nodeLabel}
-                        </span>
-                        <ArrowRight className="w-3.5 h-3.5 text-[var(--muted-foreground)]" />
-                        <span className="px-2.5 py-1 rounded-lg bg-[var(--accent-cyan)]/20 text-[var(--accent-cyan)] text-xs font-bold">
-                          {p.zoneName}
-                        </span>
-                      </div>
-                      <p className="text-sm leading-relaxed">
-                        {story?.story || "스토리를 불러오는 중..."}
-                      </p>
-                    </GlassCard>
-                  </StaggerItem>
-                );
-              })}
-            </StaggerContainer>
-
-            <Button
-              size="lg"
-              onClick={handleSave}
-              className="w-full bg-gradient-to-r from-[var(--accent-emerald)] to-[var(--accent-cyan)] text-white font-semibold py-5 rounded-xl"
-            >
-              궁전 저장하고 복습하기
-            </Button>
           </AnimatedContainer>
         )}
       </main>

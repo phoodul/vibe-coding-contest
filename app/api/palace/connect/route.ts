@@ -3,27 +3,41 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 import { PALACE_SYSTEM_PROMPT } from "@/lib/ai/palace-prompt";
 
-const StorySchema = z.array(
+const SubPlacementSchema = z.object({
+  conceptId: z.string(),
+  conceptLabel: z.string(),
+  position: z.string(),
+  story: z.string(),
+});
+
+const HierarchicalPlacementSchema = z.array(
   z.object({
-    nodeId: z.string(),
+    topicId: z.string(),
+    topicLabel: z.string(),
     zoneId: z.string(),
-    story: z.string(),
+    zoneName: z.string(),
+    subPlacements: z.array(SubPlacementSchema),
   })
 );
 
 export async function POST(req: Request) {
   try {
-    const { placements, locationName, nodes } = await req.json();
+    const { topics, locationName, zones } = await req.json();
 
-    const placementDesc = placements
+    // Build detailed prompt with topic hierarchy
+    const topicDesc = topics
       .map(
-        (p: { nodeLabel: string; zoneName: string; nodeId: string; zoneId: string; nodeDescription?: string; subNodes?: { label: string; detail: string }[] }) => {
-          let desc = `- 개념 "${p.nodeLabel}" (id: ${p.nodeId}) → 장소 "${p.zoneName}" (id: ${p.zoneId})`;
-          if (p.nodeDescription) desc += `\n  설명: ${p.nodeDescription}`;
-          if (p.subNodes && p.subNodes.length > 0) {
-            desc += `\n  세부 내용:`;
-            p.subNodes.forEach((sub) => {
-              desc += `\n    - ${sub.label}: ${sub.detail}`;
+        (t: {
+          id: string;
+          label: string;
+          description: string;
+          subNodes?: { id: string; label: string; detail: string }[];
+        }, i: number) => {
+          let desc = `\n### 대주제 ${i + 1}: "${t.label}" (id: ${t.id})\n설명: ${t.description}`;
+          if (t.subNodes && t.subNodes.length > 0) {
+            desc += `\n하위 개념:`;
+            t.subNodes.forEach((sub) => {
+              desc += `\n  - "${sub.label}" (id: ${sub.id}): ${sub.detail}`;
             });
           }
           return desc;
@@ -31,11 +45,29 @@ export async function POST(req: Request) {
       )
       .join("\n");
 
+    const zoneDesc = zones
+      .map((z: { id: string; name: string; description: string }) =>
+        `- ${z.name} (id: ${z.id}): ${z.description}`
+      )
+      .join("\n");
+
     const { object } = await generateObject({
       model: anthropic("claude-sonnet-4-5"),
-      schema: StorySchema,
+      schema: HierarchicalPlacementSchema,
       system: PALACE_SYSTEM_PROMPT,
-      prompt: `기억의 궁전 장소: ${locationName}\n\n배치된 개념-장소 연결:\n${placementDesc}\n\n각 연결에 대해, 세부 학습 내용(정의, 과정, 예시 등)이 상세히 포함된 기억 스토리를 만들어주세요.`,
+      prompt: `기억의 궁전 장소: ${locationName}
+
+사용 가능한 구역:
+${zoneDesc}
+
+배치할 학습 내용:
+${topicDesc}
+
+## 지시
+1. 각 대주제를 하나의 구역에 배정하세요.
+2. 각 대주제의 하위 개념들을 해당 구역 내의 구체적 위치(기둥, 천장, 바닥, 벽, 소품 등)에 배치하세요.
+3. 관련된 하위 개념은 공간적으로 가까운 위치에 배치하세요.
+4. 각 배치에 대해 핵심 학습 내용이 포함된 기억 스토리를 작성하세요.`,
     });
 
     return Response.json(object);
