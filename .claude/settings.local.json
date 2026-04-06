@@ -22,7 +22,8 @@
       "Bash(npm list:*)",
       "Bash(curl -s -X POST http://localhost:3000/api/teacher/feedback -H \"Content-Type: application/json\" -d '{\"title\":\"테스트\",\"rubric\":\"잘 썼는지 평가\",\"studentAnswer\":\"세포는 생명의 기본 단위이다\"}')",
       "mcp__supabase__list_projects",
-      "mcp__playwright__browser_resize"
+      "mcp__playwright__browser_resize",
+      "Bash(wc -c lib/data/textbooks/ethics-ch*.ts)"
     ]
   },
   "enabledMcpjsonServers": [
