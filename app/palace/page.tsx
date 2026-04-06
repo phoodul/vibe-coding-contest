@@ -83,8 +83,13 @@ export default function PalaceListPage() {
               return (
                 <StaggerItem key={palace.id}>
                   <Link href={`/palace/${palace.id}`}>
-                    <GlassCard className="p-5 cursor-pointer">
-                      <div className="flex items-start gap-3">
+                    <GlassCard className="p-0 cursor-pointer overflow-hidden">
+                      <div className="flex items-start gap-3 p-5" style={{
+                        backgroundImage: location?.gradient ? `${location.gradient}` : undefined,
+                        backgroundSize: "100% 4px",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "top",
+                      }}>
                         <span className="text-2xl">{location?.emoji || "🏛️"}</span>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold truncate">

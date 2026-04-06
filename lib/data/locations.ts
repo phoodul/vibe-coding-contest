@@ -10,6 +10,7 @@ export interface PalaceLocation {
   name: string;
   description: string;
   emoji: string;
+  gradient: string; // 장소 분위기를 나타내는 CSS 그라디언트
   zones: PalaceZone[];
 }
 
@@ -19,6 +20,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "경복궁",
     description: "조선 왕조의 법궁, 서울 종로구에 위치한 대한민국 대표 궁궐",
     emoji: "🏯",
+    gradient: "linear-gradient(135deg, #8B4513 0%, #D4A574 50%, #C0392B 100%)",
     zones: [
       { id: "gwanghwamun", name: "광화문", description: "경복궁의 정문, 웅장한 석축 위의 2층 누각", position: { x: 50, y: 90 } },
       { id: "geunjeongjeon", name: "근정전", description: "왕의 즉위식과 외국 사신 접견이 이루어진 정전", position: { x: 50, y: 70 } },
@@ -32,6 +34,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "한옥마을",
     description: "전통 한옥의 아름다움을 간직한 북촌 한옥마을",
     emoji: "🏠",
+    gradient: "linear-gradient(135deg, #5D4037 0%, #A1887F 50%, #8D6E63 100%)",
     zones: [
       { id: "madang", name: "마당", description: "한옥 중앙의 열린 공간, 하늘이 보이는 곳", position: { x: 50, y: 85 } },
       { id: "daecheong", name: "대청마루", description: "여름에 시원한 바람이 부는 나무 마루", position: { x: 50, y: 60 } },
@@ -45,6 +48,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "국립중앙박물관",
     description: "대한민국의 역사와 문화를 담은 아시아 최대 박물관",
     emoji: "🏛️",
+    gradient: "linear-gradient(135deg, #37474F 0%, #78909C 50%, #546E7A 100%)",
     zones: [
       { id: "lobby", name: "1층 로비", description: "높은 천장의 탁 트인 입구 공간", position: { x: 50, y: 85 } },
       { id: "prehistoric", name: "선사·고대관", description: "구석기부터 삼국시대까지의 유물", position: { x: 25, y: 60 } },
@@ -58,6 +62,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "서울도서관",
     description: "옛 서울시청 건물을 리모델링한 시민 도서관",
     emoji: "📚",
+    gradient: "linear-gradient(135deg, #1A237E 0%, #3F51B5 50%, #7986CB 100%)",
     zones: [
       { id: "entrance", name: "1층 로비", description: "높은 기둥이 늘어선 웅장한 입구", position: { x: 50, y: 85 } },
       { id: "reading", name: "열람실", description: "조용히 책을 읽는 넓은 공간", position: { x: 30, y: 60 } },
@@ -71,6 +76,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "남산타워",
     description: "서울의 상징, 남산 위의 전망 타워",
     emoji: "🗼",
+    gradient: "linear-gradient(135deg, #0D47A1 0%, #1565C0 40%, #FF6F00 100%)",
     zones: [
       { id: "cable", name: "케이블카", description: "산 아래에서 위로 올라가는 공중 이동", position: { x: 50, y: 85 } },
       { id: "stairs_namsan", name: "남산 계단", description: "숲속을 지나는 긴 돌계단", position: { x: 30, y: 65 } },
@@ -84,6 +90,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "광화문광장",
     description: "세종대왕과 이순신 장군 동상이 있는 서울의 중심 광장",
     emoji: "🏙️",
+    gradient: "linear-gradient(135deg, #263238 0%, #455A64 50%, #90A4AE 100%)",
     zones: [
       { id: "sejong", name: "세종대왕상", description: "한글을 창제한 세종대왕의 거대한 좌상", position: { x: 50, y: 80 } },
       { id: "yi_sun_sin", name: "이순신장군상", description: "거북선을 이끈 명장의 우뚝 선 동상", position: { x: 50, y: 60 } },
@@ -97,6 +104,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "창덕궁 후원",
     description: "유네스코 세계문화유산, 자연과 건축이 조화로운 비밀의 정원",
     emoji: "🌿",
+    gradient: "linear-gradient(135deg, #1B5E20 0%, #4CAF50 50%, #81C784 100%)",
     zones: [
       { id: "buyongjeong", name: "부용정", description: "네모난 연못 위 십자형 정자", position: { x: 30, y: 80 } },
       { id: "yeongyeongdang", name: "연경당", description: "왕이 사대부 생활을 체험한 집", position: { x: 70, y: 65 } },
@@ -110,6 +118,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "제주 돌하르방공원",
     description: "제주도의 상징 돌하르방과 아름다운 자연이 어우러진 공원",
     emoji: "🗿",
+    gradient: "linear-gradient(135deg, #006064 0%, #00ACC1 50%, #26C6DA 100%)",
     zones: [
       { id: "entrance_jeju", name: "입구", description: "커다란 돌하르방이 맞이하는 정문", position: { x: 50, y: 85 } },
       { id: "stone_path", name: "돌담길", description: "현무암 돌담이 이어진 제주 전통 길", position: { x: 30, y: 65 } },
@@ -123,6 +132,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "불국사",
     description: "유네스코 세계문화유산, 신라 불교 예술의 정수",
     emoji: "🛕",
+    gradient: "linear-gradient(135deg, #BF360C 0%, #E64A19 50%, #FF8A65 100%)",
     zones: [
       { id: "cheongungyo", name: "청운교·백운교", description: "극락으로 향하는 아름다운 돌다리 계단", position: { x: 50, y: 85 } },
       { id: "dabotap", name: "다보탑", description: "화려하고 복잡한 조형미의 석탑", position: { x: 70, y: 60 } },
@@ -136,6 +146,7 @@ export const LOCATIONS: PalaceLocation[] = [
     name: "수원화성",
     description: "유네스코 세계문화유산, 정조의 효심으로 지은 성곽",
     emoji: "🏰",
+    gradient: "linear-gradient(135deg, #4E342E 0%, #795548 50%, #A1887F 100%)",
     zones: [
       { id: "janganmun", name: "장안문", description: "화성의 북문, 국내 최대 규모의 성문", position: { x: 50, y: 85 } },
       { id: "hwahongmun", name: "화홍문", description: "수원천 위 7개 무지개 아치의 수문", position: { x: 30, y: 65 } },

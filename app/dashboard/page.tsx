@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Brain, GraduationCap, BookOpen, FileText, PenTool } from "lucide-react";
+import { Brain, GraduationCap, BookOpen, FileText, PenTool, Trophy, Layers, RotateCcw } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import {
@@ -9,6 +10,7 @@ import {
   StaggerContainer,
   StaggerItem,
 } from "@/components/shared/animated-container";
+import { loadPalaces, type SavedPalace } from "@/lib/db/palaces";
 
 const studentFeatures = [
   {
@@ -52,16 +54,44 @@ const teacherFeatures = [
 ];
 
 export default function DashboardPage() {
+  const [palaces, setPalaces] = useState<SavedPalace[]>([]);
+
+  useEffect(() => {
+    loadPalaces().then(setPalaces);
+  }, []);
+
+  const totalConcepts = palaces.reduce((sum, p) => sum + p.nodeCount, 0);
+  const totalReviews = palaces.reduce((sum, p) => sum + p.reviewCount, 0);
+
   return (
     <>
       <Header />
       <main className="min-h-screen pt-24 px-6 pb-12 max-w-5xl mx-auto">
         <AnimatedContainer>
           <h1 className="text-3xl font-bold mb-2">대시보드</h1>
-          <p className="text-[var(--muted-foreground)] mb-8">
+          <p className="text-[var(--muted-foreground)] mb-6">
             학습하거나 교육 도구를 사용하세요
           </p>
         </AnimatedContainer>
+
+        {/* Stats */}
+        {palaces.length > 0 && (
+          <AnimatedContainer delay={0.05} className="mb-8">
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { icon: Trophy, label: "궁전", value: palaces.length, color: "var(--accent-violet)" },
+                { icon: Layers, label: "개념", value: totalConcepts, color: "var(--accent-cyan)" },
+                { icon: RotateCcw, label: "복습", value: totalReviews, color: "var(--accent-emerald)" },
+              ].map((stat) => (
+                <GlassCard key={stat.label} className="p-4 text-center" hover={false}>
+                  <stat.icon className="w-5 h-5 mx-auto mb-1" style={{ color: stat.color }} />
+                  <p className="text-2xl font-bold">{stat.value}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">{stat.label}</p>
+                </GlassCard>
+              ))}
+            </div>
+          </AnimatedContainer>
+        )}
 
         {/* Student Section */}
         <AnimatedContainer delay={0.1} className="mb-10">

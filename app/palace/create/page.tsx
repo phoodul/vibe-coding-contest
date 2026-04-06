@@ -130,15 +130,22 @@ export default function PalaceCreatePage() {
               {LOCATIONS.map((loc) => (
                 <StaggerItem key={loc.key}>
                   <GlassCard
-                    className="p-4 cursor-pointer text-center"
+                    className="p-0 cursor-pointer text-center overflow-hidden"
                     onClick={() => handleSelectAndGenerate(loc)}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <span className="text-3xl block mb-2">{loc.emoji}</span>
-                    <h3 className="font-medium text-sm">{loc.name}</h3>
-                    <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                      {loc.zones.length}개 구역
-                    </p>
+                    <div
+                      className="h-16 flex items-center justify-center opacity-60"
+                      style={{ background: loc.gradient }}
+                    >
+                      <span className="text-3xl drop-shadow-lg">{loc.emoji}</span>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-medium text-sm">{loc.name}</h3>
+                      <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                        {loc.zones.length}개 구역
+                      </p>
+                    </div>
                   </GlassCard>
                 </StaggerItem>
               ))}
