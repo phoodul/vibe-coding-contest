@@ -119,6 +119,34 @@ export default function DashboardPage() {
           </AnimatedContainer>
         )}
 
+        {/* Subject Progress */}
+        {palaces.length > 0 && (
+          <AnimatedContainer delay={0.08} className="mb-8">
+            <h3 className="text-sm font-semibold text-[var(--muted-foreground)] mb-3">과목별 학습 현황</h3>
+            <div className="space-y-2">
+              {[
+                { key: "ethics", label: "⚖️ 생활과 윤리", color: "#8b5cf6" },
+                { key: "biology", label: "🧬 생명과학Ⅰ", color: "#06b6d4" },
+                { key: "korean", label: "📝 언어와 매체", color: "#10b981" },
+                { key: "custom", label: "📄 PDF 업로드", color: "#f59e0b" },
+              ].map((subject) => {
+                const count = palaces.filter((p) => p.subject === subject.key).length;
+                if (count === 0) return null;
+                const concepts = palaces.filter((p) => p.subject === subject.key).reduce((s, p) => s + p.nodeCount, 0);
+                return (
+                  <div key={subject.key} className="flex items-center gap-3">
+                    <span className="text-sm w-28 shrink-0">{subject.label}</span>
+                    <div className="flex-1 h-2 rounded-full bg-white/10 overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-700" style={{ width: `${Math.min(100, count * 20)}%`, background: subject.color }} />
+                    </div>
+                    <span className="text-xs text-[var(--muted-foreground)] w-20 text-right">{count}궁전 · {concepts}개념</span>
+                  </div>
+                );
+              }).filter(Boolean)}
+            </div>
+          </AnimatedContainer>
+        )}
+
         {/* Student Section */}
         <AnimatedContainer delay={0.1} className="mb-10">
           <div className="flex items-center gap-2 mb-4">
