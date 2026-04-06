@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Brain, GraduationCap, BookOpen, FileText, PenTool, Trophy, Layers, RotateCcw } from "lucide-react";
+import { Brain, GraduationCap, BookOpen, FileText, PenTool, Trophy, Layers, RotateCcw, Globe } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 import {
@@ -60,6 +60,13 @@ const studentFeatures = [
     title: "내 궁전 목록",
     description: "저장한 기억의 궁전을 복습하세요",
     gradient: "from-cyan-500 to-blue-600",
+  },
+  {
+    href: "/english",
+    icon: Globe,
+    title: "English Village",
+    description: "영어 마을을 걸으며 단어를 익히세요",
+    gradient: "from-teal-500 to-cyan-600",
   },
 ];
 
