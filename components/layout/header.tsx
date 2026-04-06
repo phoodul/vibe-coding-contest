@@ -7,10 +7,12 @@ import { Brain, LogIn, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import type { User } from "@supabase/supabase-js";
+import type { UserRole } from "@/hooks/use-role";
 
 export function Header() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const userRole = user?.user_metadata?.role as UserRole;
 
   useEffect(() => {
     const supabase = createClient();
@@ -45,15 +47,26 @@ export function Header() {
             대시보드
           </Link>
           {user ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="text-[var(--muted-foreground)] hover:text-white"
-            >
-              <LogOut className="w-4 h-4 mr-1" />
-              로그아웃
-            </Button>
+            <>
+              {userRole && (
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                  userRole === "teacher"
+                    ? "bg-[var(--accent-emerald)]/20 text-[var(--accent-emerald)]"
+                    : "bg-[var(--accent-violet)]/20 text-[var(--accent-violet)]"
+                }`}>
+                  {userRole === "teacher" ? "교사" : "학생"}
+                </span>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-[var(--muted-foreground)] hover:text-white"
+              >
+                <LogOut className="w-4 h-4 mr-1" />
+                로그아웃
+              </Button>
+            </>
           ) : (
             <Link href="/login">
               <Button

@@ -125,6 +125,15 @@ export default function SignupPage() {
               </div>
             </div>
 
+            {role === "teacher" && (
+              <div className="p-3 rounded-lg bg-[var(--accent-emerald)]/10 border border-[var(--accent-emerald)]/20">
+                <p className="text-xs text-[var(--accent-emerald)]">
+                  📋 교사 계정은 수행평가 피드백과 생기부 초안 도구를 사용할 수 있습니다.
+                  실제 서비스에서는 교원 인증(NEIS 연동)이 필요합니다.
+                </p>
+              </div>
+            )}
+
             {error && (
               <p className="text-sm text-red-400 bg-red-500/10 px-3 py-2 rounded-lg">
                 {error}

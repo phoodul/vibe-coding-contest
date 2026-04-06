@@ -11,6 +11,7 @@ import {
   StaggerItem,
 } from "@/components/shared/animated-container";
 import { loadPalaces, type SavedPalace } from "@/lib/db/palaces";
+import { useRole } from "@/hooks/use-role";
 
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
@@ -80,6 +81,7 @@ const teacherFeatures = [
 ];
 
 export default function DashboardPage() {
+  const { role, displayName } = useRole();
   const [palaces, setPalaces] = useState<SavedPalace[]>([]);
 
   useEffect(() => {
@@ -94,9 +96,20 @@ export default function DashboardPage() {
       <Header />
       <main className="min-h-screen pt-24 px-6 pb-12 max-w-5xl mx-auto">
         <AnimatedContainer>
-          <h1 className="text-3xl font-bold mb-2">대시보드</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold">대시보드</h1>
+            {role && (
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                role === "teacher"
+                  ? "bg-[var(--accent-emerald)]/20 text-[var(--accent-emerald)]"
+                  : "bg-[var(--accent-violet)]/20 text-[var(--accent-violet)]"
+              }`}>
+                {role === "teacher" ? "📝 교사" : "🎓 학생"}
+              </span>
+            )}
+          </div>
           <p className="text-[var(--muted-foreground)] mb-6">
-            학습하거나 교육 도구를 사용하세요
+            {displayName ? `${displayName}님, ` : ""}학습하거나 교육 도구를 사용하세요
           </p>
         </AnimatedContainer>
 
@@ -176,34 +189,41 @@ export default function DashboardPage() {
           </StaggerContainer>
         </AnimatedContainer>
 
-        {/* Teacher Section */}
-        <AnimatedContainer delay={0.2}>
-          <div className="flex items-center gap-2 mb-4">
-            <PenTool className="w-5 h-5 text-[var(--accent-emerald)]" />
-            <h2 className="text-xl font-semibold">교사 도구</h2>
-          </div>
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {teacherFeatures.map((feature) => (
-              <StaggerItem key={feature.href}>
-                <Link href={feature.href}>
-                  <GlassCard className="p-6 h-full cursor-pointer">
-                    <div
-                      className={`w-10 h-10 rounded-lg bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4`}
-                    >
-                      <feature.icon className="w-5 h-5 text-white" />
-                    </div>
-                    <h3 className="text-lg font-semibold mb-1">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-[var(--muted-foreground)]">
-                      {feature.description}
-                    </p>
-                  </GlassCard>
-                </Link>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </AnimatedContainer>
+        {/* Teacher Section — 교사 역할이거나 비로그인(데모)일 때 표시 */}
+        {(role === "teacher" || role === null) && (
+          <AnimatedContainer delay={0.2}>
+            <div className="flex items-center gap-2 mb-4">
+              <PenTool className="w-5 h-5 text-[var(--accent-emerald)]" />
+              <h2 className="text-xl font-semibold">교사 도구</h2>
+              {role === null && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-[var(--muted-foreground)]">
+                  데모 모드 · 실제 서비스에서는 교원 인증 필요
+                </span>
+              )}
+            </div>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {teacherFeatures.map((feature) => (
+                <StaggerItem key={feature.href}>
+                  <Link href={feature.href}>
+                    <GlassCard className="p-6 h-full cursor-pointer">
+                      <div
+                        className={`w-10 h-10 rounded-lg bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4`}
+                      >
+                        <feature.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <h3 className="text-lg font-semibold mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm text-[var(--muted-foreground)]">
+                        {feature.description}
+                      </p>
+                    </GlassCard>
+                  </Link>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </AnimatedContainer>
+        )}
       </main>
     </>
   );
