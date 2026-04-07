@@ -1,0 +1,109 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
+import { GlassCard } from "@/components/shared/glass-card";
+
+interface Profile {
+  display_name: string | null;
+  role: "student" | "teacher";
+}
+
+const studentMenus = [
+  { title: "소크라테스 AI 튜터", desc: "질문으로 이끄는 AI 학습", icon: "🎓", href: "/tutor" },
+  { title: "진로 시뮬레이터", desc: "5,000+ 직업에서 나만의 길 찾기", icon: "🧭", href: "/career" },
+  { title: "도서 추천", desc: "진로 맞춤 도서 큐레이션", icon: "📚", href: "/books" },
+];
+
+const teacherMenus = [
+  { title: "공문서 포맷터", desc: "원클릭 공문서 양식 교정", icon: "📄", href: "/teacher/formatter" },
+  { title: "공문서 생성기", desc: "AI 공문서 자동 작성", icon: "📝", href: "/teacher/generator" },
+];
+
+export default function DashboardPage() {
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function load() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, role")
+        .eq("id", user.id)
+        .single();
+
+      setProfile(data as Profile | null);
+      setLoading(false);
+    }
+    load();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted">로딩 중...</div>
+      </div>
+    );
+  }
+
+  const isTeacher = profile?.role === "teacher";
+  const menus = isTeacher ? [...teacherMenus, ...studentMenus] : studentMenus;
+
+  return (
+    <div className="min-h-screen px-6 py-20">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-10"
+        >
+          <h1 className="text-3xl font-bold mb-2">
+            안녕하세요, {profile?.display_name || "사용자"}님 👋
+          </h1>
+          <p className="text-muted">
+            {isTeacher ? "교사" : "학생"} 대시보드
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {menus.map((item, i) => (
+            <Link key={item.href} href={item.href}>
+              <GlassCard delay={i * 0.08} className="h-full cursor-pointer group">
+                <span className="text-4xl mb-3 block">{item.icon}</span>
+                <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-muted">{item.desc}</p>
+              </GlassCard>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-8 flex justify-end">
+          <button
+            onClick={async () => {
+              const supabase = createClient();
+              await supabase.auth.signOut();
+              router.push("/");
+            }}
+            className="text-sm text-muted hover:text-foreground transition-colors"
+          >
+            로그아웃
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

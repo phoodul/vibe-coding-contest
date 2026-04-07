@@ -1,9 +1,6 @@
 # Claude Code
 .claude/
 
-# Docs
-docs/
-
 # Logs
 logs
 *.log
