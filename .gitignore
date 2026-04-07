@@ -1,6 +1,9 @@
 # Claude Code
 .claude/
 
+# User local docs (not tracked)
+user_docs/
+
 # Logs
 logs
 *.log
