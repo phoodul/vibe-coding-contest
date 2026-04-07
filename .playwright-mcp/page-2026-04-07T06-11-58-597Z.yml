@@ -1,0 +1,105 @@
+- generic:
+  - generic [ref=e2]:
+    - img "경복궁 근정전" [ref=e3]
+    - button "직업의 의미" [active] [ref=e5] [cursor=pointer]:
+      - generic:
+        - generic: 직업의 의미
+    - button "칼뱅의 소명설" [ref=e7] [cursor=pointer]:
+      - generic:
+        - generic: 칼뱅의 소명설
+    - button "청렴" [ref=e9] [cursor=pointer]:
+      - generic:
+        - generic: 청렴
+    - button "맹자" [ref=e11] [cursor=pointer]:
+      - generic:
+        - generic: 맹자
+    - button "순자" [ref=e13] [cursor=pointer]:
+      - generic:
+        - generic: 순자
+    - button "마르크스 (직업관)" [ref=e15] [cursor=pointer]:
+      - generic:
+        - generic: 마르크스 (직업관)
+    - button "헤겔" [ref=e17] [cursor=pointer]:
+      - generic:
+        - generic: 헤겔
+    - button "마르크스 (노동 소외)" [ref=e19] [cursor=pointer]:
+      - generic:
+        - generic: 마르크스 (노동 소외)
+    - button "아렌트" [ref=e21] [cursor=pointer]:
+      - generic:
+        - generic: 아렌트
+    - button "홉스" [ref=e23] [cursor=pointer]:
+      - generic:
+        - generic: 홉스
+    - button "로크" [ref=e25] [cursor=pointer]:
+      - generic:
+        - generic: 로크
+    - button "루소" [ref=e27] [cursor=pointer]:
+      - generic:
+        - generic: 루소
+    - button "소로" [ref=e29] [cursor=pointer]:
+      - generic:
+        - generic: 소로
+    - button "롤스의 불복종 4조건" [ref=e31] [cursor=pointer]:
+      - generic:
+        - generic: 롤스의 불복종 4조건
+    - button "민주주의" [ref=e33] [cursor=pointer]:
+      - generic:
+        - generic: 민주주의
+    - button "롤스의 정의론" [ref=e35] [cursor=pointer]:
+      - generic:
+        - generic: 롤스의 정의론
+    - button "인권의 세대" [ref=e37] [cursor=pointer]:
+      - generic:
+        - generic: 인권의 세대
+    - button "전문직 윤리" [ref=e39] [cursor=pointer]:
+      - generic:
+        - generic: 전문직 윤리
+    - button "정의의 세 유형" [ref=e41] [cursor=pointer]:
+      - generic:
+        - generic: 정의의 세 유형
+    - button "4대 정의론" [ref=e43] [cursor=pointer]:
+      - generic:
+        - generic: 4대 정의론
+    - button "애덤 스미스" [ref=e45] [cursor=pointer]:
+      - generic:
+        - generic: 애덤 스미스
+    - button "시장의 한계" [ref=e47] [cursor=pointer]:
+      - generic:
+        - generic: 시장의 한계
+    - button "노직" [ref=e49] [cursor=pointer]:
+      - generic:
+        - generic: 노직
+    - button "왈처" [ref=e51] [cursor=pointer]:
+      - generic:
+        - generic: 왈처
+    - img
+    - generic [ref=e82]:
+      - generic [ref=e83]:
+        - generic [ref=e84]: 직업의 의미
+        - generic [ref=e85]: s1-c1
+      - list [ref=e86]:
+        - listitem [ref=e87]:
+          - generic [ref=e88]: 사회적 역할 분담
+        - listitem [ref=e89]:
+          - generic [ref=e90]: 자아실현의 수단
+    - generic:
+      - generic [ref=e53]:
+        - button [ref=e54]:
+          - img [ref=e55]
+        - generic [ref=e57]:
+          - paragraph [ref=e58]: 경복궁 근정전
+          - heading "사회와 윤리" [level=1] [ref=e59]
+      - generic [ref=e60]:
+        - button "학습하기" [ref=e61]:
+          - img [ref=e62]
+          - generic [ref=e64]: 학습하기
+        - button [ref=e65]:
+          - img [ref=e66]
+    - generic:
+      - paragraph: 키워드를 클릭하거나 ▶ 학습하기를 눌러보세요
+    - generic: Wikimedia Commons, CC BY-SA 4.0
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e76] [cursor=pointer]:
+    - img [ref=e77]
+  - alert [ref=e80]

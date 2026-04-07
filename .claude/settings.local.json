@@ -42,7 +42,23 @@
       "Bash(wc -c lib/data/textbooks/korean-ch*.ts)",
       "mcp__vercel__get_runtime_logs",
       "Bash(npm run:*)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/palace/demo)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/palace/demo)",
+      "WebFetch(domain:franklinta.com)",
+      "WebFetch(domain:portswigger.net)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:gist.github.com)",
+      "WebFetch(domain:codepen.io)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:www.uncorkedstudios.com)",
+      "WebFetch(domain:css-tricks.com)",
+      "WebFetch(domain:jlouthan.github.io)",
+      "WebFetch(domain:copyprogramming.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:unsplash.com)",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "Bash(curl -L -o geunjeongjeon-interior.jpg \"https://upload.wikimedia.org/wikipedia/commons/7/74/Interior_view_of_the_Geunjeongjeon_Hall_at_Gyeongbokgung_Palace_in_Seoul.jpg\")",
+      "Bash(curl -L -o geunjeongjeon-throne.jpg \"https://upload.wikimedia.org/wikipedia/commons/8/8b/Geunjeongjeon_Throne_of_the_King.jpg\")",
+      "Bash(curl -L -o geunjeongjeon-full.jpg \"https://upload.wikimedia.org/wikipedia/commons/a/a1/Internal_View_of_the_Geunjeongjeon_Hall.jpg\")"
     ]
   },
   "enabledMcpjsonServers": [
