@@ -1,23 +1,20 @@
-/** Mind Palace - 사진 기반 공간 + 계층적 Hotspot */
+/** Mind Palace — 1 Hotspot = 1 keyword = 1 말풍선 */
 
-/** 구조화된 목록 아이템 (말풍선에 표시) */
-export interface OutlineItem {
+/** 말풍선 내 bullet 하나 = object 특정 부위와 연결선 */
+export interface BulletItem {
   text: string;
-  /** 이 항목이 가리키는 사진 위 위치 (%) */
+  /** 사진 위 이 bullet이 가리키는 위치 (viewport %) */
   pointer: { x: number; y: number };
-  children?: OutlineItem[];
 }
 
-/** 하나의 학습 주제 */
+/** 1 Hotspot = 1 개념 = 1 말풍선 */
 export interface Hotspot {
   id: string;
   keyword: string;
-  section: string;
-  /** 사진 위 클릭 영역 (%) */
+  /** 사진 위 클릭 영역 (viewport %) */
   region: { x: number; y: number; w: number; h: number };
-  /** 말풍선에 보여줄 계층적 구조 텍스트 */
-  outline: OutlineItem[];
-  /** 나레이터가 읽을 교과서 본문 (서술형) */
+  /** flat bullet list — 하위 그룹 없음 */
+  bullets: BulletItem[];
   narratorText: string;
 }
 
