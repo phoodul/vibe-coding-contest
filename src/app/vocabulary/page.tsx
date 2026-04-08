@@ -3,27 +3,38 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/glass-card";
-import { VOCAB_DATA, CAMP_INFO } from "@/lib/data/vocabulary-data";
+import {
+  VOCAB_DATA,
+  CAMP_INFO,
+  GROUPS_PER_LEVEL,
+  WORDS_PER_GROUP,
+  PASS_SCORE,
+} from "@/lib/data/vocabulary-data";
+import type { VocabGroup } from "@/lib/data/vocabulary-data";
 import Link from "next/link";
 
 type Tab = "learn" | "quiz" | "progress";
 
-// 로컬스토리지 키
-const STORAGE_KEY = "eduflow-vocab-progress";
+const STORAGE_KEY = "eduflow-vocab-progress-v2";
 
 interface Progress {
   startCamp: number;
-  campScores: Record<number, number>; // camp -> 최고 점수
-  learnedWords: Record<number, string[]>; // camp -> 학습한 단어 목록
+  // camp -> groupIndex -> best score
+  groupScores: Record<number, Record<number, number>>;
+  // camp -> passed group indices
+  passedGroups: Record<number, number[]>;
 }
 
 function loadProgress(): Progress {
-  if (typeof window === "undefined") return { startCamp: 1, campScores: {}, learnedWords: {} };
+  if (typeof window === "undefined")
+    return { startCamp: 1, groupScores: {}, passedGroups: {} };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return { startCamp: 1, campScores: {}, learnedWords: {} };
+  } catch {
+    /* ignore */
+  }
+  return { startCamp: 1, groupScores: {}, passedGroups: {} };
 }
 
 function saveProgress(p: Progress) {
@@ -33,49 +44,63 @@ function saveProgress(p: Progress) {
 export default function VocabularyPage() {
   const [tab, setTab] = useState<Tab>("learn");
   const [selectedCamp, setSelectedCamp] = useState(1);
+  const [selectedGroup, setSelectedGroup] = useState(0);
   const [progress, setProgress] = useState<Progress>(loadProgress);
   const [hasStarted, setHasStarted] = useState(false);
 
-  // 진도 저장
   useEffect(() => {
     if (hasStarted) saveProgress(progress);
   }, [progress, hasStarted]);
 
-  // 초기 로드
   useEffect(() => {
     const p = loadProgress();
     setProgress(p);
-    if (p.startCamp > 1 || Object.keys(p.campScores).length > 0) {
+    if (p.startCamp > 1 || Object.keys(p.groupScores).length > 0) {
       setHasStarted(true);
       setSelectedCamp(p.startCamp);
     }
   }, []);
 
   function handleStart(camp: number) {
-    const newProgress = { ...progress, startCamp: camp };
-    setProgress(newProgress);
+    const np = { ...progress, startCamp: camp };
+    setProgress(np);
     setSelectedCamp(camp);
+    setSelectedGroup(0);
     setHasStarted(true);
-    saveProgress(newProgress);
+    saveProgress(np);
   }
 
-  // 시작 레벨 선택
+  const groups: VocabGroup[] = VOCAB_DATA[selectedCamp] || [];
+
   if (!hasStarted) {
     return (
       <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
         <div className="max-w-3xl mx-auto">
-          <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors mb-8 block">
-            ← 대시보드
+          <Link
+            href="/dashboard"
+            className="text-sm text-muted hover:text-foreground transition-colors mb-8 block"
+          >
+            &larr; 대시보드
           </Link>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="text-3xl font-bold mb-2">🏔️ 영어 단어 학습</h1>
-            <p className="text-muted mb-8">시작할 캠프를 선택하세요. 에베레스트 정상을 향해 출발!</p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h1 className="text-3xl font-bold mb-2">
+              &#127956;&#65039; 영어 단어 학습
+            </h1>
+            <p className="text-muted mb-8">
+              시작할 캠프를 선택하세요. 에베레스트 정상을 향해 출발!
+            </p>
           </motion.div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {CAMP_INFO.map((info, i) => (
               <GlassCard key={info.camp} delay={i * 0.05} className="cursor-pointer">
-                <button onClick={() => handleStart(info.camp)} className="w-full text-left">
+                <button
+                  onClick={() => handleStart(info.camp)}
+                  className="w-full text-left"
+                >
                   <p className="text-xs text-muted">{info.altitude}</p>
                   <p className="font-bold text-primary">{info.name}</p>
                   <p className="text-sm text-muted">{info.label}</p>
@@ -90,27 +115,38 @@ export default function VocabularyPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
-      <div className="max-w-4xl mx-auto">
-        <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors mb-6 block">
-          ← 대시보드
+      <div className="max-w-5xl mx-auto">
+        <Link
+          href="/dashboard"
+          className="text-sm text-muted hover:text-foreground transition-colors mb-6 block"
+        >
+          &larr; 대시보드
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-          <h1 className="text-2xl font-bold">🏔️ 영어 단어 학습</h1>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <h1 className="text-2xl font-bold">&#127956;&#65039; 영어 단어 학습</h1>
         </motion.div>
 
         {/* 탭 */}
         <div className="flex gap-1 mb-6 p-1 glass rounded-xl w-fit">
-          {([
-            ["learn", "학습"],
-            ["quiz", "복습 퀴즈"],
-            ["progress", "에베레스트"],
-          ] as [Tab, string][]).map(([id, label]) => (
+          {(
+            [
+              ["learn", "학습"],
+              ["quiz", "테스트하기"],
+              ["progress", "에베레스트"],
+            ] as [Tab, string][]
+          ).map(([id, label]) => (
             <button
               key={id}
               onClick={() => setTab(id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                tab === id ? "bg-primary text-primary-foreground" : "text-muted hover:text-foreground"
+                tab === id
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted hover:text-foreground"
               }`}
             >
               {label}
@@ -120,23 +156,31 @@ export default function VocabularyPage() {
 
         {tab === "learn" && (
           <LearnTab
-            selectedCamp={selectedCamp}
-            onSelectCamp={setSelectedCamp}
-            progress={progress}
-            onUpdateProgress={setProgress}
+            camp={selectedCamp}
+            groups={groups}
+            selectedGroup={selectedGroup}
+            onSelectGroup={setSelectedGroup}
+            onSelectCamp={(c) => {
+              setSelectedCamp(c);
+              setSelectedGroup(0);
+            }}
           />
         )}
         {tab === "quiz" && (
           <QuizTab
-            selectedCamp={selectedCamp}
-            onSelectCamp={setSelectedCamp}
+            camp={selectedCamp}
+            groups={groups}
+            selectedGroup={selectedGroup}
+            onSelectGroup={setSelectedGroup}
+            onSelectCamp={(c) => {
+              setSelectedCamp(c);
+              setSelectedGroup(0);
+            }}
             progress={progress}
             onUpdateProgress={setProgress}
           />
         )}
-        {tab === "progress" && (
-          <ProgressTab progress={progress} />
-        )}
+        {tab === "progress" && <ProgressTab progress={progress} />}
       </div>
     </div>
   );
@@ -144,19 +188,21 @@ export default function VocabularyPage() {
 
 // ==================== LEARN TAB ====================
 function LearnTab({
-  selectedCamp,
+  camp,
+  groups,
+  selectedGroup,
+  onSelectGroup,
   onSelectCamp,
-  progress,
-  onUpdateProgress,
 }: {
-  selectedCamp: number;
+  camp: number;
+  groups: VocabGroup[];
+  selectedGroup: number;
+  onSelectGroup: (g: number) => void;
   onSelectCamp: (c: number) => void;
-  progress: Progress;
-  onUpdateProgress: (p: Progress) => void;
 }) {
   const [playingWord, setPlayingWord] = useState<string | null>(null);
-  const words = VOCAB_DATA[selectedCamp] || [];
-  const learnedSet = new Set(progress.learnedWords[selectedCamp] || []);
+  const group = groups[selectedGroup];
+  const words = group?.words || [];
 
   const playPronunciation = useCallback(async (word: string) => {
     setPlayingWord(word);
@@ -188,18 +234,6 @@ function LearnTab({
     }
   }, []);
 
-  function markLearned(word: string) {
-    const current = progress.learnedWords[selectedCamp] || [];
-    if (current.includes(word)) return;
-    onUpdateProgress({
-      ...progress,
-      learnedWords: {
-        ...progress.learnedWords,
-        [selectedCamp]: [...current, word],
-      },
-    });
-  }
-
   return (
     <div>
       {/* 캠프 선택 바 */}
@@ -209,7 +243,7 @@ function LearnTab({
             key={info.camp}
             onClick={() => onSelectCamp(info.camp)}
             className={`shrink-0 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-              selectedCamp === info.camp
+              camp === info.camp
                 ? "bg-primary text-primary-foreground"
                 : "glass text-muted hover:text-foreground"
             }`}
@@ -219,117 +253,174 @@ function LearnTab({
         ))}
       </div>
 
-      {/* 캠프 정보 */}
+      {/* 그룹 선택 그리드 */}
       <GlassCard hover={false} className="mb-4 py-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           <div>
             <p className="font-bold text-primary">
-              {CAMP_INFO[selectedCamp - 1]?.name} — {CAMP_INFO[selectedCamp - 1]?.label}
+              {CAMP_INFO[camp - 1]?.name} &mdash; {CAMP_INFO[camp - 1]?.label}
             </p>
             <p className="text-xs text-muted">
-              {CAMP_INFO[selectedCamp - 1]?.altitude} · {words.length}개 단어 · {learnedSet.size}개 학습 완료
+              {CAMP_INFO[camp - 1]?.altitude} &middot; {groups.length}개 묶음
+              &middot; 묶음당 {WORDS_PER_GROUP}단어
             </p>
           </div>
-          <div className="text-right">
-            <div className="text-sm font-bold text-primary">
-              {words.length > 0 ? Math.round((learnedSet.size / words.length) * 100) : 0}%
-            </div>
-            <div className="w-20 h-1.5 rounded-full bg-white/10 mt-1">
-              <div
-                className="h-full rounded-full bg-primary transition-all"
-                style={{ width: `${words.length > 0 ? (learnedSet.size / words.length) * 100 : 0}%` }}
-              />
-            </div>
-          </div>
+        </div>
+        <div className="flex gap-1.5 flex-wrap">
+          {groups.map((g, i) => (
+            <button
+              key={i}
+              onClick={() => onSelectGroup(i)}
+              className={`px-2 py-1 rounded-md text-[10px] font-medium transition-all ${
+                selectedGroup === i
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-white/5 text-muted hover:bg-white/10 hover:text-foreground"
+              }`}
+              title={g.topic}
+            >
+              {i + 1}
+            </button>
+          ))}
         </div>
       </GlassCard>
 
-      {/* 단어 목록 */}
-      <div className="space-y-2">
-        {words.map(([word, meaning], i) => (
-          <motion.div
-            key={word}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(i * 0.02, 0.5) }}
-            className={`glass p-3 rounded-xl flex items-center justify-between transition-all ${
-              learnedSet.has(word) ? "border-green-500/20 bg-green-500/5" : ""
-            }`}
-          >
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <button
-                onClick={() => playPronunciation(word)}
-                disabled={playingWord === word}
-                className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                  playingWord === word
-                    ? "bg-primary/30 animate-pulse"
-                    : "bg-white/5 hover:bg-primary/20"
-                }`}
-              >
-                {playingWord === word ? (
-                  <span className="text-xs">🔊</span>
-                ) : (
-                  <svg className="w-4 h-4 text-muted" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                  </svg>
-                )}
-              </button>
-              <div className="min-w-0">
-                <span className="font-medium text-sm">{word}</span>
-                <span className="text-muted text-sm ml-3">{meaning}</span>
+      {/* 현재 그룹 주제 */}
+      {group && (
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <span className="text-xs px-2 py-1 rounded-md bg-primary/20 text-primary font-medium">
+              #{selectedGroup + 1}
+            </span>
+            <span className="font-bold text-sm">{group.topic}</span>
+            <span className="text-xs text-muted">
+              {words.length}단어
+            </span>
+          </div>
+          <div className="flex gap-1">
+            <button
+              onClick={() => onSelectGroup(Math.max(0, selectedGroup - 1))}
+              disabled={selectedGroup === 0}
+              className="px-2 py-1 rounded-md glass text-xs disabled:opacity-30 hover:bg-white/10 transition-all"
+            >
+              &larr;
+            </button>
+            <button
+              onClick={() =>
+                onSelectGroup(Math.min(groups.length - 1, selectedGroup + 1))
+              }
+              disabled={selectedGroup === groups.length - 1}
+              className="px-2 py-1 rounded-md glass text-xs disabled:opacity-30 hover:bg-white/10 transition-all"
+            >
+              &rarr;
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 40단어 2열 카드 그리드 */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`${camp}-${selectedGroup}`}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-2"
+        >
+          {words.map(([word, meaning], i) => (
+            <motion.div
+              key={word}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(i * 0.015, 0.4) }}
+              className="glass p-3 rounded-xl flex items-center justify-between group/card hover:bg-white/[0.06] transition-all"
+            >
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <button
+                  onClick={() => playPronunciation(word)}
+                  disabled={playingWord === word}
+                  className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                    playingWord === word
+                      ? "bg-primary/30 animate-pulse"
+                      : "bg-white/5 hover:bg-primary/20"
+                  }`}
+                >
+                  {playingWord === word ? (
+                    <span className="text-xs">&#128266;</span>
+                  ) : (
+                    <svg
+                      className="w-3.5 h-3.5 text-muted group-hover/card:text-primary transition-colors"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                    </svg>
+                  )}
+                </button>
+                <div className="min-w-0">
+                  <span className="font-semibold text-sm">{word}</span>
+                  <span className="text-muted text-sm ml-2">{meaning}</span>
+                </div>
               </div>
-            </div>
-            {!learnedSet.has(word) && (
-              <button
-                onClick={() => markLearned(word)}
-                className="shrink-0 text-xs px-2 py-1 rounded-md bg-white/5 text-muted hover:text-green-400 hover:bg-green-500/10 transition-all"
-              >
-                학습 완료
-              </button>
-            )}
-            {learnedSet.has(word) && (
-              <span className="shrink-0 text-green-400 text-xs">✓</span>
-            )}
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
 
 // ==================== QUIZ TAB ====================
 function QuizTab({
-  selectedCamp,
+  camp,
+  groups,
+  selectedGroup,
+  onSelectGroup,
   onSelectCamp,
   progress,
   onUpdateProgress,
 }: {
-  selectedCamp: number;
+  camp: number;
+  groups: VocabGroup[];
+  selectedGroup: number;
+  onSelectGroup: (g: number) => void;
   onSelectCamp: (c: number) => void;
   progress: Progress;
   onUpdateProgress: (p: Progress) => void;
 }) {
-  const words = VOCAB_DATA[selectedCamp] || [];
-  const [quizState, setQuizState] = useState<"ready" | "active" | "result">("ready");
-  const [questions, setQuestions] = useState<{ word: string; meaning: string; choices: string[]; answer: number }[]>([]);
+  const group = groups[selectedGroup];
+  const words = group?.words || [];
+  const [quizState, setQuizState] = useState<"ready" | "active" | "result">(
+    "ready"
+  );
+  const [questions, setQuestions] = useState<
+    { word: string; meaning: string; choices: string[]; answer: number }[]
+  >([]);
   const [currentQ, setCurrentQ] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
 
-  const bestScore = progress.campScores[selectedCamp] || 0;
-  const passed = bestScore >= 90;
+  const bestScore =
+    progress.groupScores[camp]?.[selectedGroup] ?? 0;
+  const passed = bestScore >= PASS_SCORE;
+
+  // 전체 레벨의 모든 단어 뜻 목록 (오답 풀)
+  const allMeanings = useMemo(() => {
+    const meanings: string[] = [];
+    for (const g of groups) {
+      for (const [, m] of g.words) meanings.push(m);
+    }
+    return meanings;
+  }, [groups]);
 
   function generateQuiz() {
-    if (words.length < 10) return;
-    const shuffled = [...words].sort(() => Math.random() - 0.5);
-    const picked = shuffled.slice(0, 100).map(([word, meaning]) => {
-      // 오답 3개 선택 (다른 단어의 뜻)
-      const wrongMeanings = words
-        .filter(([w]) => w !== word)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3)
-        .map(([, m]) => m);
-      const choices = [...wrongMeanings, meaning].sort(() => Math.random() - 0.5);
+    if (words.length < WORDS_PER_GROUP) return;
+    const picked = words.map(([word, meaning]) => {
+      const wrongPool = allMeanings.filter((m) => m !== meaning);
+      const shuffledWrong = wrongPool.sort(() => Math.random() - 0.5);
+      const wrongMeanings = shuffledWrong.slice(0, 3);
+      const choices = [...wrongMeanings, meaning].sort(
+        () => Math.random() - 0.5
+      );
       return {
         word,
         meaning,
@@ -337,7 +428,9 @@ function QuizTab({
         answer: choices.indexOf(meaning),
       };
     });
-    setQuestions(picked);
+    // 문제 순서도 셔플
+    const shuffled = picked.sort(() => Math.random() - 0.5);
+    setQuestions(shuffled);
     setCurrentQ(0);
     setScore(0);
     setSelected(null);
@@ -356,73 +449,134 @@ function QuizTab({
         setSelected(null);
       } else {
         const finalScore = isCorrect ? score + 1 : score;
-        const pct = Math.round((finalScore / questions.length) * 100);
-        const newScores = { ...progress.campScores };
-        if (pct > (newScores[selectedCamp] || 0)) {
-          newScores[selectedCamp] = pct;
+        // 점수 기록
+        const newScores = { ...progress.groupScores };
+        if (!newScores[camp]) newScores[camp] = {};
+        if (finalScore > (newScores[camp][selectedGroup] || 0)) {
+          newScores[camp][selectedGroup] = finalScore;
         }
-        onUpdateProgress({ ...progress, campScores: newScores });
+        // Pass 기록
+        const newPassed = { ...progress.passedGroups };
+        if (finalScore >= PASS_SCORE) {
+          if (!newPassed[camp]) newPassed[camp] = [];
+          if (!newPassed[camp].includes(selectedGroup)) {
+            newPassed[camp] = [...newPassed[camp], selectedGroup];
+          }
+        }
+        onUpdateProgress({
+          ...progress,
+          groupScores: newScores,
+          passedGroups: newPassed,
+        });
         setQuizState("result");
       }
     }, 800);
   }
 
+  const passedSet = new Set(progress.passedGroups[camp] || []);
+
   return (
     <div>
       {/* 캠프 선택 바 */}
       <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-thin">
-        {CAMP_INFO.map((info) => {
-          const campScore = progress.campScores[info.camp] || 0;
-          const campPassed = campScore >= 90;
-          return (
-            <button
-              key={info.camp}
-              onClick={() => { onSelectCamp(info.camp); setQuizState("ready"); }}
-              className={`shrink-0 px-3 py-2 rounded-lg text-xs font-medium transition-all flex items-center gap-1 ${
-                selectedCamp === info.camp
-                  ? "bg-primary text-primary-foreground"
-                  : campPassed
-                    ? "glass text-green-400 border-green-500/30"
-                    : "glass text-muted hover:text-foreground"
-              }`}
-            >
-              {campPassed && "✓ "}{info.name}
-            </button>
-          );
-        })}
+        {CAMP_INFO.map((info) => (
+          <button
+            key={info.camp}
+            onClick={() => {
+              onSelectCamp(info.camp);
+              setQuizState("ready");
+            }}
+            className={`shrink-0 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              camp === info.camp
+                ? "bg-primary text-primary-foreground"
+                : "glass text-muted hover:text-foreground"
+            }`}
+          >
+            {info.name}
+          </button>
+        ))}
       </div>
 
+      {/* 그룹 선택 그리드 */}
       {quizState === "ready" && (
-        <GlassCard hover={false}>
-          <div className="text-center py-8">
-            <h2 className="text-xl font-bold mb-2">{CAMP_INFO[selectedCamp - 1]?.name} 복습 퀴즈</h2>
-            <p className="text-muted text-sm mb-2">100문제 · 4지선다 · 90점 이상 통과</p>
-            {bestScore > 0 && (
-              <p className={`text-sm mb-4 ${passed ? "text-green-400" : "text-amber-400"}`}>
-                최고 점수: {bestScore}점 {passed ? "✓ 통과" : "— 90점 이상 필요"}
-              </p>
-            )}
-            <button
-              onClick={generateQuiz}
-              disabled={words.length < 10}
-              className="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all hover:scale-105 disabled:opacity-50"
-            >
-              {words.length < 10 ? "단어가 부족합니다" : "퀴즈 시작"}
-            </button>
-          </div>
-        </GlassCard>
+        <>
+          <GlassCard hover={false} className="mb-4 py-3">
+            <p className="font-bold text-primary mb-2">
+              묶음을 선택하고 테스트를 시작하세요
+            </p>
+            <p className="text-xs text-muted mb-3">
+              {WORDS_PER_GROUP}문항 &middot; 4지선다 &middot; {PASS_SCORE}점
+              이상 Pass
+            </p>
+            <div className="flex gap-1.5 flex-wrap">
+              {groups.map((g, i) => {
+                const isPassed = passedSet.has(i);
+                return (
+                  <button
+                    key={i}
+                    onClick={() => onSelectGroup(i)}
+                    className={`px-2 py-1 rounded-md text-[10px] font-medium transition-all ${
+                      selectedGroup === i
+                        ? "bg-primary text-primary-foreground"
+                        : isPassed
+                          ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                          : "bg-white/5 text-muted hover:bg-white/10"
+                    }`}
+                    title={g.topic}
+                  >
+                    {isPassed ? "✓" : ""}{i + 1}
+                  </button>
+                );
+              })}
+            </div>
+          </GlassCard>
+
+          {group && (
+            <GlassCard hover={false}>
+              <div className="text-center py-6">
+                <p className="text-xs text-muted mb-1">
+                  #{selectedGroup + 1}
+                </p>
+                <h2 className="text-xl font-bold mb-2">{group.topic}</h2>
+                <p className="text-muted text-sm mb-2">
+                  {WORDS_PER_GROUP}문항 &middot; {PASS_SCORE}/{WORDS_PER_GROUP}{" "}
+                  이상 Pass
+                </p>
+                {bestScore > 0 && (
+                  <p
+                    className={`text-sm mb-4 ${passed ? "text-green-400" : "text-amber-400"}`}
+                  >
+                    최고 점수: {bestScore}/{WORDS_PER_GROUP}{" "}
+                    {passed ? "✓ Pass" : `— ${PASS_SCORE}점 이상 필요`}
+                  </p>
+                )}
+                <button
+                  onClick={generateQuiz}
+                  disabled={words.length < WORDS_PER_GROUP}
+                  className="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all hover:scale-105 disabled:opacity-50"
+                >
+                  퀴즈 시작
+                </button>
+              </div>
+            </GlassCard>
+          )}
+        </>
       )}
 
       {quizState === "active" && questions[currentQ] && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted">{currentQ + 1} / {questions.length}</p>
+            <p className="text-sm text-muted">
+              {currentQ + 1} / {questions.length}
+            </p>
             <p className="text-sm text-primary font-medium">{score}점</p>
           </div>
           <div className="h-1 rounded-full bg-white/10 mb-6">
             <motion.div
               className="h-full rounded-full bg-primary"
-              animate={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
+              animate={{
+                width: `${((currentQ + 1) / questions.length) * 100}%`,
+              }}
             />
           </div>
 
@@ -434,7 +588,9 @@ function QuizTab({
               exit={{ opacity: 0, x: -20 }}
             >
               <GlassCard hover={false} className="mb-4 text-center py-8">
-                <p className="text-3xl font-bold text-primary">{questions[currentQ].word}</p>
+                <p className="text-3xl font-bold text-primary">
+                  {questions[currentQ].word}
+                </p>
               </GlassCard>
 
               <div className="grid grid-cols-2 gap-3">
@@ -443,8 +599,11 @@ function QuizTab({
                   const isSelected = selected === i;
                   let style = "glass hover:bg-white/10";
                   if (selected !== null) {
-                    if (isAnswer) style = "border-green-500 bg-green-500/20 text-green-400";
-                    else if (isSelected) style = "border-red-500 bg-red-500/20 text-red-400";
+                    if (isAnswer)
+                      style =
+                        "border-green-500 bg-green-500/20 text-green-400";
+                    else if (isSelected)
+                      style = "border-red-500 bg-red-500/20 text-red-400";
                     else style = "glass opacity-50";
                   }
                   return (
@@ -467,15 +626,21 @@ function QuizTab({
       {quizState === "result" && (
         <GlassCard hover={false}>
           <div className="text-center py-8">
-            <p className="text-6xl mb-4">{score >= 90 ? "🎉" : "💪"}</p>
+            <p className="text-6xl mb-4">
+              {score >= PASS_SCORE ? "🎉" : "💪"}
+            </p>
             <h2 className="text-2xl font-bold mb-2">
-              {score >= 90 ? "통과!" : "아쉽네요!"}
+              {score >= PASS_SCORE ? "Pass!" : "아쉽네요!"}
             </h2>
-            <p className="text-4xl font-bold text-primary mb-2">{score} / {questions.length}</p>
-            <p className={`text-sm mb-6 ${score >= 90 ? "text-green-400" : "text-amber-400"}`}>
-              {score >= 90
-                ? `${CAMP_INFO[selectedCamp - 1]?.name} 클리어! 다음 캠프로 이동할 수 있습니다.`
-                : "90점 이상이면 통과입니다. 다시 도전해보세요!"}
+            <p className="text-4xl font-bold text-primary mb-2">
+              {score} / {questions.length}
+            </p>
+            <p
+              className={`text-sm mb-6 ${score >= PASS_SCORE ? "text-green-400" : "text-amber-400"}`}
+            >
+              {score >= PASS_SCORE
+                ? `#{selectedGroup + 1} ${group?.topic} 클리어!`
+                : `${PASS_SCORE}점 이상이면 Pass입니다. 다시 도전해보세요!`}
             </p>
             <div className="flex gap-3 justify-center">
               <button
@@ -484,14 +649,18 @@ function QuizTab({
               >
                 다시 도전
               </button>
-              {score >= 90 && selectedCamp < 10 && (
-                <button
-                  onClick={() => { onSelectCamp(selectedCamp + 1); setQuizState("ready"); }}
-                  className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all"
-                >
-                  다음 캠프 →
-                </button>
-              )}
+              {score >= PASS_SCORE &&
+                selectedGroup < groups.length - 1 && (
+                  <button
+                    onClick={() => {
+                      onSelectGroup(selectedGroup + 1);
+                      setQuizState("ready");
+                    }}
+                    className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all"
+                  >
+                    다음 묶음 &rarr;
+                  </button>
+                )}
             </div>
           </div>
         </GlassCard>
@@ -502,104 +671,172 @@ function QuizTab({
 
 // ==================== PROGRESS TAB (EVEREST) ====================
 function ProgressTab({ progress }: { progress: Progress }) {
-  const camps = CAMP_INFO.map((info) => ({
-    ...info,
-    score: progress.campScores[info.camp] || 0,
-    passed: (progress.campScores[info.camp] || 0) >= 90,
-    isStart: info.camp === progress.startCamp,
-    learned: (progress.learnedWords[info.camp] || []).length,
-  }));
+  const camps = CAMP_INFO.map((info) => {
+    const passed = progress.passedGroups[info.camp] || [];
+    return {
+      ...info,
+      passedCount: passed.length,
+      totalGroups: GROUPS_PER_LEVEL,
+      allPassed: passed.length >= GROUPS_PER_LEVEL,
+      isStart: info.camp === progress.startCamp,
+    };
+  });
 
-  const highestPassed = useMemo(() => {
+  // 현재 위치: 모든 그룹을 통과한 가장 높은 캠프
+  const highestFullyPassed = useMemo(() => {
     let h = progress.startCamp - 1;
     for (const c of camps) {
-      if (c.passed && c.camp >= progress.startCamp) h = c.camp;
+      if (c.allPassed && c.camp >= progress.startCamp) h = c.camp;
     }
     return h;
   }, [camps, progress.startCamp]);
 
+  // 현재 캠프에서의 진행률
+  const currentCamp = Math.min(highestFullyPassed + 1, 10);
+  const currentCampPassed =
+    (progress.passedGroups[currentCamp] || []).length;
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto">
+      {/* 현재 위치 요약 */}
       <GlassCard hover={false} className="mb-6 text-center py-4">
         <p className="text-sm text-muted">현재 위치</p>
         <p className="text-xl font-bold text-primary">
-          {highestPassed >= 10
-            ? "🏔️ Summit 도달! 축하합니다!"
-            : `🏔️ ${CAMP_INFO[highestPassed]?.name || "Base Camp"} → ${CAMP_INFO[highestPassed + 1 - 1]?.name || ""}`}
+          {highestFullyPassed >= 10
+            ? "&#127956;&#65039; Summit 도달! 축하합니다!"
+            : `${CAMP_INFO[currentCamp - 1]?.name} — ${currentCampPassed}/${GROUPS_PER_LEVEL} 묶음 클리어`}
         </p>
       </GlassCard>
 
-      {/* 에베레스트 등반 경로 — 아래(캠프1)에서 위(캠프10)로 */}
-      <div className="relative">
-        {/* 연결선 */}
-        <div className="absolute left-[28px] top-0 bottom-0 w-0.5 bg-white/10" />
+      {/* 에베레스트 등반 경로 SVG */}
+      <div className="relative glass rounded-2xl p-6 overflow-hidden">
+        {/* 배경 산 그라데이션 */}
+        <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/30 via-slate-900/20 to-sky-900/10 pointer-events-none" />
 
-        <div className="space-y-3">
+        <div className="relative space-y-0">
           {[...camps].reverse().map((camp, i) => {
-            const isCurrent = camp.camp === highestPassed + 1;
-            const isReached = camp.camp <= highestPassed || camp.passed;
+            const isCurrent = camp.camp === currentCamp && !camp.allPassed;
+            const isCompleted = camp.allPassed;
             const isBelowStart = camp.camp < progress.startCamp;
+            const isAboveCurrent = camp.camp > currentCamp;
+            const pct =
+              camp.totalGroups > 0
+                ? Math.round((camp.passedCount / camp.totalGroups) * 100)
+                : 0;
 
             return (
               <motion.div
                 key={camp.camp}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="relative flex items-start gap-4"
+                transition={{ delay: i * 0.06 }}
+                className="relative flex items-center gap-4"
               >
+                {/* 연결선 */}
+                {i < camps.length - 1 && (
+                  <div
+                    className={`absolute left-[27px] top-[56px] w-0.5 h-[calc(100%)] ${
+                      isCompleted
+                        ? "bg-green-500/40"
+                        : isCurrent
+                          ? "bg-primary/30"
+                          : "bg-white/10"
+                    }`}
+                  />
+                )}
+
                 {/* 노드 */}
                 <div
                   className={`relative z-10 shrink-0 w-14 h-14 rounded-full flex flex-col items-center justify-center text-xs font-bold transition-all ${
-                    camp.camp === 10 && camp.passed
+                    camp.camp === 10 && isCompleted
                       ? "bg-amber-500 text-black shadow-lg shadow-amber-500/30"
-                      : camp.passed
+                      : isCompleted
                         ? "bg-green-500 text-black shadow-lg shadow-green-500/20"
                         : isCurrent
-                          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 animate-pulse"
-                          : camp.isStart
+                          ? "bg-red-500 text-white shadow-lg shadow-red-500/40"
+                          : camp.isStart && !isCompleted
                             ? "bg-primary/30 border-2 border-primary text-primary"
                             : isBelowStart
                               ? "glass opacity-30 text-muted"
                               : "glass text-muted"
                   }`}
                 >
-                  {camp.camp === 10 && camp.passed ? "⛰️" : camp.passed ? "✓" : camp.camp}
+                  {/* 현재 위치 빨간 불 깜빡임 */}
+                  {isCurrent && (
+                    <>
+                      <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-30" />
+                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-400 animate-pulse shadow-lg shadow-red-500/50" />
+                    </>
+                  )}
+                  {camp.camp === 10 && isCompleted
+                    ? "⛰️"
+                    : isCompleted
+                      ? "✓"
+                      : camp.camp}
                   <span className="text-[8px] font-normal mt-0.5">
                     {camp.camp === 10 ? "정상" : `C${camp.camp}`}
                   </span>
                 </div>
 
                 {/* 캠프 정보 */}
-                <div className={`flex-1 glass p-3 rounded-xl ${isBelowStart ? "opacity-30" : ""}`}>
+                <div
+                  className={`flex-1 glass p-3 rounded-xl my-1.5 ${
+                    isBelowStart
+                      ? "opacity-30"
+                      : isAboveCurrent && !isCompleted
+                        ? "opacity-50"
+                        : ""
+                  }`}
+                >
                   <div className="flex items-center justify-between mb-1">
                     <div>
                       <span className="font-bold text-sm">{camp.name}</span>
-                      <span className="text-xs text-muted ml-2">{camp.altitude}</span>
-                    </div>
-                    {camp.score > 0 && (
-                      <span className={`text-xs font-medium ${camp.passed ? "text-green-400" : "text-amber-400"}`}>
-                        {camp.score}점
+                      <span className="text-xs text-muted ml-2">
+                        {camp.altitude}
                       </span>
-                    )}
+                    </div>
+                    <span
+                      className={`text-xs font-medium ${
+                        isCompleted
+                          ? "text-green-400"
+                          : isCurrent
+                            ? "text-red-400"
+                            : "text-muted"
+                      }`}
+                    >
+                      {camp.passedCount}/{camp.totalGroups}
+                    </span>
                   </div>
                   <p className="text-xs text-muted">{camp.label}</p>
-                  {camp.learned > 0 && (
-                    <div className="mt-2">
-                      <div className="flex items-center justify-between text-[10px] text-muted mb-0.5">
-                        <span>학습 진도</span>
-                        <span>{camp.learned} / {camp.wordsTarget}</span>
-                      </div>
-                      <div className="h-1 rounded-full bg-white/10">
-                        <div
-                          className="h-full rounded-full bg-primary/60 transition-all"
-                          style={{ width: `${Math.min((camp.learned / camp.wordsTarget) * 100, 100)}%` }}
-                        />
-                      </div>
+
+                  {/* 진도 바 */}
+                  <div className="mt-2">
+                    <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 0.8, delay: i * 0.06 }}
+                        className={`h-full rounded-full ${
+                          isCompleted
+                            ? "bg-green-500"
+                            : isCurrent
+                              ? "bg-red-500"
+                              : "bg-primary/40"
+                        }`}
+                      />
                     </div>
+                  </div>
+
+                  {isCurrent && (
+                    <p className="text-[10px] text-red-400 mt-1 flex items-center gap-1">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                      현재 등반 중
+                    </p>
                   )}
-                  {camp.isStart && !camp.passed && (
-                    <p className="text-[10px] text-primary mt-1">📍 출발점</p>
+                  {camp.isStart && !isCompleted && !isCurrent && (
+                    <p className="text-[10px] text-primary mt-1">
+                      &#128205; 출발점
+                    </p>
                   )}
                 </div>
               </motion.div>
