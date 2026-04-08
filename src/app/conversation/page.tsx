@@ -88,10 +88,15 @@ export default function ConversationPage() {
     body: { level, topicId, customTopic },
     onFinish: async (message) => {
       if (message.role === "assistant") {
+        // AI 발화 시작 — 마이크는 onend에서 자동 중지됨 (에코 방지)
         setAiState("speaking");
         await playTTS(message.content);
-        // AI 말이 끝나면 자동으로 다시 듣기
-        if (shouldListenRef.current) setAiState("listening");
+        // AI 말 끝남 → 마이크 재시작
+        if (shouldListenRef.current) {
+          setAiState("listening");
+          // recognition 재시작 (onend에서 중단된 상태)
+          try { recognitionRef.current?.start(); } catch { /* ignore */ }
+        }
       }
     },
   });
@@ -182,12 +187,13 @@ export default function ConversationPage() {
       if (interim) {
         setInterimText(interim);
         pendingTranscriptRef.current = interim;
-        // 사용자가 말하기 시작하면 AI 오디오 중단 (barge-in)
+        // 사용자가 말하기 시작하면 AI 오디오 즉시 중단 (barge-in)
         if (aiStateRef.current === "speaking") {
           stopAudio();
           setAiState("listening");
+          aiStateRef.current = "listening";
         }
-        // 1.2초 침묵 시 축적된 텍스트를 강제 전송 (ChatGPT 수준의 반응 속도)
+        // 2초 침묵 시 축적된 텍스트를 AI에게 전송
         silenceTimerRef.current = setTimeout(() => {
           if (pendingTranscriptRef.current) {
             const text = pendingTranscriptRef.current;
@@ -197,7 +203,7 @@ export default function ConversationPage() {
             append({ role: "user", content: text });
             try { recognition.stop(); } catch { /* restart via onend */ }
           }
-        }, 1200);
+        }, 2000);
       }
 
       if (final) {
@@ -222,15 +228,19 @@ export default function ConversationPage() {
     };
 
     recognition.onend = () => {
-      // 상시 모드: 자동 재시작 (continuous=false이므로 발화마다 onend 발생)
-      if (shouldListenRef.current) {
-        try {
-          recognition.start();
-        } catch {
-          // 이미 시작된 경우 무시
-        }
-      } else {
+      // AI가 말하는 중이면 재시작하지 않음 (에코 방지)
+      if (!shouldListenRef.current) {
         setMicActive(false);
+        return;
+      }
+      if (aiStateRef.current === "speaking" || aiStateRef.current === "thinking") {
+        // AI 발화/사고 중 — 재시작하지 않고 대기 (onFinish에서 재시작됨)
+        return;
+      }
+      try {
+        recognition.start();
+      } catch {
+        // 이미 시작된 경우 무시
       }
     };
 
