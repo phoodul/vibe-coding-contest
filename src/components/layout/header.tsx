@@ -25,7 +25,7 @@ export function Header() {
           </Link>
           <Link
             href="/signup"
-            className="text-sm px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            className="btn-glow text-sm px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.97]"
           >
             시작하기
           </Link>

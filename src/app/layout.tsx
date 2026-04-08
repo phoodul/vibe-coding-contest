@@ -15,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="ko" className="dark">
       <body className="min-h-screen antialiased">
-        <div className="mesh-gradient" />
+        <div className="mesh-gradient">
+          <div className="mesh-blob-3" />
+        </div>
         <div className="noise" />
         <div className="relative z-10">{children}</div>
       </body>
