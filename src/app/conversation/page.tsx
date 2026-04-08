@@ -76,9 +76,9 @@ export default function ConversationPage() {
   const recognitionRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const shouldListenRef = useRef(false);
-  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingTranscriptRef = useRef("");
   const aiStateRef = useRef<AIState>("idle");
+  const phaseRef = useRef<Phase>("setup");
 
   const selectedVoice = VOICES.find((v) => v.id === voiceId) || VOICES[0];
   const selectedLevel = LEVELS.find((l) => l.id === level);
@@ -88,15 +88,10 @@ export default function ConversationPage() {
     body: { level, topicId, customTopic },
     onFinish: async (message) => {
       if (message.role === "assistant") {
-        // AI 발화 시작 — 마이크는 onend에서 자동 중지됨 (에코 방지)
         setAiState("speaking");
         await playTTS(message.content);
-        // AI 말 끝남 → 마이크 재시작
-        if (shouldListenRef.current) {
-          setAiState("listening");
-          // recognition 재시작 (onend에서 중단된 상태)
-          try { recognitionRef.current?.start(); } catch { /* ignore */ }
-        }
+        // AI 말 끝남 → idle 대기 (스페이스바로 다시 시작)
+        setAiState("idle");
       }
     },
   });
@@ -148,8 +143,8 @@ export default function ConversationPage() {
     [voiceId, selectedVoice.instructions]
   );
 
-  // --- STT (상시 마이크) ---
-  const startContinuousListening = useCallback(() => {
+  // --- STT (Push-to-Talk 스페이스바 방식) ---
+  const startMic = useCallback(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
@@ -157,14 +152,18 @@ export default function ConversationPage() {
       return;
     }
 
+    // AI가 말하는 중이면 먼저 중단
+    if (aiStateRef.current === "speaking") {
+      stopAudio();
+    }
+
     shouldListenRef.current = true;
+    pendingTranscriptRef.current = "";
 
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
     recognition.interimResults = true;
-    // continuous = false로 변경: 자연스러운 발화 단위 인식 후 자동 종료 → onend에서 재시작
-    // continuous=true는 isFinal이 매우 늦게 오는 브라우저 문제가 있음
-    recognition.continuous = false;
+    recognition.continuous = true; // 스페이스바로 직접 끄므로 continuous OK
 
     recognition.onresult = (event: any) => {
       let interim = "";
@@ -178,69 +177,27 @@ export default function ConversationPage() {
         }
       }
 
-      // 침묵 타이머 리셋
-      if (silenceTimerRef.current) {
-        clearTimeout(silenceTimerRef.current);
-        silenceTimerRef.current = null;
-      }
-
       if (interim) {
         setInterimText(interim);
         pendingTranscriptRef.current = interim;
-        // 사용자가 말하기 시작하면 AI 오디오 즉시 중단 (barge-in)
-        if (aiStateRef.current === "speaking") {
-          stopAudio();
-          setAiState("listening");
-          aiStateRef.current = "listening";
-        }
-        // 2초 침묵 시 축적된 텍스트를 AI에게 전송
-        silenceTimerRef.current = setTimeout(() => {
-          if (pendingTranscriptRef.current) {
-            const text = pendingTranscriptRef.current;
-            pendingTranscriptRef.current = "";
-            setInterimText("");
-            setAiState("thinking");
-            append({ role: "user", content: text });
-            try { recognition.stop(); } catch { /* restart via onend */ }
-          }
-        }, 2000);
       }
 
       if (final) {
-        pendingTranscriptRef.current = "";
-        if (silenceTimerRef.current) {
-          clearTimeout(silenceTimerRef.current);
-          silenceTimerRef.current = null;
-        }
-        setInterimText("");
-        // AI가 thinking 중이면 중복 전송 방지
-        if (aiStateRef.current !== "thinking") {
-          setAiState("thinking");
-          append({ role: "user", content: final });
-        }
+        // final이 오면 pending에 축적 (스페이스바 누를 때 전송)
+        pendingTranscriptRef.current = final;
+        setInterimText(final);
       }
     };
 
     recognition.onerror = (e: any) => {
-      // no-speech, aborted 에러는 무시하고 재시작
       if (e.error === "no-speech" || e.error === "aborted") return;
       console.error("Speech recognition error:", e.error);
     };
 
     recognition.onend = () => {
-      // AI가 말하는 중이면 재시작하지 않음 (에코 방지)
-      if (!shouldListenRef.current) {
-        setMicActive(false);
-        return;
-      }
-      if (aiStateRef.current === "speaking" || aiStateRef.current === "thinking") {
-        // AI 발화/사고 중 — 재시작하지 않고 대기 (onFinish에서 재시작됨)
-        return;
-      }
-      try {
-        recognition.start();
-      } catch {
-        // 이미 시작된 경우 무시
+      // 사용자가 아직 말하는 중이면 재시작 (브라우저가 자동 종료한 경우)
+      if (shouldListenRef.current) {
+        try { recognition.start(); } catch { /* ignore */ }
       }
     };
 
@@ -248,44 +205,54 @@ export default function ConversationPage() {
     recognition.start();
     setMicActive(true);
     setAiState("listening");
-  }, [append, aiState, stopAudio]);
+  }, [stopAudio]);
 
-  const stopContinuousListening = useCallback(() => {
+  // 마이크 끄기 + 축적된 텍스트 AI에 전송
+  const stopMicAndSend = useCallback(() => {
     shouldListenRef.current = false;
-    if (silenceTimerRef.current) {
-      clearTimeout(silenceTimerRef.current);
-      silenceTimerRef.current = null;
-    }
-    pendingTranscriptRef.current = "";
-    recognitionRef.current?.stop();
+    try { recognitionRef.current?.stop(); } catch { /* ignore */ }
     recognitionRef.current = null;
     setMicActive(false);
+
+    const text = pendingTranscriptRef.current.trim();
+    pendingTranscriptRef.current = "";
     setInterimText("");
-  }, []);
 
-  // 음소거 토글 — recognition을 중지/재시작
-  const toggleMute = useCallback(() => {
-    if (muted) {
-      // 음소거 해제 → 다시 듣기
-      setMuted(false);
-      startContinuousListening();
+    if (text) {
+      setAiState("thinking");
+      append({ role: "user", content: text });
     } else {
-      // 음소거 → 듣기 중지
-      setMuted(true);
-      stopContinuousListening();
+      setAiState("idle");
     }
-  }, [muted, startContinuousListening, stopContinuousListening]);
+  }, [append]);
 
-  // 회화 진입 시 자동으로 마이크 시작
+  // 스페이스바 핸들러
   useEffect(() => {
-    if (phase === "conversation" && !micActive && !muted) {
-      // AI가 먼저인 경우 약간 딜레이 후 시작
-      const delay = starter === "ai" ? 1000 : 300;
-      const timer = setTimeout(() => startContinuousListening(), delay);
-      return () => clearTimeout(timer);
+    if (phaseRef.current !== "conversation") return;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.code !== "Space") return;
+      // input/textarea 안에서는 무시
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      e.preventDefault();
+
+      if (aiStateRef.current === "listening" && micActive) {
+        // 말 끝남 → 마이크 끄고 AI에 전송
+        stopMicAndSend();
+      } else if (aiStateRef.current === "speaking") {
+        // AI 말하는 중 → 중단하고 마이크 시작
+        stopAudio();
+        startMic();
+      } else if (aiStateRef.current === "idle" || aiStateRef.current === "thinking") {
+        // 대기/사고 중 → 마이크 시작
+        if (!micActive) startMic();
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [phase, micActive, startMic, stopMicAndSend, stopAudio]);
 
   // 회화 종료 시 마이크 정리
   useEffect(() => {
@@ -295,10 +262,9 @@ export default function ConversationPage() {
     };
   }, []);
 
-  // aiStateRef 동기화
-  useEffect(() => {
-    aiStateRef.current = aiState;
-  }, [aiState]);
+  // ref 동기화
+  useEffect(() => { aiStateRef.current = aiState; }, [aiState]);
+  useEffect(() => { phaseRef.current = phase; }, [phase]);
 
   // AI 로딩 상태 추적
   useEffect(() => {
@@ -645,10 +611,10 @@ export default function ConversationPage() {
           <PersonaOrb state={aiState} />
 
           <p className="text-sm text-muted">
-            {aiState === "idle" && "마이크 버튼을 눌러 말해보세요"}
-            {aiState === "listening" && "듣고 있어요..."}
+            {aiState === "idle" && "Space를 눌러 말하세요"}
+            {aiState === "listening" && "듣고 있어요... (Space로 전송)"}
             {aiState === "thinking" && "생각하고 있어요..."}
-            {aiState === "speaking" && "말하고 있어요..."}
+            {aiState === "speaking" && "말하고 있어요... (Space로 끼어들기)"}
           </p>
 
           {/* 자막 영역 */}
@@ -696,29 +662,52 @@ export default function ConversationPage() {
             </AnimatePresence>
           </div>
 
-          {/* 음소거 토글 버튼 */}
+          {/* 스페이스바 PTT 버튼 */}
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={toggleMute}
-            className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${
-              muted
-                ? "glass border-red-500/50 text-red-400"
-                : "bg-primary shadow-lg shadow-primary/30 hover:bg-primary/90"
+            onClick={() => {
+              if (aiStateRef.current === "listening" && micActive) {
+                stopMicAndSend();
+              } else if (aiStateRef.current === "speaking") {
+                stopAudio();
+                startMic();
+              } else if (!micActive) {
+                startMic();
+              }
+            }}
+            className={`w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all ${
+              micActive
+                ? "bg-red-500 shadow-lg shadow-red-500/40 animate-pulse"
+                : aiState === "speaking"
+                  ? "bg-amber-500 shadow-lg shadow-amber-500/30"
+                  : aiState === "thinking"
+                    ? "glass border-2 border-primary/50"
+                    : "bg-primary shadow-lg shadow-primary/30 hover:bg-primary/90"
             }`}
           >
-            {muted ? (
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z" />
+            {micActive ? (
+              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z" />
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
               </svg>
+            ) : aiState === "thinking" ? (
+              <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
             ) : (
               <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z" />
                 <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
               </svg>
             )}
+            <span className="text-[10px] text-white/80 mt-1 font-medium">SPACE</span>
           </motion.button>
           <p className="text-xs text-muted mt-2">
-            {muted ? "음소거됨 — 탭하여 해제" : "마이크 켜짐 — 자유롭게 말하세요"}
+            {micActive
+              ? "녹음 중 — Space 또는 클릭으로 전송"
+              : aiState === "speaking"
+                ? "Space로 끼어들기"
+                : aiState === "thinking"
+                  ? "AI 응답 대기 중..."
+                  : "Space 또는 클릭으로 시작"}
           </p>
         </div>
       </div>
