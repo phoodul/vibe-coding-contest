@@ -96,11 +96,8 @@ export default function ConversationPage() {
     },
   });
 
-  // --- TTS (브라우저 SpeechSynthesis — 즉시 발화, 네트워크 0회) ---
+  // --- TTS (OpenAI gpt-4o-mini-tts — 고품질 음성) ---
   const stopAudio = useCallback(() => {
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -109,28 +106,42 @@ export default function ConversationPage() {
   }, []);
 
   const playTTS = useCallback(
-    (text: string): Promise<void> => {
-      return new Promise<void>((resolve) => {
-        if (typeof window === "undefined" || !window.speechSynthesis) {
-          resolve();
-          return;
-        }
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "en-US";
-        utterance.rate = 1.0;
-        // 음성 선택
-        const voices = window.speechSynthesis.getVoices();
-        const enVoice = voices.find(
-          (v) => v.lang.startsWith("en") && v.name.includes("Google")
-        ) || voices.find((v) => v.lang.startsWith("en-US"));
-        if (enVoice) utterance.voice = enVoice;
-        utterance.onend = () => resolve();
-        utterance.onerror = () => resolve();
-        window.speechSynthesis.speak(utterance);
-      });
+    async (text: string): Promise<void> => {
+      try {
+        const res = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text,
+            voice: voiceId,
+            instructions: selectedVoice.instructions,
+          }),
+        });
+        if (!res.ok) return;
+        const arrayBuffer = await res.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+        const url = URL.createObjectURL(blob);
+
+        return new Promise<void>((resolve) => {
+          const audio = new Audio(url);
+          audioRef.current = audio;
+          audio.onended = () => {
+            URL.revokeObjectURL(url);
+            audioRef.current = null;
+            resolve();
+          };
+          audio.onerror = () => {
+            URL.revokeObjectURL(url);
+            audioRef.current = null;
+            resolve();
+          };
+          audio.play();
+        });
+      } catch {
+        // TTS 실패 시 무시 — 텍스트는 이미 표시됨
+      }
     },
-    []
+    [voiceId, selectedVoice.instructions]
   );
 
   // --- STT (Push-to-Talk 스페이스바 방식) ---
