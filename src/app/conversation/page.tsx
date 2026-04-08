@@ -96,8 +96,11 @@ export default function ConversationPage() {
     },
   });
 
-  // --- TTS ---
+  // --- TTS (브라우저 SpeechSynthesis — 즉시 발화, 네트워크 0회) ---
   const stopAudio = useCallback(() => {
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -106,41 +109,28 @@ export default function ConversationPage() {
   }, []);
 
   const playTTS = useCallback(
-    async (text: string) => {
-      try {
-        const res = await fetch("/api/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text,
-            voice: voiceId,
-            instructions: selectedVoice.instructions,
-          }),
-        });
-        const arrayBuffer = await res.arrayBuffer();
-        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-        const url = URL.createObjectURL(blob);
-
-        return new Promise<void>((resolve) => {
-          const audio = new Audio(url);
-          audioRef.current = audio;
-          audio.onended = () => {
-            URL.revokeObjectURL(url);
-            audioRef.current = null;
-            resolve();
-          };
-          audio.onerror = () => {
-            URL.revokeObjectURL(url);
-            audioRef.current = null;
-            resolve();
-          };
-          audio.play();
-        });
-      } catch {
-        // TTS 실패 시 무시 — 텍스트는 이미 표시됨
-      }
+    (text: string): Promise<void> => {
+      return new Promise<void>((resolve) => {
+        if (typeof window === "undefined" || !window.speechSynthesis) {
+          resolve();
+          return;
+        }
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-US";
+        utterance.rate = 1.0;
+        // 음성 선택
+        const voices = window.speechSynthesis.getVoices();
+        const enVoice = voices.find(
+          (v) => v.lang.startsWith("en") && v.name.includes("Google")
+        ) || voices.find((v) => v.lang.startsWith("en-US"));
+        if (enVoice) utterance.voice = enVoice;
+        utterance.onend = () => resolve();
+        utterance.onerror = () => resolve();
+        window.speechSynthesis.speak(utterance);
+      });
     },
-    [voiceId, selectedVoice.instructions]
+    []
   );
 
   // --- STT (Push-to-Talk 스페이스바 방식) ---
@@ -345,11 +335,28 @@ export default function ConversationPage() {
         })
         .join("");
 
-      const parsed = JSON.parse(textParts);
-      setReport(parsed);
+      // JSON 블록 추출 (```json ... ``` 또는 순수 JSON)
+      let jsonStr = textParts;
+      const jsonMatch = textParts.match(/\{[\s\S]*\}/);
+      if (jsonMatch) jsonStr = jsonMatch[0];
+
+      try {
+        const parsed = JSON.parse(jsonStr);
+        setReport(parsed);
+      } catch {
+        // JSON 파싱 실패 — 텍스트 그대로 표시
+        setReport({
+          strengths: [textParts || "리포트를 생성했지만 형식 변환에 실패했습니다."],
+          improvements: [],
+          betterExpressions: [],
+          newVocabulary: [],
+          studyDirection: textParts ? "" : "다시 시도해주세요.",
+          levelFeedback: "",
+        });
+      }
     } catch {
       setReport({
-        strengths: ["리포트 생성 중 오류가 발생했습니다."],
+        strengths: ["리포트 생성 중 네트워크 오류가 발생했습니다."],
         improvements: [],
         betterExpressions: [],
         newVocabulary: [],
