@@ -262,7 +262,7 @@ export default function DocumentDetailPage() {
   const canEdit = doc.status === "revision_requested" || doc.status === "pending_approval";
 
   return (
-    <div className="min-h-screen px-6 py-20">
+    <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
       <div className="max-w-4xl mx-auto">
         <Link
           href="/teacher/documents"
@@ -288,7 +288,7 @@ export default function DocumentDetailPage() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* 좌: 문서 정보 + 액션 */}
             <div className="lg:col-span-2 space-y-4">
               {/* 문서 정보 카드 */}
@@ -422,12 +422,16 @@ export default function DocumentDetailPage() {
                 ) : (
                   <div className="space-y-3">
                     {versions.map((v, i) => {
+                      const delay = i * 0.05;
                       const prevHash = versions[i + 1]?.content_hash;
                       const hashChanged = prevHash && prevHash !== v.content_hash;
 
                       return (
-                        <div
+                        <motion.div
                           key={v.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay }}
                           className="relative pl-5 pb-3 border-l border-white/10 last:pb-0"
                         >
                           <div
@@ -459,7 +463,7 @@ export default function DocumentDetailPage() {
                           <p className="text-[10px] text-muted mt-1">
                             {new Date(v.created_at).toLocaleString("ko-KR")}
                           </p>
-                        </div>
+                        </motion.div>
                       );
                     })}
                   </div>

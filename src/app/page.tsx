@@ -60,7 +60,7 @@ export default function LandingPage() {
   return (
     <>
       <Header />
-      <main className="max-w-7xl mx-auto px-6 pt-32 pb-20">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-20 sm:pt-32 pb-12 sm:pb-20">
         {/* Hero */}
         <motion.section
           initial={{ opacity: 0, y: 40 }}
@@ -68,19 +68,19 @@ export default function LandingPage() {
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="text-center mb-20"
         >
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight">
             <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
               AI가 이끄는
             </span>
             <br />
             차세대 교육
           </h1>
-          <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-10">
+          <p className="text-base sm:text-lg md:text-xl text-muted max-w-2xl mx-auto mb-10">
             학생에게는 소크라테스식 AI 튜터링과 진로 탐색을,
             <br />
             교사에게는 공문서 업무 자동화를 제공합니다.
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Link
               href="/signup"
               className="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all hover:scale-105"
@@ -103,7 +103,7 @@ export default function LandingPage() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
         >
           {features.map((f, i) => (
             <motion.div key={f.title} variants={fadeUp} className={f.span}>
@@ -130,7 +130,7 @@ export default function LandingPage() {
           className="mt-24 text-center"
         >
           <h2 className="text-3xl font-bold mb-12">3단계로 시작하세요</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {[
               { step: "01", title: "회원가입", desc: "학생 또는 교사로 가입" },
               { step: "02", title: "기능 선택", desc: "학습, 진로, 공문서 중 선택" },

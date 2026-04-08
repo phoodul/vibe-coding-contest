@@ -22,7 +22,7 @@ export default function TutorPage() {
 
   if (!started) {
     return (
-      <div className="min-h-screen px-6 py-20">
+      <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
         <div className="max-w-3xl mx-auto">
           <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors mb-8 block">
             ← 대시보드
@@ -208,7 +208,7 @@ export default function TutorPage() {
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all disabled:opacity-50"
+            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
           >
             전송
           </button>

@@ -213,7 +213,7 @@ export default function DocumentUploadPage() {
   const allDone = files.length > 0 && files.every((f) => f.status === "done");
 
   return (
-    <div className="min-h-screen px-6 py-20">
+    <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
       <div className="max-w-4xl mx-auto">
         <Link
           href="/teacher/documents"

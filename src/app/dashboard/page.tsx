@@ -64,7 +64,7 @@ export default function DashboardPage() {
   const menus = isTeacher ? [...teacherMenus, ...studentMenus] : studentMenus;
 
   return (
-    <div className="min-h-screen px-6 py-20">
+    <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
       <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -79,7 +79,7 @@ export default function DashboardPage() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {menus.map((item, i) => (
             <Link key={item.href} href={item.href}>
               <GlassCard delay={i * 0.08} className="h-full cursor-pointer group">

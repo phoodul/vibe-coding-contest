@@ -45,7 +45,7 @@ export default function FormatterPage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-20">
+    <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
       <div className="max-w-6xl mx-auto">
         <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors mb-8 block">
           ← 대시보드
@@ -58,7 +58,7 @@ export default function FormatterPage() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 에디터 */}
           <GlassCard hover={false} className="h-[600px] flex flex-col">
             <div className="flex items-center justify-between mb-3">

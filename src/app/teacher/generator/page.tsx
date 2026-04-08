@@ -40,7 +40,7 @@ export default function GeneratorPage() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-20">
+    <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
       <div className="max-w-4xl mx-auto">
         <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors mb-8 block">
           ← 대시보드
