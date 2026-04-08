@@ -310,3 +310,277 @@ CREATE POLICY "Teachers manage own drafts" ON public.document_drafts FOR ALL USI
 - [x] Wow Feature가 정의되어 있는가? → Yes (소크라테스 튜터 + 공문서 포맷터)
 
 > **승인:** 사용자 전권 위임 + 자율주행 (2026-04-08)
+
+---
+
+# Phase 2 — AI 영어 음성 회화 (Voice Conversation)
+
+> 작성일: 2026-04-08 | 상태: **승인 대기**
+
+## 1. 기능 개요
+
+학생의 영어 단어 학습 수준에 맞춰 AI와 음성으로 영어 회화를 하는 시스템.
+단어 시험 결과 기반으로 AI가 회화 수준을 추천하거나, 학생이 직접 레벨을 선택할 수 있다.
+
+### 심사 기준 매핑
+| 심사 항목 | 대응 |
+|-----------|------|
+| AI 활용 능력 | 학습 수준 맞춤 프롬프트 + 원어민 표현 제안 + 대화 후 AI 리포트 |
+| 기술적 완성도 | Web Speech API(STT) + Claude(AI) + OpenAI TTS 3단 파이프라인 |
+| 실무 적합성 | 영어 회화 연습 기회 부족 → AI로 무제한 1:1 회화 |
+| 창의성 및 확장성 | 학습 데이터 연동 회화 + 음성 다양성 + 실시간 자막 토글 |
+
+---
+
+## 2. 아키텍처
+
+```
+[마이크] → Web Speech API (STT, 무료)
+              ↓ 텍스트
+          [Claude AI] → 수준 맞춤 응답 생성 (Vercel AI SDK streamText)
+              ↓ 텍스트
+          [OpenAI gpt-4o-mini-tts] → 음성 변환 (Vercel AI SDK generateSpeech)
+              ↓ 오디오
+          [<audio> 재생] + [AI Persona 애니메이션]
+```
+
+### 새로운 의존성
+- `@ai-sdk/openai` — TTS용 (gpt-4o-mini-tts)
+
+### 비용 예측
+- STT: $0 (Web Speech API)
+- Claude 응답: ~$0.01/대화
+- TTS: ~$0.015/분
+- **10분 회화 약 $0.16 → $200 예산으로 1,250회 가능**
+
+---
+
+## 3. 새로운 라우트
+
+```
+app/
+├── conversation/
+│   └── page.tsx              # 영어 음성 회화 메인
+├── api/
+│   ├── conversation/
+│   │   └── route.ts          # Claude 회화 응답 (streamText)
+│   └── tts/
+│       └── route.ts          # OpenAI TTS 음성 생성
+lib/
+├── ai/
+│   └── conversation-prompt.ts # 회화 시스템 프롬프트
+```
+
+---
+
+## 4. 핵심 기능 상세
+
+### 4-1. 회화 수준 설정
+
+**두 가지 진입 경로:**
+- **직접 선택**: US Grade 1~12 + College 중 선택하는 슬라이더/셀렉트
+- **AI 추천**: 간단한 단어 퀴즈(10문항) → 결과 기반으로 AI가 적정 레벨 추천
+
+레벨별 어휘 가이드라인을 시스템 프롬프트에 주입:
+```
+Grade 3-4: ~3,000 word families, simple sentences
+Grade 5-6: ~6,000 word families, compound sentences
+Grade 7-8: ~10,000 word families, complex topics
+Grade 9-12: ~15,000+ word families, academic discussion
+```
+
+### 4-2. 대화 주제 선택 + 선공 선택
+
+**주제 카테고리** (각 3~5개 세부 시나리오):
+- 일상 (카페 주문, 길 묻기, 쇼핑)
+- 학교 (수업 토론, 동아리, 시험 준비)
+- 여행 (공항, 호텔, 관광지)
+- 자유 대화 (주제 없이 프리토킹)
+
+**선공 선택:**
+- "내가 먼저" → 빈 상태에서 사용자가 말하기 시작
+- "AI가 먼저" → AI가 상황 설정 + 첫 마디를 던짐 (예: "Welcome to the café! What can I get for you today?")
+
+### 4-3. 음성 선택
+
+OpenAI gpt-4o-mini-tts 기본 음성 + voice instructions 조합:
+
+| UI 표시 | 음성 ID | voice instructions |
+|---------|---------|-------------------|
+| 여성 (밝은) | nova | "Speak in a bright, friendly tone" |
+| 여성 (차분한) | shimmer | "Speak in a calm, gentle tone" |
+| 남성 (깊은) | onyx | "Speak in a deep, warm tone" |
+| 남성 (중성적) | echo | "Speak in a neutral, clear tone" |
+| 청소년 톤 | coral | "Speak like an enthusiastic young student" |
+| 선생님 톤 | sage | "Speak like a patient, encouraging teacher" |
+
+### 4-4. 실시간 자막 (토글 on/off)
+
+- AI 응답 텍스트를 화면에 표시 (기본: ON)
+- 토글 버튼으로 켜기/끄기
+- 켜면: 읽기+듣기 병행 학습
+- 끄면: 순수 리스닝 훈련
+
+### 4-5. 원어민 표현 제안 (Better Expression)
+
+대화 중 사용자가 문법적으로 맞지만 어색한 표현을 사용하면, AI가 응답 후에 자연스러운 대안을 제안:
+
+```
+You said: "I want to go to the store for buying milk"
+💡 More natural: "I want to go to the store to buy milk"
+   (Use "to + verb" for purpose, not "for + verb-ing")
+```
+
+Claude 시스템 프롬프트에 규칙 추가:
+- 대화 흐름을 끊지 않도록 응답 마지막에 별도 블록으로 제안
+- 매 턴마다 하지 않고, 교정할 가치가 있을 때만 제안
+- JSON 구조로 분리해서 UI에서 별도 카드로 표시
+
+### 4-6. AI Persona 애니메이션
+
+대화 상태에 따른 시각적 피드백:
+- **idle**: 잔잔한 파동 (대기 중)
+- **listening**: 음파 반응 애니메이션 (사용자 말하는 중)
+- **thinking**: 펄스 애니메이션 (AI 응답 생성 중)
+- **speaking**: 리듬 있는 파동 (AI 말하는 중)
+
+Framer Motion으로 구현. 원형 아바타 + 주변 파동 이펙트.
+
+### 4-7. 대화 후 리포트
+
+회화 종료 시 Claude가 대화 전체를 분석해서 리포트 생성:
+- **잘한 점**: 자연스러웠던 표현 하이라이트
+- **개선할 점**: 틀린 문법/어색한 표현 정리
+- **새로운 표현**: AI가 사용한 표현 중 학습 가치 있는 것 추출
+- **학습 방향 추천**: "접속사 활용 연습 필요", "과거 시제 표현 강화" 등 구체적 제안
+- **추천 레벨 조정**: 현재 레벨이 너무 쉬웠는지/어려웠는지 판단
+
+---
+
+## 5. DB 스키마 추가
+
+```sql
+-- 영어 회화 세션
+CREATE TABLE public.conversation_sessions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) NOT NULL,
+  level TEXT NOT NULL,              -- 'grade-3', 'grade-6', 'grade-9' 등
+  topic TEXT NOT NULL,              -- 'cafe', 'airport', 'free-talk' 등
+  voice TEXT NOT NULL,              -- 'nova', 'onyx' 등
+  messages JSONB NOT NULL DEFAULT '[]',
+  report JSONB,                     -- 대화 후 리포트
+  duration_seconds INTEGER,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.conversation_sessions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users manage own conversations"
+  ON public.conversation_sessions FOR ALL USING (auth.uid() = user_id);
+```
+
+---
+
+## 6. 시스템 프롬프트 설계
+
+### 회화 프롬프트 (conversation-prompt.ts)
+```
+역할: 영어 회화 파트너. 학생의 어휘 수준에 맞춰 대화한다.
+
+규칙:
+1. {level}에 해당하는 어휘와 문장 구조만 사용한다.
+2. 학생이 수준 이상의 단어를 사용하면 자연스럽게 칭찬한다.
+3. 학생이 문법 오류를 범하면 대화 흐름을 유지하면서 올바른 표현을 자연스럽게 반복한다.
+4. 응답은 2-3문장으로 간결하게 한다 (회화는 짧은 턴이 핵심).
+5. 주제: {topic}에 맞는 상황극을 진행한다.
+6. 모든 응답은 영어로만 한다.
+7. 학생의 표현이 문법적으로 맞지만 어색하면, 응답 후 [BETTER] 블록에 자연스러운 대안을 제안한다.
+
+응답 형식:
+{
+  "reply": "AI의 영어 응답",
+  "better": {                      // 없으면 null
+    "original": "학생이 말한 표현",
+    "suggestion": "더 자연스러운 표현",
+    "explanation": "간단한 설명 (한국어)"
+  }
+}
+```
+
+### 리포트 프롬프트
+```
+아래 영어 회화 대화 기록을 분석하여 학습 리포트를 생성하라.
+
+출력 형식:
+{
+  "strengths": ["잘한 점 1", "잘한 점 2"],
+  "improvements": [
+    {"expression": "틀린 표현", "correction": "올바른 표현", "rule": "문법 규칙"}
+  ],
+  "new_vocabulary": [
+    {"word": "단어", "meaning": "뜻", "example": "예문"}
+  ],
+  "study_direction": "구체적 학습 방향 추천",
+  "level_feedback": "현재 레벨 적합도 + 추천 조정"
+}
+```
+
+---
+
+## 7. 구현 순서
+
+### Step 1: 인프라 셋업
+- [ ] `@ai-sdk/openai` 설치
+- [ ] `/api/conversation/route.ts` — Claude 회화 API (streamText, JSON mode)
+- [ ] `/api/tts/route.ts` — OpenAI TTS API (generateSpeech)
+- **검증:** API 호출 → 텍스트 응답 + 오디오 바이너리 반환 확인
+
+### Step 2: 회화 페이지 기본 UI
+- [ ] `/conversation/page.tsx` — 레벨 선택 + 주제 선택 + 음성 선택 + 선공 선택
+- [ ] 대화 시작 → AI Persona 화면 전환
+- [ ] GlassCard 기반 설정 UI (기존 디자인 패턴 활용)
+- **검증:** 설정 완료 → 회화 화면 진입
+
+### Step 3: 음성 파이프라인 연결
+- [ ] Web Speech API로 마이크 입력 → 텍스트 변환
+- [ ] 텍스트 → `/api/conversation` → Claude 응답
+- [ ] 응답 텍스트 → `/api/tts` → 오디오 재생
+- [ ] 브라우저 미지원 시 안내 메시지
+- **검증:** 말하기 → AI 음성 응답 전체 루프 동작
+
+### Step 4: 부가 기능
+- [ ] 실시간 자막 토글 (on/off)
+- [ ] 원어민 표현 제안 카드 UI ([BETTER] 블록 파싱)
+- [ ] AI Persona 애니메이션 (idle/listening/thinking/speaking)
+- **검증:** 자막 토글 동작, 표현 제안 표시, 상태별 애니메이션 전환
+
+### Step 5: 대화 후 리포트
+- [ ] 대화 종료 버튼 → 리포트 생성 API 호출
+- [ ] 리포트 UI (잘한 점 / 개선점 / 새 어휘 / 학습 방향)
+- [ ] Supabase에 세션 + 리포트 저장
+- **검증:** 회화 종료 → 리포트 표시 + DB 저장 확인
+
+### Step 6: 대시보드 연동
+- [ ] 대시보드에 "AI 영어 회화" 카드 추가
+- [ ] 빌드 확인 (`npm run build` 에러 0)
+- **검증:** 대시보드 → 회화 → 대화 → 리포트 전체 플로우
+
+---
+
+## 8. 리스크 & 대안
+
+| 리스크 | 확률 | 대안 |
+|--------|------|------|
+| Web Speech API 브라우저 미지원 | 중 | Chrome 권장 안내 + Whisper API 폴백 |
+| TTS 지연 (1초+) | 중 | 로딩 애니메이션으로 체감 속도 개선 |
+| gpt-4o-mini-tts voice instructions 버그 | 낮 | 기본 음성만으로도 남녀 구분 가능 |
+| 회화 JSON 파싱 실패 | 중 | 텍스트 폴백 (JSON 실패 시 plain text로 처리) |
+
+---
+
+## 승인 대기
+
+- [x] 기존 기능에 영향 없이 추가 가능한가? → Yes (새 라우트만 추가)
+- [x] 예산 내 구현 가능한가? → Yes ($10 이내 예상)
+- [x] 심사 기준 4가지를 강화하는가? → Yes (AI 활용 + 기술 완성도 + 실무 적합성 + 창의성)
+
+> **승인:** 대기 중

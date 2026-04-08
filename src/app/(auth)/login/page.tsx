@@ -6,6 +6,15 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { GlassCard } from "@/components/shared/glass-card";
+import type { Provider } from "@supabase/supabase-js";
+
+const socialProviders: { id: Provider; label: string; icon: string; bg: string }[] = [
+  { id: "google", label: "Google", icon: "G", bg: "bg-white text-gray-900" },
+  { id: "kakao", label: "Kakao", icon: "K", bg: "bg-[#FEE500] text-[#191919]" },
+  { id: "apple", label: "Apple", icon: "", bg: "bg-white text-black" },
+  { id: "github", label: "GitHub", icon: "", bg: "bg-[#24292f] text-white" },
+  { id: "azure", label: "Microsoft", icon: "M", bg: "bg-[#2F2F2F] text-white" },
+];
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -34,6 +43,17 @@ export default function LoginPage() {
     router.push("/dashboard");
   }
 
+  async function handleSocialLogin(provider: Provider) {
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) setError(error.message);
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
       <motion.div
@@ -43,6 +63,27 @@ export default function LoginPage() {
       >
         <GlassCard hover={false}>
           <h1 className="text-2xl font-bold text-center mb-6">로그인</h1>
+
+          {/* 소셜 로그인 */}
+          <div className="space-y-2 mb-6">
+            {socialProviders.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => handleSocialLogin(p.id)}
+                className={`w-full py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all hover:opacity-90 hover:scale-[1.01] ${p.bg}`}
+              >
+                <span className="text-base">{p.icon}</span>
+                {p.label}로 계속하기
+              </button>
+            ))}
+          </div>
+
+          {/* 구분선 */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-muted">또는 이메일로 로그인</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
@@ -82,12 +123,19 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-sm text-muted text-center mt-6">
-            계정이 없으신가요?{" "}
-            <Link href="/signup" className="text-primary hover:underline">
-              회원가입
-            </Link>
-          </p>
+          <div className="mt-6 space-y-2 text-center">
+            <p className="text-sm text-muted">
+              계정이 없으신가요?{" "}
+              <Link href="/signup" className="text-primary hover:underline">
+                회원가입
+              </Link>
+            </p>
+            <p className="text-sm text-muted">
+              <Link href="/dashboard" className="text-muted hover:text-foreground transition-colors">
+                로그인 없이 체험하기 →
+              </Link>
+            </p>
+          </div>
         </GlassCard>
       </motion.div>
     </div>

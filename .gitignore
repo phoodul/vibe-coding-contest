@@ -177,3 +177,4 @@ claude_history/
 .supabase/
 supabase/.temp/
 supabase/migrations/.empty
+.vercel
