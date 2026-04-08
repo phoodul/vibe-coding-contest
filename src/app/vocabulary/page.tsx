@@ -669,180 +669,314 @@ function QuizTab({
   );
 }
 
-// ==================== PROGRESS TAB (EVEREST) ====================
+// ==================== PROGRESS TAB (EVEREST SVG) ====================
+
+// 등반 루트 좌표 (SVG viewBox 800x600 기준) — 참고: everest4.webp 스타일
+// Base Camp(하단 좌측) → Summit(상단 중앙) 지그재그 경로
+const ROUTE_POINTS: [number, number][] = [
+  [120, 540], // 1: Base Camp (5,364m)
+  [160, 480], // 2: Camp I (6,065m)
+  [240, 420], // 3: Camp II (6,500m)
+  [330, 370], // 4: Camp III (7,162m)
+  [420, 320], // 5: Camp IV (7,920m)
+  [480, 270], // 6: Camp V (8,000m)
+  [530, 225], // 7: Camp VI (8,200m)
+  [560, 180], // 8: Camp VII (8,400m)
+  [510, 135], // 9: Camp VIII (8,600m)
+  [430, 75],  // 10: Summit (8,849m)
+];
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
+
+function getPointOnRoute(campIdx: number, groupIdx: number): [number, number] {
+  // campIdx: 0-9 (which camp we're in), groupIdx: 0-44 (which group within that camp)
+  if (campIdx >= ROUTE_POINTS.length - 1) return ROUTE_POINTS[ROUTE_POINTS.length - 1];
+  const t = groupIdx / GROUPS_PER_LEVEL;
+  const [x1, y1] = ROUTE_POINTS[campIdx];
+  const [x2, y2] = ROUTE_POINTS[campIdx + 1];
+  return [lerp(x1, x2, t), lerp(y1, y2, t)];
+}
+
 function ProgressTab({ progress }: { progress: Progress }) {
+  const [showCelebration, setShowCelebration] = useState("");
+
   const camps = CAMP_INFO.map((info) => {
     const passed = progress.passedGroups[info.camp] || [];
     return {
       ...info,
       passedCount: passed.length,
-      totalGroups: GROUPS_PER_LEVEL,
       allPassed: passed.length >= GROUPS_PER_LEVEL,
-      isStart: info.camp === progress.startCamp,
     };
   });
 
-  // 현재 위치: 모든 그룹을 통과한 가장 높은 캠프
-  const highestFullyPassed = useMemo(() => {
-    let h = progress.startCamp - 1;
-    for (const c of camps) {
-      if (c.allPassed && c.camp >= progress.startCamp) h = c.camp;
+  // 현재 위치 계산
+  const { currentCampIdx, currentGroupIdx } = useMemo(() => {
+    let cIdx = progress.startCamp - 1; // 0-based
+    for (let i = progress.startCamp - 1; i < 10; i++) {
+      if (camps[i].allPassed) {
+        cIdx = i + 1; // 다음 캠프로
+      } else {
+        return { currentCampIdx: i, currentGroupIdx: camps[i].passedCount };
+      }
     }
-    return h;
+    return { currentCampIdx: Math.min(cIdx, 9), currentGroupIdx: GROUPS_PER_LEVEL };
   }, [camps, progress.startCamp]);
 
-  // 현재 캠프에서의 진행률
-  const currentCamp = Math.min(highestFullyPassed + 1, 10);
-  const currentCampPassed =
-    (progress.passedGroups[currentCamp] || []).length;
+  const currentPos = getPointOnRoute(currentCampIdx, currentGroupIdx);
+  const reachedSummit = currentCampIdx >= 9 && currentGroupIdx >= GROUPS_PER_LEVEL;
+
+  // 캠프 도착 축하 감지
+  useEffect(() => {
+    for (let i = progress.startCamp; i <= 10; i++) {
+      const campData = camps[i - 1];
+      if (campData?.allPassed) {
+        const key = `camp-${i}-celebrated`;
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, "true");
+          setShowCelebration(campData.name);
+          setTimeout(() => setShowCelebration(""), 3000);
+          break;
+        }
+      }
+    }
+  }, [camps, progress.startCamp]);
+
+  // 루트 경로 SVG path
+  const routePath = ROUTE_POINTS.map((p, i) =>
+    i === 0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`
+  ).join(" ");
+
+  // 진행 완료 구간 path
+  const completedPoints: [number, number][] = [];
+  for (let i = 0; i <= currentCampIdx; i++) {
+    if (i < currentCampIdx) {
+      completedPoints.push(ROUTE_POINTS[i]);
+    } else {
+      completedPoints.push(ROUTE_POINTS[i]);
+      if (currentGroupIdx > 0 && i < 9) {
+        completedPoints.push(currentPos);
+      }
+    }
+  }
+  const completedPath = completedPoints
+    .map((p, i) => (i === 0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`))
+    .join(" ");
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-4xl mx-auto">
+      {/* 축하 메시지 */}
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -20 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 glass-gradient px-8 py-4 text-center"
+          >
+            <p className="text-3xl mb-1">&#127881;</p>
+            <p className="font-bold text-lg text-primary">
+              {showCelebration} 도착!
+            </p>
+            <p className="text-sm text-muted">축하합니다! 다음 구간으로 나아가세요!</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 현재 위치 요약 */}
-      <GlassCard hover={false} className="mb-6 text-center py-4">
+      <GlassCard hover={false} className="mb-4 text-center py-3">
         <p className="text-sm text-muted">현재 위치</p>
-        <p className="text-xl font-bold text-primary">
-          {highestFullyPassed >= 10
-            ? "&#127956;&#65039; Summit 도달! 축하합니다!"
-            : `${CAMP_INFO[currentCamp - 1]?.name} — ${currentCampPassed}/${GROUPS_PER_LEVEL} 묶음 클리어`}
+        <p className="text-lg font-bold text-primary">
+          {reachedSummit
+            ? "Summit 도달! 축하합니다!"
+            : `${CAMP_INFO[currentCampIdx]?.name} — ${camps[currentCampIdx]?.passedCount}/${GROUPS_PER_LEVEL} 묶음`}
         </p>
       </GlassCard>
 
-      {/* 에베레스트 등반 경로 SVG */}
-      <div className="relative glass rounded-2xl p-6 overflow-hidden">
-        {/* 배경 산 그라데이션 */}
-        <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/30 via-slate-900/20 to-sky-900/10 pointer-events-none" />
+      {/* 에베레스트 SVG */}
+      <div className="relative glass rounded-2xl overflow-hidden">
+        <svg viewBox="0 0 800 620" className="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+          {/* 하늘 그라데이션 */}
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#0c1929" />
+              <stop offset="40%" stopColor="#1a2744" />
+              <stop offset="100%" stopColor="#1e3a5f" />
+            </linearGradient>
+            <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#e8edf2" />
+              <stop offset="100%" stopColor="#8a9bb0" />
+            </linearGradient>
+            <linearGradient id="rock" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#6b7d8e" />
+              <stop offset="100%" stopColor="#3d4f5e" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
 
-        <div className="relative space-y-0">
-          {[...camps].reverse().map((camp, i) => {
-            const isCurrent = camp.camp === currentCamp && !camp.allPassed;
+          {/* 배경 하늘 */}
+          <rect width="800" height="620" fill="url(#sky)" />
+
+          {/* 별 */}
+          {[
+            [50, 30], [150, 55], [280, 20], [400, 45], [550, 15],
+            [650, 40], [720, 25], [100, 70], [350, 60], [600, 50],
+          ].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r={1} fill="white" opacity={0.4 + (i % 3) * 0.2} />
+          ))}
+
+          {/* 산 — 메인 에베레스트 (눈 덮인 피크) */}
+          <polygon points="430,60 250,350 150,550 700,550 650,350 550,200" fill="url(#rock)" />
+          <polygon points="430,60 300,250 200,450 660,450 600,280 520,170" fill="url(#snow)" opacity="0.5" />
+          <polygon points="430,60 350,180 280,300 580,300 520,180" fill="white" opacity="0.3" />
+
+          {/* 산 — 로체 (오른쪽) */}
+          <polygon points="650,100 580,300 550,500 750,500 730,250" fill="url(#rock)" opacity="0.7" />
+          <polygon points="650,100 600,220 570,400 730,400 700,220" fill="url(#snow)" opacity="0.3" />
+
+          {/* 산 — 왼쪽 능선 */}
+          <polygon points="100,380 50,550 250,550 200,400 150,350" fill="url(#rock)" opacity="0.5" />
+
+          {/* 빙하 / 쿰부 지역 (하단) */}
+          <polygon points="80,520 120,540 300,530 400,550 200,560 50,560" fill="#4a6070" opacity="0.4" />
+
+          {/* 등반 루트 — 전체 (점선, 회색) */}
+          <path
+            d={routePath}
+            fill="none"
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth="2"
+            strokeDasharray="6 4"
+          />
+
+          {/* 등반 루트 — 완료 구간 (빨간 실선) */}
+          {completedPoints.length > 1 && (
+            <path
+              d={completedPath}
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+          )}
+
+          {/* 캠프 마커 */}
+          {ROUTE_POINTS.map((point, i) => {
+            const camp = camps[i];
             const isCompleted = camp.allPassed;
+            const isCurrent = i === currentCampIdx && !isCompleted;
             const isBelowStart = camp.camp < progress.startCamp;
-            const isAboveCurrent = camp.camp > currentCamp;
-            const pct =
-              camp.totalGroups > 0
-                ? Math.round((camp.passedCount / camp.totalGroups) * 100)
-                : 0;
 
             return (
-              <motion.div
-                key={camp.camp}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.06 }}
-                className="relative flex items-center gap-4"
-              >
-                {/* 연결선 */}
-                {i < camps.length - 1 && (
-                  <div
-                    className={`absolute left-[27px] top-[56px] w-0.5 h-[calc(100%)] ${
-                      isCompleted
-                        ? "bg-green-500/40"
-                        : isCurrent
-                          ? "bg-primary/30"
-                          : "bg-white/10"
-                    }`}
-                  />
-                )}
-
-                {/* 노드 */}
-                <div
-                  className={`relative z-10 shrink-0 w-14 h-14 rounded-full flex flex-col items-center justify-center text-xs font-bold transition-all ${
-                    camp.camp === 10 && isCompleted
-                      ? "bg-amber-500 text-black shadow-lg shadow-amber-500/30"
-                      : isCompleted
-                        ? "bg-green-500 text-black shadow-lg shadow-green-500/20"
-                        : isCurrent
-                          ? "bg-red-500 text-white shadow-lg shadow-red-500/40"
-                          : camp.isStart && !isCompleted
-                            ? "bg-primary/30 border-2 border-primary text-primary"
-                            : isBelowStart
-                              ? "glass opacity-30 text-muted"
-                              : "glass text-muted"
-                  }`}
+              <g key={i}>
+                {/* 캠프 삼각형 마커 */}
+                <polygon
+                  points={`${point[0]},${point[1] - 10} ${point[0] - 7},${point[1] + 4} ${point[0] + 7},${point[1] + 4}`}
+                  fill={
+                    isCompleted
+                      ? "#22c55e"
+                      : isCurrent
+                        ? "#ef4444"
+                        : isBelowStart
+                          ? "rgba(255,255,255,0.15)"
+                          : "rgba(255,255,255,0.3)"
+                  }
+                  stroke={isCompleted ? "#16a34a" : isCurrent ? "#dc2626" : "rgba(255,255,255,0.2)"}
+                  strokeWidth="1"
+                />
+                {/* 라벨 */}
+                <text
+                  x={point[0] + (i % 2 === 0 ? 14 : -14)}
+                  y={point[1] - 2}
+                  fill={isCompleted ? "#86efac" : isCurrent ? "#fca5a5" : "rgba(255,255,255,0.5)"}
+                  fontSize="9"
+                  fontWeight="bold"
+                  textAnchor={i % 2 === 0 ? "start" : "end"}
+                  fontFamily="system-ui"
                 >
-                  {/* 현재 위치 빨간 불 깜빡임 */}
-                  {isCurrent && (
-                    <>
-                      <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-30" />
-                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-400 animate-pulse shadow-lg shadow-red-500/50" />
-                    </>
-                  )}
-                  {camp.camp === 10 && isCompleted
-                    ? "⛰️"
-                    : isCompleted
-                      ? "✓"
-                      : camp.camp}
-                  <span className="text-[8px] font-normal mt-0.5">
-                    {camp.camp === 10 ? "정상" : `C${camp.camp}`}
-                  </span>
-                </div>
-
-                {/* 캠프 정보 */}
-                <div
-                  className={`flex-1 glass p-3 rounded-xl my-1.5 ${
-                    isBelowStart
-                      ? "opacity-30"
-                      : isAboveCurrent && !isCompleted
-                        ? "opacity-50"
-                        : ""
-                  }`}
+                  {camp.name}
+                </text>
+                <text
+                  x={point[0] + (i % 2 === 0 ? 14 : -14)}
+                  y={point[1] + 9}
+                  fill="rgba(255,255,255,0.35)"
+                  fontSize="7"
+                  textAnchor={i % 2 === 0 ? "start" : "end"}
+                  fontFamily="system-ui"
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <div>
-                      <span className="font-bold text-sm">{camp.name}</span>
-                      <span className="text-xs text-muted ml-2">
-                        {camp.altitude}
-                      </span>
-                    </div>
-                    <span
-                      className={`text-xs font-medium ${
-                        isCompleted
-                          ? "text-green-400"
-                          : isCurrent
-                            ? "text-red-400"
-                            : "text-muted"
-                      }`}
-                    >
-                      {camp.passedCount}/{camp.totalGroups}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted">{camp.label}</p>
-
-                  {/* 진도 바 */}
-                  <div className="mt-2">
-                    <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.8, delay: i * 0.06 }}
-                        className={`h-full rounded-full ${
-                          isCompleted
-                            ? "bg-green-500"
-                            : isCurrent
-                              ? "bg-red-500"
-                              : "bg-primary/40"
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  {isCurrent && (
-                    <p className="text-[10px] text-red-400 mt-1 flex items-center gap-1">
-                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                      현재 등반 중
-                    </p>
-                  )}
-                  {camp.isStart && !isCompleted && !isCurrent && (
-                    <p className="text-[10px] text-primary mt-1">
-                      &#128205; 출발점
-                    </p>
-                  )}
-                </div>
-              </motion.div>
+                  {camp.altitude}
+                  {isCompleted ? " ✓" : isCurrent ? ` ${camp.passedCount}/${GROUPS_PER_LEVEL}` : ""}
+                </text>
+              </g>
             );
           })}
-        </div>
+
+          {/* 현재 위치 — 빨간 깜빡이는 점 */}
+          {!reachedSummit && (
+            <g filter="url(#glow)">
+              <circle cx={currentPos[0]} cy={currentPos[1]} r="8" fill="#ef4444" opacity="0.3">
+                <animate attributeName="r" values="8;14;8" dur="2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite" />
+              </circle>
+              <circle cx={currentPos[0]} cy={currentPos[1]} r="5" fill="#ef4444" stroke="#fff" strokeWidth="1.5">
+                <animate attributeName="r" values="5;6;5" dur="1.5s" repeatCount="indefinite" />
+              </circle>
+            </g>
+          )}
+
+          {/* Summit 깃발 (도달 시) */}
+          {reachedSummit && (
+            <g>
+              <line x1="430" y1="60" x2="430" y2="35" stroke="white" strokeWidth="1.5" />
+              <polygon points="430,35 455,42 430,49" fill="#ef4444" />
+              <text x="430" y="28" fill="#fbbf24" fontSize="11" fontWeight="bold" textAnchor="middle" fontFamily="system-ui">
+                SUMMIT!
+              </text>
+            </g>
+          )}
+        </svg>
+      </div>
+
+      {/* 하단 캠프 진도 요약 */}
+      <div className="mt-4 grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+        {camps.map((camp) => {
+          const pct = camp.passedCount / GROUPS_PER_LEVEL;
+          const isCurrent = camp.camp - 1 === currentCampIdx;
+          return (
+            <div
+              key={camp.camp}
+              className={`text-center p-1.5 rounded-lg ${
+                camp.allPassed
+                  ? "bg-green-500/20"
+                  : isCurrent
+                    ? "bg-red-500/20"
+                    : "bg-white/5"
+              }`}
+            >
+              <p className="text-[10px] font-bold">
+                {camp.camp === 10 ? "SUM" : `C${camp.camp}`}
+              </p>
+              <div className="h-1 rounded-full bg-white/10 mt-1 overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${
+                    camp.allPassed ? "bg-green-500" : isCurrent ? "bg-red-500" : "bg-white/20"
+                  }`}
+                  style={{ width: `${pct * 100}%` }}
+                />
+              </div>
+              <p className="text-[8px] text-muted mt-0.5">
+                {camp.passedCount}/{GROUPS_PER_LEVEL}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

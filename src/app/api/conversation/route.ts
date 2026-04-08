@@ -5,7 +5,7 @@ import { CONVERSATION_SYSTEM_PROMPT, REPORT_SYSTEM_PROMPT, TOPICS } from "@/lib/
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages, level, topicId, mode } = await req.json();
+  const { messages, level, topicId, customTopic, mode } = await req.json();
 
   // 리포트 모드
   if (mode === "report") {
@@ -23,8 +23,13 @@ export async function POST(req: Request) {
   }
 
   // 시나리오 프롬프트 찾기
-  const scenario = TOPICS.flatMap((t) => t.scenarios).find((s) => s.id === topicId);
-  const scenarioPrompt = scenario?.prompt || "You are a friendly conversation partner.";
+  let scenarioPrompt: string;
+  if (topicId === "custom" && customTopic) {
+    scenarioPrompt = `The student wants to discuss: "${customTopic}". Engage naturally with this topic as a knowledgeable conversation partner.`;
+  } else {
+    const scenario = TOPICS.flatMap((t) => t.scenarios).find((s) => s.id === topicId);
+    scenarioPrompt = scenario?.prompt || "You are a friendly conversation partner.";
+  }
 
   const systemPrompt = CONVERSATION_SYSTEM_PROMPT.replace("{level}", level) + `\n\n## Scenario\n${scenarioPrompt}`;
 

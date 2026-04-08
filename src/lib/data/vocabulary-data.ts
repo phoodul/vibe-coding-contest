@@ -32,13 +32,13 @@ export const PASS_SCORE = 36; // 36/40 = 90%
 
 export const CAMP_INFO = [
   { camp: 1, name: "Base Camp", altitude: "5,364m", label: "기초 단어" },
-  { camp: 2, name: "Camp I", altitude: "6,065m", label: "기본 확장" },
-  { camp: 3, name: "Camp II", altitude: "6,500m", label: "초등 심화" },
-  { camp: 4, name: "Camp III", altitude: "7,162m", label: "중등 준비" },
-  { camp: 5, name: "Camp IV", altitude: "7,920m", label: "중학 기초" },
-  { camp: 6, name: "Camp V", altitude: "8,000m", label: "중학 심화" },
-  { camp: 7, name: "Camp VI", altitude: "8,200m", label: "고등 기초" },
-  { camp: 8, name: "Camp VII", altitude: "8,400m", label: "고등 심화" },
-  { camp: 9, name: "Camp VIII", altitude: "8,600m", label: "대학 준비" },
+  { camp: 2, name: "Camp 1", altitude: "6,065m", label: "기본 확장" },
+  { camp: 3, name: "Camp 2", altitude: "6,500m", label: "초등 심화" },
+  { camp: 4, name: "Camp 3", altitude: "7,162m", label: "중등 준비" },
+  { camp: 5, name: "Camp 4", altitude: "7,920m", label: "중학 기초" },
+  { camp: 6, name: "Camp 5", altitude: "8,000m", label: "중학 심화" },
+  { camp: 7, name: "Camp 6", altitude: "8,200m", label: "고등 기초" },
+  { camp: 8, name: "Camp 7", altitude: "8,400m", label: "고등 심화" },
+  { camp: 9, name: "Camp 8", altitude: "8,600m", label: "대학 준비" },
   { camp: 10, name: "Summit", altitude: "8,849m", label: "정상 도달" },
 ];

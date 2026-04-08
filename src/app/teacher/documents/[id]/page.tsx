@@ -113,7 +113,7 @@ export default function DocumentDetailPage() {
   }
 
   // --- 수정된 파일 재업로드 ---
-  async function handleReupload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleReupload(e: React.ChangeEvent<HTMLInputElement>, andApprove = false) {
     if (!doc || !e.target.files?.[0] || !userId) return;
     setActionLoading(true);
 
@@ -124,15 +124,17 @@ export default function DocumentDetailPage() {
     const newPath = `${userId}/${Date.now()}_${file.name}`;
     await supabase.storage.from("documents").upload(newPath, file);
 
-    const nextVersion = (versions[0]?.version_number ?? 0) + 1;
+    let nextVersion = (versions[0]?.version_number ?? 0) + 1;
 
+    // 수정 버전 기록
     await supabase
       .from("documents")
       .update({
         file_name: file.name,
         file_path: newPath,
         content_hash: newHash,
-        status: "pending_approval",
+        status: andApprove ? "approved" : "pending_approval",
+        ...(andApprove ? { approver_id: userId } : {}),
       })
       .eq("id", doc.id);
 
@@ -143,8 +145,21 @@ export default function DocumentDetailPage() {
       file_path: newPath,
       action: "edit",
       actor_id: userId,
-      notes: "파일 수정 재업로드",
+      notes: andApprove ? "승인자 직접 수정" : "파일 수정 재업로드",
     });
+
+    // 수정 후 즉시 승인하는 경우 승인 이력도 추가
+    if (andApprove) {
+      nextVersion += 1;
+      await supabase.from("document_versions").insert({
+        document_id: doc.id,
+        version_number: nextVersion,
+        content_hash: newHash,
+        action: "approve",
+        actor_id: userId,
+        notes: "수정 후 승인",
+      });
+    }
 
     setActionLoading(false);
     loadDocument();
@@ -340,14 +355,24 @@ export default function DocumentDetailPage() {
                   </button>
 
                   {canEdit && (
-                    <label className="px-4 py-2 rounded-lg glass text-sm hover:bg-card-hover transition-colors cursor-pointer">
-                      📎 수정 파일 업로드
-                      <input
-                        type="file"
-                        onChange={handleReupload}
-                        className="hidden"
-                      />
-                    </label>
+                    <>
+                      <label className="px-4 py-2 rounded-lg glass text-sm hover:bg-card-hover transition-colors cursor-pointer">
+                        &#128206; 수정 파일 업로드
+                        <input
+                          type="file"
+                          onChange={(e) => handleReupload(e, false)}
+                          className="hidden"
+                        />
+                      </label>
+                      <label className="px-4 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-sm font-medium hover:bg-emerald-500/20 transition-colors cursor-pointer">
+                        &#128206;&#9989; 수정 후 즉시 승인
+                        <input
+                          type="file"
+                          onChange={(e) => handleReupload(e, true)}
+                          className="hidden"
+                        />
+                      </label>
+                    </>
                   )}
 
                   {canApprove && (

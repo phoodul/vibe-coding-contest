@@ -55,10 +55,10 @@ const features = [
     span: "sm:col-span-2",
   },
   {
-    title: "공문서 생성기",
+    title: "공문번호 자동생성기",
     description:
-      "전달할 내용만 입력하면 AI가 두문-본문-결문 구조로 공문서를 자동 작성.",
-    icon: "📝",
+      "업로드 → 승인 → 번호 발급 → 해시 기반 위변조 검증까지 원스톱 처리.",
+    icon: "🔢",
     href: "/teacher/generator",
     span: "",
   },

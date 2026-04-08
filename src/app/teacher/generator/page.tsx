@@ -1,162 +1,135 @@
 "use client";
 
-import { useState } from "react";
-import { useChat } from "ai/react";
-import { motion, AnimatePresence } from "framer-motion";
-import { GlassCard } from "@/components/shared/glass-card";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import { GlassCard } from "@/components/shared/glass-card";
 
-const DOC_TYPES = [
-  { id: "안내문", label: "📢 안내문", desc: "정보 안내" },
-  { id: "협조문", label: "🤝 협조문", desc: "협조 요청" },
-  { id: "보고문", label: "📊 보고문", desc: "결과 보고" },
-  { id: "내부결재", label: "📋 내부결재", desc: "내부 의사결정" },
+const steps = [
+  {
+    step: "01",
+    title: "문서 업로드",
+    desc: "공문서 파일을 업로드합니다. HWP, DOCX, PDF 등 모든 형식을 지원합니다. 업로드 시 SHA-256 해시가 자동 생성되며, 공유 대상과 승인자를 지정할 수 있습니다.",
+    icon: "📎",
+    href: "/teacher/documents/upload",
+    action: "업로드하기",
+  },
+  {
+    step: "02",
+    title: "검토 및 승인",
+    desc: "승인 권한자(교장, 부장)가 문서를 검토한 후 승인 버튼을 누릅니다. 수정이 필요하면 수정 요청과 사유를 보냅니다.",
+    icon: "✅",
+    href: "/teacher/documents",
+    action: "문서 목록 보기",
+  },
+  {
+    step: "03",
+    title: "공문번호 발급",
+    desc: "승인된 문서에 고유한 공문서 발급 번호가 자동으로 부여됩니다. 번호는 원자적(atomic)으로 생성되어 중복이 불가능합니다.",
+    icon: "🔢",
+    href: "/teacher/documents",
+    action: "발급 현황 확인",
+  },
+  {
+    step: "04",
+    title: "위변조 검증",
+    desc: "나중에 문서 파일을 업로드하면 원본 해시와 비교하여 변경 여부를 즉시 확인합니다. 버전 이력으로 변경 시점도 추적 가능합니다.",
+    icon: "🔍",
+    href: "/teacher/documents/verify",
+    action: "검증하기",
+  },
 ];
 
 export default function GeneratorPage() {
-  const [content, setContent] = useState("");
-  const [docType, setDocType] = useState("안내문");
-  const [submitted, setSubmitted] = useState(false);
-
-  const { messages, isLoading, append } = useChat({
-    api: "/api/teacher/generate",
-  });
-
-  const lastAssistant = messages.filter((m) => m.role === "assistant").pop();
-
-  async function handleGenerate() {
-    if (!content.trim()) return;
-    setSubmitted(true);
-    await append({
-      role: "user",
-      content: JSON.stringify({ content, docType }),
-    });
-  }
-
-  function handleCopy() {
-    if (lastAssistant) {
-      navigator.clipboard.writeText(lastAssistant.content);
-    }
-  }
-
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
       <div className="max-w-4xl mx-auto">
-        <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors mb-8 block">
-          ← 대시보드
+        <Link
+          href="/dashboard"
+          className="text-sm text-muted hover:text-foreground transition-colors mb-8 block"
+        >
+          &larr; 대시보드
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold mb-2">📝 공문서 생성기</h1>
-          <p className="text-muted mb-8">
-            전달할 내용만 입력하면 AI가 K-에듀파인 공문서 양식으로 자동 작성합니다.
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <h1 className="text-3xl font-bold mb-2">
+            &#128290; 공문번호 자동생성기
+          </h1>
+          <p className="text-muted mb-10">
+            문서 업로드 &rarr; 승인 &rarr; 번호 발급 &rarr; 위변조 검증까지
+            원스톱으로 처리합니다.
           </p>
         </motion.div>
 
-        <AnimatePresence mode="wait">
-          {!submitted ? (
+        {/* 워크플로우 */}
+        <div className="space-y-4">
+          {steps.map((s, i) => (
             <motion.div
-              key="form"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="space-y-4"
+              key={s.step}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                delay: i * 0.1,
+                ease: [0.22, 1, 0.36, 1] as const,
+              }}
             >
-              <GlassCard hover={false}>
-                <label className="text-sm font-medium mb-3 block">문서 유형</label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {DOC_TYPES.map((dt) => (
-                    <button
-                      key={dt.id}
-                      onClick={() => setDocType(dt.id)}
-                      className={`p-3 rounded-lg border text-left transition-all ${
-                        docType === dt.id
-                          ? "bg-primary/20 border-primary"
-                          : "bg-white/5 border-white/10 hover:border-white/20"
-                      }`}
+              <GlassCard hover={false} className="card-sheen">
+                <div className="flex items-start gap-5">
+                  <div className="shrink-0 w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-2xl">{s.icon}</span>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-primary font-medium">
+                        STEP {s.step}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-semibold mb-1">{s.title}</h3>
+                    <p className="text-sm text-muted leading-relaxed mb-3">
+                      {s.desc}
+                    </p>
+                    <Link
+                      href={s.href}
+                      className="inline-block px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
                     >
-                      <span className="block text-sm font-medium">{dt.label}</span>
-                      <span className="text-xs text-muted">{dt.desc}</span>
-                    </button>
-                  ))}
+                      {s.action} &rarr;
+                    </Link>
+                  </div>
                 </div>
               </GlassCard>
-
-              <GlassCard hover={false}>
-                <label className="text-sm font-medium mb-2 block">
-                  전달할 내용
-                </label>
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  rows={10}
-                  placeholder="예: 4월 15일까지 교육과정 운영 계획서를 K-에듀파인으로 제출해주세요. 양식은 붙임 참고."
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-foreground font-mono text-sm leading-relaxed resize-none placeholder:text-muted/50 focus:outline-none focus:border-primary transition-colors"
-                />
-              </GlassCard>
-
-              <div className="flex justify-center">
-                <button
-                  onClick={handleGenerate}
-                  disabled={!content.trim()}
-                  className="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all hover:scale-105 disabled:opacity-50"
-                >
-                  공문서 생성
-                </button>
-              </div>
             </motion.div>
-          ) : (
-            <motion.div
-              key="result"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              {isLoading && !lastAssistant && (
-                <GlassCard hover={false}>
-                  <div className="flex items-center gap-3">
-                    <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
-                    <span className="text-muted">공문서를 작성하고 있습니다...</span>
-                  </div>
-                </GlassCard>
-              )}
+          ))}
+        </div>
 
-              {lastAssistant && (
-                <GlassCard hover={false}>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium">생성된 공문서</span>
-                    <button
-                      onClick={handleCopy}
-                      className="text-xs px-3 py-1 rounded-lg glass hover:bg-card-hover transition-colors"
-                    >
-                      📋 복사
-                    </button>
-                  </div>
-                  <div className="whitespace-pre-wrap text-sm leading-relaxed font-mono bg-white/3 rounded-lg p-4 border border-white/5">
-                    {lastAssistant.content}
-                  </div>
-                </GlassCard>
-              )}
-
-              <div className="flex gap-3 justify-center mt-6">
-                <button
-                  onClick={() => {
-                    setSubmitted(false);
-                    setContent("");
-                  }}
-                  className="px-6 py-2 rounded-lg glass text-sm hover:bg-card-hover transition-colors"
-                >
-                  새 문서 작성
-                </button>
-                <Link
-                  href="/teacher/formatter"
-                  className="px-6 py-2 rounded-lg glass text-sm hover:bg-card-hover transition-colors"
-                >
-                  포맷터로 교정하기 →
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* 빠른 액션 */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3"
+        >
+          <Link
+            href="/teacher/documents/upload"
+            className="btn-glow px-6 py-4 rounded-xl bg-primary text-primary-foreground font-medium text-center hover:scale-105 transition-all active:scale-[0.97]"
+          >
+            &#128195; 새 문서 업로드
+          </Link>
+          <Link
+            href="/teacher/documents"
+            className="px-6 py-4 rounded-xl glass text-center font-medium hover:bg-white/10 transition-all"
+          >
+            &#128203; 문서 관리
+          </Link>
+          <Link
+            href="/teacher/documents/verify"
+            className="px-6 py-4 rounded-xl glass text-center font-medium hover:bg-white/10 transition-all"
+          >
+            &#128269; 위변조 검증
+          </Link>
+        </motion.div>
       </div>
     </div>
   );

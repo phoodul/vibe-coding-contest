@@ -55,6 +55,7 @@ export default function ConversationPage() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [level, setLevel] = useState("");
   const [topicId, setTopicId] = useState("");
+  const [customTopic, setCustomTopic] = useState("");
   const [voiceId, setVoiceId] = useState("nova");
   const [starter, setStarter] = useState<"me" | "ai">("ai");
   const [subtitles, setSubtitles] = useState(true);
@@ -75,13 +76,16 @@ export default function ConversationPage() {
   const recognitionRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const shouldListenRef = useRef(false);
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingTranscriptRef = useRef("");
+  const aiStateRef = useRef<AIState>("idle");
 
   const selectedVoice = VOICES.find((v) => v.id === voiceId) || VOICES[0];
   const selectedLevel = LEVELS.find((l) => l.id === level);
 
   const { messages, append, isLoading, setMessages } = useChat({
     api: "/api/conversation",
-    body: { level, topicId },
+    body: { level, topicId, customTopic },
     onFinish: async (message) => {
       if (message.role === "assistant") {
         setAiState("speaking");
@@ -167,16 +171,39 @@ export default function ConversationPage() {
         }
       }
 
+      // 침묵 타이머 리셋
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
+
       if (interim) {
         setInterimText(interim);
+        pendingTranscriptRef.current = interim;
         // 사용자가 말하기 시작하면 AI 오디오 중단 (barge-in)
-        if (aiState === "speaking") {
+        if (aiStateRef.current === "speaking") {
           stopAudio();
           setAiState("listening");
         }
+        // 2초 침묵 시 축적된 텍스트를 강제 전송
+        silenceTimerRef.current = setTimeout(() => {
+          if (pendingTranscriptRef.current) {
+            const text = pendingTranscriptRef.current;
+            pendingTranscriptRef.current = "";
+            setInterimText("");
+            setAiState("thinking");
+            append({ role: "user", content: text });
+            try { recognition.stop(); } catch { /* restart via onend */ }
+          }
+        }, 2000);
       }
 
       if (final) {
+        pendingTranscriptRef.current = "";
+        if (silenceTimerRef.current) {
+          clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+        }
         setInterimText("");
         setAiState("thinking");
         append({ role: "user", content: final });
@@ -210,6 +237,11 @@ export default function ConversationPage() {
 
   const stopContinuousListening = useCallback(() => {
     shouldListenRef.current = false;
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    pendingTranscriptRef.current = "";
     recognitionRef.current?.stop();
     recognitionRef.current = null;
     setMicActive(false);
@@ -248,6 +280,11 @@ export default function ConversationPage() {
     };
   }, []);
 
+  // aiStateRef 동기화
+  useEffect(() => {
+    aiStateRef.current = aiState;
+  }, [aiState]);
+
   // AI 로딩 상태 추적
   useEffect(() => {
     if (isLoading) setAiState("thinking");
@@ -272,11 +309,15 @@ export default function ConversationPage() {
   function startConversation() {
     setPhase("conversation");
     if (starter === "ai") {
-      const scenario = TOPICS.flatMap((t) => t.scenarios).find((s) => s.id === topicId);
-      const greeting =
-        topicId === "free-talk"
-          ? "Start with a friendly greeting and ask what the student wants to talk about."
-          : `Start the conversation as: ${scenario?.prompt || "a friendly partner"}. Greet the student and set the scene.`;
+      let greeting: string;
+      if (topicId === "custom" && customTopic) {
+        greeting = `Start the conversation about: "${customTopic}". Greet the student and introduce the topic naturally.`;
+      } else if (topicId === "free-talk") {
+        greeting = "Start with a friendly greeting and ask what the student wants to talk about.";
+      } else {
+        const scenario = TOPICS.flatMap((t) => t.scenarios).find((s) => s.id === topicId);
+        greeting = `Start the conversation as: ${scenario?.prompt || "a friendly partner"}. Greet the student and set the scene.`;
+      }
       append({ role: "user", content: `[SYSTEM: ${greeting}]` });
     }
   }
@@ -670,7 +711,7 @@ export default function ConversationPage() {
   }
 
   // --- SETUP PHASE (default) ---
-  const canStart = level && topicId;
+  const canStart = level && (topicId === "custom" ? customTopic.trim() : topicId);
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
@@ -733,7 +774,7 @@ export default function ConversationPage() {
                     {cat.scenarios.map((s) => (
                       <button
                         key={s.id}
-                        onClick={() => setTopicId(s.id)}
+                        onClick={() => { setTopicId(s.id); setCustomTopic(""); }}
                         className={`glass p-3 rounded-xl text-left text-sm transition-all ${
                           topicId === s.id
                             ? "!border-primary !bg-primary/10"
@@ -746,6 +787,31 @@ export default function ConversationPage() {
                   </div>
                 </div>
               ))}
+
+              {/* 직접 입력 */}
+              <div>
+                <p className="text-sm text-muted mb-2">✏️ 직접 입력</p>
+                <div
+                  className={`glass p-3 rounded-xl transition-all ${
+                    topicId === "custom" ? "!border-primary !bg-primary/10" : ""
+                  }`}
+                >
+                  <input
+                    type="text"
+                    placeholder="원하는 주제를 입력하세요 (예: 양자역학, 르네상스 미술, K-pop...)"
+                    value={customTopic}
+                    onChange={(e) => {
+                      setCustomTopic(e.target.value);
+                      if (e.target.value.trim()) setTopicId("custom");
+                    }}
+                    onFocus={() => { if (customTopic.trim()) setTopicId("custom"); }}
+                    className="w-full bg-transparent text-sm text-foreground placeholder:text-muted/50 focus:outline-none"
+                  />
+                </div>
+                <p className="text-[10px] text-muted/60 mt-1.5">
+                  * 외설, 불법, 마약, 폭력, 무기제조, 자해 관련 주제는 AI가 대화를 거부합니다.
+                </p>
+              </div>
             </div>
           </section>
 

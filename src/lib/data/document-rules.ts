@@ -1,6 +1,6 @@
 /**
  * K-에듀파인 공문서 양식 규칙
- * 참고: hook_and_middleware.md, teacherGemini.md
+ * 행정업무의 운영에 관한 규정 시행규칙 기반
  */
 
 export interface FormatIssue {
@@ -8,17 +8,12 @@ export interface FormatIssue {
   original: string;
   corrected: string;
   rule: string;
+  category: "spacing" | "date" | "time" | "amount" | "marker" | "reference" | "structure";
 }
 
 /** 항목 기호 순서: 1. → 가. → 1) → 가) → (1) → (가) → ① → ㉮ */
-const ITEM_PATTERNS = [
-  { regex: /^(\d+)\.\s/, level: 1, name: "첫째 항목 (1. 2. 3.)" },
-  { regex: /^([가-힣])\.\s/, level: 2, name: "둘째 항목 (가. 나. 다.)" },
-  { regex: /^(\d+)\)\s/, level: 3, name: "셋째 항목 (1) 2) 3))" },
-  { regex: /^([가-힣])\)\s/, level: 4, name: "넷째 항목 (가) 나) 다))" },
-];
 
-/** 날짜 표기 교정: 2026.4.8 → 2026. 4. 8. */
+// ── 날짜 표기 교정: 2026.4.8 → 2026. 4. 8. ──
 function fixDateFormat(text: string): string {
   return text.replace(
     /(\d{4})\.(\d{1,2})\.(\d{1,2})\.?/g,
@@ -26,7 +21,7 @@ function fixDateFormat(text: string): string {
   );
 }
 
-/** 시간 표기 교정: 15:30 → 15 : 30 */
+// ── 시간 표기 교정: 15:30 → 15 : 30 ──
 function fixTimeFormat(text: string): string {
   return text.replace(
     /(\d{1,2}):(\d{2})/g,
@@ -34,14 +29,16 @@ function fixTimeFormat(text: string): string {
   );
 }
 
-/** 금액 표기 교정 */
+// ── 금액 표기 교정: 50000원 → 금50,000원(금오만원) ──
 function fixAmountFormat(text: string): string {
   return text.replace(
-    /(\d{1,3}(,\d{3})*)원/g,
+    /(?<!\d[,.])(\d{1,3}(,?\d{3})*)원(?!\()/g,
     (match) => {
       const num = match.replace(/[^0-9]/g, "");
-      const formatted = Number(num).toLocaleString("ko-KR");
-      const korean = numberToKorean(Number(num));
+      const n = Number(num);
+      if (n === 0 || isNaN(n)) return match;
+      const formatted = n.toLocaleString("ko-KR");
+      const korean = numberToKorean(n);
       return `금${formatted}원(${korean})`;
     }
   );
@@ -81,20 +78,61 @@ function numberToKorean(n: number): string {
   return result + "원";
 }
 
-/** 붙임/끝 표시 교정 */
+// ── 끝 표시 교정 ──
 function fixEndMarker(text: string): string {
-  // "끝" 이 없으면 추가하지는 않음 (생성기에서 처리)
-  // "끝." → "끝." 유지, "끝" → "끝." 으로 교정
   return text.replace(/끝\s*$/gm, "끝.");
 }
 
-/** 항목 기호 뒤 간격 교정 (2타 띄우기) */
+// ── 항목 기호 뒤 간격 교정 ──
 function fixItemSpacing(text: string): string {
-  // "1.항목" → "1. 항목" (마침표 뒤 공백)
-  return text.replace(/^(\d+)\.([^\s])/gm, "$1. $2")
-    .replace(/^([가-힣])\.([^\s])/gm, "$1. $2")
-    .replace(/^(\d+)\)([^\s])/gm, "$1) $2")
-    .replace(/^([가-힣])\)([^\s])/gm, "$1) $2");
+  return text
+    .replace(/^(\s*)(\d+)\.([^\s.\d])/gm, "$1$2. $3")
+    .replace(/^(\s*)([가-힣])\.([^\s.])/gm, "$1$2. $3")
+    .replace(/^(\s*)(\d+)\)([^\s])/gm, "$1$2) $3")
+    .replace(/^(\s*)([가-힣])\)([^\s])/gm, "$1$2) $3")
+    .replace(/^(\s*)\((\d+)\)([^\s])/gm, "$1($2) $3")
+    .replace(/^(\s*)\(([가-힣])\)([^\s])/gm, "$1($2) $3");
+}
+
+// ── 관련 번호 표기 교정: 교육지원과-1234 → 교육지원과-1234 (변경 없으면 skip) ──
+function fixReferenceNumber(text: string): string {
+  // 관련: 다음에 오는 참조번호 형식 검증
+  return text.replace(
+    /관련\s*:\s*/g,
+    "관련: "
+  );
+}
+
+// ── 붙임 표기 교정 ──
+function fixAttachment(text: string): string {
+  // "붙임1." → "붙임 1."
+  return text.replace(/붙임(\d)/g, "붙임 $1");
+}
+
+// ── 수신자 표기 교정 ──
+function fixRecipientFormat(text: string): string {
+  // "수신:" → "수신: " (콜론 뒤 공백)
+  return text
+    .replace(/수신:([^\s])/g, "수신: $1")
+    .replace(/참조:([^\s])/g, "참조: $1")
+    .replace(/제목:([^\s])/g, "제목: $1");
+}
+
+// ── 쌍반점(;) → 쉼표(,) 교정 ──
+function fixSemicolon(text: string): string {
+  // 공문서에서는 세미콜론 대신 쉼표 사용
+  return text.replace(/;/g, ",");
+}
+
+// ── 전각 문자 → 반각 교정 ──
+function fixFullWidth(text: string): string {
+  return text
+    .replace(/（/g, "(")
+    .replace(/）/g, ")")
+    .replace(/，/g, ",")
+    .replace(/．/g, ".")
+    .replace(/：/g, ":")
+    .replace(/；/g, ",");
 }
 
 export function analyzeDocument(text: string): FormatIssue[] {
@@ -103,34 +141,76 @@ export function analyzeDocument(text: string): FormatIssue[] {
 
   lines.forEach((line, i) => {
     const lineNum = i + 1;
-    let corrected = line;
+    let current = line;
+
+    // 전각 문자
+    const fullWidthFix = fixFullWidth(current);
+    if (fullWidthFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: fullWidthFix, rule: "전각 문자 → 반각 변환", category: "structure" });
+      current = fullWidthFix;
+    }
 
     // 날짜 표기
-    const dateFix = fixDateFormat(corrected);
-    if (dateFix !== corrected) {
-      issues.push({ line: lineNum, original: corrected, corrected: dateFix, rule: "날짜 표기 (연. 월. 일.)" });
-      corrected = dateFix;
+    const dateFix = fixDateFormat(current);
+    if (dateFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: dateFix, rule: "날짜 표기 (연. 월. 일.)", category: "date" });
+      current = dateFix;
     }
 
     // 시간 표기
-    const timeFix = fixTimeFormat(corrected);
-    if (timeFix !== corrected) {
-      issues.push({ line: lineNum, original: corrected, corrected: timeFix, rule: "시간 표기 (24시각제, 쌍점 앞뒤 공백)" });
-      corrected = timeFix;
+    const timeFix = fixTimeFormat(current);
+    if (timeFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: timeFix, rule: "시간 표기 (24시각제, 쌍점 앞뒤 공백)", category: "time" });
+      current = timeFix;
+    }
+
+    // 금액 표기
+    const amountFix = fixAmountFormat(current);
+    if (amountFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: amountFix, rule: "금액 표기 (금00,000원(금OO원))", category: "amount" });
+      current = amountFix;
     }
 
     // 항목 기호 간격
-    const spacingFix = fixItemSpacing(corrected);
-    if (spacingFix !== corrected) {
-      issues.push({ line: lineNum, original: corrected, corrected: spacingFix, rule: "항목 기호 뒤 공백" });
-      corrected = spacingFix;
+    const spacingFix = fixItemSpacing(current);
+    if (spacingFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: spacingFix, rule: "항목 기호 뒤 공백", category: "spacing" });
+      current = spacingFix;
+    }
+
+    // 관련 번호
+    const refFix = fixReferenceNumber(current);
+    if (refFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: refFix, rule: "관련 표기 (관련: )", category: "reference" });
+      current = refFix;
+    }
+
+    // 붙임 표기
+    const attachFix = fixAttachment(current);
+    if (attachFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: attachFix, rule: "붙임 표기 (붙임 1.)", category: "marker" });
+      current = attachFix;
+    }
+
+    // 수신자/참조/제목 콜론
+    const recipientFix = fixRecipientFormat(current);
+    if (recipientFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: recipientFix, rule: "수신/참조/제목 콜론 뒤 공백", category: "structure" });
+      current = recipientFix;
+    }
+
+    // 쌍반점
+    const semiFix = fixSemicolon(current);
+    if (semiFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: semiFix, rule: "쌍반점(;) → 쉼표(,)", category: "structure" });
+      current = semiFix;
     }
 
     // 끝 표시
-    const endFix = fixEndMarker(corrected);
-    if (endFix !== corrected) {
-      issues.push({ line: lineNum, original: corrected, corrected: endFix, rule: "끝 표시 (끝.)" });
-      corrected = endFix;
+    const endFix = fixEndMarker(current);
+    if (endFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: endFix, rule: "끝 표시 (끝.)", category: "marker" });
+      current = endFix;
     }
   });
 
@@ -138,10 +218,35 @@ export function analyzeDocument(text: string): FormatIssue[] {
 }
 
 export function applyAllFixes(text: string): string {
-  let result = text;
-  result = fixDateFormat(result);
-  result = fixTimeFormat(result);
-  result = fixItemSpacing(result);
-  result = fixEndMarker(result);
-  return result;
+  let r = text;
+  r = fixFullWidth(r);
+  r = fixDateFormat(r);
+  r = fixTimeFormat(r);
+  r = fixAmountFormat(r);
+  r = fixItemSpacing(r);
+  r = fixReferenceNumber(r);
+  r = fixAttachment(r);
+  r = fixRecipientFormat(r);
+  r = fixSemicolon(r);
+  r = fixEndMarker(r);
+  return r;
 }
+
+/** 카테고리별 이슈 수 집계 */
+export function countByCategory(issues: FormatIssue[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const issue of issues) {
+    counts[issue.category] = (counts[issue.category] || 0) + 1;
+  }
+  return counts;
+}
+
+export const CATEGORY_LABELS: Record<string, string> = {
+  spacing: "항목 기호/간격",
+  date: "날짜 표기",
+  time: "시간 표기",
+  amount: "금액 표기",
+  marker: "끝/붙임 표시",
+  reference: "참조 번호",
+  structure: "문서 구조",
+};

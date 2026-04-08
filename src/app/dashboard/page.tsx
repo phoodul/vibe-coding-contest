@@ -91,9 +91,9 @@ const teacherSections: MenuSection[] = [
         span: "sm:col-span-2 lg:col-span-1",
       },
       {
-        title: "공문서 생성기",
-        desc: "AI 공문서 자동 작성",
-        icon: "📝",
+        title: "공문번호 자동생성기",
+        desc: "업로드 → 승인 → 번호 발급 → 위변조 검증",
+        icon: "🔢",
         href: "/teacher/generator",
       },
       {

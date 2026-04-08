@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { GlassCard } from "@/components/shared/glass-card";
 import type { Provider } from "@supabase/supabase-js";
 
-const socialProviders: { id: Provider; label: string; icon: string; bg: string }[] = [
-  { id: "google", label: "Google", icon: "G", bg: "bg-white text-gray-900" },
-  { id: "kakao", label: "Kakao", icon: "K", bg: "bg-[#FEE500] text-[#191919]" },
-  { id: "apple", label: "Apple", icon: "", bg: "bg-white text-black" },
-  { id: "github", label: "GitHub", icon: "", bg: "bg-[#24292f] text-white" },
-  { id: "azure", label: "Microsoft", icon: "M", bg: "bg-[#2F2F2F] text-white" },
+const socialProviders: { id: Provider; label: string; bg: string }[] = [
+  { id: "google", label: "Google", bg: "bg-white text-gray-900" },
+  { id: "kakao", label: "Kakao", bg: "bg-[#FEE500] text-[#191919]" },
+  { id: "apple", label: "Apple", bg: "bg-white text-black" },
+  { id: "github", label: "GitHub", bg: "bg-[#24292f] text-white" },
+  { id: "azure", label: "Microsoft", bg: "bg-[#2F2F2F] text-white" },
 ];
 
 export default function LoginPage() {
@@ -22,6 +22,13 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // OAuth 콜백 에러 표시
+  useEffect(() => {
+    const errParam = searchParams.get("error");
+    if (errParam) setError(decodeURIComponent(errParam));
+  }, [searchParams]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -72,7 +79,6 @@ export default function LoginPage() {
                 onClick={() => handleSocialLogin(p.id)}
                 className={`w-full py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all hover:opacity-90 hover:scale-[1.01] ${p.bg}`}
               >
-                <span className="text-base">{p.icon}</span>
                 {p.label}로 계속하기
               </button>
             ))}

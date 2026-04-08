@@ -1,66 +1,155 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SUBJECTS } from "@/lib/ai/tutor-prompt";
+import type { Subject, Topic } from "@/lib/ai/tutor-prompt";
 import { GlassCard } from "@/components/shared/glass-card";
 import Link from "next/link";
 
 export default function TutorPage() {
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [started, setStarted] = useState(false);
+  const [summaryLoading, setSummaryLoading] = useState(false);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append } =
     useChat({
       api: "/api/tutor",
-      body: { subject: selectedSubject, topic: selectedTopic },
+      body: {
+        subject: selectedSubject?.name || "",
+        topic: selectedTopic?.name || "",
+      },
     });
 
-  const currentSubject = SUBJECTS.find((s) => s.name === selectedSubject);
+  // 학습 노트 생성 + 다운로드
+  const generateStudyNote = useCallback(async () => {
+    if (messages.length < 3) return;
+    setSummaryLoading(true);
+    try {
+      const res = await fetch("/api/tutor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            ...messages.filter((m) => !m.content.startsWith("[SYSTEM:")),
+            {
+              role: "user",
+              content: `[SYSTEM: 지금까지의 대화를 바탕으로 학습 노트를 Markdown 형식으로 작성해주세요.
+
+## 작성 규칙:
+1. 제목은 "# {교과} — {단원} 학습 노트"
+2. "## 핵심 개념 요약" 섹션에서 학습한 주요 개념을 hierarchy(###, ####)로 정리
+3. 각 개념에 대해 충분한 설명과 맥락(context)을 포함 (1-2문단)
+4. "## 주요 Q&A" 섹션에서 대화 중 나온 핵심 질의응답을 정리
+5. "## 핵심 용어 정리" 섹션에서 중요한 용어를 표로 정리 (| 용어 | 뜻 | 예시 |)
+6. "## 더 알아볼 내용" 섹션에서 심화 학습 방향 제안
+7. 단순 압축이 아니라 교과서 수준의 충분한 context와 설명을 포함
+8. 한국어로 작성
+9. Markdown 코드펜스 없이 순수 Markdown 텍스트만 출력]`,
+            },
+          ],
+          subject: selectedSubject?.name || "",
+          topic: selectedTopic?.name || "",
+        }),
+      });
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          fullText += decoder.decode(value, { stream: true });
+        }
+      }
+
+      // Vercel AI SDK data stream에서 텍스트 추출
+      const md = fullText
+        .split("\n")
+        .filter((line) => line.startsWith("0:"))
+        .map((line) => {
+          try { return JSON.parse(line.slice(2)); }
+          catch { return ""; }
+        })
+        .join("");
+
+      // 다운로드
+      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${selectedTopic?.name || "학습노트"}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("학습 노트 생성에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setSummaryLoading(false);
+    }
+  }, [messages, selectedSubject, selectedTopic]);
+
+  // 학습 시작 — AI가 먼저 opener 질문을 던짐
+  function startLesson() {
+    if (!selectedSubject || !selectedTopic) return;
+    setStarted(true);
+    // AI가 단원의 opener 질문으로 시작
+    append({
+      role: "user",
+      content: `[SYSTEM: 학생이 "${selectedSubject.name}" 과목의 "${selectedTopic.name}" 단원을 선택했습니다. 다음 질문으로 수업을 시작하세요: "${selectedTopic.opener}"]`,
+    });
+  }
 
   if (!started) {
     return (
       <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
         <div className="max-w-3xl mx-auto">
-          <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors mb-8 block">
-            ← 대시보드
+          <Link
+            href="/dashboard"
+            className="text-sm text-muted hover:text-foreground transition-colors mb-8 block"
+          >
+            &larr; 대시보드
           </Link>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h1 className="text-3xl font-bold mb-2">🎓 소크라테스 AI 튜터</h1>
+            <h1 className="text-3xl font-bold mb-2">
+              &#127891; 소크라테스 AI 튜터
+            </h1>
             <p className="text-muted mb-8">
-              답을 주지 않고 질문으로 이끕니다. 스스로 깨닫는 진짜 공부.
+              AI가 질문으로 이끕니다. 단원을 선택하면 맞춤 수업이 시작됩니다.
             </p>
           </motion.div>
 
-          {/* 교과 선택 */}
           <div className="space-y-6">
+            {/* 교과 선택 */}
             <div>
               <h2 className="text-lg font-semibold mb-3">교과를 선택하세요</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {SUBJECTS.map((s, i) => (
                   <GlassCard
                     key={s.id}
                     delay={i * 0.05}
                     className={`cursor-pointer ${
-                      selectedSubject === s.name
+                      selectedSubject?.id === s.id
                         ? "!border-primary !bg-primary/10"
                         : ""
                     }`}
                   >
                     <button
                       onClick={() => {
-                        setSelectedSubject(s.name);
-                        setSelectedTopic("");
+                        setSelectedSubject(s);
+                        setSelectedTopic(null);
                       }}
                       className="w-full text-left"
                     >
-                      <span className="font-medium">{s.name}</span>
+                      <span className="text-2xl mb-2 block">{s.icon}</span>
+                      <span className="font-medium text-sm">{s.name}</span>
                     </button>
                   </GlassCard>
                 ))}
@@ -69,7 +158,7 @@ export default function TutorPage() {
 
             {/* 단원 선택 */}
             <AnimatePresence>
-              {currentSubject && (
+              {selectedSubject && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -79,21 +168,24 @@ export default function TutorPage() {
                     단원을 선택하세요
                   </h2>
                   <div className="grid grid-cols-1 gap-2">
-                    {currentSubject.topics.map((t, i) => (
+                    {selectedSubject.topics.map((t, i) => (
                       <GlassCard
-                        key={t}
+                        key={t.name}
                         delay={i * 0.03}
                         className={`cursor-pointer py-4 ${
-                          selectedTopic === t
+                          selectedTopic?.name === t.name
                             ? "!border-primary !bg-primary/10"
                             : ""
                         }`}
                       >
                         <button
                           onClick={() => setSelectedTopic(t)}
-                          className="w-full text-left text-sm"
+                          className="w-full text-left"
                         >
-                          {t}
+                          <p className="font-medium text-sm mb-1">{t.name}</p>
+                          <p className="text-xs text-muted">
+                            {t.concepts.join(" · ")}
+                          </p>
                         </button>
                       </GlassCard>
                     ))}
@@ -109,8 +201,8 @@ export default function TutorPage() {
                 className="flex justify-center"
               >
                 <button
-                  onClick={() => setStarted(true)}
-                  className="px-8 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all hover:scale-105"
+                  onClick={startLesson}
+                  className="btn-glow px-8 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all hover:scale-105 active:scale-[0.97]"
                 >
                   학습 시작하기
                 </button>
@@ -129,17 +221,30 @@ export default function TutorPage() {
       <div className="glass border-b border-white/5 px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-semibold">🎓 소크라테스 AI 튜터</h1>
+            <h1 className="text-lg font-semibold">
+              {selectedSubject?.icon} 소크라테스 AI 튜터
+            </h1>
             <p className="text-xs text-muted">
-              {selectedSubject} &gt; {selectedTopic}
+              {selectedSubject?.name} &gt; {selectedTopic?.name}
             </p>
           </div>
-          <button
-            onClick={() => setStarted(false)}
-            className="text-sm text-muted hover:text-foreground transition-colors"
-          >
-            교과 변경
-          </button>
+          <div className="flex items-center gap-3">
+            {messages.filter((m) => !m.content.startsWith("[SYSTEM:")).length >= 3 && (
+              <button
+                onClick={generateStudyNote}
+                disabled={summaryLoading}
+                className="text-sm text-amber-400 hover:text-amber-300 transition-colors disabled:opacity-50"
+              >
+                {summaryLoading ? "생성 중..." : "&#128221; 학습 노트 저장"}
+              </button>
+            )}
+            <button
+              onClick={() => setStarted(false)}
+              className="text-sm text-muted hover:text-foreground transition-colors"
+            >
+              교과 변경
+            </button>
+          </div>
         </div>
       </div>
 
@@ -149,31 +254,33 @@ export default function TutorPage() {
           {messages.length === 0 && (
             <GlassCard hover={false}>
               <p className="text-muted text-sm">
-                💡 <strong>{selectedTopic}</strong>에 대해 궁금한 것을
-                질문해보세요. AI가 답을 직접 주지 않고, 질문을 통해 스스로
-                깨달을 수 있도록 도와드립니다.
+                &#128161; AI 튜터가 질문을 준비하고 있습니다...
               </p>
             </GlassCard>
           )}
 
-          {messages.map((m) => (
-            <motion.div
-              key={m.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                  m.role === "user"
-                    ? "bg-primary text-primary-foreground rounded-br-md"
-                    : "glass rounded-bl-md"
+          {messages
+            .filter((m) => !m.content.startsWith("[SYSTEM:"))
+            .map((m) => (
+              <motion.div
+                key={m.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`flex ${
+                  m.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                <p className="whitespace-pre-wrap">{m.content}</p>
-              </div>
-            </motion.div>
-          ))}
+                <div
+                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                    m.role === "user"
+                      ? "bg-primary text-primary-foreground rounded-br-md"
+                      : "glass rounded-bl-md"
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap">{m.content}</p>
+                </div>
+              </motion.div>
+            ))}
 
           {isLoading && (
             <motion.div
@@ -202,7 +309,7 @@ export default function TutorPage() {
           <input
             value={input}
             onChange={handleInputChange}
-            placeholder="질문을 입력하세요..."
+            placeholder="답변을 입력하세요..."
             className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-primary transition-colors"
           />
           <button
