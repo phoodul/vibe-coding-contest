@@ -21,6 +21,8 @@ const studentMenus = [
 const teacherMenus = [
   { title: "공문서 포맷터", desc: "원클릭 공문서 양식 교정", icon: "📄", href: "/teacher/formatter" },
   { title: "공문서 생성기", desc: "AI 공문서 자동 작성", icon: "📝", href: "/teacher/generator" },
+  { title: "문서 관리", desc: "발급 워크플로우 · 번호 발급", icon: "📋", href: "/teacher/documents" },
+  { title: "위변조 검증", desc: "SHA-256 해시 기반 원본 확인", icon: "🔍", href: "/teacher/documents/verify" },
 ];
 
 export default function DashboardPage() {
