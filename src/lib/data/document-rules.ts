@@ -29,10 +29,18 @@ function fixTimeFormat(text: string): string {
   );
 }
 
+// ── 금액 괄호 앞 공백 제거: 금500,000원 (금오십만원) → 금500,000원(금오십만원) ──
+function fixAmountParenSpace(text: string): string {
+  return text.replace(
+    /(금[\d,]+원)\s+(\(금[^)]+\))/g,
+    "$1$2"
+  );
+}
+
 // ── 금액 표기 교정: 50000원 → 금50,000원(금오만원) ──
 function fixAmountFormat(text: string): string {
   return text.replace(
-    /(?<!\d[,.])(\d{1,3}(,?\d{3})*)원(?!\()/g,
+    /(?<!금)(?<!\d[,.])(\d{1,3}(,?\d{3})*)원(?!\s*\(금)/g,
     (match) => {
       const num = match.replace(/[^0-9]/g, "");
       const n = Number(num);
@@ -164,6 +172,13 @@ export function analyzeDocument(text: string): FormatIssue[] {
       current = timeFix;
     }
 
+    // 금액 괄호 앞 공백
+    const amountParenFix = fixAmountParenSpace(current);
+    if (amountParenFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: amountParenFix, rule: "금액 괄호 앞 공백 제거", category: "amount" });
+      current = amountParenFix;
+    }
+
     // 금액 표기
     const amountFix = fixAmountFormat(current);
     if (amountFix !== current) {
@@ -222,6 +237,7 @@ export function applyAllFixes(text: string): string {
   r = fixFullWidth(r);
   r = fixDateFormat(r);
   r = fixTimeFormat(r);
+  r = fixAmountParenSpace(r);
   r = fixAmountFormat(r);
   r = fixItemSpacing(r);
   r = fixReferenceNumber(r);

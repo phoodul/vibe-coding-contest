@@ -1,77 +1,92 @@
-# Implementation Plan: 최신 UI/UX 디자인 업그레이드
+# Mind Palace 카툰 데모 — Implementation Plan
 
-## 조사 기반
-- Awwwards SOTY 2025 (Lando Norris) — 시네마틱 스크롤, 키네틱 타이포
-- CSSDA WOTY 2025 (Dropbox Brand) — 감정적 모션, 발견 기반 UX
-- Charles Leclerc — 스크롤 스토리텔링, 마이크로인터랙션
+## 개요
+생활과 윤리 3단원 "사회와 윤리"의 교과서 내용을 카툰 서재 배경에 공간 배치하여, 
+나레이터가 교과서를 읽어주는 기억의 궁전(Mind Palace) 데모.
 
-## 현재 스택으로 구현 가능 여부: ✅ 전부 가능
-- Next.js 15 + Framer Motion 12 + Tailwind CSS 4
-- WebGL 불필요 — CSS + Framer Motion만으로 충분
+## 핵심 컨셉
+- **카툰 서재 SVG** — 명확한 외곽선 + 단색 면 → 객체 구분이 깔끔
+- **공간 기억법** — 서재의 벽/가구별로 소단원을 매핑, 객체별로 세부 항목 할당
+- **나레이터** — 기존 `/api/tts` (OpenAI gpt-4o-mini-tts) 활용, 순차 음성 가이드
+- **계층 구조** — 4개 소단원 → 18개 세부 항목 → 객체 클릭 시 상세 내용
 
----
+## 공간 매핑 전략 (서재 4개 영역)
 
-## 업그레이드 계획
+```
+┌──────────────────────────────────────────┐
+│            [칠판] 사회 정의와 윤리         │ ← 북쪽 벽
+│  ┌──────┐                      ┌──────┐  │
+│  │ 책장 │    (서재 중앙 공간)    │ 창문 │  │
+│  │      │                      │ 화분 │  │
+│  │직업과│   ┌──────────────┐   │국가와│  │
+│  │청렴의│   │  책상 + 의자  │   │시민의│  │
+│  │ 윤리 │   │ 종합비교/시험 │   │ 윤리 │  │
+│  └──────┘   └──────────────┘   └──────┘  │
+│  ← 서쪽 벽                      동쪽 벽 →  │
+└──────────────────────────────────────────┘
+```
 
-### 1. 랜딩 페이지 (src/app/page.tsx) — 가장 큰 임팩트
+| 영역 (소단원) | 서재 위치 | 객체 수 | 세부 항목 |
+|------|---------|-------|--------|
+| 1. 직업과 청렴 | 서쪽 책장 | 5개 | 책장 칸 5단 |
+| 2. 사회 정의 | 북쪽 칠판 | 7개 | 칠판/지구본/시계/액자 등 |
+| 3. 국가와 시민 | 동쪽 창문 | 3개 | 창문/화분/달력 |
+| 4. 종합 비교 | 중앙 책상 | 3개 | 노트북/펜꽂이/커피잔 |
 
-#### 1-1. 키네틱 타이포그래피 히어로
-- 스크롤에 연동된 텍스트 스케일링/페이드
-- Framer Motion `useScroll()` + `useTransform()` 활용
-- 제목이 뷰포트에 맞춰 확대/축소되는 효과
+## 파일 구조
 
-#### 1-2. 스크롤 기반 콘텐츠 리빌
-- 각 섹션이 스크롤에 따라 시네마틱하게 등장
-- `whileInView` + opacity/y 트랜지션
-- 이전 정적 나열 → 순차적 스토리텔링
+```
+src/
+├── app/mind-palace/
+│   └── page.tsx                    # 메인 페이지
+├── components/mind-palace/
+│   ├── study-room-svg.tsx          # 카툰 서재 SVG (18개 클릭 영역)
+│   ├── palace-content-panel.tsx    # 선택한 항목 상세 패널
+│   ├── palace-narrator.tsx         # 나레이터 컨트롤
+│   └── palace-hierarchy.tsx        # 좌측 목차 트리
+├── hooks/
+│   └── use-palace-narrator.ts      # TTS 나레이터 훅
+└── lib/data/mind-palace/
+    └── ethics-ch3-palace.ts        # 교과서 데이터 + 객체 매핑
+```
 
-#### 1-3. 히어로 CTA 강화
-- Glow 효과 + 펄스 애니메이션 버튼
-- Hover 시 그라디언트 보더 애니메이션
+## 구현 순서
 
-### 2. 글로벌 디자인 시스템 진화
+### Step 1: 데이터 (ethics-ch3-palace.ts)
+- main의 ethics-ch3.ts를 version2 형태로 포팅
+- 각 항목에 SVG 객체 ID, 나레이터 텍스트 추가
+- verify: import 에러 없이 데이터 로드
 
-#### 2-1. 그라디언트 보더 글래스 카드
-- 기존 `border: rgba(255,255,255,0.08)` → 그라디언트 보더
-- CSS `conic-gradient` + `border-image` 조합
-- Hover 시 보더 회전 애니메이션
+### Step 2: SVG 서재 (study-room-svg.tsx)
+- React 컴포넌트로 카툰 서재 SVG 직접 그리기
+- 18개 객체 영역에 hover/click 인터랙션
+- Framer Motion 하이라이트 애니메이션
+- verify: 클릭 시 객체 ID 콜백 정상 작동
 
-#### 2-2. Mesh Gradient 풍부화
-- 2개 블롭 → 3개 블롭 (cyan 추가)
-- 스크롤에 따라 블롭 위치/크기 미세 변화
+### Step 3: 페이지 조립 (page.tsx)
+- 좌: 계층 목차 (소단원 → 항목), 우: SVG 서재 + 콘텐츠 패널
+- 목차 클릭 ↔ SVG 객체 하이라이트 양방향 연동
+- 글래스모피즘 카드, 벤토 그리드
+- verify: 목차 클릭 → SVG 하이라이트 → 패널 내용 표시
 
-#### 2-3. 글로벌 CSS 효과 추가
-- 버튼 hover glow 효과
-- 텍스트 그라디언트 shimmer 애니메이션
-- 카드 hover 시 글래스 광택(sheen) 효과
+### Step 4: 나레이터 (use-palace-narrator.ts + palace-narrator.tsx)
+- `/api/tts` 엔드포인트로 한국어 TTS 요청
+- 순차 재생: 현재 항목 읽기 → 완료 시 다음 항목 자동 이동
+- SVG 객체 자동 하이라이트 연동
+- 재생/일시정지/이전/다음 컨트롤
+- verify: 나레이터 시작 → SVG 하이라이트 자동 이동 + 음성 재생
 
-### 3. 대시보드 (src/app/dashboard/page.tsx) 강화
+### Step 5: 대시보드 통합
+- 학생 대시보드 "AI 학습" 섹션에 "기억의 궁전" 카드 추가
+- 소크라테스 AI 튜터 옆에 배치
+- verify: 대시보드 → 기억의 궁전 → 정상 이동
 
-#### 3-1. 비대칭 Bento Grid
-- 주요 기능 카드 크기 차별화 (AI 튜터 = 2x, 나머지 = 1x)
-- `col-span-2`, `row-span-2` 활용
+### Step 6: 빌드 확인
+- `npm run build` 성공
+- TypeScript 에러 0
+- verify: 빌드 성공 로그 확인
 
-#### 3-2. 카드 호버 인터랙션 강화
-- Hover 시 내부 아이콘 부유 애니메이션
-- 카드 배경 그라디언트 시프트
-- 미묘한 3D 틸트 효과 (CSS perspective + Framer Motion)
-
-### 4. 마이크로인터랙션 전면 강화
-
-#### 4-1. 버튼 컴포넌트
-- Press 시 scale-down (0.97) + release bounce
-- Hover 시 glow shadow 확산
-- 로딩 상태 스피너 → shimmer 프로그레스
-
-#### 4-2. 카드 컴포넌트
-- Hover 시 subtle magnetic tilt (마우스 위치 기반)
-- 카드 진입 시 stagger 더 정교화 (spring physics)
-
----
-
-## 검증 기준
-1. 랜딩 페이지: 스크롤 시 키네틱 타이포 + 콘텐츠 리빌 동작
-2. 대시보드: 비대칭 벤토 그리드 + 카드 호버 효과
-3. 글로벌: 그라디언트 보더 + glow 버튼 + mesh gradient 3블롭
-4. `npm run build` 성공
-5. 모바일 반응형 유지
+## 기술 결정
+- **TTS**: 기존 `/api/tts` (OpenAI) → 한국어 지원 여부 확인, 미지원 시 브라우저 SpeechSynthesis fallback
+- **SVG vs 이미지**: SVG 직접 그리기 — 외부 이미지 불필요, 모든 영역 프로그래밍 가능, 해상도 독립적
+- **애니메이션**: Framer Motion — 기존 프로젝트 패턴과 일치

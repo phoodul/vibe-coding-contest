@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import JSZip from "jszip";
 import {
   analyzeDocument,
   applyAllFixes,
@@ -29,20 +30,28 @@ export default function FormatterPage() {
     setAppliedFixes(new Set());
     setCurrentIssueIdx(0);
 
-    if (file.name.endsWith(".txt")) {
+    const ext = file.name.toLowerCase();
+
+    if (ext.endsWith(".txt")) {
       const content = await file.text();
       setText(content);
-    } else if (file.name.endsWith(".docx")) {
-      // docx에서 텍스트 추출 (간이 방식 — zip 내 document.xml 파싱)
+    } else if (ext.endsWith(".hwpx")) {
       try {
         const arrayBuffer = await file.arrayBuffer();
-        const text = await extractDocxText(arrayBuffer);
-        setText(text);
+        const content = await extractHwpxText(arrayBuffer);
+        setText(content);
+      } catch {
+        setText("[.hwpx 파일 텍스트 추출에 실패했습니다. 한글에서 Ctrl+A → Ctrl+C로 복사 후 붙여넣기를 시도해주세요.]");
+      }
+    } else if (ext.endsWith(".docx")) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const content = await extractDocxText(arrayBuffer);
+        setText(content);
       } catch {
         setText("[.docx 파일 텍스트 추출에 실패했습니다. .txt 파일로 변환 후 다시 시도해주세요.]");
       }
     } else {
-      // hwp, pdf 등은 텍스트 추출 제한
       setText(
         `[${file.name}]\n\n이 파일 형식은 직접 텍스트 추출이 어렵습니다.\n\n` +
           "아래 방법으로 텍스트를 붙여넣어 주세요:\n" +
@@ -149,7 +158,7 @@ export default function FormatterPage() {
                 공문서 파일을 드래그 앤 드롭하세요
               </p>
               <p className="text-sm text-muted mb-4">
-                .txt, .docx 파일 지원 &middot; HWP는 텍스트 복사/붙여넣기
+                .hwpx, .txt, .docx 파일 지원 &middot; HWP는 텍스트 복사/붙여넣기
               </p>
               <button className="px-6 py-2 rounded-lg bg-primary/20 text-primary text-sm font-medium hover:bg-primary/30 transition-colors">
                 파일 선택
@@ -391,21 +400,128 @@ export default function FormatterPage() {
   );
 }
 
-// ── DOCX 텍스트 추출 (zip → document.xml → strip tags) ──
-async function extractDocxText(buffer: ArrayBuffer): Promise<string> {
-  // docx는 ZIP 파일. JSZip 없이 최소한의 파싱 시도
-  // ZIP 구조에서 word/document.xml 을 찾아 텍스트 추출
-  const uint8 = new Uint8Array(buffer);
-  const text = new TextDecoder("utf-8", { fatal: false }).decode(uint8);
+// ── HWPX 텍스트 추출 (ZIP → Contents/section*.xml) ──
+// 표(table): <hp:tbl> → <hp:tr> → <hp:tc> → 탭 구분 텍스트로 변환
+// 본문: <hp:p> → <hp:run> → <hp:t> 태그 추출
+async function extractHwpxText(buffer: ArrayBuffer): Promise<string> {
+  const zip = await JSZip.loadAsync(buffer);
+  const lines: string[] = [];
 
-  // XML에서 <w:t> 태그 내용 추출
-  const matches = text.match(/<w:t[^>]*>([^<]*)<\/w:t>/g);
-  if (!matches || matches.length === 0) {
-    throw new Error("No text content found in docx");
+  const sectionFiles = Object.keys(zip.files)
+    .filter((name) => /^Contents\/section\d+\.xml$/i.test(name))
+    .sort();
+
+  if (sectionFiles.length === 0) {
+    throw new Error("No section files found in HWPX");
   }
 
-  return matches
-    .map((m) => m.replace(/<[^>]+>/g, ""))
-    .join("")
-    .replace(/\r\n/g, "\n");
+  for (const path of sectionFiles) {
+    const xml = await zip.files[path].async("string");
+    parseHwpxBody(xml, lines);
+  }
+
+  return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+
+/** hp:t 태그에서 텍스트 추출 (단일 단락/셀 내부) */
+function extractHpText(fragment: string): string {
+  const matches = fragment.match(/<hp:t[^>]*>([^<]*)<\/hp:t>/g);
+  if (!matches) return "";
+  return matches.map((m) => m.replace(/<[^>]+>/g, "")).join("");
+}
+
+/** HWPX XML 본문을 파싱하여 lines 배열에 추가 */
+function parseHwpxBody(xml: string, lines: string[]) {
+  // 표와 본문 단락을 순서대로 처리하기 위해 top-level 요소를 순회
+  // 전략: 표(<hp:tbl>)를 먼저 마커로 치환 → 본문 단락 처리 → 마커 위치에서 표 삽입
+
+  // 1. 모든 표를 추출하여 저장
+  const tables: string[] = [];
+  const TABLE_MARKER = "\x00TABLE_";
+  const xmlWithMarkers = xml.replace(/<hp:tbl\b[^>]*>[\s\S]*?<\/hp:tbl>/g, (match) => {
+    const idx = tables.length;
+    tables.push(match);
+    return `${TABLE_MARKER}${idx}\x00`;
+  });
+
+  // 2. 표가 제거된 XML에서 단락 처리
+  const paragraphs = xmlWithMarkers.split(/<\/hp:p>/);
+  for (const para of paragraphs) {
+    // 표 마커 확인
+    const markerMatch = para.match(new RegExp(`${TABLE_MARKER.replace("\x00", "\\x00")}(\\d+)\\x00`));
+    if (markerMatch) {
+      // 표 마커 앞의 텍스트 처리
+      const before = para.slice(0, para.indexOf("\x00TABLE_"));
+      const beforeText = extractHpText(before);
+      if (beforeText.trim()) lines.push(beforeText);
+
+      // 표 렌더링
+      const tableXml = tables[Number(markerMatch[1])];
+      parseHwpxTable(tableXml, lines);
+      continue;
+    }
+
+    // 일반 단락
+    const text = extractHpText(para);
+    if (text) {
+      lines.push(text);
+    } else if (/<hp:p[\s>]/.test(para)) {
+      lines.push("");
+    }
+  }
+}
+
+/** HWPX 표를 탭 구분 텍스트로 변환 */
+function parseHwpxTable(tableXml: string, lines: string[]) {
+  // 행 추출
+  const rows = tableXml.match(/<hp:tr\b[^>]*>[\s\S]*?<\/hp:tr>/g);
+  if (!rows) return;
+
+  lines.push(""); // 표 앞 빈 줄
+
+  for (const row of rows) {
+    // 셀 추출
+    const cells = row.match(/<hp:tc\b[^>]*>[\s\S]*?<\/hp:tc>/g);
+    if (!cells) continue;
+
+    const cellTexts = cells.map((cell) => {
+      // 셀 내부 단락들의 텍스트를 합침
+      const cellParas = cell.split(/<\/hp:p>/);
+      return cellParas
+        .map((p) => extractHpText(p))
+        .filter((t) => t)
+        .join(" ");
+    });
+
+    lines.push(cellTexts.join("\t"));
+  }
+
+  lines.push(""); // 표 뒤 빈 줄
+}
+
+// ── DOCX 텍스트 추출 (ZIP → word/document.xml → <w:t> 태그) ──
+async function extractDocxText(buffer: ArrayBuffer): Promise<string> {
+  const zip = await JSZip.loadAsync(buffer);
+  const docFile = zip.files["word/document.xml"];
+  if (!docFile) {
+    throw new Error("No document.xml found in docx");
+  }
+
+  const xml = await docFile.async("string");
+  const lines: string[] = [];
+  const paragraphs = xml.split(/<\/w:p>/);
+
+  for (const para of paragraphs) {
+    const textMatches = para.match(/<w:t[^>]*>([^<]*)<\/w:t>/g);
+    if (textMatches && textMatches.length > 0) {
+      const lineText = textMatches
+        .map((m) => m.replace(/<[^>]+>/g, ""))
+        .join("");
+      lines.push(lineText);
+    } else if (/<w:p[\s>]/.test(para)) {
+      lines.push("");
+    }
+  }
+
+  return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }

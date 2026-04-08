@@ -17,6 +17,18 @@ type Tab = "learn" | "quiz" | "progress";
 
 const STORAGE_KEY = "eduflow-vocab-progress-v2";
 
+/** 한국어 뜻의 끝 패턴으로 품사를 추론 — 같은 품사끼리 보기를 만들기 위함 */
+function guessPos(meaning: string): string {
+  const m = meaning.trim();
+  if (m.endsWith("하다") || m.endsWith("되다") || m.endsWith("시키다") || m.endsWith("짓다") || m.endsWith("나다") || m.endsWith("내다") || m.endsWith("주다") || m.endsWith("먹다") || m.endsWith("가다") || m.endsWith("오다"))
+    return "verb";
+  if (m.endsWith("의") || m.endsWith("적") || m.endsWith("스러운") || m.endsWith("로운") || m.endsWith("다운") || m.endsWith("같은") || m.endsWith("없는") || m.endsWith("있는") || m.endsWith("한") || m.endsWith("인") || m.endsWith("색의") || m.endsWith("적인"))
+    return "adj";
+  if (m.endsWith("게") || m.endsWith("히") || m.endsWith("으로") || m.endsWith("로"))
+    return "adv";
+  return "noun";
+}
+
 interface Progress {
   startCamp: number;
   // camp -> groupIndex -> best score
@@ -395,21 +407,35 @@ function QuizTab({
     progress.groupScores[camp]?.[selectedGroup] ?? 0;
   const passed = bestScore >= PASS_SCORE;
 
-  // 전체 레벨의 모든 단어 뜻 목록 (오답 풀)
-  const allMeanings = useMemo(() => {
-    const meanings: string[] = [];
+  // 전체 레벨의 모든 단어 뜻 목록 (오답 풀) — 품사별 분류
+  const meaningsByPos = useMemo(() => {
+    const all: string[] = [];
+    const byPos: Record<string, string[]> = {};
     for (const g of groups) {
-      for (const [, m] of g.words) meanings.push(m);
+      for (const [, m] of g.words) {
+        all.push(m);
+        const pos = guessPos(m);
+        if (!byPos[pos]) byPos[pos] = [];
+        byPos[pos].push(m);
+      }
     }
-    return meanings;
+    return { all, byPos };
   }, [groups]);
 
   function generateQuiz() {
     if (words.length < WORDS_PER_GROUP) return;
     const picked = words.map(([word, meaning]) => {
-      const wrongPool = allMeanings.filter((m) => m !== meaning);
-      const shuffledWrong = wrongPool.sort(() => Math.random() - 0.5);
-      const wrongMeanings = shuffledWrong.slice(0, 3);
+      const pos = guessPos(meaning);
+      // 같은 품사에서 오답 후보를 먼저 뽑고, 부족하면 전체 풀에서 보충
+      const samePosPool = (meaningsByPos.byPos[pos] || []).filter(
+        (m) => m !== meaning
+      );
+      const otherPool = meaningsByPos.all.filter(
+        (m) => m !== meaning && !samePosPool.includes(m)
+      );
+      const shuffledSame = samePosPool.sort(() => Math.random() - 0.5);
+      const shuffledOther = otherPool.sort(() => Math.random() - 0.5);
+      const wrongMeanings = [...shuffledSame, ...shuffledOther].slice(0, 3);
       const choices = [...wrongMeanings, meaning].sort(
         () => Math.random() - 0.5
       );

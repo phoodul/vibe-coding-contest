@@ -36,7 +36,12 @@ const studentSections: MenuSection[] = [
         desc: "질문으로 이끄는 AI 학습",
         icon: "🎓",
         href: "/tutor",
-        span: "sm:col-span-2 lg:col-span-2",
+      },
+      {
+        title: "기억의 궁전",
+        desc: "카툰 공간 기억법으로 교과서 암기",
+        icon: "🏛️",
+        href: "/mind-palace",
       },
     ],
   },
