@@ -204,32 +204,24 @@ function LearnTab({
   const group = groups[selectedGroup];
   const words = group?.words || [];
 
-  const playPronunciation = useCallback(async (word: string) => {
+  const playPronunciation = useCallback((word: string) => {
     setPlayingWord(word);
-    try {
-      const res = await fetch("/api/tts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: word,
-          voice: "nova",
-          instructions: "Pronounce this English word clearly and slowly.",
-        }),
-      });
-      const arrayBuffer = await res.arrayBuffer();
-      const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audio.onended = () => {
-        URL.revokeObjectURL(url);
-        setPlayingWord(null);
-      };
-      audio.onerror = () => {
-        URL.revokeObjectURL(url);
-        setPlayingWord(null);
-      };
-      audio.play();
-    } catch {
+    // 브라우저 내장 SpeechSynthesis — 네트워크 없이 즉시 발음
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.cancel(); // 이전 발음 중단
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = "en-US";
+      utterance.rate = 0.85; // 약간 느리게 (학습용)
+      // 영어 음성 선택
+      const voices = window.speechSynthesis.getVoices();
+      const enVoice = voices.find(
+        (v) => v.lang.startsWith("en") && v.name.includes("Google")
+      ) || voices.find((v) => v.lang.startsWith("en"));
+      if (enVoice) utterance.voice = enVoice;
+      utterance.onend = () => setPlayingWord(null);
+      utterance.onerror = () => setPlayingWord(null);
+      window.speechSynthesis.speak(utterance);
+    } else {
       setPlayingWord(null);
     }
   }, []);
@@ -702,27 +694,30 @@ function getPointOnRoute(campIdx: number, groupIdx: number): [number, number] {
 function ProgressTab({ progress }: { progress: Progress }) {
   const [showCelebration, setShowCelebration] = useState("");
 
-  const camps = CAMP_INFO.map((info) => {
-    const passed = progress.passedGroups[info.camp] || [];
-    return {
-      ...info,
-      passedCount: passed.length,
-      allPassed: passed.length >= GROUPS_PER_LEVEL,
-    };
-  });
+  // progress.passedGroups에서 직접 계산 (의존성 명확화)
+  const camps = useMemo(
+    () =>
+      CAMP_INFO.map((info) => {
+        const passed = progress.passedGroups[info.camp] || [];
+        return {
+          ...info,
+          passedCount: passed.length,
+          allPassed: passed.length >= GROUPS_PER_LEVEL,
+        };
+      }),
+    [progress.passedGroups]
+  );
 
   // 현재 위치 계산
   const { currentCampIdx, currentGroupIdx } = useMemo(() => {
-    let cIdx = progress.startCamp - 1; // 0-based
     for (let i = progress.startCamp - 1; i < 10; i++) {
-      if (camps[i].allPassed) {
-        cIdx = i + 1; // 다음 캠프로
-      } else {
-        return { currentCampIdx: i, currentGroupIdx: camps[i].passedCount };
+      const passedCount = (progress.passedGroups[CAMP_INFO[i].camp] || []).length;
+      if (passedCount < GROUPS_PER_LEVEL) {
+        return { currentCampIdx: i, currentGroupIdx: passedCount };
       }
     }
-    return { currentCampIdx: Math.min(cIdx, 9), currentGroupIdx: GROUPS_PER_LEVEL };
-  }, [camps, progress.startCamp]);
+    return { currentCampIdx: 9, currentGroupIdx: GROUPS_PER_LEVEL };
+  }, [progress.passedGroups, progress.startCamp]);
 
   const currentPos = getPointOnRoute(currentCampIdx, currentGroupIdx);
   const reachedSummit = currentCampIdx >= 9 && currentGroupIdx >= GROUPS_PER_LEVEL;
@@ -906,13 +901,17 @@ function ProgressTab({ progress }: { progress: Progress }) {
                 <text
                   x={point[0] + (i % 2 === 0 ? 14 : -14)}
                   y={point[1] + 9}
-                  fill="rgba(255,255,255,0.35)"
+                  fill={isCurrent ? "#fca5a5" : "rgba(255,255,255,0.35)"}
                   fontSize="7"
                   textAnchor={i % 2 === 0 ? "start" : "end"}
                   fontFamily="system-ui"
                 >
                   {camp.altitude}
-                  {isCompleted ? " ✓" : isCurrent ? ` ${camp.passedCount}/${GROUPS_PER_LEVEL}` : ""}
+                  {isCompleted
+                    ? " ✓ CLEAR"
+                    : camp.passedCount > 0
+                      ? ` (${camp.passedCount}/${GROUPS_PER_LEVEL})`
+                      : ""}
                 </text>
               </g>
             );

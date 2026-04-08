@@ -157,7 +157,9 @@ export default function ConversationPage() {
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
     recognition.interimResults = true;
-    recognition.continuous = true;
+    // continuous = false로 변경: 자연스러운 발화 단위 인식 후 자동 종료 → onend에서 재시작
+    // continuous=true는 isFinal이 매우 늦게 오는 브라우저 문제가 있음
+    recognition.continuous = false;
 
     recognition.onresult = (event: any) => {
       let interim = "";
@@ -185,7 +187,7 @@ export default function ConversationPage() {
           stopAudio();
           setAiState("listening");
         }
-        // 2초 침묵 시 축적된 텍스트를 강제 전송
+        // 1.2초 침묵 시 축적된 텍스트를 강제 전송 (ChatGPT 수준의 반응 속도)
         silenceTimerRef.current = setTimeout(() => {
           if (pendingTranscriptRef.current) {
             const text = pendingTranscriptRef.current;
@@ -195,7 +197,7 @@ export default function ConversationPage() {
             append({ role: "user", content: text });
             try { recognition.stop(); } catch { /* restart via onend */ }
           }
-        }, 2000);
+        }, 1200);
       }
 
       if (final) {
@@ -205,19 +207,22 @@ export default function ConversationPage() {
           silenceTimerRef.current = null;
         }
         setInterimText("");
-        setAiState("thinking");
-        append({ role: "user", content: final });
+        // AI가 thinking 중이면 중복 전송 방지
+        if (aiStateRef.current !== "thinking") {
+          setAiState("thinking");
+          append({ role: "user", content: final });
+        }
       }
     };
 
     recognition.onerror = (e: any) => {
-      // no-speech 에러는 무시하고 재시작
+      // no-speech, aborted 에러는 무시하고 재시작
       if (e.error === "no-speech" || e.error === "aborted") return;
       console.error("Speech recognition error:", e.error);
     };
 
     recognition.onend = () => {
-      // 상시 모드: 자동 재시작
+      // 상시 모드: 자동 재시작 (continuous=false이므로 발화마다 onend 발생)
       if (shouldListenRef.current) {
         try {
           recognition.start();

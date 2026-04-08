@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SUBJECTS } from "@/lib/ai/tutor-prompt";
@@ -13,6 +13,8 @@ export default function TutorPage() {
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [started, setStarted] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryText, setSummaryText] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, append } =
     useChat({
@@ -22,6 +24,73 @@ export default function TutorPage() {
         topic: selectedTopic?.name || "",
       },
     });
+
+  // 자동 스크롤 — 새 메시지 시 하단으로
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
+
+  // 요약 정리 — 화면에 표시
+  const generateSummary = useCallback(async () => {
+    if (messages.length < 3) return;
+    setSummaryLoading(true);
+    setSummaryText("");
+    try {
+      const res = await fetch("/api/tutor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            ...messages.filter((m) => !m.content.startsWith("[SYSTEM:")),
+            {
+              role: "user",
+              content: `[SYSTEM: 지금까지 대화에서 학생이 배운 핵심 개념을 요약 정리해주세요.
+형식:
+📚 오늘 배운 핵심 개념
+1. **개념명**: 설명 (2-3문장)
+2. **개념명**: 설명
+...
+
+💡 아직 더 알아볼 내용
+- 내용1
+- 내용2
+
+한국어로 작성하되 간결하고 명확하게 정리해주세요.]`,
+            },
+          ],
+          subject: selectedSubject?.name || "",
+          topic: selectedTopic?.name || "",
+        }),
+      });
+
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          fullText += decoder.decode(value, { stream: true });
+        }
+      }
+
+      const parsed = fullText
+        .split("\n")
+        .filter((line) => line.startsWith("0:"))
+        .map((line) => {
+          try { return JSON.parse(line.slice(2)); }
+          catch { return ""; }
+        })
+        .join("");
+
+      setSummaryText(parsed);
+    } catch {
+      setSummaryText("요약 생성에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setSummaryLoading(false);
+    }
+  }, [messages, selectedSubject, selectedTopic]);
 
   // 학습 노트 생성 + 다운로드
   const generateStudyNote = useCallback(async () => {
@@ -228,19 +297,28 @@ export default function TutorPage() {
               {selectedSubject?.name} &gt; {selectedTopic?.name}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {messages.filter((m) => !m.content.startsWith("[SYSTEM:")).length >= 3 && (
-              <button
-                onClick={generateStudyNote}
-                disabled={summaryLoading}
-                className="text-sm text-amber-400 hover:text-amber-300 transition-colors disabled:opacity-50"
-              >
-                {summaryLoading ? "생성 중..." : "&#128221; 학습 노트 저장"}
-              </button>
+              <>
+                <button
+                  onClick={generateSummary}
+                  disabled={summaryLoading}
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50"
+                >
+                  {summaryLoading ? "..." : "&#128218; 요약 정리"}
+                </button>
+                <button
+                  onClick={generateStudyNote}
+                  disabled={summaryLoading}
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-50"
+                >
+                  {summaryLoading ? "..." : "&#128190; 노트 저장"}
+                </button>
+              </>
             )}
             <button
               onClick={() => setStarted(false)}
-              className="text-sm text-muted hover:text-foreground transition-colors"
+              className="text-xs text-muted hover:text-foreground transition-colors"
             >
               교과 변경
             </button>
@@ -297,6 +375,37 @@ export default function TutorPage() {
               </div>
             </motion.div>
           )}
+
+          {/* 요약 정리 패널 */}
+          <AnimatePresence>
+            {summaryText && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+              >
+                <div className="glass-gradient p-5 rounded-2xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-semibold text-primary">
+                      &#128218; 학습 요약 정리
+                    </span>
+                    <button
+                      onClick={() => setSummaryText("")}
+                      className="text-xs text-muted hover:text-foreground transition-colors"
+                    >
+                      닫기
+                    </button>
+                  </div>
+                  <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                    {summaryText}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 자동 스크롤 앵커 */}
+          <div ref={messagesEndRef} />
         </div>
       </div>
 
