@@ -279,37 +279,6 @@ export default function LandingPage() {
             </Link>
           </motion.div>
 
-          {/* Floating mockup element - glass UI preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mt-16 sm:mt-20 w-full max-w-3xl mx-auto"
-          >
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="glass-gradient p-1 rounded-2xl"
-            >
-              <div className="rounded-xl bg-[rgba(10,10,15,0.8)] p-4 sm:p-6">
-                {/* Mock top bar */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 rounded-full bg-[#f43f5e]/60" />
-                  <div className="w-3 h-3 rounded-full bg-[#f59e0b]/60" />
-                  <div className="w-3 h-3 rounded-full bg-[#10b981]/60" />
-                  <div className="ml-3 h-5 w-48 rounded-md bg-white/5" />
-                </div>
-                {/* Mock content grid */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  <div className="col-span-2 h-20 sm:h-28 rounded-lg bg-gradient-to-br from-indigo-500/10 to-violet-500/10 border border-white/5" />
-                  <div className="h-20 sm:h-28 rounded-lg bg-gradient-to-br from-cyan-500/10 to-indigo-500/10 border border-white/5" />
-                  <div className="h-16 sm:h-20 rounded-lg bg-gradient-to-br from-violet-500/10 to-cyan-500/10 border border-white/5" />
-                  <div className="col-span-2 h-16 sm:h-20 rounded-lg bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border border-white/5" />
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-
           {/* Scroll Indicator */}
           <motion.div
             initial={{ opacity: 0 }}
