@@ -11,6 +11,8 @@ import type {
 export interface FlatNarratorItem {
   id: string;
   text: string;
+  keyword?: string;       // Scene object 위 키워드
+  originalText?: string;  // 나레이터 읽기용 원본 텍스트
   depth: number; // 노드의 중첩 깊이 (0 = 최상위)
   noteId: string; // 소속 StructuredNote id
   sectionId: string;
@@ -49,6 +51,8 @@ function walkNodes(
     items.push({
       id: `${note.id}_n${items.length}`,
       text: node.text,
+      keyword: node.keyword,
+      originalText: node.originalText,
       depth,
       noteId: note.id,
       sectionId: section.id,

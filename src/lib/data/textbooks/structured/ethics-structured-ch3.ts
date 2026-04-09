@@ -14,6 +14,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s1_c1",
         label: "직업의 의미와 직업 윤리",
+        keyword: "직업윤리",
         nodes: [
           { text: "직업: 생계 수단 + 사회적 역할 분담 + 자아실현의 수단" },
           {
@@ -64,6 +65,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s1_c2",
         label: "전문직 윤리와 기업 윤리",
+        keyword: "전문직",
         nodes: [
           {
             text: "전문직 윤리",
@@ -104,6 +106,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s1_c2b",
         label: "노동의 의미와 노동자의 권리",
+        keyword: "노동권",
         nodes: [
           {
             text: "노동에 대한 철학적 관점",
@@ -170,6 +173,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s1_c2c",
         label: "시장경제 윤리와 기업의 사회적 책임",
+        keyword: "시장경제",
         nodes: [
           {
             text: "애덤 스미스(Adam Smith)",
@@ -216,6 +220,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s1_c3",
         label: "청렴과 부패 방지",
+        keyword: "청렴",
         nodes: [
           {
             text: "청렴(廉): 공직자가 사적 이익 배제, 공공 이익 위해 직무 수행하는 것",
@@ -262,6 +267,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s2_c1",
         label: "정의의 의미와 유형",
+        keyword: "정의",
         nodes: [
           {
             text: "정의(Justice): 사회 구성원에게 마땅한 몫을 공정하게 분배하는 원리",
@@ -285,6 +291,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s2_c2",
         label: "롤스의 정의론",
+        keyword: "롤스",
         nodes: [
           { text: "롤스(John Rawls): '정의론(1971)'" },
           {
@@ -325,6 +332,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s2_c2b",
         label: "롤스 정의론의 핵심 개념 심화",
+        keyword: "기본재",
         nodes: [
           {
             text: "반성적 평형(Reflective Equilibrium)",
@@ -360,6 +368,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s2_c3",
         label: "노직의 자유지상주의",
+        keyword: "노직",
         nodes: [
           {
             text: "노직(Robert Nozick): '무정부, 국가, 유토피아(1974)'",
@@ -389,6 +398,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s2_c4",
         label: "왈처의 다원적 정의",
+        keyword: "왈처",
         nodes: [
           {
             text: "왈처(Michael Walzer): '정의의 영역들(1983)'",
@@ -415,6 +425,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s2_c5",
         label: "교정적 정의와 사형제 논쟁",
+        keyword: "사형제",
         nodes: [
           {
             text: "교정적 정의: 범죄·부당 행위에 적절한 처벌·보상으로 정의 회복",
@@ -459,6 +470,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s2_c6",
         label: "우대 정책(적극적 우대 조치)",
+        keyword: "우대정책",
         nodes: [
           {
             text: "적극적 우대 조치(Affirmative Action): 역사적으로 차별받은 집단에 교육·고용 우선 기회 제공",
@@ -494,6 +506,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s3_c1",
         label: "국가의 권위와 시민의 의무",
+        keyword: "국가권위",
         nodes: [
           {
             text: "홉스(Thomas Hobbes)",
@@ -531,6 +544,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s3_c2",
         label: "시민 불복종",
+        keyword: "불복종",
         nodes: [
           {
             text: "시민 불복종(Civil Disobedience): 부정의한 법·정책에 비폭력적·공개적으로 법 위반하여 변화 촉구하는 행위",
@@ -564,6 +578,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s3_c3",
         label: "민주주의와 인권",
+        keyword: "민주주의",
         nodes: [
           {
             text: "민주주의 기본 원리",
@@ -610,6 +625,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s4_c1",
         label: "4대 정의론 핵심 비교",
+        keyword: "정의론",
         nodes: [
           {
             text: "롤스(Rawls)",
@@ -656,6 +672,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s4_c2",
         label: "정의론 적용 — 시험 빈출 상황",
+        keyword: "적용문제",
         nodes: [
           {
             text: "상황 1: 대입에서 저소득층 학생에게 가산점을 주는 정책",
@@ -690,6 +707,7 @@ export const ETHICS_STRUCTURED_CH3: StructuredSection[] = [
       {
         id: "ch3_s4_c3",
         label: "동서양 정의 사상 비교",
+        keyword: "동서양",
         nodes: [
           {
             text: "서양 정의 사상",

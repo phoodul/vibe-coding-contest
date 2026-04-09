@@ -1,270 +1,422 @@
 "use client";
 
-import { motion } from "framer-motion";
-import type { StructuredSection } from "@/lib/data/textbooks/structured/ethics-structured-index";
+import { useCallback, useRef, useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PalaceObjectSVG } from "./palace-objects";
+import type { RoomSceneConfig, SceneObject, ObjectPart } from "@/lib/mind-palace/scene-config";
 
 /**
- * Mind Palace 씬 — 서재 투시도 SVG
+ * Mind Palace Scene Renderer
  *
- * structured text의 섹션 수에 따라 영역(zone) 배치
- * 각 영역 내 note 수에 따라 오브젝트 배치
+ * 기본 상태: 모든 오브젝트 + 작은 keyword(9px) = 학습 지도
+ * 나레이터/클릭 시: keyword 사라짐 → structured_text 16px + 오브젝트 글로우
+ * 모든 텍스트 표시는 Scene 위에서만 (하단 패널 없음)
  */
 
+export type PalaceMode = "learn" | "review";
+export type ReviewClickState = "scene" | "keyword" | "text";
+
 interface PalaceSceneProps {
-  sections: StructuredSection[];
-  activeNoteId: string | null;
-  activeSectionId: string | null;
-  onNoteClick: (noteId: string) => void;
+  config: RoomSceneConfig;
+  mode: PalaceMode;
+  /** 현재 나레이터가 읽고 있는 flatIndex (-1 = 없음) */
+  activeFlatIndex: number;
+  /** 나레이터가 지금까지 reveal한 최대 flatIndex (-1 = 없음) */
+  revealedUpTo?: number;
+  /** 학습 모드: 클릭으로 선택된 오브젝트 ID (전체 파트 텍스트 표시) */
+  selectedObjId: string | null;
+  /** 복습 모드 3-click 상태 */
+  reviewStates: Record<string, ReviewClickState>;
+  /** 클릭 시 콜백 */
+  onPartClick: (obj: SceneObject, part: ObjectPart) => void;
+  /** 오브젝트 클릭 */
+  onObjectClick: (obj: SceneObject) => void;
 }
 
-// 영역별 색상
-const ZONE_THEME = [
-  { fill: "#2a1f1a", active: "#f59e0b", glow: "#f59e0b40", label: "#f59e0b" },
-  { fill: "#1a2a1f", active: "#10b981", glow: "#10b98140", label: "#10b981" },
-  { fill: "#1a1f2a", active: "#3b82f6", glow: "#3b82f640", label: "#3b82f6" },
-  { fill: "#2a1a2a", active: "#a855f7", glow: "#a855f740", label: "#a855f7" },
-];
+const SVG_W = 1200;
+const SVG_H = 700;
+const TEXT_BOX_W = 260;
+const TEXT_BOX_H = 90;
 
-// 오브젝트 이모지 풀 (중복 방지)
-const OBJECT_ICONS = [
-  ["📖", "⚖️", "🔨", "💰", "🏛️", "📜", "🪙"],
-  ["📋", "🌍", "🔍", "📚", "🕐", "🖼️", "🤝"],
-  ["🪟", "🌿", "📅", "🗳️", "🔔"],
-  ["💻", "✏️", "☕", "🗂️", "📐"],
-];
+export function PalaceScene({
+  config,
+  mode,
+  activeFlatIndex,
+  revealedUpTo = -1,
+  selectedObjId,
+  reviewStates,
+  onPartClick,
+  onObjectClick,
+}: PalaceSceneProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [hoveredObjId, setHoveredObjId] = useState<string | null>(null);
 
-interface ZoneLayout {
-  label: string;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+  // 현재 활성 파트 찾기 (나레이터 기반)
+  const activePart = findPartByFlatIndex(config, activeFlatIndex);
+
+  // 텍스트 박스 위치를 겹치지 않도록 계산
+  const textPositions = useMemo(() => {
+    return computeTextPositions(config, mode, activeFlatIndex, revealedUpTo, selectedObjId, reviewStates);
+  }, [config, mode, activeFlatIndex, revealedUpTo, selectedObjId, reviewStates]);
+
+  return (
+    <div className="relative w-full h-full">
+      <svg
+        ref={svgRef}
+        viewBox="0 0 1200 700"
+        className="w-full h-full"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <linearGradient id="mp-wall-bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#2a1f3d" />
+            <stop offset="100%" stopColor="#1a1428" />
+          </linearGradient>
+          <linearGradient id="mp-floor-bg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#3d2b1a" />
+            <stop offset="100%" stopColor="#2a1d12" />
+          </linearGradient>
+          <filter id="glow-active">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="shadow-soft">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" floodOpacity="0.3" />
+          </filter>
+        </defs>
+
+        {/* ── 배경: 강의실 ── */}
+        <rect x="0" y="0" width="1200" height="380" fill="url(#mp-wall-bg)" pointerEvents="none" />
+        <rect x="0" y="380" width="1200" height="320" fill="url(#mp-floor-bg)" pointerEvents="none" />
+        <line x1="0" y1="380" x2="1200" y2="380" stroke="#4a3728" strokeWidth="3" pointerEvents="none" />
+
+        {/* 벽면 디테일 (pointer-events: none으로 오브젝트 클릭 차단 방지) */}
+        <g pointerEvents="none">
+          <rect x="20" y="20" width="250" height="340" rx="4" fill="#2c1810" stroke="#5a3a2040" strokeWidth="2" />
+          <text x="145" y="15" textAnchor="middle" fill="#5a3a2050" fontSize="8">WEST WALL</text>
+          <rect x="300" y="20" width="580" height="200" rx="4" fill="#1a403060" stroke="#2d6b4f40" strokeWidth="2" />
+          <text x="590" y="15" textAnchor="middle" fill="#2d6b4f50" fontSize="8">NORTH WALL — BLACKBOARD</text>
+          <rect x="920" y="20" width="260" height="340" rx="4" fill="#1a2d3d60" stroke="#3a5a7a40" strokeWidth="2" />
+          <text x="1050" y="15" textAnchor="middle" fill="#3a5a7a50" fontSize="8">EAST WALL</text>
+          <rect x="350" y="400" width="500" height="200" rx="5" fill="#4a302040" stroke="#6b4a3040" strokeWidth="2" />
+          <text x="600" y="395" textAnchor="middle" fill="#6b4a3050" fontSize="8">DESK AREA</text>
+          <rect x="300" y="620" width="600" height="60" rx="4" fill="#3a2a1a40" stroke="#5a3a2030" strokeWidth="1" />
+          <text x="600" y="670" textAnchor="middle" fill="#5a3a2040" fontSize="8">SOUTH — ENTRANCE</text>
+        </g>
+
+        {/* ── 오브젝트 렌더링 ── */}
+        {config.objects.map((obj) => {
+          const isObjActive = activePart?.objId === obj.id || selectedObjId === obj.id;
+          const isHovered = hoveredObjId === obj.id;
+          const reviewState = reviewStates[obj.id];
+
+          return (
+            <g
+              key={obj.id}
+              onMouseEnter={() => setHoveredObjId(obj.id)}
+              onMouseLeave={() => setHoveredObjId(null)}
+              onClick={() => onObjectClick(obj)}
+              className="cursor-pointer"
+            >
+              {/* 오브젝트 SVG */}
+              <PalaceObjectSVG
+                type={obj.type}
+                x={obj.x}
+                y={obj.y}
+                scale={obj.scale}
+                active={isObjActive}
+                dimmed={activeFlatIndex >= 0 && !isObjActive}
+              />
+
+              {/* ── keyword 라벨들 (작은 글씨) ── */}
+              {obj.parts.map((part, pIdx) => {
+                const isPartActive = activeFlatIndex === part.flatIndex;
+                const partOffsetX = getPartOffsetX(obj.parts.length, pIdx);
+                const partOffsetY = getPartOffsetY(obj.parts.length, pIdx);
+
+                const isObjSelected = selectedObjId === obj.id;
+
+                // 학습: 나레이터 활성 또는 오브젝트 클릭 시 텍스트 표시
+                const showKeyword =
+                  mode === "learn"
+                    ? !isPartActive && !isObjSelected
+                    : reviewState === "keyword";
+
+                const showText =
+                  mode === "learn"
+                    ? isPartActive || isObjSelected
+                    : reviewState === "text";
+
+                const kx = obj.x + partOffsetX;
+                const ky = obj.y + 70 + partOffsetY;
+
+                // 텍스트 박스 위치 (겹침 방지 계산된 위치 사용)
+                const pos = textPositions.get(part.id);
+                const textX = pos ? pos.x : Math.max(0, Math.min(kx - TEXT_BOX_W / 2, SVG_W - TEXT_BOX_W));
+                const textY = pos ? pos.y : Math.max(5, ky - 50);
+
+                return (
+                  <g
+                    key={part.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onPartClick(obj, part);
+                    }}
+                  >
+                    {/* 작은 keyword (10px) */}
+                    {showKeyword && (
+                      <motion.g
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        <text
+                          x={kx}
+                          y={ky}
+                          textAnchor="middle"
+                          fill="#ffffffa0"
+                          fontSize="10"
+                          filter="url(#shadow-soft)"
+                          className="select-none pointer-events-none"
+                        >
+                          {part.keyword}
+                        </text>
+                      </motion.g>
+                    )}
+
+                    {/* 강조 텍스트 (16px) — Scene 위 직접 표시, 겹침 방지 위치 */}
+                    {showText && (
+                      <foreignObject
+                        x={textX}
+                        y={textY}
+                        width={TEXT_BOX_W}
+                        height={TEXT_BOX_H}
+                        className="pointer-events-none"
+                        style={{ overflow: "visible", zIndex: 100 }}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          transition={{ duration: 0.25 }}
+                          // @ts-expect-error xmlns required for foreignObject
+                          xmlns="http://www.w3.org/1999/xhtml"
+                          className="bg-[#1a1a2e]/95 backdrop-blur-xl border border-amber-400/30 rounded-xl px-3 py-2 shadow-lg shadow-amber-500/10"
+                        >
+                          <p className="text-white text-[14px] leading-snug font-medium">
+                            {part.text}
+                          </p>
+                        </motion.div>
+                      </foreignObject>
+                    )}
+
+                    {/* 연결선: 오브젝트 → 텍스트 */}
+                    {showText && (
+                      <motion.line
+                        x1={obj.x + 30}
+                        y1={obj.y + 50}
+                        x2={textX + TEXT_BOX_W / 2}
+                        y2={textY + TEXT_BOX_H}
+                        stroke="#f59e0b80"
+                        strokeWidth={1.5}
+                        strokeDasharray="4 3"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.4 }}
+                      />
+                    )}
+                  </g>
+                );
+              })}
+
+              {/* 오브젝트 대표 keyword (학습 모드, 활성 아닐 때) */}
+              {mode === "learn" && !isObjActive && activeFlatIndex < 0 && (
+                <text
+                  x={obj.x + 30}
+                  y={obj.y - 8}
+                  textAnchor="middle"
+                  fill="#ffffff50"
+                  fontSize="10"
+                  fontWeight="bold"
+                  className="select-none pointer-events-none"
+                >
+                  {obj.keyword}
+                </text>
+              )}
+
+              {/* hover 이름 표시 */}
+              {isHovered && !isObjActive && (
+                <text
+                  x={obj.x + 30}
+                  y={obj.y - 12}
+                  textAnchor="middle"
+                  fill="#ffffffaa"
+                  fontSize="11"
+                  fontWeight="bold"
+                  className="select-none pointer-events-none"
+                >
+                  {obj.label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
 }
 
-// 4-zone 기본 레이아웃 (서재 투시도)
-const ZONE_LAYOUTS: ZoneLayout[] = [
-  { label: "", x: 10, y: 35, w: 120, h: 310 },   // 좌측 벽 (책장)
-  { label: "", x: 140, y: 10, w: 340, h: 130 },   // 정면 벽 (칠판/액자)
-  { label: "", x: 500, y: 35, w: 130, h: 200 },   // 우측 벽 (창문)
-  { label: "", x: 200, y: 210, w: 280, h: 130 },   // 바닥 (책상)
-];
+/** 파트가 여러 개일 때 수평 오프셋 계산 */
+function getPartOffsetX(totalParts: number, partIndex: number): number {
+  if (totalParts <= 1) return 30;
+  // 2행 배치: 행당 열 수 계산
+  const cols = Math.ceil(totalParts / 2);
+  const row = partIndex < cols ? 0 : 1;
+  const colIdx = row === 0 ? partIndex : partIndex - cols;
+  const colsInRow = row === 0 ? cols : totalParts - cols;
+  const spread = Math.min(colsInRow * 55, 200);
+  const step = colsInRow <= 1 ? 0 : spread / (colsInRow - 1);
+  return 30 - spread / 2 + step * colIdx;
+}
 
-function getObjectPositions(
-  zone: ZoneLayout,
-  count: number
-): { x: number; y: number; w: number; h: number }[] {
-  const positions: { x: number; y: number; w: number; h: number }[] = [];
-  const pad = 6;
+/** 파트가 많을 때 수직 오프셋 (2줄 배치) */
+function getPartOffsetY(totalParts: number, partIndex: number): number {
+  if (totalParts <= 2) return 0;
+  const cols = Math.ceil(totalParts / 2);
+  return partIndex >= cols ? 16 : 0;
+}
 
-  if (zone.h > zone.w) {
-    // 세로 배치 (좌/우 벽)
-    const itemH = (zone.h - pad * (count + 1)) / count;
-    for (let i = 0; i < count; i++) {
-      positions.push({
-        x: zone.x + pad,
-        y: zone.y + pad + i * (itemH + pad),
-        w: zone.w - pad * 2,
-        h: itemH,
-      });
+/** flatIndex로 활성 파트 찾기 */
+function findPartByFlatIndex(
+  config: RoomSceneConfig,
+  flatIndex: number
+): { objId: string; part: ObjectPart } | null {
+  if (flatIndex < 0) return null;
+  for (const obj of config.objects) {
+    for (const part of obj.parts) {
+      if (part.flatIndex === flatIndex) {
+        return { objId: obj.id, part };
+      }
     }
-  } else if (count <= 4) {
-    // 가로 배치
-    const itemW = (zone.w - pad * (count + 1)) / count;
-    for (let i = 0; i < count; i++) {
-      positions.push({
-        x: zone.x + pad + i * (itemW + pad),
-        y: zone.y + pad,
-        w: itemW,
-        h: zone.h - pad * 2,
-      });
-    }
-  } else {
-    // 2행 배치 (5개 이상)
-    const rows = 2;
-    const perRow = Math.ceil(count / rows);
-    const itemW = (zone.w - pad * (perRow + 1)) / perRow;
-    const itemH = (zone.h - pad * (rows + 1)) / rows;
-    for (let i = 0; i < count; i++) {
-      const row = Math.floor(i / perRow);
-      const col = i % perRow;
-      positions.push({
-        x: zone.x + pad + col * (itemW + pad),
-        y: zone.y + pad + row * (itemH + pad),
-        w: itemW,
-        h: itemH,
-      });
+  }
+  return null;
+}
+
+/**
+ * 텍스트 박스 위치 계산 (겹침 방지)
+ * 현재 표시되어야 하는 모든 텍스트 박스를 수집한 뒤,
+ * 겹치는 박스들을 수직으로 분산 배치한다.
+ */
+function computeTextPositions(
+  config: RoomSceneConfig,
+  mode: PalaceMode,
+  activeFlatIndex: number,
+  revealedUpTo: number,
+  selectedObjId: string | null,
+  reviewStates: Record<string, ReviewClickState>,
+): Map<string, { x: number; y: number }> {
+  const positions = new Map<string, { x: number; y: number }>();
+  const boxes: { id: string; x: number; y: number; objX: number; objY: number }[] = [];
+
+  for (const obj of config.objects) {
+    const activePart = findPartByFlatIndex(config, activeFlatIndex);
+    const isObjActive = activePart?.objId === obj.id || selectedObjId === obj.id;
+    const reviewState = reviewStates[obj.id];
+
+    for (let pIdx = 0; pIdx < obj.parts.length; pIdx++) {
+      const part = obj.parts[pIdx];
+      const isPartActive = activeFlatIndex === part.flatIndex;
+      const isObjSelected = selectedObjId === obj.id;
+
+      const showText =
+        mode === "learn"
+          ? isPartActive || isObjSelected
+          : reviewState === "text";
+
+      if (!showText) continue;
+
+      const partOffsetX = getPartOffsetX(obj.parts.length, pIdx);
+      const partOffsetY = getPartOffsetY(obj.parts.length, pIdx);
+      const kx = obj.x + partOffsetX;
+      const ky = obj.y + 70 + partOffsetY;
+
+      // 기본 위치: 오브젝트 옆에 배치 (오브젝트를 가리지 않도록)
+      let baseX = obj.x + 70; // 오브젝트 오른쪽에 배치
+      let baseY = ky - 30;
+
+      // 오른쪽 공간이 부족하면 왼쪽에 배치
+      if (baseX + TEXT_BOX_W > SVG_W - 10) {
+        baseX = obj.x - TEXT_BOX_W - 10;
+      }
+      // 왼쪽도 부족하면 아래에 배치
+      if (baseX < 10) {
+        baseX = Math.max(10, kx - TEXT_BOX_W / 2);
+      }
+
+      // 경계 클램핑
+      baseX = Math.max(5, Math.min(baseX, SVG_W - TEXT_BOX_W - 5));
+      baseY = Math.max(5, Math.min(baseY, SVG_H - TEXT_BOX_H - 5));
+
+      boxes.push({ id: part.id, x: baseX, y: baseY, objX: obj.x, objY: obj.y });
     }
   }
 
-  return positions;
-}
+  // 겹침 해소: 같은 오브젝트의 박스들은 수직으로 분산
+  const byObj = new Map<string, typeof boxes>();
+  for (const box of boxes) {
+    const key = `${box.objX}_${box.objY}`;
+    if (!byObj.has(key)) byObj.set(key, []);
+    byObj.get(key)!.push(box);
+  }
 
-export function PalaceScene({
-  sections,
-  activeNoteId,
-  activeSectionId,
-  onNoteClick,
-}: PalaceSceneProps) {
-  return (
-    <svg viewBox="0 0 650 370" className="w-full h-full" style={{ maxHeight: "55vh" }}>
-      <defs>
-        <linearGradient id="mp-wall" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2a1f3d" />
-          <stop offset="100%" stopColor="#1a1428" />
-        </linearGradient>
-        <linearGradient id="mp-floor" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3d2b1a" />
-          <stop offset="100%" stopColor="#2a1d12" />
-        </linearGradient>
-        <filter id="mp-glow">
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
+  for (const [, group] of byObj) {
+    if (group.length <= 1) {
+      for (const b of group) positions.set(b.id, { x: b.x, y: b.y });
+      continue;
+    }
 
-      {/* 벽 */}
-      <rect x="0" y="0" width="650" height="200" fill="url(#mp-wall)" />
-      {/* 바닥 */}
-      <rect x="0" y="200" width="650" height="170" fill="url(#mp-floor)" />
-      <line x1="0" y1="200" x2="650" y2="200" stroke="#4a3728" strokeWidth="2" />
+    // 수직으로 균등 배분
+    const startY = Math.max(5, group[0].objY - 20);
+    const spacing = Math.min(TEXT_BOX_H + 4, (SVG_H - startY - TEXT_BOX_H) / group.length);
 
-      {/* 좌측 책장 프레임 */}
-      <rect x="6" y="28" width="128" height="322" rx="4" fill="#2c1810" stroke="#5a3a20" strokeWidth="2" />
-      {/* 정면 벽 프레임 (칠판) */}
-      <rect x="134" y="4" width="348" height="138" rx="3" fill="#1a4030" stroke="#2d6b4f" strokeWidth="2.5" />
-      {/* 우측 창문 프레임 */}
-      <rect x="494" y="28" width="140" height="210" rx="3" fill="#1a2d3d" stroke="#3a5a7a" strokeWidth="2" />
-      <line x1="564" y1="28" x2="564" y2="238" stroke="#3a5a7a" strokeWidth="1" />
-      <line x1="494" y1="133" x2="634" y2="133" stroke="#3a5a7a" strokeWidth="1" />
-      {/* 책상 */}
-      <rect x="194" y="205" width="290" height="138" rx="4" fill="#4a3020" stroke="#6b4a30" strokeWidth="2" />
-      <rect x="210" y="343" width="8" height="26" fill="#5a3a20" />
-      <rect x="468" y="343" width="8" height="26" fill="#5a3a20" />
+    for (let i = 0; i < group.length; i++) {
+      const y = Math.min(startY + i * spacing, SVG_H - TEXT_BOX_H - 5);
+      positions.set(group[i].id, { x: group[i].x, y });
+    }
+  }
 
-      {/* 영역 및 오브젝트 렌더링 */}
-      {sections.map((section, sIdx) => {
-        const zoneIdx = Math.min(sIdx, ZONE_LAYOUTS.length - 1);
-        const zone = ZONE_LAYOUTS[zoneIdx];
-        const theme = ZONE_THEME[zoneIdx];
-        const icons = OBJECT_ICONS[zoneIdx] ?? OBJECT_ICONS[0];
-        const positions = getObjectPositions(zone, section.notes.length);
-        const isSectionActive = activeSectionId === section.id;
+  // 교차 오브젝트 간 겹침 해소 (간단한 push-apart)
+  const allPos = Array.from(positions.entries());
+  for (let iter = 0; iter < 3; iter++) {
+    for (let i = 0; i < allPos.length; i++) {
+      for (let j = i + 1; j < allPos.length; j++) {
+        const a = allPos[i][1];
+        const b = allPos[j][1];
+        // 수평, 수직 겹침 확인
+        const overlapX = (a.x < b.x + TEXT_BOX_W) && (a.x + TEXT_BOX_W > b.x);
+        const overlapY = (a.y < b.y + TEXT_BOX_H) && (a.y + TEXT_BOX_H > b.y);
+        if (overlapX && overlapY) {
+          // 수직으로 밀어내기
+          const pushAmount = (TEXT_BOX_H + 4 - Math.abs(a.y - b.y)) / 2;
+          if (a.y <= b.y) {
+            a.y = Math.max(5, a.y - pushAmount);
+            b.y = Math.min(SVG_H - TEXT_BOX_H - 5, b.y + pushAmount);
+          } else {
+            b.y = Math.max(5, b.y - pushAmount);
+            a.y = Math.min(SVG_H - TEXT_BOX_H - 5, a.y + pushAmount);
+          }
+        }
+      }
+    }
+  }
 
-        return (
-          <g key={section.id}>
-            {/* 영역 라벨 */}
-            <text
-              x={zone.x + zone.w / 2}
-              y={zone.y - 4}
-              textAnchor="middle"
-              fill={theme.label}
-              fontSize="9"
-              fontWeight="bold"
-              opacity="0.7"
-            >
-              {section.title}
-            </text>
-
-            {/* 영역 활성 글로우 */}
-            {isSectionActive && (
-              <motion.rect
-                x={zone.x - 2}
-                y={zone.y - 2}
-                width={zone.w + 4}
-                height={zone.h + 4}
-                rx={6}
-                fill="none"
-                stroke={theme.active}
-                strokeWidth={1.5}
-                opacity={0.3}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0.15, 0.35, 0.15] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            )}
-
-            {/* 오브젝트 */}
-            {section.notes.map((note, nIdx) => {
-              const pos = positions[nIdx];
-              if (!pos) return null;
-              const isActive = activeNoteId === note.id;
-              const icon = icons[nIdx % icons.length];
-
-              return (
-                <g
-                  key={note.id}
-                  onClick={() => onNoteClick(note.id)}
-                  className="cursor-pointer"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={note.label}
-                >
-                  {/* 활성 글로우 */}
-                  {isActive && (
-                    <motion.rect
-                      x={pos.x - 3}
-                      y={pos.y - 3}
-                      width={pos.w + 6}
-                      height={pos.h + 6}
-                      rx={6}
-                      fill="none"
-                      stroke={theme.active}
-                      strokeWidth={2.5}
-                      filter="url(#mp-glow)"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 1.2, repeat: Infinity }}
-                    />
-                  )}
-
-                  {/* 오브젝트 배경 */}
-                  <rect
-                    x={pos.x}
-                    y={pos.y}
-                    width={pos.w}
-                    height={pos.h}
-                    rx={4}
-                    fill={isActive ? theme.active + "30" : theme.fill + "80"}
-                    stroke={isActive ? theme.active : theme.fill}
-                    strokeWidth={isActive ? 1.5 : 0.8}
-                    className="transition-all duration-200"
-                  />
-
-                  {/* 이모지 */}
-                  <text
-                    x={pos.x + pos.w / 2}
-                    y={pos.y + pos.h / 2 - 5}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize={Math.min(pos.w, pos.h) * 0.3}
-                    className="select-none pointer-events-none"
-                  >
-                    {icon}
-                  </text>
-
-                  {/* 라벨 */}
-                  <text
-                    x={pos.x + pos.w / 2}
-                    y={pos.y + pos.h - 6}
-                    textAnchor="middle"
-                    fill={isActive ? "#fff" : "#999"}
-                    fontSize={Math.min(8, pos.w / note.label.length * 1.3)}
-                    fontWeight={isActive ? "bold" : "normal"}
-                    className="select-none pointer-events-none"
-                  >
-                    {note.label.length > 10
-                      ? note.label.slice(0, 9) + "…"
-                      : note.label}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
-        );
-      })}
-    </svg>
-  );
+  // 업데이트된 위치 반영
+  const result = new Map<string, { x: number; y: number }>();
+  for (const [id, pos] of allPos) {
+    result.set(id, pos);
+  }
+  return result;
 }

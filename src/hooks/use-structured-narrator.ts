@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import type { FlatNarratorItem } from "@/lib/mind-palace/flatten-nodes";
+import { getOriginalText } from "@/lib/mind-palace/get-original-text";
 
 const TEACHER_INSTRUCTION =
   "당신은 친절한 고등학교 윤리 선생님입니다. 학생들에게 교과서 내용을 또박또박 읽어주듯 설명하세요. 중요한 개념은 강조하며, 사상가 이름은 천천히 발음하세요. 따뜻하고 격려하는 어조를 유지하세요.";
@@ -12,6 +13,13 @@ interface NarratorState {
   isLoading: boolean;
 }
 
+/**
+ * 구조화 텍스트 나레이터 훅
+ *
+ * - note 단위로 originalText(교과서 원문)를 TTS로 읽음
+ * - 같은 note 내의 이후 노드는 TTS 없이 하이라이트만 진행
+ * - progressive reveal: revealedUpTo까지 텍스트 표시
+ */
 export function useStructuredNarrator(items: FlatNarratorItem[]) {
   const [state, setState] = useState<NarratorState>({
     isPlaying: false,
@@ -21,7 +29,7 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  // 현재까지 나레이션을 완료한 최대 인덱스 (progressive reveal 용)
+  const voiceRef = useRef("nova");
   const [revealedUpTo, setRevealedUpTo] = useState(-1);
 
   const stopAudio = useCallback(() => {
@@ -35,6 +43,32 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
       abortRef.current = null;
     }
   }, []);
+
+  /**
+   * TTS 텍스트 결정:
+   * - note의 첫 번째 아이템이면 → originalText(교과서 원문) 읽기
+   * - 같은 note의 후속 아이템이면 → TTS 스킵, 짧은 딜레이 후 다음으로
+   */
+  const getTtsText = useCallback(
+    (index: number): string | null => {
+      const item = items[index];
+      if (!item) return null;
+
+      // 이 아이템이 note의 첫 번째인지 확인
+      const isFirstInNote =
+        index === 0 || items[index - 1]?.noteId !== item.noteId;
+
+      if (isFirstInNote) {
+        // originalText 우선, 없으면 structured text
+        const original = getOriginalText(item.noteId);
+        return original || item.text;
+      }
+
+      // 같은 note의 후속 아이템 → TTS 없이 진행
+      return null;
+    },
+    [items]
+  );
 
   const playItem = useCallback(
     async (index: number) => {
@@ -50,9 +84,17 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
 
       stopAudio();
 
-      const item = items[index];
       setState({ isPlaying: true, currentIndex: index, isLoading: true });
       setRevealedUpTo((prev) => Math.max(prev, index));
+
+      const ttsText = getTtsText(index);
+
+      if (!ttsText) {
+        // TTS 스킵: 짧은 딜레이 후 다음 아이템
+        setState((s) => ({ ...s, isLoading: false }));
+        setTimeout(() => playItem(index + 1), 600);
+        return;
+      }
 
       try {
         const controller = new AbortController();
@@ -62,15 +104,15 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            text: item.text,
-            voice: "nova",
+            text: ttsText,
+            voice: voiceRef.current,
             instructions: TEACHER_INSTRUCTION,
           }),
           signal: controller.signal,
         });
 
         if (!res.ok) {
-          fallbackSpeak(item.text, () => playItem(index + 1));
+          fallbackSpeak(ttsText, () => playItem(index + 1));
           setState((s) => ({ ...s, isLoading: false }));
           return;
         }
@@ -82,12 +124,73 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
 
         setState((s) => ({ ...s, isLoading: false }));
 
+        // note 내의 모든 아이템을 점진적으로 reveal
+        const noteId = items[index].noteId;
+        // 같은 note에 속하는 아이템 인덱스 범위 계산
+        const noteItems: number[] = [];
+        for (let i = index; i < items.length && items[i].noteId === noteId; i++) {
+          noteItems.push(i);
+        }
+        let revealStep = 0;
+
+        // TTS 시작 후 오디오 duration 기반으로 reveal 간격 결정
+        const startReveal = (duration: number) => {
+          if (noteItems.length <= 1) return null;
+          // 오디오 길이를 아이템 수로 나눠 균등 분배 (최소 1초, 최대 3초)
+          const interval = Math.max(1000, Math.min(3000,
+            (duration * 1000) / noteItems.length
+          ));
+          return setInterval(() => {
+            revealStep++;
+            if (revealStep >= noteItems.length) {
+              return; // onended에서 cleanup
+            }
+            const nextIdx = noteItems[revealStep];
+            setState((s) => ({ ...s, currentIndex: nextIdx }));
+            setRevealedUpTo((prev) => Math.max(prev, nextIdx));
+          }, interval);
+        };
+
+        let revealInterval: ReturnType<typeof setInterval> | null = null;
+
+        // duration 이 로드되면 reveal 시작
+        audio.onloadedmetadata = () => {
+          const dur = audio.duration; // seconds
+          if (dur && isFinite(dur)) {
+            revealInterval = startReveal(dur);
+          }
+        };
+        // fallback: duration이 안 잡히면 2초 기본 간격
+        setTimeout(() => {
+          if (!revealInterval && noteItems.length > 1) {
+            revealInterval = startReveal(noteItems.length * 2);
+          }
+        }, 500);
+
         audio.onended = () => {
+          if (revealInterval) clearInterval(revealInterval);
           URL.revokeObjectURL(url);
-          playItem(index + 1);
+          // 현재 note의 모든 아이템 즉시 reveal
+          const lastInNote = noteItems[noteItems.length - 1];
+          setState((s) => ({ ...s, currentIndex: lastInNote }));
+          setRevealedUpTo((prev) => Math.max(prev, lastInNote));
+          // 짧은 딜레이 후 다음 note로 이동 (마지막 아이템을 잠깐 보여준 뒤)
+          setTimeout(() => {
+            const nextNoteIdx = items.findIndex(
+              (item, i) => i > index && item.noteId !== noteId
+            );
+            if (nextNoteIdx >= 0) {
+              playItem(nextNoteIdx);
+            } else {
+              // 마지막 note -> 완료
+              setRevealedUpTo(items.length - 1);
+              setState({ isPlaying: false, currentIndex: -1, isLoading: false });
+            }
+          }, 800);
         };
 
         audio.onerror = () => {
+          if (revealInterval) clearInterval(revealInterval);
           URL.revokeObjectURL(url);
           setState((s) => ({ ...s, isPlaying: false, isLoading: false }));
         };
@@ -97,7 +200,7 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
         setState((s) => ({ ...s, isPlaying: false, isLoading: false }));
       }
     },
-    [items, stopAudio]
+    [items, stopAudio, getTtsText]
   );
 
   const play = useCallback(
@@ -122,18 +225,34 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
   }, []);
 
   const next = useCallback(() => {
-    const nextIdx = state.currentIndex + 1;
-    if (nextIdx < items.length) {
-      playItem(nextIdx);
+    // 다음 note의 첫 아이템으로
+    const currentItem = items[state.currentIndex];
+    if (!currentItem) return;
+    const nextNoteIdx = items.findIndex(
+      (item, i) => i > state.currentIndex && item.noteId !== currentItem.noteId
+    );
+    if (nextNoteIdx >= 0) {
+      playItem(nextNoteIdx);
     }
-  }, [state.currentIndex, items.length, playItem]);
+  }, [state.currentIndex, items, playItem]);
 
   const prev = useCallback(() => {
-    const prevIdx = state.currentIndex - 1;
-    if (prevIdx >= 0) {
-      playItem(prevIdx);
+    // 이전 note의 첫 아이템으로
+    const currentItem = items[state.currentIndex];
+    if (!currentItem) return;
+    // 현재 note의 첫 아이템 찾기
+    const currentNoteStart = items.findIndex(
+      (item) => item.noteId === currentItem.noteId
+    );
+    if (currentNoteStart > 0) {
+      // 이전 note의 noteId
+      const prevNoteId = items[currentNoteStart - 1].noteId;
+      const prevNoteStart = items.findIndex(
+        (item) => item.noteId === prevNoteId
+      );
+      playItem(prevNoteStart);
     }
-  }, [state.currentIndex, playItem]);
+  }, [state.currentIndex, items, playItem]);
 
   const stop = useCallback(() => {
     stopAudio();
@@ -146,7 +265,10 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
     setRevealedUpTo(-1);
   }, [stopAudio]);
 
-  // 특정 인덱스까지 한번에 reveal (스킵)
+  const setVoice = useCallback((v: string) => {
+    voiceRef.current = v;
+  }, []);
+
   const revealUpTo = useCallback((index: number) => {
     setRevealedUpTo(index);
   }, []);
@@ -161,6 +283,7 @@ export function useStructuredNarrator(items: FlatNarratorItem[]) {
     prev,
     stop,
     reset,
+    setVoice,
     revealUpTo,
     currentItem: state.currentIndex >= 0 ? items[state.currentIndex] : null,
   };
@@ -171,7 +294,9 @@ function fallbackSpeak(text: string, onEnd: () => void) {
     onEnd();
     return;
   }
-  const utterance = new SpeechSynthesisUtterance(text);
+  // 원본 텍스트가 길 수 있으므로 앞 200자만
+  const shortened = text.length > 200 ? text.slice(0, 200) + "..." : text;
+  const utterance = new SpeechSynthesisUtterance(shortened);
   utterance.lang = "ko-KR";
   utterance.rate = 0.9;
   utterance.onend = onEnd;

@@ -5,12 +5,15 @@
 
 export interface NoteNode {
   text: string;
+  keyword?: string;       // Scene object 위에 표시할 키워드
+  originalText?: string;  // 나레이터가 읽을 원본 교과서 텍스트
   children?: NoteNode[];
 }
 
 export interface StructuredNote {
   id: string; // 원본 content id와 동일 (ch1_s1_c1)
   label: string; // 원본 label 그대로
+  keyword?: string; // Scene object 위에 표시할 짧은 키워드 (2~4자)
   nodes: NoteNode[];
 }
 
