@@ -20,101 +20,20 @@ interface MenuItem {
   span?: string;
 }
 
-interface MenuSection {
-  label: string;
-  badge?: string;
-  items: MenuItem[];
-}
-
-// 학생 메뉴 — 섹션별 구분
-const studentSections: MenuSection[] = [
-  {
-    label: "AI 학습",
-    items: [
-      {
-        title: "소크라테스 AI 튜터",
-        desc: "질문으로 이끄는 AI 학습",
-        icon: "🎓",
-        href: "/tutor",
-      },
-      {
-        title: "기억의 궁전",
-        desc: "카툰 공간 기억법으로 교과서 암기",
-        icon: "🏛️",
-        href: "/mind-palace",
-      },
-    ],
-  },
-  {
-    label: "영어",
-    items: [
-      {
-        title: "영어 단어 학습",
-        desc: "18,000 단어 레벨별 에베레스트 등반",
-        icon: "🏔️",
-        href: "/vocabulary",
-        span: "sm:col-span-2 lg:col-span-1",
-      },
-      {
-        title: "AI 영어 회화",
-        desc: "내 수준에 맞는 음성 영어 대화",
-        icon: "🎙️",
-        href: "/conversation",
-      },
-    ],
-  },
-  {
-    label: "진로 탐색",
-    items: [
-      {
-        title: "진로 시뮬레이터",
-        desc: "5,000+ 직업에서 나만의 길 찾기",
-        icon: "🧭",
-        href: "/career",
-      },
-      {
-        title: "도서 추천",
-        desc: "진로 맞춤 도서 큐레이션",
-        icon: "📚",
-        href: "/books",
-      },
-    ],
-  },
+// 학생 메뉴 — 2열 그리드
+const studentItems: MenuItem[] = [
+  { title: "소크라테스 AI 튜터", desc: "질문으로 이끄는 AI 학습", icon: "🎓", href: "/tutor" },
+  { title: "기억의 궁전", desc: "카툰 공간 기억법으로 교과서 암기", icon: "🏛️", href: "/mind-palace" },
+  { title: "영어 단어 학습", desc: "18,000 단어 레벨별 에베레스트 등반", icon: "🏔️", href: "/vocabulary" },
+  { title: "AI 영어 회화", desc: "내 수준에 맞는 음성 영어 대화", icon: "🎙️", href: "/conversation" },
+  { title: "진로 시뮬레이터", desc: "5,000+ 직업에서 나만의 길 찾기", icon: "🧭", href: "/career" },
+  { title: "맞춤 도서 추천", desc: "진로 맞춤 도서 큐레이션", icon: "📚", href: "/books" },
 ];
 
-// 교사 메뉴 — 나이스 승인 필요
-const teacherSections: MenuSection[] = [
-  {
-    label: "공문서 관리",
-    badge: "NEIS 승인 필요",
-    items: [
-      {
-        title: "공문서 포맷터",
-        desc: "원클릭 공문서 양식 교정",
-        icon: "📄",
-        href: "/teacher/formatter",
-        span: "sm:col-span-2 lg:col-span-1",
-      },
-      {
-        title: "공문번호 자동생성기",
-        desc: "업로드 → 승인 → 번호 발급 → 위변조 검증",
-        icon: "🔢",
-        href: "/teacher/generator",
-      },
-      {
-        title: "문서 관리",
-        desc: "발급 워크플로우 · 번호 발급",
-        icon: "📋",
-        href: "/teacher/documents",
-      },
-      {
-        title: "위변조 검증",
-        desc: "SHA-256 해시 기반 원본 확인",
-        icon: "🔍",
-        href: "/teacher/documents/verify",
-      },
-    ],
-  },
+// 교사 메뉴 — 2열 그리드
+const teacherItems: MenuItem[] = [
+  { title: "공문서 포맷터", desc: "HWPX 업로드 → 원클릭 양식 교정", icon: "📄", href: "/teacher/formatter" },
+  { title: "공문번호 자동생성기", desc: "업로드 → 승인 → 번호 발급 → 위변조 검증", icon: "🔢", href: "/teacher/generator" },
 ];
 
 const sectionVariants = {
@@ -171,9 +90,6 @@ export default function DashboardPage() {
 
   const isLoggedIn = !!profile;
   const isTeacher = profile?.role === "teacher";
-  const sections = isTeacher
-    ? [...studentSections, ...teacherSections]
-    : studentSections;
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
@@ -201,54 +117,57 @@ export default function DashboardPage() {
           <p className="text-muted">
             {isLoggedIn
               ? `${isTeacher ? "교사" : "학생"} 대시보드`
-              : "로그인 없이 체험할 수 있습니다. 교사 기능은 로그인 후 이용 가능합니다."}
+              : "로그인 없이 체험할 수 있습니다"}
           </p>
         </motion.div>
 
-        {/* Sections */}
         <div className="space-y-10">
-          {sections.map((section, sectionIdx) => (
-            <motion.div
-              key={section.label}
-              variants={sectionVariants}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, margin: "-50px" }}
-            >
-              {/* Section Header */}
+          {/* 학생 기능 — 2열 그리드 */}
+          <motion.div variants={sectionVariants} initial="hidden" animate="show">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-sm font-medium text-muted uppercase tracking-wider">학습 도구</h2>
+              <div className="flex-1 h-px bg-white/5" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {studentItems.map((item) => (
+                <motion.div key={item.href} variants={cardVariants}>
+                  <Link href={item.href}>
+                    <GlassCard delay={0} className="h-full cursor-pointer group card-sheen">
+                      <motion.span
+                        className="text-4xl mb-3 block"
+                        whileHover={{ scale: 1.2, y: -4, rotate: [0, -5, 5, 0], transition: { duration: 0.4 } }}
+                      >
+                        {item.icon}
+                      </motion.span>
+                      <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors duration-300">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-muted">{item.desc}</p>
+                    </GlassCard>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* 교사 기능 — 로그인+교사 역할만 표시 */}
+          {isTeacher && (
+            <motion.div variants={sectionVariants} initial="hidden" animate="show">
               <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-sm font-medium text-muted uppercase tracking-wider">
-                  {section.label}
-                </h2>
-                {"badge" in section && section.badge && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                    {section.badge}
-                  </span>
-                )}
+                <h2 className="text-sm font-medium text-muted uppercase tracking-wider">교사 도구</h2>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  NEIS 승인 필요
+                </span>
                 <div className="flex-1 h-px bg-white/5" />
               </div>
-
-              {/* Cards Grid — 비대칭 벤토 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {section.items.map((item) => (
-                  <motion.div
-                    key={item.href}
-                    variants={cardVariants}
-                    className={item.span || ""}
-                  >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {teacherItems.map((item) => (
+                  <motion.div key={item.href} variants={cardVariants}>
                     <Link href={item.href}>
-                      <GlassCard
-                        delay={0}
-                        className="h-full cursor-pointer group card-sheen"
-                      >
+                      <GlassCard delay={0} className="h-full cursor-pointer group card-sheen">
                         <motion.span
                           className="text-4xl mb-3 block"
-                          whileHover={{
-                            scale: 1.2,
-                            y: -4,
-                            rotate: [0, -5, 5, 0],
-                            transition: { duration: 0.4 },
-                          }}
+                          whileHover={{ scale: 1.2, y: -4, rotate: [0, -5, 5, 0], transition: { duration: 0.4 } }}
                         >
                           {item.icon}
                         </motion.span>
@@ -262,7 +181,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             </motion.div>
-          ))}
+          )}
         </div>
 
         {/* Footer */}
