@@ -9,26 +9,30 @@ import { GlassCard } from "@/components/shared/glass-card";
 const features = [
   {
     title: "소크라테스 AI 튜터",
-    description:
-      "답을 주지 않고 질문으로 이끄는 대화형 학습. 스스로 깨닫는 진짜 공부.",
+    description: "답을 주지 않고 질문으로 이끄는 대화형 학습. 스스로 깨닫는 진짜 공부.",
     icon: "🎓",
     href: "/tutor",
-    span: "sm:col-span-2",
+    span: "",
   },
   {
-    title: "AI 영어 회화",
-    description:
-      "내 레벨에 맞는 AI 원어민과 음성 대화. 실시간 피드백으로 회화 실력 UP.",
-    icon: "🎙️",
-    href: "/conversation",
+    title: "기억의 궁전",
+    description: "카툰 공간 기억법으로 교과서 핵심 내용을 장소에 배치하고 나레이터가 읽어줍니다.",
+    icon: "🏛️",
+    href: "/mind-palace",
     span: "",
   },
   {
     title: "영어 단어 학습",
-    description:
-      "18,000 단어를 레벨별로 정복. 에베레스트 정상을 향해 한 걸음씩.",
+    description: "18,000 단어를 레벨별로 정복. 에베레스트 정상을 향해 한 걸음씩.",
     icon: "🏔️",
     href: "/vocabulary",
+    span: "",
+  },
+  {
+    title: "AI 영어 회화",
+    description: "내 레벨에 맞는 AI 원어민과 음성 대화. 실시간 피드백으로 회화 실력 UP.",
+    icon: "🎙️",
+    href: "/conversation",
     span: "",
   },
   {
@@ -40,24 +44,21 @@ const features = [
   },
   {
     title: "맞춤 도서 추천",
-    description:
-      "학년, 희망 학과, 진로에 맞는 도서를 AI가 선별하여 추천.",
+    description: "학년, 희망 학과, 진로에 맞는 도서를 AI가 선별하여 추천.",
     icon: "📚",
     href: "/books",
     span: "",
   },
   {
     title: "공문서 포맷터",
-    description:
-      "단축키 한 번으로 K-에듀파인 공문서 양식 자동 교정. 교사의 시간을 돌려드립니다.",
+    description: "HWPX 업로드 → K-에듀파인 공문서 양식 원클릭 교정. 교사의 시간을 돌려드립니다.",
     icon: "📄",
     href: "/teacher/formatter",
-    span: "sm:col-span-2",
+    span: "",
   },
   {
     title: "공문번호 자동생성기",
-    description:
-      "업로드 → 승인 → 번호 발급 → 해시 기반 위변조 검증까지 원스톱 처리.",
+    description: "업로드 → 승인 → 번호 발급 → 해시 기반 위변조 검증까지 원스톱 처리.",
     icon: "🔢",
     href: "/teacher/generator",
     span: "",
@@ -250,7 +251,7 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {features.map((f) => (
               <motion.div key={f.title} variants={fadeUp} className={f.span}>
                 <Link href={f.href}>

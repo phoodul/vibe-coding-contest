@@ -127,9 +127,9 @@ export const ASSESSMENT_FIELDS: AssessmentField[] = [
   },
   {
     id: "grades",
-    label: "전체 성적 백분위 (대략적으로)",
-    type: "chips",
-    options: ["상위 10% 이내", "상위 10~25%", "상위 25~50%", "상위 50~75%", "하위 25%", "잘 모르겠어요"],
+    label: "전체 성적 백분위 (%)",
+    type: "text",
+    placeholder: "예: 3.5 (상위 3.5%), 15.0, 50.0 — 소수점 한 자리까지",
   },
   {
     id: "strongSubjects",

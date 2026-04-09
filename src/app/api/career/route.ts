@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 - 취미: ${assessment.hobbies || "미입력"}
 - 적성/잘하는 것: ${assessment.aptitude || "미입력"}
 - 주로 읽는 책: ${assessment.reading || "미입력"}
-- 전체 성적 백분위: ${assessment.grades || "미입력"}
+- 전체 성적 백분위: ${assessment.grades ? `상위 ${assessment.grades}%` : "미입력"}
 - 강한 과목: ${Array.isArray(assessment.strongSubjects) && assessment.strongSubjects.length > 0 ? assessment.strongSubjects.join(", ") : "미입력"}
 - 운동 능력: ${assessment.sports || "미입력"}
 - 음악적 재능: ${assessment.music || "미입력"}
