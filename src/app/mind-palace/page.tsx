@@ -1,210 +1,167 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { StudyRoomSVG } from "@/components/mind-palace/study-room-svg";
-import {
-  ETHICS_CH3_PALACE,
-  getAllItems,
-  findItemByObjectId,
-  type PalaceItem,
-  type PalaceSection,
-} from "@/lib/data/mind-palace/ethics-ch3-palace";
-import { usePalaceNarrator } from "@/hooks/use-palace-narrator";
+import { ETHICS_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/ethics-structured-ch3";
+import { flattenStructuredSections } from "@/lib/mind-palace/flatten-nodes";
+import { useStructuredNarrator } from "@/hooks/use-structured-narrator";
+import { PalaceScene } from "@/components/mind-palace/palace-scene";
+import { TextTreePanel } from "@/components/mind-palace/text-tree-panel";
 
-const ZONE_COLORS: Record<string, string> = {
-  west: "text-amber-400",
-  north: "text-emerald-400",
-  east: "text-blue-400",
-  center: "text-purple-400",
-};
-
-const ZONE_BG: Record<string, string> = {
-  west: "bg-amber-500/10 border-amber-500/30",
-  north: "bg-emerald-500/10 border-emerald-500/30",
-  east: "bg-blue-500/10 border-blue-500/30",
-  center: "bg-purple-500/10 border-purple-500/30",
-};
-
-const ZONE_ACTIVE_BG: Record<string, string> = {
-  west: "bg-amber-500/20 border-amber-400",
-  north: "bg-emerald-500/20 border-emerald-400",
-  east: "bg-blue-500/20 border-blue-400",
-  center: "bg-purple-500/20 border-purple-400",
-};
+const SECTION_DATA = ETHICS_STRUCTURED_CH3;
 
 export default function MindPalacePage() {
-  const allItems = getAllItems();
-  const [activeItem, setActiveItem] = useState<PalaceItem | null>(null);
-  const narrator = usePalaceNarrator(allItems);
+  const flatItems = useMemo(
+    () => flattenStructuredSections(SECTION_DATA),
+    []
+  );
 
-  const handleObjectClick = useCallback(
-    (objectId: string) => {
-      const item = findItemByObjectId(objectId);
-      if (item) {
-        setActiveItem(item);
+  const narrator = useStructuredNarrator(flatItems);
+
+  // 현재 활성 noteId / sectionId (클릭 또는 나레이터 기반)
+  const [manualNoteId, setManualNoteId] = useState<string | null>(null);
+
+  const activeNoteId = narrator.currentItem?.noteId ?? manualNoteId;
+  const activeSectionId = narrator.currentItem?.sectionId ?? null;
+
+  const handleNoteClick = useCallback(
+    (noteId: string) => {
+      setManualNoteId(noteId);
+      // 나레이터가 진행 중이면 해당 note의 첫 아이템으로 이동
+      if (narrator.isPlaying) {
+        const idx = flatItems.findIndex((item) => item.noteId === noteId);
+        if (idx >= 0) narrator.play(idx);
       }
     },
-    []
+    [flatItems, narrator]
   );
 
-  const handleTreeClick = useCallback(
-    (item: PalaceItem) => {
-      setActiveItem(item);
-    },
-    []
-  );
-
-  const handleNarratorStart = useCallback(
-    (startIndex?: number) => {
-      narrator.play(startIndex ?? 0);
+  const handleItemClick = useCallback(
+    (globalIndex: number) => {
+      narrator.play(globalIndex);
     },
     [narrator]
   );
 
-  // 나레이터 현재 항목과 동기화
-  const currentObjectId =
-    narrator.currentItem?.objectId ?? activeItem?.objectId ?? null;
-  const displayItem = narrator.currentItem ?? activeItem;
+  const totalItems = flatItems.length;
+  const progress =
+    narrator.currentIndex >= 0
+      ? Math.round(((narrator.currentIndex + 1) / totalItems) * 100)
+      : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0a1a] via-[#0f1628] to-[#0a0a1a] text-white">
       {/* ── 헤더 ── */}
-      <header className="border-b border-white/10 px-6 py-4">
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+      <header className="border-b border-white/10 px-4 py-3 sticky top-0 z-20 bg-[#0a0a1a]/90 backdrop-blur-xl">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold">
-              <span className="text-amber-400">🏛️</span> 기억의 궁전
+            <h1 className="text-lg font-bold flex items-center gap-2">
+              <span className="text-amber-400">🏛️</span>
+              기억의 궁전
+              <span className="text-white/30 font-normal text-sm ml-2">
+                제3장 사회와 윤리
+              </span>
             </h1>
-            <p className="text-sm text-white/50 mt-1">
-              {ETHICS_CH3_PALACE.chapter} {ETHICS_CH3_PALACE.title} —{" "}
-              {allItems.length}개 항목 · 4개 영역
+            <p className="text-xs text-white/40 mt-0.5">
+              {totalItems}개 항목 · {SECTION_DATA.length}개 영역
+              {narrator.currentIndex >= 0 && (
+                <span className="ml-2 text-amber-400">
+                  진행률 {progress}%
+                </span>
+              )}
             </p>
           </div>
 
           {/* 나레이터 컨트롤 */}
-          <div className="flex items-center gap-2">
-            {narrator.isPlaying || narrator.currentIndex >= 0 ? (
-              <>
-                <button
-                  onClick={narrator.prev}
-                  disabled={narrator.currentIndex <= 0}
-                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-sm transition-colors"
-                >
-                  ⏮
-                </button>
-                <button
-                  onClick={narrator.isPlaying ? narrator.pause : narrator.resume}
-                  className="px-4 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-sm font-medium transition-colors"
-                >
-                  {narrator.isLoading
-                    ? "로딩..."
-                    : narrator.isPlaying
-                    ? "⏸ 일시정지"
-                    : "▶ 계속"}
-                </button>
-                <button
-                  onClick={narrator.next}
-                  disabled={narrator.currentIndex >= allItems.length - 1}
-                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-sm transition-colors"
-                >
-                  ⏭
-                </button>
-                <button
-                  onClick={narrator.stop}
-                  className="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-sm transition-colors"
-                >
-                  ⏹ 정지
-                </button>
-                <span className="text-xs text-white/40 ml-2">
-                  {narrator.currentIndex + 1}/{allItems.length}
-                </span>
-              </>
-            ) : (
-              <button
-                onClick={() => handleNarratorStart(0)}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-500/20 to-purple-500/20 hover:from-amber-500/30 hover:to-purple-500/30 border border-white/10 text-sm font-medium transition-all"
-              >
-                🎙️ 선생님 나레이션 시작
-              </button>
-            )}
-          </div>
+          <NarratorControls
+            narrator={narrator}
+            totalItems={totalItems}
+          />
         </div>
+
+        {/* 프로그레스 바 */}
+        {narrator.currentIndex >= 0 && (
+          <div className="max-w-[1600px] mx-auto mt-2">
+            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-amber-500 to-purple-500 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          </div>
+        )}
       </header>
 
       {/* ── 메인 레이아웃 ── */}
-      <div className="max-w-[1400px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_340px] gap-6">
-        {/* 좌: 계층 목차 */}
-        <aside className="space-y-3 max-h-[calc(100vh-140px)] overflow-y-auto scrollbar-thin pr-2">
-          <h2 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-2">
-            목차
-          </h2>
-          {ETHICS_CH3_PALACE.sections.map((section) => (
-            <SectionTree
-              key={section.id}
-              section={section}
-              activeItemId={displayItem?.id ?? null}
-              playingItemId={narrator.currentItem?.id ?? null}
-              onItemClick={handleTreeClick}
-            />
-          ))}
-        </aside>
-
-        {/* 중: SVG 서재 */}
-        <main className="glass-gradient p-4 flex items-center justify-center">
-          <StudyRoomSVG
-            activeObjectId={currentObjectId}
-            onObjectClick={handleObjectClick}
-            playingObjectId={narrator.currentItem?.objectId ?? null}
+      <div className="max-w-[1600px] mx-auto p-4 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-4">
+        {/* 좌: 텍스트 트리 (메인 콘텐츠) */}
+        <main className="max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin pr-2">
+          <TextTreePanel
+            sections={SECTION_DATA}
+            flatItems={flatItems}
+            currentIndex={narrator.currentIndex}
+            revealedUpTo={narrator.revealedUpTo}
+            onItemClick={handleItemClick}
           />
         </main>
 
-        {/* 우: 콘텐츠 패널 */}
-        <aside className="max-h-[calc(100vh-140px)] overflow-y-auto scrollbar-thin">
+        {/* 우: 씬 + 현재 항목 디테일 */}
+        <aside className="space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin">
+          {/* 씬 SVG */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3">
+            <PalaceScene
+              sections={SECTION_DATA}
+              activeNoteId={activeNoteId}
+              activeSectionId={activeSectionId}
+              onNoteClick={handleNoteClick}
+            />
+          </div>
+
+          {/* 현재 항목 디테일 카드 */}
           <AnimatePresence mode="wait">
-            {displayItem ? (
+            {narrator.currentItem ? (
               <motion.div
-                key={displayItem.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="glass-gradient p-5 space-y-4"
+                key={narrator.currentItem.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-2"
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-lg">{displayItem.label}</h3>
-                  <button
-                    onClick={() => {
-                      const idx = allItems.findIndex(
-                        (i) => i.id === displayItem.id
-                      );
-                      if (idx >= 0) handleNarratorStart(idx);
-                    }}
-                    className="px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs transition-colors"
-                  >
-                    🎙️ 이 항목부터 듣기
-                  </button>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                  <span className="text-xs text-white/40">
+                    {narrator.currentItem.sectionTitle}
+                  </span>
+                  <span className="text-white/20">›</span>
+                  <span className="text-xs text-white/50">
+                    {narrator.currentItem.noteLabel}
+                  </span>
                 </div>
-                <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">
-                  {displayItem.detail}
+                <p className="text-base text-white leading-relaxed font-medium">
+                  {narrator.currentItem.text}
+                </p>
+                <p className="text-[10px] text-white/30">
+                  {narrator.currentIndex + 1} / {totalItems}
                 </p>
               </motion.div>
             ) : (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="glass-gradient p-8 text-center"
+                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-center"
               >
-                <p className="text-4xl mb-4">🏛️</p>
-                <p className="text-white/50 text-sm">
+                <p className="text-3xl mb-3">🏛️</p>
+                <p className="text-white/40 text-sm">
                   서재의 물건을 클릭하거나
-                  <br />
-                  목차에서 항목을 선택하세요
                 </p>
-                <p className="text-white/30 text-xs mt-3">
-                  또는 나레이션을 시작하면
-                  <br />
-                  선생님이 순서대로 설명해줍니다
+                <p className="text-white/40 text-sm">
+                  나레이션을 시작하세요
+                </p>
+                <p className="text-white/25 text-xs mt-3">
+                  텍스트를 클릭하면 해당 항목부터 읽기 시작합니다
                 </p>
               </motion.div>
             )}
@@ -215,78 +172,60 @@ export default function MindPalacePage() {
   );
 }
 
-/** 소단원 트리 컴포넌트 */
-function SectionTree({
-  section,
-  activeItemId,
-  playingItemId,
-  onItemClick,
+/** 나레이터 컨트롤 버튼 그룹 */
+function NarratorControls({
+  narrator,
+  totalItems,
 }: {
-  section: PalaceSection;
-  activeItemId: string | null;
-  playingItemId: string | null;
-  onItemClick: (item: PalaceItem) => void;
+  narrator: ReturnType<typeof useStructuredNarrator>;
+  totalItems: number;
 }) {
-  const [expanded, setExpanded] = useState(true);
+  if (narrator.isPlaying || narrator.currentIndex >= 0) {
+    return (
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={narrator.prev}
+          disabled={narrator.currentIndex <= 0}
+          className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-sm transition-colors"
+        >
+          ⏮
+        </button>
+        <button
+          onClick={narrator.isPlaying ? narrator.pause : narrator.resume}
+          className="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-sm font-medium transition-colors min-w-[80px]"
+        >
+          {narrator.isLoading
+            ? "로딩..."
+            : narrator.isPlaying
+            ? "⏸ 일시정지"
+            : "▶ 계속"}
+        </button>
+        <button
+          onClick={narrator.next}
+          disabled={narrator.currentIndex >= totalItems - 1}
+          className="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 disabled:opacity-30 text-sm transition-colors"
+        >
+          ⏭
+        </button>
+        <button
+          onClick={narrator.stop}
+          className="px-2.5 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 text-sm transition-colors"
+        >
+          ⏹
+        </button>
+        <span className="text-xs text-white/30 ml-1.5 tabular-nums">
+          {narrator.currentIndex + 1}/{totalItems}
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <div className={`rounded-xl border p-3 ${ZONE_BG[section.zone]}`}>
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full text-left flex items-center gap-2"
-      >
-        <span
-          className={`text-xs ${expanded ? "rotate-90" : ""} transition-transform`}
-        >
-          ▶
-        </span>
-        <span className={`text-sm font-semibold ${ZONE_COLORS[section.zone]}`}>
-          {section.title}
-        </span>
-        <span className="text-[10px] text-white/30 ml-auto">
-          {section.zoneLabel}
-        </span>
-      </button>
-
-      <AnimatePresence>
-        {expanded && (
-          <motion.ul
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="mt-2 space-y-1 overflow-hidden"
-          >
-            {section.items.map((item) => {
-              const isActive = activeItemId === item.id;
-              const isPlaying = playingItemId === item.id;
-
-              return (
-                <li key={item.id}>
-                  <button
-                    onClick={() => onItemClick(item)}
-                    className={`w-full text-left px-2 py-1.5 rounded-lg text-xs transition-all ${
-                      isPlaying
-                        ? ZONE_ACTIVE_BG[section.zone] +
-                          " border font-semibold text-white"
-                        : isActive
-                        ? "bg-white/10 border border-white/20 text-white"
-                        : "hover:bg-white/5 text-white/60 border border-transparent"
-                    }`}
-                  >
-                    {isPlaying && (
-                      <span className="inline-block mr-1 animate-pulse">
-                        🔊
-                      </span>
-                    )}
-                    {item.label}
-                  </button>
-                </li>
-              );
-            })}
-          </motion.ul>
-        )}
-      </AnimatePresence>
-    </div>
+    <button
+      onClick={() => narrator.play(0)}
+      className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500/20 to-purple-500/20 hover:from-amber-500/30 hover:to-purple-500/30 border border-white/10 text-sm font-medium transition-all"
+    >
+      🎙️ 나레이션 시작
+    </button>
   );
 }
