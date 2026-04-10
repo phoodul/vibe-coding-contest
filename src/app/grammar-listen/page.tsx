@@ -36,7 +36,8 @@ export default function GrammarListenPage() {
   const [loading, setLoading] = useState(false);
   const [jumpTo, setJumpTo] = useState("");
   const [showList, setShowList] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const sourceRef = useRef<AudioBufferSourceNode | null>(null);
   const playingRef = useRef(false);
 
   const info = GRAMMAR_LEVELS.find((l) => l.key === level)!;
@@ -46,12 +47,15 @@ export default function GrammarListenPage() {
   const sentence = sentences[currentIdx] ?? sentences[0];
   const progress = ((currentIdx + 1) / TOTAL) * 100;
 
-  // Audio 엘리먼트 1회 생성 (모바일 autoplay 정책 대응)
-  useEffect(() => {
-    audioRef.current = new Audio();
-    return () => {
-      audioRef.current?.pause();
-    };
+  // 사용자 제스처로 AudioContext unlock
+  const ensureAudioCtx = useCallback(() => {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    }
+    if (audioCtxRef.current.state === "suspended") {
+      audioCtxRef.current.resume();
+    }
+    return audioCtxRef.current;
   }, []);
 
   // 초기 로드
@@ -77,45 +81,32 @@ export default function GrammarListenPage() {
     localStorage.setItem(posKey(level), String(idx));
   };
 
-  // TTS 재생
+  // TTS 재생 (Web Audio API — 모바일 autoplay 대응)
   const playTTS = useCallback(async (text: string): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        setLoading(true);
-        const res = await fetch("/api/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text,
-            voice: "nova",
-            instructions:
-              "Speak clearly and at a moderate pace, suitable for English language learners. Enunciate each word distinctly.",
-          }),
-        });
-        if (!res.ok) throw new Error("TTS failed");
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+    const ctx = audioCtxRef.current!;
+    setLoading(true);
+    const res = await fetch("/api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text,
+        voice: "nova",
+        instructions:
+          "Speak clearly and at a moderate pace, suitable for English language learners. Enunciate each word distinctly.",
+      }),
+    });
+    if (!res.ok) throw new Error("TTS failed");
+    const arrayBuffer = await res.arrayBuffer();
+    const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+    setLoading(false);
 
-        const audio = audioRef.current!;
-        audio.pause();
-        const prevSrc = audio.src;
-        if (prevSrc && prevSrc.startsWith("blob:")) URL.revokeObjectURL(prevSrc);
-
-        audio.onended = () => {
-          URL.revokeObjectURL(url);
-          resolve();
-        };
-        audio.onerror = () => {
-          URL.revokeObjectURL(url);
-          reject(new Error("Audio error"));
-        };
-        audio.src = url;
-        setLoading(false);
-        audio.play();
-      } catch (e) {
-        setLoading(false);
-        reject(e);
-      }
+    return new Promise<void>((resolve) => {
+      const source = ctx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(ctx.destination);
+      source.onended = () => resolve();
+      sourceRef.current = source;
+      source.start();
     });
   }, []);
 
@@ -162,10 +153,9 @@ export default function GrammarListenPage() {
     playingRef.current = false;
     setIsPlaying(false);
     setCurrentRepeat(0);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.onended = null;
-      audioRef.current.onerror = null;
+    if (sourceRef.current) {
+      try { sourceRef.current.stop(); } catch { /* already stopped */ }
+      sourceRef.current = null;
     }
   }, []);
 
@@ -173,6 +163,7 @@ export default function GrammarListenPage() {
     if (isPlaying) {
       stopPlayback();
     } else {
+      ensureAudioCtx(); // 사용자 탭에서 AudioContext unlock
       startPlayback(currentIdx);
     }
   };
