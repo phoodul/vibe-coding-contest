@@ -243,26 +243,30 @@ function ReadingLogTab() {
     .filter((m) => m.role === "assistant")
     .pop();
 
+  const [summaryRequest, setSummaryRequest] = useState("");
+
   useEffect(() => {
-    setLogs(getReadingLogs());
+    getReadingLogs().then(setLogs);
   }, []);
 
-  const handleSave = (entry: Omit<ReadingLogEntry, "id" | "createdAt">) => {
-    addReadingLog(entry);
-    setLogs(getReadingLogs());
+  const handleSave = async (entry: Omit<ReadingLogEntry, "id" | "createdAt">) => {
+    await addReadingLog(entry);
+    setLogs(await getReadingLogs());
     setShowForm(false);
   };
 
-  const handleDelete = (id: string) => {
-    deleteReadingLog(id);
-    setLogs(getReadingLogs());
+  const handleDelete = async (id: string) => {
+    await deleteReadingLog(id);
+    setLogs(await getReadingLogs());
   };
 
   const handleSummary = () => {
-    if (logs.length === 0) return;
+    if (logs.length === 0 || !summaryRequest.trim()) return;
     appendSummary({
       role: "user",
-      content: logsToText(logs),
+      content:
+        `[요청사항]\n${summaryRequest.trim()}\n\n` +
+        `[독서 기록 목록]\n${logsToText(logs)}`,
     });
   };
 
@@ -276,26 +280,43 @@ function ReadingLogTab() {
         >
           + 독서 기록 추가
         </button>
-        {logs.length >= 2 && (
-          <button
-            onClick={handleSummary}
-            disabled={summaryLoading}
-            className="px-5 py-2.5 rounded-xl glass hover:bg-card-hover font-medium transition-all text-sm"
-          >
-            {summaryLoading ? (
-              <span className="flex items-center gap-2">
-                <span className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
-                분석 중...
-              </span>
-            ) : (
-              "🤖 AI 독서 기록 요약"
-            )}
-          </button>
-        )}
         <span className="ml-auto text-sm text-muted self-center">
           총 {logs.length}권 기록
         </span>
       </div>
+
+      {/* AI 독서기록 요약 생성 */}
+      {logs.length >= 1 && (
+        <GlassCard hover={false} className="border-indigo-500/20">
+          <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+            <span>🤖</span> AI 독서기록 요약 생성
+          </h3>
+          <p className="text-xs text-muted mb-3">
+            독서 기록을 바탕으로 용도에 맞는 요약문을 AI가 작성합니다.
+          </p>
+          <textarea
+            value={summaryRequest}
+            onChange={(e) => setSummaryRequest(e.target.value)}
+            placeholder="예: 약대 지원을 위한 600자 독서기록 요약을 작성해주세요. 생명과학 관련 도서를 중심으로 작성해주세요."
+            rows={3}
+            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-indigo-500/50 transition-colors resize-none leading-relaxed mb-3 placeholder:text-white/25"
+          />
+          <button
+            onClick={handleSummary}
+            disabled={summaryLoading || !summaryRequest.trim()}
+            className="px-5 py-2.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 font-medium transition-all text-sm disabled:opacity-40"
+          >
+            {summaryLoading ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full" />
+                생성 중...
+              </span>
+            ) : (
+              "요약문 생성"
+            )}
+          </button>
+        </GlassCard>
+      )}
 
       {/* 기록 작성 폼 */}
       <AnimatePresence>
