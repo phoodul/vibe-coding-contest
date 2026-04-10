@@ -191,6 +191,11 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
 
   const isMobile = size.w < 640;
 
+  // 포커스 노드 색상: 자식일 때 보았던 색상과 동일하게 유지
+  const focusedColor = parent
+    ? getChildColor(focused.siblingIndex, parent.siblingIndex)
+    : getNodeColor(focused.siblingIndex);
+
   return (
     <div ref={containerRef} className="relative w-full h-full flex flex-col overflow-hidden">
       {/* ── 브레드크럼 ── */}
@@ -242,11 +247,11 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
               background:
                 focused.id === "root"
                   ? "rgba(15,22,40,0.95)"
-                  : getNodeColor(focused.siblingIndex).solid,
+                  : focusedColor.solid,
               borderColor:
                 focused.id === "root"
                   ? "rgba(255,255,255,0.25)"
-                  : getNodeColor(focused.siblingIndex).border,
+                  : focusedColor.border,
             }}
           >
             <p className="font-bold text-lg text-white">{focused.label}</p>
@@ -432,12 +437,12 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
                   background:
                     focused.id === "root"
                       ? "rgba(15,22,40,0.95)"
-                      : getNodeColor(focused.siblingIndex).solid,
+                      : focusedColor.solid,
                   borderColor:
                     focused.id === "root"
                       ? "rgba(255,255,255,0.25)"
-                      : getNodeColor(focused.siblingIndex).border,
-                  boxShadow: `0 0 40px ${focused.id === "root" ? "rgba(99,102,241,0.15)" : getNodeColor(focused.siblingIndex).bg + "25"}`,
+                      : focusedColor.border,
+                  boxShadow: `0 0 40px ${focused.id === "root" ? "rgba(99,102,241,0.15)" : focusedColor.bg + "25"}`,
                   maxWidth: `min(${Math.round(size.w * 0.45)}px, 280px)`,
                 }}
               >
