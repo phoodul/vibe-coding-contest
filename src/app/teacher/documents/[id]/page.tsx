@@ -230,7 +230,7 @@ export default function DocumentDetailPage() {
 
     // RPC로 atomic 번호 생성
     const { data: docNumber } = await supabase.rpc("generate_doc_number", {
-      p_org_prefix: "EduFlow",
+      p_org_prefix: "EasyEdu",
     });
 
     const nextVersion = (versions[0]?.version_number ?? 0) + 1;

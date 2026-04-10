@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-function EduFlowLogo() {
+function EasyEduLogo() {
   return (
     <svg
       width="28"
@@ -61,9 +61,9 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <EduFlowLogo />
+          <EasyEduLogo />
           <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-            EduFlow AI
+            EasyEdu AI
           </span>
         </Link>
         <nav className="flex items-center gap-6">

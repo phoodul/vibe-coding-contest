@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   // 순차적으로 번호 발급 (atomic)
   for (const doc of docs) {
     const { data: docNumber } = await supabase.rpc("generate_doc_number", {
-      p_org_prefix: "EduFlow",
+      p_org_prefix: "EasyEdu",
     });
 
     await supabase

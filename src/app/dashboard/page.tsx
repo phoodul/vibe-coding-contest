@@ -110,7 +110,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold mb-2">
             {isLoggedIn
               ? `안녕하세요, ${profile?.display_name || "사용자"}님`
-              : "EduFlow AI"}{" "}
+              : "EasyEdu AI"}{" "}
             <motion.span
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
