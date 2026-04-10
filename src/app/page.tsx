@@ -12,6 +12,7 @@ const featureAccents = [
   "#6366f1", // indigo - 마인드 맵
   "#06b6d4", // cyan - 영어 단어
   "#f43f5e", // rose - 영어 회화
+  "#22d3ee", // cyan-400 - 영문법 듣기
   "#f59e0b", // amber - 진로
   "#eab308", // yellow - 내 길 내비
   "#10b981", // emerald - 도서
@@ -47,6 +48,12 @@ const studentFeatures = [
     description: "내 레벨에 맞는 AI 원어민과 음성 대화. 실시간 피드백으로 회화 실력 UP.",
     icon: "🎙️",
     href: "/conversation",
+  },
+  {
+    title: "영문법 핵심 100문장",
+    description: "ESL 연구 기반 핵심 문법 문장 100개를 반복 청취하며 체득. 이동 중 학습에 최적화.",
+    icon: "🎧",
+    href: "/grammar-listen",
   },
   {
     title: "진로 시뮬레이터",
