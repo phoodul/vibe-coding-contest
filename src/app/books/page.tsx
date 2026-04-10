@@ -361,16 +361,14 @@ function ReadingLogForm({
   onSave: (entry: Omit<ReadingLogEntry, "id" | "createdAt">) => void;
   onCancel: () => void;
 }) {
-  const today = new Date().toISOString().split("T")[0];
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [publisher, setPublisher] = useState("");
   const [year, setYear] = useState("");
   const [isbn, setIsbn] = useState("");
+  const [readDate, setReadDate] = useState(new Date().toISOString().slice(0, 10));
   const [reflection, setReflection] = useState("");
   const [rating, setRating] = useState(4);
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
 
   // 인라인 도서 검색
   const [searchQuery, setSearchQuery] = useState("");
@@ -441,8 +439,7 @@ function ReadingLogForm({
       bookIsbn: isbn.trim(),
       reflection: reflection.trim(),
       rating,
-      startDate,
-      endDate,
+      startDate: readDate,
     });
   };
 
@@ -499,6 +496,9 @@ function ReadingLogForm({
                       <p className="text-xs text-muted truncate">
                         {book.author}{book.publisher && ` · ${book.publisher}`}{book.year && ` · ${book.year}`}
                       </p>
+                      {book.isbn && (
+                        <p className="text-[10px] text-muted/50 font-mono truncate">ISBN {book.isbn}</p>
+                      )}
                     </div>
                   </button>
                 ))}
@@ -568,43 +568,34 @@ function ReadingLogForm({
           </div>
         </div>
 
-        {/* 독서 기간 + 평점 */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label className="text-xs text-muted mb-1 block">읽기 시작</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-primary transition-colors"
-            />
+        {/* 읽은 날 + 평점 */}
+        <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs text-muted mb-1 block">읽은 날</label>
+          <input
+            type="date"
+            value={readDate}
+            onChange={(e) => setReadDate(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-primary transition-colors"
+          />
+        </div>
+        <div>
+          <label className="text-xs text-muted mb-1 block">평점</label>
+          <div className="flex gap-1 py-1">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setRating(n)}
+                className={`text-xl transition-transform hover:scale-125 ${
+                  n <= rating ? "text-amber-400" : "text-white/20"
+                }`}
+              >
+                ★
+              </button>
+            ))}
           </div>
-          <div>
-            <label className="text-xs text-muted mb-1 block">읽기 완료</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-primary transition-colors"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-muted mb-1 block">평점</label>
-            <div className="flex gap-1 py-2">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setRating(n)}
-                  className={`text-xl transition-transform hover:scale-125 ${
-                    n <= rating ? "text-amber-400" : "text-white/20"
-                  }`}
-                >
-                  ★
-                </button>
-              ))}
-            </div>
-          </div>
+        </div>
         </div>
 
         {/* 감상문 */}
@@ -672,9 +663,7 @@ function LogEntryCard({
           <h4 className="font-semibold text-sm">{log.bookTitle}</h4>
           <div className="flex flex-wrap gap-x-3 text-xs text-muted mt-0.5">
             {log.bookAuthor && <span>{log.bookAuthor}</span>}
-            <span>
-              {log.startDate} ~ {log.endDate}
-            </span>
+            {log.startDate && <span>{log.startDate}</span>}
           </div>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-xs text-amber-400">

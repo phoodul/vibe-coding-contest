@@ -13,8 +13,8 @@ export interface ReadingLogEntry {
   // 독서 기록
   reflection: string; // 독서감상문
   rating: number; // 1~5
-  startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
+  startDate?: string; // YYYY-MM-DD (레거시 호환)
+  endDate?: string; // YYYY-MM-DD (레거시 호환)
   createdAt: string; // ISO string
 }
 
@@ -81,7 +81,6 @@ export function logsToText(logs: ReadingLogEntry[]): string {
       (log, i) =>
         `[${i + 1}] 「${log.bookTitle}」 (${log.bookAuthor}, ${log.bookYear})\n` +
         `   평점: ${"★".repeat(log.rating)}${"☆".repeat(5 - log.rating)}\n` +
-        `   기간: ${log.startDate} ~ ${log.endDate}\n` +
         `   감상: ${log.reflection}`
     )
     .join("\n\n");
