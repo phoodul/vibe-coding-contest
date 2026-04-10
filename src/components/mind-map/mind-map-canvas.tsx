@@ -96,15 +96,43 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
     // Fan arc (non-root): divide by n-1 so nodes sit at both ends of the arc
     const step = n <= 1 ? 0 : isRoot ? fanAngle / n : fanAngle / (n - 1);
 
-    return children.map((child, i) => {
+    // 1. 균등 배치된 위치 계산
+    const slots = Array.from({ length: n }, (_, i) => {
       const angle = n === 1 ? centerAngle : startAngle + step * i;
       return {
-        node: child,
         x: cx + r * Math.cos(angle),
         y: cy + r * Math.sin(angle),
         angle,
       };
     });
+
+    // 2. 읽기 순서 정렬 — 표준 수학 각도(0°=우, 반시계) 기준 4영역
+    // 상(45-135):좌→우  좌(135-225):위→아래  하(225-315):좌→우  우(315-45):위→아래
+    const readingOrder = slots
+      .map((s, idx) => {
+        const rad = Math.atan2(cy - s.y, s.x - cx);
+        const deg = ((rad * 180) / Math.PI + 360) % 360;
+        let zone: number;
+        let sortKey: number;
+        if (deg >= 45 && deg < 135) {
+          zone = 0; sortKey = s.x;          // 상: 좌→우
+        } else if (deg >= 135 && deg < 225) {
+          zone = 1; sortKey = s.y;          // 좌: 위→아래
+        } else if (deg >= 225 && deg < 315) {
+          zone = 3; sortKey = s.x;          // 하: 좌→우
+        } else {
+          zone = 2; sortKey = s.y;          // 우: 위→아래
+        }
+        return { idx, zone, sortKey };
+      })
+      .sort((a, b) => a.zone - b.zone || a.sortKey - b.sortKey)
+      .map((p) => p.idx);
+
+    // 3. children[i] → 읽기 순서 i번째 위치
+    return children.map((child, i) => ({
+      node: child,
+      ...slots[readingOrder[i]],
+    }));
   }, [children, cx, cy, size, outwardAngle]);
 
   // 자식 클릭: 하위로 drill-in (클릭한 자식의 각도 저장)

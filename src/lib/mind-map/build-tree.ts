@@ -1,7 +1,21 @@
 import type { Textbook } from "@/../lib/data/textbooks/ethics-index";
 import type { StructuredSection, NoteNode } from "@/lib/data/textbooks/structured/ethics-structured-index";
 import { ETHICS_TEXTBOOK } from "@/../lib/data/textbooks/ethics";
+import { ETHICS_STRUCTURED_CH1 } from "@/lib/data/textbooks/structured/ethics-structured-ch1";
+import { ETHICS_STRUCTURED_CH2 } from "@/lib/data/textbooks/structured/ethics-structured-ch2";
 import { ETHICS_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/ethics-structured-ch3";
+import { ETHICS_STRUCTURED_CH4 } from "@/lib/data/textbooks/structured/ethics-structured-ch4";
+import { ETHICS_STRUCTURED_CH5 } from "@/lib/data/textbooks/structured/ethics-structured-ch5";
+import { ETHICS_STRUCTURED_CH6 } from "@/lib/data/textbooks/structured/ethics-structured-ch6";
+
+const ALL_STRUCTURED: StructuredSection[] = [
+  ...ETHICS_STRUCTURED_CH1,
+  ...ETHICS_STRUCTURED_CH2,
+  ...ETHICS_STRUCTURED_CH3,
+  ...ETHICS_STRUCTURED_CH4,
+  ...ETHICS_STRUCTURED_CH5,
+  ...ETHICS_STRUCTURED_CH6,
+];
 
 /* ── 타입 ── */
 
@@ -135,7 +149,7 @@ function noteNodesToMindMap(
 
 export function buildMindMapTree(
   textbook: Textbook = ETHICS_TEXTBOOK,
-  structuredSections: StructuredSection[] = ETHICS_STRUCTURED_CH3,
+  structuredSections: StructuredSection[] = ALL_STRUCTURED,
 ): MindMapNode {
   const structuredMap = buildStructuredMap(structuredSections);
 
