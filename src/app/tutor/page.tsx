@@ -15,6 +15,7 @@ export default function TutorPage() {
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [selectedConcept, setSelectedConcept] = useState<string | null>(null); // null = 전체 학습
   const [freeQuestion, setFreeQuestion] = useState("");
+  const [completedConcepts, setCompletedConcepts] = useState<Set<string>>(new Set());
   const [started, setStarted] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [summaryText, setSummaryText] = useState("");
@@ -34,6 +35,22 @@ export default function TutorPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
+
+  // AI 응답에서 [CONCEPT_DONE: ...] 마커 감지
+  useEffect(() => {
+    const assistantMsgs = messages.filter((m) => m.role === "assistant");
+    const newCompleted = new Set(completedConcepts);
+    for (const m of assistantMsgs) {
+      const matches = m.content.matchAll(/\[CONCEPT_DONE:\s*(.+?)\]/g);
+      for (const match of matches) {
+        newCompleted.add(match[1].trim());
+      }
+    }
+    if (newCompleted.size !== completedConcepts.size) {
+      setCompletedConcepts(newCompleted);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
 
   // 요약 정리 — 화면에 표시
   const generateSummary = useCallback(async () => {
@@ -379,13 +396,33 @@ export default function TutorPage() {
       {/* 헤더 */}
       <div className="glass border-b border-white/5 px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <div>
+          <div className="min-w-0">
             <h1 className="text-lg font-semibold">
               {selectedSubject?.icon} 소크라테스 AI 튜터
             </h1>
             <p className="text-xs text-muted">
-              {selectedSubject?.name} &gt; {selectedTopic?.name}
+              {selectedSubject?.name} &gt; {selectedTopic?.name || "자유 질문"}
             </p>
+            {/* 개념 진행 칩 */}
+            {selectedTopic && selectedTopic.concepts.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {selectedTopic.concepts.map((c) => {
+                  const done = completedConcepts.has(c);
+                  return (
+                    <span
+                      key={c}
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-all ${
+                        done
+                          ? "bg-emerald-500/20 text-emerald-300"
+                          : "bg-white/5 text-muted/60"
+                      }`}
+                    >
+                      {done ? "✓ " : ""}{c}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {messages.filter((m) => !m.content.startsWith("[SYSTEM:")).length >= 3 && (
@@ -447,7 +484,9 @@ export default function TutorPage() {
                 >
                   {m.role === "assistant" ? (
                     <div className="prose prose-invert prose-sm max-w-none [&_table]:text-xs [&_th]:px-2 [&_th]:py-1 [&_td]:px-2 [&_td]:py-1 [&_th]:bg-white/5 [&_table]:border-collapse [&_th]:border [&_th]:border-white/10 [&_td]:border [&_td]:border-white/10">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {m.content.replace(/\[CONCEPT_DONE:\s*.+?\]\n?/g, "")}
+                      </ReactMarkdown>
                     </div>
                   ) : (
                     <p className="whitespace-pre-wrap">{m.content}</p>
