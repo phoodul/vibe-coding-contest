@@ -1,8 +1,10 @@
 import { anthropic } from "@ai-sdk/anthropic";
-import { streamText } from "ai";
+import { streamText, tool } from "ai";
+import { z } from "zod";
 import { TUTOR_SYSTEM_PROMPT, SUBJECTS } from "@/lib/ai/tutor-prompt";
+import { searchWeb, formatSearchResults } from "@/lib/search";
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const { messages, subject, topic, concept } = await req.json();
@@ -12,9 +14,13 @@ export async function POST(req: Request) {
   const topicData = subjectData?.topics.find((t) => t.name === topic);
   const concepts = topicData?.concepts?.join(", ") || "";
 
-  const focusInstruction = concept
-    ? `학생이 "${concept}" 개념을 집중 학습하려 합니다. 이 개념을 중심으로 깊이 있게 다루되, 필요시 관련 개념도 연결하세요.`
-    : `이 교과와 단원의 내용에 집중하여 Guided Learning 방식으로 학생을 이끄세요.
+  const isCurrent = subjectData?.id === "current";
+
+  const focusInstruction = isCurrent
+    ? `학생이 "시사 · 최신 주제" 교과를 선택했습니다. 학생의 질문이나 주제에 맞게 자유롭게 Guided Learning을 진행하세요. 최신 주제이므로 searchWeb 도구를 적극 활용하세요.`
+    : concept
+      ? `학생이 "${concept}" 개념을 집중 학습하려 합니다. 이 개념을 중심으로 깊이 있게 다루되, 필요시 관련 개념도 연결하세요.`
+      : `이 교과와 단원의 내용에 집중하여 Guided Learning 방식으로 학생을 이끄세요.
 하나의 개념을 충분히 다루면 자연스럽게 다음 핵심 개념으로 넘어가세요.`;
 
   const systemPrompt = `${TUTOR_SYSTEM_PROMPT}
@@ -30,6 +36,22 @@ ${focusInstruction}
     model: anthropic("claude-sonnet-4-20250514"),
     system: systemPrompt,
     messages,
+    tools: {
+      searchWeb: tool({
+        description:
+          "웹에서 최신 정보를 검색합니다. 시사 주제, 최신 뉴스, 학생이 언급한 새로운 사실을 확인할 때 사용하세요. 교과서 수준의 확립된 지식은 검색하지 마세요.",
+        parameters: z.object({
+          query: z
+            .string()
+            .describe("검색할 키워드 또는 질문 (한국어 또는 영어)"),
+        }),
+        execute: async ({ query }) => {
+          const response = await searchWeb(query);
+          return formatSearchResults(response);
+        },
+      }),
+    },
+    maxSteps: 5,
   });
 
   return result.toDataStreamResponse();

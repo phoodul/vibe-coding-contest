@@ -265,7 +265,7 @@ export default function TutorPage() {
 
             {/* 단원 선택 */}
             <AnimatePresence>
-              {selectedSubject && (
+              {selectedSubject && selectedSubject.topics.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -350,7 +350,7 @@ export default function TutorPage() {
 
             {/* 자유 질문 진입 */}
             <AnimatePresence>
-              {selectedSubject && !selectedTopic && (
+              {selectedSubject && (selectedSubject.topics.length === 0 || !selectedTopic) && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -358,10 +358,14 @@ export default function TutorPage() {
                 >
                   <GlassCard hover={false} className="border-primary/20">
                     <h3 className="text-sm font-semibold mb-2">
-                      또는 궁금한 점을 직접 질문하세요
+                      {selectedSubject.topics.length === 0
+                        ? "학습하고 싶은 주제를 입력하세요"
+                        : "또는 궁금한 점을 직접 질문하세요"}
                     </h3>
                     <p className="text-xs text-muted mb-3">
-                      단원을 고르지 않아도 질문에서 출발하여 AI가 관련 개념을 안내합니다.
+                      {selectedSubject.topics.length === 0
+                        ? "AI가 최신 정보를 검색하여 소크라테스식으로 안내합니다."
+                        : "단원을 고르지 않아도 질문에서 출발하여 AI가 관련 개념을 안내합니다."}
                     </p>
                     <div className="flex gap-2">
                       <input
@@ -495,21 +499,34 @@ export default function TutorPage() {
               </motion.div>
             ))}
 
-          {isLoading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex justify-start"
-            >
-              <div className="glass rounded-2xl rounded-bl-md px-4 py-3">
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 rounded-full bg-muted animate-bounce" />
-                  <span className="w-2 h-2 rounded-full bg-muted animate-bounce [animation-delay:0.1s]" />
-                  <span className="w-2 h-2 rounded-full bg-muted animate-bounce [animation-delay:0.2s]" />
+          {isLoading && (() => {
+            const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+            const isSearching = lastAssistant?.toolInvocations?.some(
+              (t: { state: string }) => t.state === "call" || t.state === "partial-call"
+            );
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex justify-start"
+              >
+                <div className="glass rounded-2xl rounded-bl-md px-4 py-3">
+                  {isSearching ? (
+                    <div className="flex items-center gap-2 text-xs text-cyan-400">
+                      <span className="animate-spin w-3.5 h-3.5 border-2 border-cyan-400 border-t-transparent rounded-full" />
+                      최신 정보를 검색하고 있습니다...
+                    </div>
+                  ) : (
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 rounded-full bg-muted animate-bounce" />
+                      <span className="w-2 h-2 rounded-full bg-muted animate-bounce [animation-delay:0.1s]" />
+                      <span className="w-2 h-2 rounded-full bg-muted animate-bounce [animation-delay:0.2s]" />
+                    </div>
+                  )}
                 </div>
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            );
+          })()}
 
           {/* 요약 정리 패널 */}
           <AnimatePresence>
