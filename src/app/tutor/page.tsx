@@ -5,6 +5,8 @@ import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SUBJECTS } from "@/lib/ai/tutor-prompt";
 import type { Subject, Topic } from "@/lib/ai/tutor-prompt";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
 import Link from "next/link";
 
@@ -355,7 +357,13 @@ export default function TutorPage() {
                       : "glass rounded-bl-md"
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">{m.content}</p>
+                  {m.role === "assistant" ? (
+                    <div className="prose prose-invert prose-sm max-w-none [&_table]:text-xs [&_th]:px-2 [&_th]:py-1 [&_td]:px-2 [&_td]:py-1 [&_th]:bg-white/5 [&_table]:border-collapse [&_th]:border [&_th]:border-white/10 [&_td]:border [&_td]:border-white/10">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap">{m.content}</p>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -396,8 +404,8 @@ export default function TutorPage() {
                       닫기
                     </button>
                   </div>
-                  <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                    {summaryText}
+                  <div className="prose prose-invert prose-sm max-w-none [&_table]:text-xs [&_th]:px-2 [&_th]:py-1 [&_td]:px-2 [&_td]:py-1 [&_th]:bg-white/5 [&_table]:border-collapse [&_th]:border [&_th]:border-white/10 [&_td]:border [&_td]:border-white/10">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{summaryText}</ReactMarkdown>
                   </div>
                 </div>
               </motion.div>
