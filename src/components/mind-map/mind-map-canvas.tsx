@@ -189,8 +189,10 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
     [ancestors],
   );
 
+  const isMobile = size.w < 640;
+
   return (
-    <div className="relative w-full h-full flex flex-col overflow-hidden">
+    <div ref={containerRef} className="relative w-full h-full flex flex-col overflow-hidden">
       {/* ── 브레드크럼 ── */}
       <nav className="px-5 py-2.5 flex items-center gap-1.5 flex-shrink-0 overflow-x-auto border-b border-white/5 bg-[#0a0a1a]/50">
         {ancestors.slice(0, -1).map((a) => (
@@ -220,147 +222,119 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
         </span>
       </nav>
 
-      {/* ── 캔버스 ── */}
-      <div ref={containerRef} className="flex-1 relative">
-        {/* SVG 연결선 */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          style={{ overflow: "visible" }}
-        >
-          {/* 부모 → 중앙 연결선 */}
-          {parent && parentPos && (
-            <motion.line
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.3 }}
-              x1={parentPos.x}
-              y1={parentPos.y}
-              x2={cx}
-              y2={cy}
-              stroke="#ffffff"
-              strokeWidth={2}
-              strokeDasharray="6 4"
-            />
-          )}
-          {/* 중앙 → 자식 연결선 */}
-          {childPositions.map(({ node, x, y }) => {
-            const color = getChildColor(node.siblingIndex, focused.siblingIndex);
-            return (
-              <motion.line
-                key={`edge-${node.id}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.4 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
-                x1={cx}
-                y1={cy}
-                x2={x}
-                y2={y}
-                stroke={color.bg}
-                strokeWidth={2}
-              />
-            );
-          })}
-        </svg>
-
-        {/* ── 부모 노드 (incoming 방향) ── */}
-        <AnimatePresence mode="wait">
-          {parent && parentPos && (
-            <motion.div
-              key={`parent-${parent.id}`}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-              className="absolute -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer"
-              style={{ left: parentPos.x, top: parentPos.y }}
+      {/* ── 모바일: 세로 트리 리스트 ── */}
+      {isMobile ? (
+        <div className="flex-1 overflow-y-auto px-4 py-5 space-y-3">
+          {/* 뒤로가기 */}
+          {parent && (
+            <motion.button
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
               onClick={() => goTo(parent.id)}
+              className="text-sm text-white/50 hover:text-white/80 transition-colors mb-1"
             >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="rounded-xl px-4 py-2 border border-white/15 bg-[#1a1a3a]/90"
-              >
-                <p className="text-white/60 text-sm font-medium whitespace-nowrap text-center">
-                  ← {parent.label}
-                </p>
-              </motion.div>
+              ← {parent.label}
+            </motion.button>
+          )}
+
+          {/* 현재 노드 */}
+          <motion.div
+            key={`focus-m-${focused.id}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl px-5 py-4 shadow-2xl border-2"
+            style={{
+              background:
+                focused.id === "root"
+                  ? "rgba(15,22,40,0.95)"
+                  : getNodeColor(focused.siblingIndex).solid,
+              borderColor:
+                focused.id === "root"
+                  ? "rgba(255,255,255,0.25)"
+                  : getNodeColor(focused.siblingIndex).border,
+            }}
+          >
+            <p className="font-bold text-lg text-white">{focused.label}</p>
+            {children.length > 0 && (
+              <p className="text-white/40 text-xs mt-1">{children.length}개 항목</p>
+            )}
+          </motion.div>
+
+          {/* 자식 없고 detail 있으면 표시 */}
+          {children.length === 0 && focused.detail && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-[#12122a]/80 backdrop-blur-xl border border-white/10 rounded-xl p-4"
+            >
+              <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">
+                {focused.detail}
+              </p>
             </motion.div>
           )}
-        </AnimatePresence>
 
-        {/* ── 중앙 노드 (포커스) ── */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`focus-${focused.id}`}
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.85 }}
-            transition={{ duration: 0.3 }}
-            className="absolute -translate-x-1/2 -translate-y-1/2 z-20"
-            style={{ left: cx, top: cy }}
-          >
-            <div
-              className="rounded-2xl px-5 py-3 sm:px-8 sm:py-4 shadow-2xl border-2"
-              style={{
-                background:
-                  focused.id === "root"
-                    ? "rgba(15,22,40,0.95)"
-                    : getNodeColor(focused.siblingIndex).solid,
-                borderColor:
-                  focused.id === "root"
-                    ? "rgba(255,255,255,0.25)"
-                    : getNodeColor(focused.siblingIndex).border,
-                boxShadow: `0 0 40px ${focused.id === "root" ? "rgba(99,102,241,0.15)" : getNodeColor(focused.siblingIndex).bg + "25"}`,
-                maxWidth: `min(${Math.round(size.w * 0.45)}px, 280px)`,
-              }}
-            >
-              <p
-                className="text-center font-bold text-lg sm:text-xl text-white"
+          {/* 자식 노드 리스트 */}
+          {children.map((child, i) => {
+            const color = getChildColor(child.siblingIndex, focused.siblingIndex);
+            const hasKids = child.children.length > 0;
+            const hasDetail = !!child.detail;
+            return (
+              <motion.div
+                key={child.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.04 }}
+                className="flex items-start gap-3"
               >
-                {focused.label}
-              </p>
-              {children.length > 0 && (
-                <p className="text-center text-white/40 text-xs mt-1">
-                  {children.length}개 항목
-                </p>
-              )}
-              {children.length === 0 && !focused.detail && (
-                <p className="text-center text-white/40 text-xs mt-1">
-                  마지막 노드
-                </p>
-              )}
-            </div>
-          </motion.div>
-        </AnimatePresence>
+                {/* 연결선 */}
+                <div className="flex flex-col items-center pt-4 shrink-0">
+                  <div className="w-0.5 h-3" style={{ background: color.bg + "60" }} />
+                  <div className="w-2 h-2 rounded-full" style={{ background: color.bg }} />
+                </div>
+                {/* 카드 */}
+                <button
+                  onClick={() => {
+                    if (hasKids) {
+                      handleChildClick(child, 0);
+                    } else if (hasDetail) {
+                      setDetailNode((prev) => prev?.id === child.id ? null : child);
+                    }
+                  }}
+                  className="flex-1 text-left rounded-xl px-4 py-3 shadow-lg transition-all active:scale-[0.98]"
+                  style={{
+                    background: color.solid,
+                    border: `1.5px solid ${color.border}`,
+                  }}
+                >
+                  <p className="text-[14px] font-semibold" style={{ color: color.text }}>
+                    {child.label}
+                  </p>
+                  {hasKids && (
+                    <p className="text-[11px] mt-0.5 opacity-60" style={{ color: color.text }}>
+                      {child.children.length}개 항목 →
+                    </p>
+                  )}
+                  {!hasKids && hasDetail && (
+                    <p className="text-[11px] mt-0.5 opacity-50" style={{ color: color.text }}>
+                      상세보기
+                    </p>
+                  )}
+                </button>
+              </motion.div>
+            );
+          })}
 
-        {/* ── 자식 노드 (부채꼴 배치) ── */}
-        <AnimatePresence>
-          {childPositions.map(({ node, x, y, angle }, i) => (
-            <ChildNode
-              key={node.id}
-              node={node}
-              parentSiblingIndex={focused.siblingIndex}
-              x={x}
-              y={y}
-              delay={i * 0.04}
-              onClick={() => handleChildClick(node, angle)}
-            />
-          ))}
-        </AnimatePresence>
-
-        {/* ── Detail 팝오버 ── */}
-        <AnimatePresence>
-          {detailNode && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 max-w-2xl w-[92%]"
-            >
-              <div className="bg-[#12122a]/95 backdrop-blur-2xl border border-white/15 rounded-2xl p-5 shadow-2xl">
+          {/* Detail 팝오버 (모바일) */}
+          <AnimatePresence>
+            {detailNode && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="bg-[#12122a]/95 backdrop-blur-2xl border border-white/15 rounded-2xl p-5 shadow-2xl"
+              >
                 <div className="flex items-start justify-between gap-3 mb-3">
-                  <h3 className="text-white font-bold text-base">
-                    {detailNode.label}
-                  </h3>
+                  <h3 className="text-white font-bold text-base">{detailNode.label}</h3>
                   <button
                     onClick={() => setDetailNode(null)}
                     className="text-white/40 hover:text-white/80 text-lg leading-none transition-colors flex-shrink-0"
@@ -371,27 +345,180 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
                 <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
                   {detailNode.detail}
                 </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      ) : (
+        /* ── 데스크톱: 기존 방사형 캔버스 ── */
+        <div className="flex-1 relative">
+          {/* SVG 연결선 */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{ overflow: "visible" }}
+          >
+            {parent && parentPos && (
+              <motion.line
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.3 }}
+                x1={parentPos.x}
+                y1={parentPos.y}
+                x2={cx}
+                y2={cy}
+                stroke="#ffffff"
+                strokeWidth={2}
+                strokeDasharray="6 4"
+              />
+            )}
+            {childPositions.map(({ node, x, y }) => {
+              const color = getChildColor(node.siblingIndex, focused.siblingIndex);
+              return (
+                <motion.line
+                  key={`edge-${node.id}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.4 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                  x1={cx}
+                  y1={cy}
+                  x2={x}
+                  y2={y}
+                  stroke={color.bg}
+                  strokeWidth={2}
+                />
+              );
+            })}
+          </svg>
+
+          {/* 부모 노드 */}
+          <AnimatePresence mode="wait">
+            {parent && parentPos && (
+              <motion.div
+                key={`parent-${parent.id}`}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+                className="absolute -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer"
+                style={{ left: parentPos.x, top: parentPos.y }}
+                onClick={() => goTo(parent.id)}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="rounded-xl px-4 py-2 border border-white/15 bg-[#1a1a3a]/90"
+                >
+                  <p className="text-white/60 text-sm font-medium whitespace-nowrap text-center">
+                    ← {parent.label}
+                  </p>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 중앙 노드 */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`focus-${focused.id}`}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ duration: 0.3 }}
+              className="absolute -translate-x-1/2 -translate-y-1/2 z-20"
+              style={{ left: cx, top: cy }}
+            >
+              <div
+                className="rounded-2xl px-8 py-4 shadow-2xl border-2"
+                style={{
+                  background:
+                    focused.id === "root"
+                      ? "rgba(15,22,40,0.95)"
+                      : getNodeColor(focused.siblingIndex).solid,
+                  borderColor:
+                    focused.id === "root"
+                      ? "rgba(255,255,255,0.25)"
+                      : getNodeColor(focused.siblingIndex).border,
+                  boxShadow: `0 0 40px ${focused.id === "root" ? "rgba(99,102,241,0.15)" : getNodeColor(focused.siblingIndex).bg + "25"}`,
+                  maxWidth: `min(${Math.round(size.w * 0.45)}px, 280px)`,
+                }}
+              >
+                <p className="text-center font-bold text-xl text-white">
+                  {focused.label}
+                </p>
+                {children.length > 0 && (
+                  <p className="text-center text-white/40 text-xs mt-1">
+                    {children.length}개 항목
+                  </p>
+                )}
+                {children.length === 0 && !focused.detail && (
+                  <p className="text-center text-white/40 text-xs mt-1">
+                    마지막 노드
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* 자식 노드 (부채꼴) */}
+          <AnimatePresence>
+            {childPositions.map(({ node, x, y, angle }, i) => (
+              <ChildNode
+                key={node.id}
+                node={node}
+                parentSiblingIndex={focused.siblingIndex}
+                x={x}
+                y={y}
+                delay={i * 0.04}
+                onClick={() => handleChildClick(node, angle)}
+              />
+            ))}
+          </AnimatePresence>
+
+          {/* Detail 팝오버 */}
+          <AnimatePresence>
+            {detailNode && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 max-w-2xl w-[92%]"
+              >
+                <div className="bg-[#12122a]/95 backdrop-blur-2xl border border-white/15 rounded-2xl p-5 shadow-2xl">
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <h3 className="text-white font-bold text-base">
+                      {detailNode.label}
+                    </h3>
+                    <button
+                      onClick={() => setDetailNode(null)}
+                      className="text-white/40 hover:text-white/80 text-lg leading-none transition-colors flex-shrink-0"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
+                    {detailNode.detail}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 자식 없으면 detail 표시 */}
+          {children.length === 0 && focused.detail && !detailNode && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute left-1/2 -translate-x-1/2 z-10 max-w-xl w-[85%]"
+              style={{ top: cy + 60 }}
+            >
+              <div className="bg-[#12122a]/80 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">
+                  {focused.detail}
+                </p>
               </div>
             </motion.div>
           )}
-        </AnimatePresence>
-
-        {/* 자식 없으면 detail 표시 */}
-        {children.length === 0 && focused.detail && !detailNode && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute left-1/2 -translate-x-1/2 z-10 max-w-xl w-[85%]"
-            style={{ top: cy + 60 }}
-          >
-            <div className="bg-[#12122a]/80 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-              <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">
-                {focused.detail}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
