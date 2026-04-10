@@ -1,14 +1,26 @@
 import type { Textbook } from "@/../lib/data/textbooks/ethics-index";
 import type { StructuredSection, NoteNode } from "@/lib/data/textbooks/structured/ethics-structured-index";
 import { ETHICS_TEXTBOOK } from "@/../lib/data/textbooks/ethics";
+import { BIOLOGY_TEXTBOOK } from "@/../lib/data/textbooks/biology";
+import { KOREAN_TEXTBOOK } from "@/../lib/data/textbooks/korean";
 import { ETHICS_STRUCTURED_CH1 } from "@/lib/data/textbooks/structured/ethics-structured-ch1";
 import { ETHICS_STRUCTURED_CH2 } from "@/lib/data/textbooks/structured/ethics-structured-ch2";
 import { ETHICS_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/ethics-structured-ch3";
 import { ETHICS_STRUCTURED_CH4 } from "@/lib/data/textbooks/structured/ethics-structured-ch4";
 import { ETHICS_STRUCTURED_CH5 } from "@/lib/data/textbooks/structured/ethics-structured-ch5";
 import { ETHICS_STRUCTURED_CH6 } from "@/lib/data/textbooks/structured/ethics-structured-ch6";
+import { BIOLOGY_STRUCTURED_CH1 } from "@/lib/data/textbooks/structured/biology-structured-ch1";
+import { BIOLOGY_STRUCTURED_CH2 } from "@/lib/data/textbooks/structured/biology-structured-ch2";
+import { BIOLOGY_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/biology-structured-ch3";
+import { BIOLOGY_STRUCTURED_CH4 } from "@/lib/data/textbooks/structured/biology-structured-ch4";
+import { BIOLOGY_STRUCTURED_CH5 } from "@/lib/data/textbooks/structured/biology-structured-ch5";
+import { KOREAN_STRUCTURED_CH1 } from "@/lib/data/textbooks/structured/korean-structured-ch1";
+import { KOREAN_STRUCTURED_CH2 } from "@/lib/data/textbooks/structured/korean-structured-ch2";
+import { KOREAN_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/korean-structured-ch3";
+import { KOREAN_STRUCTURED_CH4 } from "@/lib/data/textbooks/structured/korean-structured-ch4";
+import { KOREAN_STRUCTURED_CH5 } from "@/lib/data/textbooks/structured/korean-structured-ch5";
 
-const ALL_STRUCTURED: StructuredSection[] = [
+const ETHICS_STRUCTURED: StructuredSection[] = [
   ...ETHICS_STRUCTURED_CH1,
   ...ETHICS_STRUCTURED_CH2,
   ...ETHICS_STRUCTURED_CH3,
@@ -16,6 +28,30 @@ const ALL_STRUCTURED: StructuredSection[] = [
   ...ETHICS_STRUCTURED_CH5,
   ...ETHICS_STRUCTURED_CH6,
 ];
+
+const BIOLOGY_STRUCTURED: StructuredSection[] = [
+  ...BIOLOGY_STRUCTURED_CH1,
+  ...BIOLOGY_STRUCTURED_CH2,
+  ...BIOLOGY_STRUCTURED_CH3,
+  ...BIOLOGY_STRUCTURED_CH4,
+  ...BIOLOGY_STRUCTURED_CH5,
+];
+
+const KOREAN_STRUCTURED: StructuredSection[] = [
+  ...KOREAN_STRUCTURED_CH1,
+  ...KOREAN_STRUCTURED_CH2,
+  ...KOREAN_STRUCTURED_CH3,
+  ...KOREAN_STRUCTURED_CH4,
+  ...KOREAN_STRUCTURED_CH5,
+];
+
+export type SubjectKey = "ethics" | "biology" | "korean";
+
+const SUBJECT_DATA: Record<SubjectKey, { textbook: Textbook; structured: StructuredSection[] }> = {
+  ethics: { textbook: ETHICS_TEXTBOOK, structured: ETHICS_STRUCTURED },
+  biology: { textbook: BIOLOGY_TEXTBOOK, structured: BIOLOGY_STRUCTURED },
+  korean: { textbook: KOREAN_TEXTBOOK, structured: KOREAN_STRUCTURED },
+};
 
 /* ── 타입 ── */
 
@@ -148,9 +184,9 @@ function noteNodesToMindMap(
 /* ── 메인 빌더 ── */
 
 export function buildMindMapTree(
-  textbook: Textbook = ETHICS_TEXTBOOK,
-  structuredSections: StructuredSection[] = ALL_STRUCTURED,
+  subject: SubjectKey = "ethics",
 ): MindMapNode {
+  const { textbook, structured: structuredSections } = SUBJECT_DATA[subject];
   const structuredMap = buildStructuredMap(structuredSections);
 
   return {

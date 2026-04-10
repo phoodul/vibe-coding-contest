@@ -1,12 +1,19 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { buildMindMapTree } from "@/lib/mind-map/build-tree";
+import { buildMindMapTree, type SubjectKey } from "@/lib/mind-map/build-tree";
 import { MindMapCanvas } from "@/components/mind-map/mind-map-canvas";
 
+const SUBJECTS: { key: SubjectKey; label: string; icon: string }[] = [
+  { key: "ethics", label: "생활과 윤리", icon: "⚖️" },
+  { key: "biology", label: "생명과학Ⅰ", icon: "🧬" },
+  { key: "korean", label: "언어와 매체", icon: "📖" },
+];
+
 export default function MindMapPage() {
-  const tree = useMemo(() => buildMindMapTree(), []);
+  const [subject, setSubject] = useState<SubjectKey>("ethics");
+  const tree = useMemo(() => buildMindMapTree(subject), [subject]);
 
   return (
     <div className="h-screen bg-gradient-to-br from-[#0a0a1a] via-[#0f1628] to-[#0a0a1a] text-white flex flex-col overflow-hidden">
@@ -24,19 +31,32 @@ export default function MindMapPage() {
               <span className="text-amber-400">🧠</span>
               마인드 맵
             </h1>
-            <span className="text-white/30 text-xs">
-              {tree.label} · 교과서 전체 구조
-            </span>
+            {/* 교과목 탭 */}
+            <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5">
+              {SUBJECTS.map((s) => (
+                <button
+                  key={s.key}
+                  onClick={() => setSubject(s.key)}
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                    subject === s.key
+                      ? "bg-white/15 text-white shadow-sm"
+                      : "text-white/40 hover:text-white/70"
+                  }`}
+                >
+                  {s.icon} {s.label}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="text-white/30 text-xs">
-            스크롤로 확대/축소 · 드래그로 이동 · 클릭으로 확장
+            클릭으로 확장 · 상단 경로로 이동
           </div>
         </div>
       </header>
 
       {/* 캔버스 */}
       <main className="flex-1 overflow-hidden">
-        <MindMapCanvas root={tree} />
+        <MindMapCanvas key={subject} root={tree} />
       </main>
     </div>
   );
