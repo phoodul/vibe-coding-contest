@@ -13,6 +13,8 @@ import Link from "next/link";
 export default function TutorPage() {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [selectedConcept, setSelectedConcept] = useState<string | null>(null); // null = 전체 학습
+  const [freeQuestion, setFreeQuestion] = useState("");
   const [started, setStarted] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [summaryText, setSummaryText] = useState("");
@@ -24,6 +26,7 @@ export default function TutorPage() {
       body: {
         subject: selectedSubject?.name || "",
         topic: selectedTopic?.name || "",
+        concept: selectedConcept || "",
       },
     });
 
@@ -167,10 +170,26 @@ export default function TutorPage() {
   function startLesson() {
     if (!selectedSubject || !selectedTopic) return;
     setStarted(true);
-    // AI가 단원의 opener 질문으로 시작
+    if (selectedConcept) {
+      append({
+        role: "user",
+        content: `[SYSTEM: 학생이 "${selectedSubject.name}" 과목의 "${selectedTopic.name}" 단원에서 "${selectedConcept}" 개념을 집중 학습하려 합니다. 이 개념에 맞는 도입 질문으로 수업을 시작하세요.]`,
+      });
+    } else {
+      append({
+        role: "user",
+        content: `[SYSTEM: 학생이 "${selectedSubject.name}" 과목의 "${selectedTopic.name}" 단원을 선택했습니다. 다음 질문으로 수업을 시작하세요: "${selectedTopic.opener}"]`,
+      });
+    }
+  }
+
+  // 자유 질문으로 시작
+  function startFreeQuestion() {
+    if (!selectedSubject || !freeQuestion.trim()) return;
+    setStarted(true);
     append({
       role: "user",
-      content: `[SYSTEM: 학생이 "${selectedSubject.name}" 과목의 "${selectedTopic.name}" 단원을 선택했습니다. 다음 질문으로 수업을 시작하세요: "${selectedTopic.opener}"]`,
+      content: `[SYSTEM: 학생이 "${selectedSubject.name}" 과목에서 자유 질문을 했습니다. 이 질문을 출발점으로 소크라테스식 Guided Learning을 시작하세요. 관련 단원의 핵심 개념과 연결지어 대화를 이끌어주세요.]\n\n학생의 질문: ${freeQuestion.trim()}`,
     });
   }
 
@@ -265,20 +284,89 @@ export default function TutorPage() {
               )}
             </AnimatePresence>
 
-            {selectedTopic && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex justify-center"
-              >
-                <button
-                  onClick={startLesson}
-                  className="btn-glow px-8 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all hover:scale-105 active:scale-[0.97]"
+            {/* 개념 선택 + 시작 */}
+            <AnimatePresence>
+              {selectedTopic && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-4"
                 >
-                  학습 시작하기
-                </button>
-              </motion.div>
-            )}
+                  <h2 className="text-lg font-semibold">집중할 개념을 선택하세요</h2>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setSelectedConcept(null)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        selectedConcept === null
+                          ? "bg-primary/80 text-white"
+                          : "bg-white/5 text-muted hover:bg-white/10"
+                      }`}
+                    >
+                      전체 학습
+                    </button>
+                    {selectedTopic.concepts.map((c) => (
+                      <button
+                        key={c}
+                        onClick={() => setSelectedConcept(c)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                          selectedConcept === c
+                            ? "bg-primary/80 text-white"
+                            : "bg-white/5 text-muted hover:bg-white/10"
+                        }`}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex justify-center">
+                    <button
+                      onClick={startLesson}
+                      className="btn-glow px-8 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all hover:scale-105 active:scale-[0.97]"
+                    >
+                      학습 시작하기
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* 자유 질문 진입 */}
+            <AnimatePresence>
+              {selectedSubject && !selectedTopic && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                >
+                  <GlassCard hover={false} className="border-primary/20">
+                    <h3 className="text-sm font-semibold mb-2">
+                      또는 궁금한 점을 직접 질문하세요
+                    </h3>
+                    <p className="text-xs text-muted mb-3">
+                      단원을 고르지 않아도 질문에서 출발하여 AI가 관련 개념을 안내합니다.
+                    </p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={freeQuestion}
+                        onChange={(e) => setFreeQuestion(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && freeQuestion.trim() && startFreeQuestion()}
+                        placeholder="예: 미토콘드리아가 왜 이중막 구조인가요?"
+                        className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-primary/50 transition-colors"
+                      />
+                      <button
+                        onClick={startFreeQuestion}
+                        disabled={!freeQuestion.trim()}
+                        className="px-5 py-2 rounded-lg bg-primary/20 text-primary font-medium text-sm hover:bg-primary/30 transition-colors disabled:opacity-40"
+                      >
+                        질문하기
+                      </button>
+                    </div>
+                  </GlassCard>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
