@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/glass-card";
@@ -23,7 +23,7 @@ const GRADES = [
   "대학생/재수생",
 ];
 
-type Tab = "recommend" | "search" | "log";
+type Tab = "recommend" | "log";
 
 interface NLBook {
   isbn: string;
@@ -38,22 +38,8 @@ interface NLBook {
   type: string;
 }
 
-interface SearchResult {
-  total: number;
-  pageNum: number;
-  pageSize: number;
-  books: NLBook[];
-}
-
 export default function BooksPage() {
   const [tab, setTab] = useState<Tab>("recommend");
-  // 검색에서 "읽었어요" 클릭 시 기록 탭으로 전환하며 도서 정보 전달
-  const [bookToLog, setBookToLog] = useState<NLBook | null>(null);
-
-  const handleReadBook = (book: NLBook) => {
-    setBookToLog(book);
-    setTab("log");
-  };
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
@@ -62,7 +48,7 @@ export default function BooksPage() {
           href="/dashboard"
           className="text-sm text-muted hover:text-foreground transition-colors mb-8 block"
         >
-          ← 대시보드
+          &larr; 대시보드
         </Link>
 
         <motion.div
@@ -71,7 +57,7 @@ export default function BooksPage() {
         >
           <h1 className="text-3xl font-bold mb-2">📚 도서 추천 & 독서 기록</h1>
           <p className="text-muted mb-6">
-            AI 맞춤 추천, 국립중앙도서관 검색, 독서 기록을 관리하세요.
+            AI 맞춤 추천을 받고, 읽은 책을 검색하여 독서 기록을 관리하세요.
           </p>
         </motion.div>
 
@@ -80,7 +66,6 @@ export default function BooksPage() {
           {(
             [
               { key: "recommend", label: "🤖 AI 맞춤 추천" },
-              { key: "search", label: "🔍 도서관 검색" },
               { key: "log", label: "📖 독서 기록" },
             ] as const
           ).map((t) => (
@@ -110,17 +95,6 @@ export default function BooksPage() {
               <RecommendTab />
             </motion.div>
           )}
-          {tab === "search" && (
-            <motion.div
-              key="search"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.2 }}
-            >
-              <SearchTab onReadBook={handleReadBook} />
-            </motion.div>
-          )}
           {tab === "log" && (
             <motion.div
               key="log"
@@ -129,10 +103,7 @@ export default function BooksPage() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <ReadingLogTab
-                initialBook={bookToLog}
-                onBookConsumed={() => setBookToLog(null)}
-              />
+              <ReadingLogTab />
             </motion.div>
           )}
         </AnimatePresence>
@@ -256,231 +227,11 @@ function RecommendTab() {
 }
 
 /* ═══════════════════════════════════════ */
-/*  국립중앙도서관 검색 탭                   */
-/* ═══════════════════════════════════════ */
-function SearchTab({ onReadBook }: { onReadBook: (book: NLBook) => void }) {
-  const [query, setQuery] = useState("");
-  const [result, setResult] = useState<SearchResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  const doSearch = useCallback(
-    async (pageNum: number) => {
-      if (!query.trim()) return;
-      setLoading(true);
-      setError("");
-      try {
-        const params = new URLSearchParams({
-          kwd: query.trim(),
-          pageNum: String(pageNum),
-          pageSize: String(pageSize),
-        });
-        const res = await fetch(`/api/books/search?${params}`);
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || "검색 실패");
-        }
-        const data: SearchResult = await res.json();
-        setResult(data);
-        setPage(pageNum);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "검색 중 오류 발생");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [query]
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    doSearch(1);
-  };
-
-  const totalPages = result ? Math.ceil(result.total / pageSize) : 0;
-
-  return (
-    <div className="space-y-6">
-      <GlassCard hover={false}>
-        <form onSubmit={handleSubmit} className="flex gap-3">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="도서명, 저자, 키워드로 검색..."
-            className="flex-1 px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-primary transition-colors"
-          />
-          <button
-            type="submit"
-            disabled={!query.trim() || loading}
-            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all disabled:opacity-50 shrink-0"
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
-                검색 중
-              </span>
-            ) : (
-              "검색"
-            )}
-          </button>
-        </form>
-        <p className="text-xs text-muted/50 mt-2">
-          국립중앙도서관 소장 자료를 검색합니다
-        </p>
-      </GlassCard>
-
-      {error && (
-        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          {error}
-        </div>
-      )}
-
-      {result && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted">
-              총{" "}
-              <span className="text-foreground font-semibold">
-                {result.total.toLocaleString()}
-              </span>
-              건
-            </p>
-            {totalPages > 1 && (
-              <p className="text-xs text-muted">
-                {page} / {Math.min(totalPages, 100)} 페이지
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            {result.books.map((book, i) => (
-              <BookCard
-                key={`${book.isbn || i}-${i}`}
-                book={book}
-                index={i}
-                onRead={() => onReadBook(book)}
-              />
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2 pt-4">
-              <button
-                onClick={() => doSearch(page - 1)}
-                disabled={page <= 1 || loading}
-                className="px-4 py-2 rounded-lg glass text-sm hover:bg-card-hover transition-colors disabled:opacity-30"
-              >
-                ← 이전
-              </button>
-              <span className="px-4 py-2 text-sm text-muted">
-                {page} / {Math.min(totalPages, 100)}
-              </span>
-              <button
-                onClick={() => doSearch(page + 1)}
-                disabled={page >= Math.min(totalPages, 100) || loading}
-                className="px-4 py-2 rounded-lg glass text-sm hover:bg-card-hover transition-colors disabled:opacity-30"
-              >
-                다음 →
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** 도서 카드 */
-function BookCard({
-  book,
-  index,
-  onRead,
-}: {
-  book: NLBook;
-  index: number;
-  onRead?: () => void;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.04 }}
-      className="glass-gradient p-4 flex gap-4 group"
-    >
-      <div className="w-12 h-16 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-2xl">
-        {book.imageUrl ? (
-          <img
-            src={book.imageUrl}
-            alt={book.title}
-            className="w-full h-full object-cover rounded-lg"
-          />
-        ) : (
-          "📕"
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-sm leading-snug mb-1 group-hover:text-primary transition-colors">
-          {book.detailLink ? (
-            <a
-              href={book.detailLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              {book.title}
-            </a>
-          ) : (
-            book.title
-          )}
-        </h3>
-        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted">
-          {book.author && <span>{book.author}</span>}
-          {book.publisher && (
-            <span className="text-muted/60">{book.publisher}</span>
-          )}
-          {book.year && <span className="text-muted/60">{book.year}</span>}
-        </div>
-        <div className="flex flex-wrap items-center gap-1.5 mt-2">
-          {book.className && (
-            <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium">
-              {book.className}
-            </span>
-          )}
-          {book.isbn && (
-            <span className="px-2 py-0.5 rounded-full bg-white/5 text-muted/50 text-[10px] font-mono">
-              ISBN {book.isbn}
-            </span>
-          )}
-          {onRead && (
-            <button
-              onClick={onRead}
-              className="ml-auto px-3 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-medium transition-colors"
-            >
-              읽었어요 →
-            </button>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ═══════════════════════════════════════ */
 /*  독서 기록 탭                            */
 /* ═══════════════════════════════════════ */
-function ReadingLogTab({
-  initialBook,
-  onBookConsumed,
-}: {
-  initialBook: NLBook | null;
-  onBookConsumed: () => void;
-}) {
+function ReadingLogTab() {
   const [logs, setLogs] = useState<ReadingLogEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [formBook, setFormBook] = useState<NLBook | null>(null);
 
   // AI 요약
   const {
@@ -496,20 +247,10 @@ function ReadingLogTab({
     setLogs(getReadingLogs());
   }, []);
 
-  // 검색에서 "읽었어요"로 넘어온 경우
-  useEffect(() => {
-    if (initialBook) {
-      setFormBook(initialBook);
-      setShowForm(true);
-      onBookConsumed();
-    }
-  }, [initialBook, onBookConsumed]);
-
   const handleSave = (entry: Omit<ReadingLogEntry, "id" | "createdAt">) => {
     addReadingLog(entry);
     setLogs(getReadingLogs());
     setShowForm(false);
-    setFormBook(null);
   };
 
   const handleDelete = (id: string) => {
@@ -530,10 +271,7 @@ function ReadingLogTab({
       {/* 상단 액션 */}
       <div className="flex flex-wrap gap-3">
         <button
-          onClick={() => {
-            setFormBook(null);
-            setShowForm(true);
-          }}
+          onClick={() => setShowForm(true)}
           className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-all text-sm"
         >
           + 독서 기록 추가
@@ -569,12 +307,8 @@ function ReadingLogTab({
             className="overflow-hidden"
           >
             <ReadingLogForm
-              book={formBook}
               onSave={handleSave}
-              onCancel={() => {
-                setShowForm(false);
-                setFormBook(null);
-              }}
+              onCancel={() => setShowForm(false)}
             />
           </motion.div>
         )}
@@ -599,7 +333,7 @@ function ReadingLogTab({
             <p className="text-3xl mb-3">📖</p>
             <p className="text-muted text-sm">아직 독서 기록이 없습니다.</p>
             <p className="text-muted/50 text-xs mt-1">
-              도서관 검색에서 &quot;읽었어요&quot;를 누르거나 직접 추가하세요.
+              위 버튼을 눌러 읽은 책을 검색하고 기록하세요.
             </p>
           </div>
         </GlassCard>
@@ -619,26 +353,82 @@ function ReadingLogTab({
   );
 }
 
-/** 독서 기록 작성 폼 */
+/** 독서 기록 작성 폼 — 인라인 도서 검색 포함 */
 function ReadingLogForm({
-  book,
   onSave,
   onCancel,
 }: {
-  book: NLBook | null;
   onSave: (entry: Omit<ReadingLogEntry, "id" | "createdAt">) => void;
   onCancel: () => void;
 }) {
   const today = new Date().toISOString().split("T")[0];
-  const [title, setTitle] = useState(book?.title || "");
-  const [author, setAuthor] = useState(book?.author || "");
-  const [publisher, setPublisher] = useState(book?.publisher || "");
-  const [year, setYear] = useState(book?.year || "");
-  const [isbn, setIsbn] = useState(book?.isbn || "");
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [publisher, setPublisher] = useState("");
+  const [year, setYear] = useState("");
+  const [isbn, setIsbn] = useState("");
   const [reflection, setReflection] = useState("");
   const [rating, setRating] = useState(4);
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(today);
+
+  // 인라인 도서 검색
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<NLBook[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // 검색 입력 시 debounce 자동 검색
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    if (value.trim().length < 2) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+    searchTimerRef.current = setTimeout(() => doSearch(value.trim()), 500);
+  };
+
+  const doSearch = async (kwd: string) => {
+    setSearching(true);
+    try {
+      const params = new URLSearchParams({ kwd, pageNum: "1", pageSize: "8" });
+      const res = await fetch(`/api/books/search?${params}`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setSearchResults(data.books || []);
+      setShowResults(true);
+    } catch {
+      setSearchResults([]);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const selectBook = (book: NLBook) => {
+    setTitle(book.title);
+    setAuthor(book.author);
+    setPublisher(book.publisher);
+    setYear(book.year);
+    setIsbn(book.isbn);
+    setSearchQuery("");
+    setShowResults(false);
+    setSearchResults([]);
+  };
+
+  // 바깥 클릭 시 검색 결과 닫기
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (resultsRef.current && !resultsRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -660,6 +450,69 @@ function ReadingLogForm({
     <GlassCard hover={false} className="border-emerald-500/20">
       <h3 className="font-semibold mb-4">독서 기록 작성</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* 도서 검색 */}
+        <div className="relative" ref={resultsRef}>
+          <label className="text-xs text-muted mb-1 block">
+            도서 검색 (제목 또는 저자)
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onFocus={() => searchResults.length > 0 && setShowResults(true)}
+              placeholder="읽은 책의 제목이나 저자를 입력하세요..."
+              className="w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-emerald-500/50 transition-colors pr-10"
+            />
+            {searching && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="animate-spin w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full" />
+              </div>
+            )}
+          </div>
+
+          {/* 검색 결과 드롭다운 */}
+          <AnimatePresence>
+            {showResults && searchResults.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                className="absolute z-20 left-0 right-0 mt-1 rounded-xl border border-white/10 bg-[#1a1a2e] shadow-2xl max-h-72 overflow-y-auto"
+              >
+                {searchResults.map((book, i) => (
+                  <button
+                    key={`${book.isbn || i}-${i}`}
+                    type="button"
+                    onClick={() => selectBook(book)}
+                    className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0 flex gap-3"
+                  >
+                    <div className="w-8 h-10 rounded bg-white/5 flex items-center justify-center shrink-0 text-sm">
+                      {book.imageUrl ? (
+                        <img src={book.imageUrl} alt="" className="w-full h-full object-cover rounded" />
+                      ) : (
+                        "📕"
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{book.title}</p>
+                      <p className="text-xs text-muted truncate">
+                        {book.author}{book.publisher && ` · ${book.publisher}`}{book.year && ` · ${book.year}`}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {showResults && searchResults.length === 0 && searchQuery.trim().length >= 2 && !searching && (
+            <div className="absolute z-20 left-0 right-0 mt-1 rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-3 text-sm text-muted">
+              검색 결과가 없습니다. 아래에 직접 입력하세요.
+            </div>
+          )}
+        </div>
+
         {/* 도서 정보 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
