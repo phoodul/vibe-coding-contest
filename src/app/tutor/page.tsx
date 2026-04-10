@@ -544,26 +544,50 @@ export default function TutorPage() {
         </div>
       </div>
 
-      {/* 입력 */}
-      <div className="glass border-t border-white/5 px-6 py-4">
-        <form
-          onSubmit={handleSubmit}
-          className="max-w-3xl mx-auto flex gap-3"
-        >
-          <input
-            value={input}
-            onChange={handleInputChange}
-            placeholder="답변을 입력하세요..."
-            className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-primary transition-colors"
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+      {/* 사고 가이드 칩 + 입력 */}
+      <div className="glass border-t border-white/5 px-6 py-3">
+        <div className="max-w-3xl mx-auto">
+          {/* Think-Articulate 가이드 칩 */}
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {[
+              { label: "내 생각은...", prefix: "제 생각에는 " },
+              { label: "이유는...", prefix: "그 이유는 " },
+              { label: "예를 들면...", prefix: "예를 들어 " },
+              { label: "잘 모르겠어요", prefix: "잘 모르겠는데, " },
+              { label: "다시 설명해주세요", prefix: "조금 더 쉽게 설명해주실 수 있나요? " },
+            ].map((chip) => (
+              <button
+                key={chip.label}
+                type="button"
+                onClick={() => {
+                  const e = { target: { value: input ? input + chip.prefix : chip.prefix } } as React.ChangeEvent<HTMLInputElement>;
+                  handleInputChange(e);
+                }}
+                className="text-[11px] px-2.5 py-1 rounded-full bg-white/5 text-muted hover:bg-primary/10 hover:text-primary transition-all"
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+          <form
+            onSubmit={handleSubmit}
+            className="flex gap-3"
           >
-            전송
-          </button>
-        </form>
+            <input
+              value={input}
+              onChange={handleInputChange}
+              placeholder="생각을 정리해서 답변해보세요..."
+              className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-primary transition-colors"
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+            >
+              전송
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
