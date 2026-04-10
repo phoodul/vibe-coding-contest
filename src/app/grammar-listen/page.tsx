@@ -36,7 +36,6 @@ export default function GrammarListenPage() {
   const [loading, setLoading] = useState(false);
   const [jumpTo, setJumpTo] = useState("");
   const [showList, setShowList] = useState(false);
-  const [announcingCategory, setAnnouncingCategory] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playingRef = useRef(false);
 
@@ -113,69 +112,17 @@ export default function GrammarListenPage() {
     });
   }, []);
 
-  // 카테고리 안내 TTS (한국어)
-  const playCategory = useCallback(async (categoryName: string): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        setAnnouncingCategory(true);
-        const res = await fetch("/api/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: categoryName,
-            voice: "nova",
-            instructions: "Announce the grammar category name clearly. Brief and direct.",
-          }),
-        });
-        if (!res.ok) { resolve(); return; }
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-
-        if (audioRef.current) {
-          audioRef.current.pause();
-          URL.revokeObjectURL(audioRef.current.src);
-        }
-
-        const audio = new Audio(url);
-        audioRef.current = audio;
-        audio.onended = () => {
-          URL.revokeObjectURL(url);
-          setAnnouncingCategory(false);
-          resolve();
-        };
-        audio.onerror = () => {
-          URL.revokeObjectURL(url);
-          setAnnouncingCategory(false);
-          resolve(); // 실패해도 문장 재생으로 진행
-        };
-        audio.play();
-      } catch {
-        setAnnouncingCategory(false);
-        resolve();
-      }
-    });
-  }, []);
-
-  // 연속 재생 루프 — 카테고리 전환 시 안내 포함
+  // 연속 재생 루프
   const startPlayback = useCallback(
     async (startIdx: number) => {
       playingRef.current = true;
       setIsPlaying(true);
       let idx = startIdx;
-      let prevCategory = idx > 0 ? sentences[idx - 1]?.category : "";
 
       while (idx < TOTAL && playingRef.current) {
         setCurrentIdx(idx);
         savePos(idx);
         const s = sentences[idx];
-
-        // 카테고리가 바뀌면 안내
-        if (s.category !== prevCategory && playingRef.current) {
-          await playCategory(s.category);
-          if (!playingRef.current) break;
-          await new Promise((r) => setTimeout(r, 600));
-        }
-        prevCategory = s.category;
 
         for (let rep = 0; rep < repeatCount; rep++) {
           if (!playingRef.current) break;
@@ -201,14 +148,13 @@ export default function GrammarListenPage() {
       setCurrentRepeat(0);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [repeatCount, playTTS, playCategory, sentences, TOTAL],
+    [repeatCount, playTTS, sentences, TOTAL],
   );
 
   const stopPlayback = useCallback(() => {
     playingRef.current = false;
     setIsPlaying(false);
     setCurrentRepeat(0);
-    setAnnouncingCategory(false);
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -336,11 +282,7 @@ export default function GrammarListenPage() {
             </p>
             {isPlaying && (
               <div className="mt-3 text-xs text-indigo-300">
-                {announcingCategory
-                  ? "카테고리 안내 중..."
-                  : loading
-                    ? "음성 생성 중..."
-                    : `반복 ${currentRepeat} / ${repeatCount}`}
+                {loading ? "음성 생성 중..." : `반복 ${currentRepeat} / ${repeatCount}`}
               </div>
             )}
           </GlassCard>

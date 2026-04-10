@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e6]:
+    - link "← 대시보드" [ref=e7] [cursor=pointer]:
+      - /url: /dashboard
+    - generic [ref=e8]:
+      - heading "🎓 소크라테스 AI 튜터" [level=1] [ref=e9]
+      - paragraph [ref=e10]: AI가 질문으로 이끕니다. 단원을 선택하면 맞춤 수업이 시작됩니다.
+    - generic [ref=e12]:
+      - heading "교과를 선택하세요" [level=2] [ref=e13]
+      - generic [ref=e14]:
+        - button "📝 국어 — 언어와 매체" [ref=e16]:
+          - generic [ref=e17]: 📝
+          - text: 국어 — 언어와 매체
+        - button "⚖️ 사회 — 생활과 윤리" [ref=e19]:
+          - generic [ref=e20]: ⚖️
+          - text: 사회 — 생활과 윤리
+        - button "🧬 과학 — 생명과학 I" [ref=e22]:
+          - generic [ref=e23]: 🧬
+          - text: 과학 — 생명과학 I
+        - button "📐 수학 — 수학 I" [ref=e25]:
+          - generic [ref=e26]: 📐
+          - text: 수학 — 수학 I
+        - button "🌍 영어 — 영어 I" [ref=e28]:
+          - generic [ref=e29]: 🌍
+          - text: 영어 — 영어 I
+  - alert [ref=e30]

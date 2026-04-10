@@ -1,0 +1,22 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e6]:
+    - link "← 대시보드" [ref=e7] [cursor=pointer]:
+      - /url: /dashboard
+    - generic [ref=e8]:
+      - heading "📝 현장실습 일지 도우미" [level=1] [ref=e9]
+      - paragraph [ref=e10]: 오늘 한 일을 간단히 메모하면, AI가 제출용 실습 일지로 정리해드려요.
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]: 실습 분야
+        - 'textbox "예: 자동차 정비, 미용, 조리, IT 등" [ref=e14]'
+      - generic [ref=e15]:
+        - generic [ref=e16]: 실습 업체명
+        - 'textbox "예: ○○자동차 정비소" [ref=e17]'
+      - generic [ref=e18]:
+        - generic [ref=e19]: 오늘 한 일 (간단히 메모)
+        - 'textbox "예: 오일 교환 보조함, 타이어 공기압 체크, 선배가 엔진 점검하는 거 봄" [ref=e20]'
+      - generic [ref=e21]:
+        - generic [ref=e22]: 배운 점 (선택)(선택)
+        - 'textbox "예: 엔진오일 점도 차이를 배움" [ref=e23]'
+      - button "일지 작성하기" [disabled] [ref=e25]
+  - alert [ref=e26]

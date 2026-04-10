@@ -1,0 +1,43 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - link "← 대시보드" [ref=e9] [cursor=pointer]:
+            - /url: /dashboard
+          - heading "🧠 마인드 맵" [level=1] [ref=e10]:
+            - generic [ref=e11]: 🧠
+            - text: 마인드 맵
+          - generic [ref=e12]:
+            - button "⚖️ 생활과 윤리" [ref=e13]
+            - button "🧬 생명과학Ⅰ" [ref=e14]
+            - button "📖 언어와 매체" [ref=e15]
+        - generic [ref=e16]: 클릭으로 확장 · 상단 경로로 이동
+    - main [ref=e17]:
+      - generic [ref=e18]:
+        - navigation [ref=e19]:
+          - generic [ref=e20]: 생활과 윤리
+        - generic [ref=e21]:
+          - img
+          - generic [ref=e23]:
+            - paragraph [ref=e24]: 생활과 윤리
+            - paragraph [ref=e25]: 6개 항목
+          - generic [ref=e27] [cursor=pointer]:
+            - paragraph [ref=e28]: 1. 현대 생활과 실천 윤리
+            - paragraph [ref=e29]: 6개 →
+          - generic [ref=e31] [cursor=pointer]:
+            - paragraph [ref=e32]: 2. 생명과 윤리
+            - paragraph [ref=e33]: 4개 →
+          - generic [ref=e35] [cursor=pointer]:
+            - paragraph [ref=e36]: 3. 사회와 윤리
+            - paragraph [ref=e37]: 4개 →
+          - generic [ref=e39] [cursor=pointer]:
+            - paragraph [ref=e40]: 4. 과학과 윤리
+            - paragraph [ref=e41]: 4개 →
+          - generic [ref=e43] [cursor=pointer]:
+            - paragraph [ref=e44]: 5. 문화와 윤리
+            - paragraph [ref=e45]: 3개 →
+          - generic [ref=e47] [cursor=pointer]:
+            - paragraph [ref=e48]: 6. 평화와 공존의 윤리
+            - paragraph [ref=e49]: 3개 →
+  - alert [ref=e50]
