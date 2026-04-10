@@ -173,9 +173,11 @@ desktop.ini
 claude_history/
 *.local
 
-# 5. Test artifacts
+# 5. Test artifacts & screenshots
 .playwright-mcp/
 test-screenshots/
+screenshots/
+palace-*.png
 
 # 6. Supabase / Database
 .supabase/
