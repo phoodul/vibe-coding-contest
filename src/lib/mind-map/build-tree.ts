@@ -3,6 +3,7 @@ import type { StructuredSection, NoteNode } from "@/lib/data/textbooks/structure
 import { ETHICS_TEXTBOOK } from "@/lib/data/textbooks/ethics";
 import { BIOLOGY_TEXTBOOK } from "@/lib/data/textbooks/biology";
 import { KOREAN_TEXTBOOK } from "@/lib/data/textbooks/korean";
+import { LIFE_TEXTBOOK } from "@/lib/data/textbooks/life";
 import { ETHICS_STRUCTURED_CH1 } from "@/lib/data/textbooks/structured/ethics-structured-ch1";
 import { ETHICS_STRUCTURED_CH2 } from "@/lib/data/textbooks/structured/ethics-structured-ch2";
 import { ETHICS_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/ethics-structured-ch3";
@@ -19,6 +20,12 @@ import { KOREAN_STRUCTURED_CH2 } from "@/lib/data/textbooks/structured/korean-st
 import { KOREAN_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/korean-structured-ch3";
 import { KOREAN_STRUCTURED_CH4 } from "@/lib/data/textbooks/structured/korean-structured-ch4";
 import { KOREAN_STRUCTURED_CH5 } from "@/lib/data/textbooks/structured/korean-structured-ch5";
+import { LIFE_STRUCTURED_CH1 } from "@/lib/data/textbooks/structured/life-structured-ch1";
+import { LIFE_STRUCTURED_CH2 } from "@/lib/data/textbooks/structured/life-structured-ch2";
+import { LIFE_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/life-structured-ch3";
+import { LIFE_STRUCTURED_CH4 } from "@/lib/data/textbooks/structured/life-structured-ch4";
+import { LIFE_STRUCTURED_CH5 } from "@/lib/data/textbooks/structured/life-structured-ch5";
+import { LIFE_STRUCTURED_CH6 } from "@/lib/data/textbooks/structured/life-structured-ch6";
 
 const ETHICS_STRUCTURED: StructuredSection[] = [
   ...ETHICS_STRUCTURED_CH1,
@@ -45,12 +52,22 @@ const KOREAN_STRUCTURED: StructuredSection[] = [
   ...KOREAN_STRUCTURED_CH5,
 ];
 
-export type SubjectKey = "ethics" | "biology" | "korean";
+const LIFE_STRUCTURED: StructuredSection[] = [
+  ...LIFE_STRUCTURED_CH1,
+  ...LIFE_STRUCTURED_CH2,
+  ...LIFE_STRUCTURED_CH3,
+  ...LIFE_STRUCTURED_CH4,
+  ...LIFE_STRUCTURED_CH5,
+  ...LIFE_STRUCTURED_CH6,
+];
+
+export type SubjectKey = "ethics" | "biology" | "korean" | "life";
 
 const SUBJECT_DATA: Record<SubjectKey, { textbook: Textbook; structured: StructuredSection[] }> = {
   ethics: { textbook: ETHICS_TEXTBOOK, structured: ETHICS_STRUCTURED },
   biology: { textbook: BIOLOGY_TEXTBOOK, structured: BIOLOGY_STRUCTURED },
   korean: { textbook: KOREAN_TEXTBOOK, structured: KOREAN_STRUCTURED },
+  life: { textbook: LIFE_TEXTBOOK, structured: LIFE_STRUCTURED },
 };
 
 /* ── 타입 ── */
