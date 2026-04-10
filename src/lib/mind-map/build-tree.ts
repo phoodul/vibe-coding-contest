@@ -85,6 +85,13 @@ export function getNodeColor(siblingIndex: number) {
   return SIBLING_COLORS[siblingIndex % SIBLING_COLORS.length];
 }
 
+/** 부모 색상을 제외한 팔레트에서 자식 색상 선택 */
+export function getChildColor(siblingIndex: number, parentSiblingIndex: number) {
+  const parentIdx = parentSiblingIndex % SIBLING_COLORS.length;
+  const filtered = SIBLING_COLORS.filter((_, i) => i !== parentIdx);
+  return filtered[siblingIndex % filtered.length];
+}
+
 /* ── detail 텍스트 → 트리 자동 파싱 ── */
 
 /**

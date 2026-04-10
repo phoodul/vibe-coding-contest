@@ -10,7 +10,7 @@ import {
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { MindMapNode } from "@/lib/mind-map/build-tree";
-import { getNodeColor, findNode, getAncestors } from "@/lib/mind-map/build-tree";
+import { getNodeColor, getChildColor, findNode, getAncestors } from "@/lib/mind-map/build-tree";
 
 interface MindMapCanvasProps {
   root: MindMapNode;
@@ -243,7 +243,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
           )}
           {/* 중앙 → 자식 연결선 */}
           {childPositions.map(({ node, x, y }) => {
-            const color = getNodeColor(node.siblingIndex);
+            const color = getChildColor(node.siblingIndex, focused.siblingIndex);
             return (
               <motion.line
                 key={`edge-${node.id}`}
@@ -338,6 +338,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
             <ChildNode
               key={node.id}
               node={node}
+              parentSiblingIndex={focused.siblingIndex}
               x={x}
               y={y}
               delay={i * 0.04}
@@ -399,18 +400,20 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
 
 function ChildNode({
   node,
+  parentSiblingIndex,
   x,
   y,
   delay,
   onClick,
 }: {
   node: MindMapNode;
+  parentSiblingIndex: number;
   x: number;
   y: number;
   delay: number;
   onClick: () => void;
 }) {
-  const color = getNodeColor(node.siblingIndex);
+  const color = getChildColor(node.siblingIndex, parentSiblingIndex);
   const hasChildren = node.children.length > 0;
   const hasDetail = !!node.detail;
 
