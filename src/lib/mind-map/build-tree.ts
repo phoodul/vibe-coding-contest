@@ -1,8 +1,8 @@
-import type { Textbook } from "@/../lib/data/textbooks/ethics-index";
+import type { Textbook } from "@/lib/data/textbooks/ethics-index";
 import type { StructuredSection, NoteNode } from "@/lib/data/textbooks/structured/ethics-structured-index";
-import { ETHICS_TEXTBOOK } from "@/../lib/data/textbooks/ethics";
-import { BIOLOGY_TEXTBOOK } from "@/../lib/data/textbooks/biology";
-import { KOREAN_TEXTBOOK } from "@/../lib/data/textbooks/korean";
+import { ETHICS_TEXTBOOK } from "@/lib/data/textbooks/ethics";
+import { BIOLOGY_TEXTBOOK } from "@/lib/data/textbooks/biology";
+import { KOREAN_TEXTBOOK } from "@/lib/data/textbooks/korean";
 import { ETHICS_STRUCTURED_CH1 } from "@/lib/data/textbooks/structured/ethics-structured-ch1";
 import { ETHICS_STRUCTURED_CH2 } from "@/lib/data/textbooks/structured/ethics-structured-ch2";
 import { ETHICS_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/ethics-structured-ch3";
