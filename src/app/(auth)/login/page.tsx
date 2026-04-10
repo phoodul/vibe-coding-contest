@@ -11,9 +11,7 @@ import type { Provider } from "@supabase/supabase-js";
 const socialProviders: { id: Provider; label: string; bg: string }[] = [
   { id: "google", label: "Google", bg: "bg-white text-gray-900" },
   { id: "kakao", label: "Kakao", bg: "bg-[#FEE500] text-[#191919]" },
-  { id: "apple", label: "Apple", bg: "bg-white text-black" },
   { id: "github", label: "GitHub", bg: "bg-[#24292f] text-white" },
-  { id: "azure", label: "Microsoft", bg: "bg-[#2F2F2F] text-white" },
 ];
 
 export default function LoginPage() {
@@ -51,6 +49,7 @@ export default function LoginPage() {
   }
 
   async function handleSocialLogin(provider: Provider) {
+    setError("");
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider,

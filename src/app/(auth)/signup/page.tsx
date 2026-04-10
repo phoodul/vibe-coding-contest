@@ -6,6 +6,13 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { GlassCard } from "@/components/shared/glass-card";
+import type { Provider } from "@supabase/supabase-js";
+
+const socialProviders: { id: Provider; label: string; bg: string }[] = [
+  { id: "google", label: "Google", bg: "bg-white text-gray-900" },
+  { id: "kakao", label: "Kakao", bg: "bg-[#FEE500] text-[#191919]" },
+  { id: "github", label: "GitHub", bg: "bg-[#24292f] text-white" },
+];
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -47,6 +54,18 @@ export default function SignupPage() {
     router.push("/dashboard");
   }
 
+  async function handleSocialLogin(provider: Provider) {
+    setError("");
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) setError(error.message);
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
       <motion.div
@@ -56,6 +75,26 @@ export default function SignupPage() {
       >
         <GlassCard hover={false}>
           <h1 className="text-2xl font-bold text-center mb-6">회원가입</h1>
+
+          {/* 소셜 로그인 */}
+          <div className="space-y-2 mb-6">
+            {socialProviders.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => handleSocialLogin(p.id)}
+                className={`w-full py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all hover:opacity-90 hover:scale-[1.01] ${p.bg}`}
+              >
+                {p.label}로 계속하기
+              </button>
+            ))}
+          </div>
+
+          {/* 구분선 */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-muted">또는 이메일로 가입</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
 
           <form onSubmit={handleSignup} className="space-y-4">
             <div>
