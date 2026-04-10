@@ -222,22 +222,37 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
         </span>
       </nav>
 
-      {/* ── 모바일: 인덴트 트리 ── */}
+      {/* ── 모바일: 세로 트리 (박스 + 연결선) ── */}
       {isMobile ? (
         <div className="flex-1 overflow-y-auto px-4 py-5">
           {/* 부모 (뒤로가기) */}
           {parent && (
             <button
               onClick={() => goTo(parent.id)}
-              className="text-sm text-white/50 hover:text-white/80 transition-colors mb-3 flex items-center gap-1"
+              className="mb-3 rounded-xl px-4 py-2 border border-white/15 bg-[#1a1a3a]/90 active:scale-[0.98] transition-transform"
             >
-              <span className="text-white/30">←</span> {parent.label}
+              <p className="text-white/60 text-sm font-medium">← {parent.label}</p>
             </button>
           )}
 
-          {/* 현재 노드 (부모 텍스트) */}
-          <div className="mb-2">
-            <p className="text-base font-bold text-white">{focused.label}</p>
+          {/* 현재 노드 박스 */}
+          <div
+            className="rounded-2xl px-5 py-4 shadow-2xl border-2"
+            style={{
+              background:
+                focused.id === "root"
+                  ? "rgba(15,22,40,0.95)"
+                  : getNodeColor(focused.siblingIndex).solid,
+              borderColor:
+                focused.id === "root"
+                  ? "rgba(255,255,255,0.25)"
+                  : getNodeColor(focused.siblingIndex).border,
+            }}
+          >
+            <p className="font-bold text-lg text-white">{focused.label}</p>
+            {children.length > 0 && (
+              <p className="text-white/40 text-xs mt-1">{children.length}개 항목</p>
+            )}
             {children.length === 0 && !focused.detail && (
               <p className="text-white/30 text-xs mt-1">마지막 노드</p>
             )}
@@ -245,34 +260,34 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
 
           {/* 자식 없고 detail 있으면 표시 */}
           {children.length === 0 && focused.detail && (
-            <div className="ml-4 mt-2 border-l border-white/10 pl-4 py-2">
+            <div className="mt-3 bg-[#12122a]/80 border border-white/10 rounded-xl p-4">
               <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">
                 {focused.detail}
               </p>
             </div>
           )}
 
-          {/* 자식 노드: 인덴트 트리 */}
+          {/* 자식 노드: 세로 트리 + 박스 */}
           {children.length > 0 && (
-            <div className="relative ml-2 mt-1">
-              {/* 세로 줄기 */}
-              <div
-                className="absolute left-0 top-0 w-px bg-white/15"
-                style={{ height: `calc(100% - 14px)` }}
-              />
+            <div className="relative mt-1 ml-5">
+              {/* 세로 줄기: 첫 자식 중앙 ~ 마지막 자식 중앙 */}
+              <div className="absolute left-0 top-0 bottom-0 w-px bg-white/20" />
 
               {children.map((child, i) => {
                 const color = getChildColor(child.siblingIndex, focused.siblingIndex);
                 const hasKids = child.children.length > 0;
                 const hasDetail = !!child.detail;
-                const isLast = i === children.length - 1;
                 const isActive = detailNode?.id === child.id;
 
                 return (
-                  <div key={child.id} className="relative">
-                    {/* 가로 가지 */}
-                    <div className="flex items-center">
-                      <div className="w-4 h-px shrink-0" style={{ background: color.bg + "60" }} />
+                  <div key={child.id} className="relative flex items-stretch" style={{ marginTop: i === 0 ? 0 : 6 }}>
+                    {/* 가로 가지: 세로줄에서 박스까지 */}
+                    <div className="shrink-0 flex items-center" style={{ width: 20 }}>
+                      <div className="w-full h-px" style={{ background: color.bg }} />
+                    </div>
+
+                    {/* 박스 */}
+                    <div className="flex-1 min-w-0">
                       <button
                         onClick={() => {
                           if (hasKids) {
@@ -281,50 +296,53 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
                             setDetailNode((prev) => prev?.id === child.id ? null : child);
                           }
                         }}
-                        className={`flex-1 text-left py-2.5 px-3 rounded-lg transition-all active:scale-[0.98] ${
-                          isActive ? "bg-white/10" : "hover:bg-white/5"
-                        }`}
+                        className="w-full text-left rounded-xl px-4 py-2.5 shadow-lg transition-all active:scale-[0.98]"
+                        style={{
+                          background: color.solid,
+                          border: `1.5px solid ${color.border}`,
+                        }}
                       >
-                        <span className="text-[14px] font-medium" style={{ color: color.text }}>
+                        <p className="text-[14px] font-semibold" style={{ color: color.text }}>
                           {child.label}
-                        </span>
+                        </p>
                         {hasKids && (
-                          <span className="text-[11px] ml-2 opacity-50" style={{ color: color.text }}>
-                            ({child.children.length}) ›
-                          </span>
+                          <p className="text-[11px] mt-0.5 opacity-60" style={{ color: color.text }}>
+                            {child.children.length}개 항목 →
+                          </p>
                         )}
                         {!hasKids && hasDetail && (
-                          <span className="text-[11px] ml-2 opacity-40" style={{ color: color.text }}>
-                            ···
-                          </span>
+                          <p className="text-[11px] mt-0.5 opacity-50" style={{ color: color.text }}>
+                            상세보기
+                          </p>
                         )}
                       </button>
-                    </div>
 
-                    {/* 마지막 아이템이 아니면 간격 */}
-                    {!isLast && <div className="h-0.5" />}
-
-                    {/* 선택된 detail 표시 */}
-                    {isActive && hasDetail && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="ml-4 pl-4 border-l border-white/10 mt-1 mb-2 overflow-hidden"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap py-1">
-                            {child.detail}
-                          </p>
-                          <button
-                            onClick={() => setDetailNode(null)}
-                            className="text-white/30 hover:text-white/60 text-sm shrink-0 mt-1"
+                      {/* 선택된 detail */}
+                      <AnimatePresence>
+                        {isActive && hasDetail && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden"
                           >
-                            ✕
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
+                            <div className="mt-2 bg-[#12122a]/95 border border-white/15 rounded-xl p-4">
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="text-white/70 text-sm leading-relaxed whitespace-pre-wrap">
+                                  {child.detail}
+                                </p>
+                                <button
+                                  onClick={() => setDetailNode(null)}
+                                  className="text-white/30 hover:text-white/60 text-sm shrink-0"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 );
               })}
