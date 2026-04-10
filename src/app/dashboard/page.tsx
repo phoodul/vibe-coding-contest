@@ -27,13 +27,18 @@ const studentItems: MenuItem[] = [
   { title: "영어 단어 학습", desc: "18,000 단어 레벨별 에베레스트 등반", icon: "🏔️", href: "/vocabulary" },
   { title: "AI 영어 회화", desc: "내 수준에 맞는 음성 영어 대화", icon: "🎙️", href: "/conversation" },
   { title: "진로 시뮬레이터", desc: "5,000+ 직업에서 나만의 길 찾기", icon: "🧭", href: "/career" },
+  { title: "내 길 내비", desc: "꿈이 있으면 길이 있다 — AI 진로 로드맵", icon: "🌟", href: "/pathfinder" },
   { title: "맞춤 도서 추천", desc: "진로 맞춤 도서 큐레이션", icon: "📚", href: "/books" },
+  { title: "PAPS AI 코치", desc: "체력평가 분석 + 맞춤 운동 프로그램", icon: "💪", href: "/paps" },
+  { title: "현장실습 일지", desc: "메모 → 제출용 실습 일지 자동 작성", icon: "📋", href: "/internship" },
+  { title: "음악 감상문 코치", desc: "음악 용어 활용 감상문 작성 도우미", icon: "🎵", href: "/music-review" },
 ];
 
 // 교사 메뉴 — 2열 그리드
 const teacherItems: MenuItem[] = [
   { title: "공문서 포맷터", desc: "HWPX 업로드 → 원클릭 양식 교정", icon: "📄", href: "/teacher/formatter" },
-  { title: "공문번호 자동생성기", desc: "업로드 → 승인 → 번호 발급 → 위변조 검증", icon: "🔢", href: "/teacher/generator" },
+  { title: "공문서 초안 작성기", desc: "주제 입력 → AI 공문서 초안 자동 생성", icon: "✍️", href: "/teacher/generator" },
+  { title: "생기부 세특 도우미", desc: "NEIS 바이트 계산 · 금지어 감지 · 유사도 분석", icon: "📝", href: "/teacher/record" },
 ];
 
 const sectionVariants = {

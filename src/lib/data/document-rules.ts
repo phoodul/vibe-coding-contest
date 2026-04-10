@@ -8,7 +8,7 @@ export interface FormatIssue {
   original: string;
   corrected: string;
   rule: string;
-  category: "spacing" | "date" | "time" | "amount" | "marker" | "reference" | "structure";
+  category: "spacing" | "date" | "time" | "amount" | "marker" | "reference" | "structure" | "table";
 }
 
 /** 항목 기호 순서: 1. → 가. → 1) → 가) → (1) → (가) → ① → ㉮ */
@@ -22,10 +22,19 @@ function fixDateFormat(text: string): string {
 }
 
 // ── 시간 표기 교정: 15:30 → 15 : 30 ──
+// 유효 시간만 매칭 (0:00~23:59), 참조번호·URL 포트 등은 제외
 function fixTimeFormat(text: string): string {
   return text.replace(
-    /(\d{1,2}):(\d{2})/g,
+    /\b([01]?\d|2[0-3]):([0-5]\d)\b/g,
     "$1 : $2"
+  );
+}
+
+// ── 시간 범위 물결표 공백: 09 : 00~15 : 30 → 09 : 00 ~ 15 : 30 ──
+function fixTimeRangeTilde(text: string): string {
+  return text.replace(
+    /(\d{1,2}\s*:\s*\d{2})~(\d{1,2}\s*:\s*\d{2})/g,
+    "$1 ~ $2"
   );
 }
 
@@ -143,6 +152,22 @@ function fixFullWidth(text: string): string {
     .replace(/；/g, ",");
 }
 
+// ── 표 제목 형식: 표1. 제목 → < 표 1 > 제목 ──
+function fixTableTitle(text: string): string {
+  return text.replace(
+    /(?:^|\s)표\s*(\d+)[.\s:]\s*(.+)/g,
+    " < 표 $1 > $2"
+  );
+}
+
+// ── 표 단위 표기: (단위:원) → (단위: 원) ──
+function fixTableUnit(text: string): string {
+  return text.replace(
+    /\(단위\s*:\s*([^)]+)\)/g,
+    (_, unit) => `(단위: ${unit.trim()})`
+  );
+}
+
 export function analyzeDocument(text: string): FormatIssue[] {
   const issues: FormatIssue[] = [];
   const lines = text.split("\n");
@@ -170,6 +195,13 @@ export function analyzeDocument(text: string): FormatIssue[] {
     if (timeFix !== current) {
       issues.push({ line: lineNum, original: current, corrected: timeFix, rule: "시간 표기 (24시각제, 쌍점 앞뒤 공백)", category: "time" });
       current = timeFix;
+    }
+
+    // 시간 범위 물결표 공백
+    const tildeFix = fixTimeRangeTilde(current);
+    if (tildeFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: tildeFix, rule: "시간 범위 물결표 앞뒤 공백", category: "time" });
+      current = tildeFix;
     }
 
     // 금액 괄호 앞 공백
@@ -221,6 +253,20 @@ export function analyzeDocument(text: string): FormatIssue[] {
       current = semiFix;
     }
 
+    // 표 제목
+    const tableTitleFix = fixTableTitle(current);
+    if (tableTitleFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: tableTitleFix, rule: "표 제목 형식 (< 표 N > 제목)", category: "table" });
+      current = tableTitleFix;
+    }
+
+    // 표 단위 표기
+    const tableUnitFix = fixTableUnit(current);
+    if (tableUnitFix !== current) {
+      issues.push({ line: lineNum, original: current, corrected: tableUnitFix, rule: "표 단위 표기 (단위: OO)", category: "table" });
+      current = tableUnitFix;
+    }
+
     // 끝 표시
     const endFix = fixEndMarker(current);
     if (endFix !== current) {
@@ -237,6 +283,7 @@ export function applyAllFixes(text: string): string {
   r = fixFullWidth(r);
   r = fixDateFormat(r);
   r = fixTimeFormat(r);
+  r = fixTimeRangeTilde(r);
   r = fixAmountParenSpace(r);
   r = fixAmountFormat(r);
   r = fixItemSpacing(r);
@@ -244,6 +291,8 @@ export function applyAllFixes(text: string): string {
   r = fixAttachment(r);
   r = fixRecipientFormat(r);
   r = fixSemicolon(r);
+  r = fixTableTitle(r);
+  r = fixTableUnit(r);
   r = fixEndMarker(r);
   return r;
 }
@@ -265,4 +314,5 @@ export const CATEGORY_LABELS: Record<string, string> = {
   marker: "끝/붙임 표시",
   reference: "참조 번호",
   structure: "문서 구조",
+  table: "표 양식",
 };

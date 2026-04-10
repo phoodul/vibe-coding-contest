@@ -1,4 +1,4 @@
-import type { RoomSceneConfig } from "./scene-config";
+import type { RoomSceneConfig, ObjectType, SceneObject } from "./scene-config";
 
 export const ROOM_301_CONFIG: RoomSceneConfig = {
   roomId: "301",
@@ -835,3 +835,76 @@ export const ROOM_301_CONFIG: RoomSceneConfig = {
     "flag_prevention",
   ],
 };
+
+/* ── 84개 단일-파트 오브젝트로 확장 ── */
+
+// 각 noteId → 방 안 배치 영역
+const ZONES: Record<string, { x: number; y: number; w: number; h: number }> = {
+  ch3_s1_c1:  { x: 100, y: 30,  w: 680, h: 190 },  // North wall
+  ch3_s1_c2:  { x: 20,  y: 220, w: 240, h: 290 },  // West wall
+  ch3_s1_c2b: { x: 280, y: 340, w: 440, h: 240 },  // Center desk
+  ch3_s1_c2c: { x: 840, y: 30,  w: 330, h: 350 },  // East wall
+  ch3_s1_c3:  { x: 280, y: 530, w: 540, h: 150 },  // South/door
+};
+
+// 타입 순환 — 시각적 다양성 부여
+const ALT_TYPES: ObjectType[] = [
+  "scroll", "notebook", "certificate", "poster", "sign",
+  "flag", "shield", "chart", "nameplate", "stone",
+  "globe", "phone", "lawbook", "scale", "book", "painting",
+];
+
+export function expandToSinglePartObjects(compact: RoomSceneConfig): RoomSceneConfig {
+  // 1) noteId별 파트 수집 (원본 순서 유지)
+  const byZone = new Map<string, { part: typeof compact.objects[0]["parts"][0]; parentType: ObjectType; isFirst: boolean }[]>();
+  for (const obj of compact.objects) {
+    const list = byZone.get(obj.noteId) ?? [];
+    for (let i = 0; i < obj.parts.length; i++) {
+      list.push({ part: obj.parts[i], parentType: obj.type, isFirst: i === 0 });
+    }
+    byZone.set(obj.noteId, list);
+  }
+
+  // 2) 존 내 그리드 배치
+  const expanded: SceneObject[] = [];
+  let altIdx = 0;
+
+  for (const [noteId, entries] of byZone) {
+    const zone = ZONES[noteId];
+    if (!zone) continue;
+
+    const count = entries.length;
+    const cols = Math.ceil(Math.sqrt(count * (zone.w / zone.h)));
+    const rows = Math.ceil(count / cols);
+    const cellW = zone.w / cols;
+    const cellH = zone.h / rows;
+
+    entries.forEach((entry, idx) => {
+      const col = idx % cols;
+      const row = Math.floor(idx / cols);
+      const x = Math.round(zone.x + cellW * col + cellW / 2);
+      const y = Math.round(zone.y + cellH * row + cellH / 2);
+      const type = entry.isFirst ? entry.parentType : ALT_TYPES[altIdx++ % ALT_TYPES.length];
+
+      expanded.push({
+        id: entry.part.id,
+        type,
+        x, y,
+        keyword: entry.part.keyword,
+        label: entry.part.keyword,
+        noteId,
+        scale: 0.5,
+        parts: [entry.part],
+      });
+    });
+  }
+
+  // flatIndex 순 정렬
+  expanded.sort((a, b) => a.parts[0].flatIndex - b.parts[0].flatIndex);
+
+  return {
+    ...compact,
+    objects: expanded,
+    walkPath: expanded.map((o) => o.id),
+  };
+}

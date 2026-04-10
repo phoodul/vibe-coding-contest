@@ -6,7 +6,7 @@ import { ETHICS_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/ethics-st
 import { ETHICS_BUILDING } from "@/lib/mind-palace/building-config";
 import { flattenStructuredSections } from "@/lib/mind-palace/flatten-nodes";
 import { useStructuredNarrator } from "@/hooks/use-structured-narrator";
-import { ROOM_301_CONFIG } from "@/lib/mind-palace/room-301-config";
+import { ROOM_301_CONFIG, expandToSinglePartObjects } from "@/lib/mind-palace/room-301-config";
 import {
   PalaceScene,
   type PalaceMode,
@@ -30,6 +30,7 @@ const VOICE_OPTIONS = [
 export default function MindPalacePage() {
   // ── 데이터 ──
   const flatItems = useMemo(() => flattenStructuredSections(SECTION_DATA), []);
+  const sceneConfig = useMemo(() => expandToSinglePartObjects(ROOM_301_CONFIG), []);
 
   // ── 모드 ──
   const [mode, setMode] = useState<PalaceMode>("learn");
@@ -51,8 +52,9 @@ export default function MindPalacePage() {
     [narrator]
   );
 
-  // ── 학습 모드: 클릭으로 선택된 오브젝트 ──
+  // ── 학습 모드: 클릭으로 선택된 오브젝트 / 파트 ──
   const [selectedObjId, setSelectedObjId] = useState<string | null>(null);
+  const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
 
   // ── 복습 모드: reviewStates (오브젝트 ID별 3-click 상태) ──
   const [reviewStates, setReviewStates] = useState<
@@ -61,21 +63,26 @@ export default function MindPalacePage() {
 
   // walkPath index for arrow key navigation
   const [walkIdx, setWalkIdx] = useState(0);
-  const walkPath = ROOM_301_CONFIG.walkPath;
+  const walkPath = sceneConfig.walkPath;
 
-  // ── 복습 모드 3-click cycle ──
+  // ── 복습 모드: scene → keyword → text → scene (1 오브젝트 = 1 파트) ──
   const cycleReviewState = useCallback((objId: string) => {
+    const obj = sceneConfig.objects.find((o) => o.id === objId);
+    if (!obj) return;
+
     setReviewStates((prev) => {
       const current = prev[objId] || "scene";
-      const next: ReviewClickState =
-        current === "scene"
-          ? "keyword"
-          : current === "keyword"
-          ? "text"
-          : "scene";
-      return { ...prev, [objId]: next };
+      if (current === "scene") {
+        return { ...prev, [objId]: "keyword" };
+      }
+      if (current === "keyword") {
+        setSelectedPartId(obj.parts[0]?.id ?? null);
+        return { ...prev, [objId]: "text" };
+      }
+      setSelectedPartId(null);
+      return { ...prev, [objId]: "scene" };
     });
-  }, []);
+  }, [sceneConfig]);
 
   // ── 키보드 이벤트 (복습 모드 방향키) ──
   useEffect(() => {
@@ -103,28 +110,36 @@ export default function MindPalacePage() {
     return () => window.removeEventListener("keydown", handler);
   }, [mode, walkPath, cycleReviewState]);
 
-  // ── Part 클릭 ──
+  // ── Part 마커 클릭 → 해당 파트 텍스트만 표시 ──
   const handlePartClick = useCallback(
-    (obj: SceneObject, _part: ObjectPart) => {
+    (obj: SceneObject, part: ObjectPart) => {
       if (mode === "learn") {
-        // 파트 클릭 = 해당 오브젝트 전체 텍스트 토글
-        setSelectedObjId((prev) => (prev === obj.id ? null : obj.id));
+        narrator.stop(); // 나레이터와 동시 표시 방지
+        setSelectedObjId(obj.id);
+        setSelectedPartId((prev) => (prev === part.id ? null : part.id));
       }
     },
-    [mode]
+    [mode, narrator]
   );
 
-  // ── Object 클릭 ──
+  // ── Object 클릭 → 1 오브젝트 = 1 파트이므로 토글 ──
   const handleObjectClick = useCallback(
     (obj: SceneObject) => {
       if (mode === "review") {
         cycleReviewState(obj.id);
         return;
       }
-      // 학습 모드: toggle — 클릭하면 전체 파트 텍스트 표시/숨김
-      setSelectedObjId((prev) => (prev === obj.id ? null : obj.id));
+      narrator.stop();
+      const partId = obj.parts[0]?.id ?? null;
+      if (selectedPartId === partId) {
+        setSelectedObjId(null);
+        setSelectedPartId(null);
+      } else {
+        setSelectedObjId(obj.id);
+        setSelectedPartId(partId);
+      }
     },
-    [mode, cycleReviewState]
+    [mode, selectedPartId, cycleReviewState, narrator]
   );
 
   // ── Sidebar 네비게이션 ──
@@ -150,6 +165,7 @@ export default function MindPalacePage() {
     setMode((m) => (m === "learn" ? "review" : "learn"));
     setReviewStates({});
     setSelectedObjId(null);
+    setSelectedPartId(null);
     setWalkIdx(0);
     narrator.stop();
   }, [narrator]);
@@ -199,7 +215,7 @@ export default function MindPalacePage() {
             </div>
 
             <span className="text-white/30 text-xs">
-              {ROOM_301_CONFIG.title} · {ROOM_301_CONFIG.objects.length}개 오브젝트
+              {sceneConfig.title} · {sceneConfig.objects.length}개 노드
             </span>
 
             <button
@@ -281,11 +297,12 @@ export default function MindPalacePage() {
         <main className="flex-1 relative overflow-hidden p-4">
           <div className="w-full h-full rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden relative">
             <PalaceScene
-              config={ROOM_301_CONFIG}
+              config={sceneConfig}
               mode={mode}
               activeFlatIndex={narrator.currentIndex}
               revealedUpTo={narrator.revealedUpTo}
               selectedObjId={selectedObjId}
+              selectedPartId={selectedPartId}
               reviewStates={reviewStates}
               onPartClick={handlePartClick}
               onObjectClick={handleObjectClick}

@@ -13,74 +13,104 @@ const featureAccents = [
   "#06b6d4", // cyan - 영어 단어
   "#f43f5e", // rose - 영어 회화
   "#f59e0b", // amber - 진로
+  "#eab308", // yellow - 내 길 내비
   "#10b981", // emerald - 도서
-  "#a78bfa", // light violet - 공문서
-  "#38bdf8", // sky - 공문번호
+  "#ef4444", // red - PAPS
+  "#14b8a6", // teal - 현장실습
+  "#a855f7", // purple - 음악 감상문
+  "#a78bfa", // light violet - 공문서 포맷터
+  "#38bdf8", // sky - 공문서 초안
+  "#f97316", // orange - 생기부 세특
 ];
 
-const features = [
+const studentFeatures = [
   {
     title: "소크라테스 AI 튜터",
     description: "답을 주지 않고 질문으로 이끄는 대화형 학습. 스스로 깨닫는 진짜 공부.",
     icon: "🎓",
     href: "/tutor",
-    span: "",
   },
   {
     title: "기억의 궁전",
     description: "카툰 공간 기억법으로 교과서 핵심 내용을 장소에 배치하고 나레이터가 읽어줍니다.",
     icon: "🏛️",
     href: "/mind-palace",
-    span: "",
   },
   {
     title: "영어 단어 학습",
     description: "18,000 단어를 레벨별로 정복. 에베레스트 정상을 향해 한 걸음씩.",
     icon: "🏔️",
     href: "/vocabulary",
-    span: "",
   },
   {
     title: "AI 영어 회화",
     description: "내 레벨에 맞는 AI 원어민과 음성 대화. 실시간 피드백으로 회화 실력 UP.",
     icon: "🎙️",
     href: "/conversation",
-    span: "",
   },
   {
     title: "진로 시뮬레이터",
     description: "MBTI, 적성, 흥미 분석 → 5,000+ 직업에서 나만의 진로 발견.",
     icon: "🧭",
     href: "/career",
-    span: "",
+  },
+  {
+    title: "내 길 내비",
+    description: "꿈이 있으면 길이 있다. 미용, 조리, 체육, 음악 등 어떤 꿈이든 AI가 로드맵과 학교를 안내.",
+    icon: "🌟",
+    href: "/pathfinder",
   },
   {
     title: "맞춤 도서 추천",
     description: "학년, 희망 학과, 진로에 맞는 도서를 AI가 선별하여 추천.",
     icon: "📚",
     href: "/books",
-    span: "",
   },
+  {
+    title: "PAPS AI 코치",
+    description: "체력평가 결과 입력 → 등급 분석, 취약 종목 개선 운동 프로그램 제공.",
+    icon: "💪",
+    href: "/paps",
+  },
+  {
+    title: "현장실습 일지 도우미",
+    description: "오늘 한 일을 메모하면 제출용 실습 일지로 자동 정리. 특성화고·마이스터고 필수.",
+    icon: "📋",
+    href: "/internship",
+  },
+  {
+    title: "음악 감상문 코치",
+    description: "곡 정보와 느낌만 입력하면 음악 용어를 활용한 감상문 초안과 표현 팁 제공.",
+    icon: "🎵",
+    href: "/music-review",
+  },
+];
+
+const teacherFeatures = [
   {
     title: "공문서 포맷터",
-    description: "HWPX 업로드 → K-에듀파인 공문서 양식 원클릭 교정. 교사의 시간을 돌려드립니다.",
+    description: "HWP/HWPX 업로드 → K-에듀파인 공문서 양식 원클릭 교정. 교사의 시간을 돌려드립니다.",
     icon: "📄",
     href: "/teacher/formatter",
-    span: "",
   },
   {
-    title: "공문번호 자동생성기",
-    description: "업로드 → 승인 → 번호 발급 → 해시 기반 위변조 검증까지 원스톱 처리.",
-    icon: "🔢",
+    title: "공문서 초안 작성기",
+    description: "주제만 입력하면 K-에듀파인 양식에 맞는 공문서 초안을 AI가 즉시 생성합니다.",
+    icon: "✍️",
     href: "/teacher/generator",
-    span: "",
+  },
+  {
+    title: "생기부 세특 도우미",
+    description: "NEIS 바이트 실시간 계산, 금지어 자동 감지, 학생별 유사도 분석. AI가 못하는 것을 해결합니다.",
+    icon: "📝",
+    href: "/teacher/record",
   },
 ];
 
 const stats = [
   { value: "18,000+", label: "영어 단어" },
   { value: "5,000+", label: "직업 데이터" },
-  { value: "5", label: "교과목 AI 튜터" },
+  { value: "13", label: "AI 기반 도구" },
   { value: "100%", label: "무료" },
 ];
 
@@ -215,7 +245,7 @@ export default function LandingPage() {
           >
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium text-muted">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              AI 기반 차세대 교육 플랫폼
+              학생과 교사를 위한 AI 교육 플랫폼
             </span>
           </motion.div>
 
@@ -230,7 +260,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="text-shimmer block"
             >
-              AI가 이끄는
+              교육에 편안함을,
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 40 }}
@@ -242,7 +272,7 @@ export default function LandingPage() {
               }}
               className="block"
             >
-              차세대 교육
+              배움에 즐거움을
             </motion.span>
           </motion.h1>
 
@@ -255,7 +285,7 @@ export default function LandingPage() {
           >
             학생에게는 소크라테스식 AI 튜터링과 진로 탐색을,
             <br className="hidden sm:block" />
-            교사에게는 공문서 업무 자동화를 제공합니다.
+            교사에게는 공문서 자동화와 생기부 작성 도우미를 제공합니다.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -389,22 +419,25 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {features.map((f, i) => (
-              <motion.div key={f.title} variants={fadeUp} className={f.span}>
+          {/* 학생용 */}
+          <motion.div variants={fadeUp} className="flex items-center gap-3 mb-4">
+            <span className="text-xs uppercase tracking-[0.15em] text-muted/60 shrink-0">학생용</span>
+            <div className="flex-1 h-px bg-white/5" />
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
+            {studentFeatures.map((f, i) => (
+              <motion.div key={f.title} variants={fadeUp}>
                 <Link href={f.href}>
                   <GlassCard
                     delay={0}
                     className="h-full cursor-pointer group card-sheen relative overflow-hidden"
                   >
-                    {/* Top accent gradient line */}
                     <div
                       className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       style={{
                         background: `linear-gradient(90deg, transparent, ${featureAccents[i]}, transparent)`,
                       }}
                     />
-                    {/* Icon with glow */}
                     <span className="relative text-5xl mb-5 block transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
                       <span
                         className="absolute inset-0 rounded-full opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-xl"
@@ -412,12 +445,7 @@ export default function LandingPage() {
                       />
                       <span className="relative">{f.icon}</span>
                     </span>
-                    <h3
-                      className="text-xl font-semibold mb-2 transition-colors duration-300"
-                      style={{
-                        // Use CSS variable for group-hover color change
-                      }}
-                    >
+                    <h3 className="text-xl font-semibold mb-2 transition-colors duration-300">
                       <span className="group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300" style={{ backgroundImage: `linear-gradient(135deg, ${featureAccents[i]}, ${featureAccents[(i + 1) % featureAccents.length]})` }}>
                         {f.title}
                       </span>
@@ -430,93 +458,114 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
-        </motion.section>
 
-        {/* ─── How it Works — Cinematic Scroll Reveal ─── */}
-        <motion.section className="py-20 sm:py-32">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="text-3xl sm:text-5xl font-bold text-center mb-20"
-          >
-            <span className="text-shimmer">3단계</span>로 시작하세요
-          </motion.h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-            {[
-              {
-                step: "01",
-                title: "회원가입",
-                desc: "학생 또는 교사로 간편 가입. 게스트 체험도 가능합니다.",
-              },
-              {
-                step: "02",
-                title: "기능 선택",
-                desc: "학습, 진로, 영어, 공문서 — 필요한 기능을 선택하세요.",
-              },
-              {
-                step: "03",
-                title: "AI와 함께",
-                desc: "맞춤형 AI가 즉시 학습을 도와드립니다.",
-              },
-            ].map((item, i) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{
-                  duration: 0.7,
-                  delay: i * 0.15,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                <div className="glass-gradient p-8 card-sheen h-full">
-                  <span className="text-6xl font-bold text-primary/20 block mb-4">
-                    {item.step}
-                  </span>
-                  <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                  <p className="text-muted text-sm leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+          {/* 교사용 */}
+          <motion.div variants={fadeUp} className="flex items-center gap-3 mb-4">
+            <span className="text-xs uppercase tracking-[0.15em] text-muted/60 shrink-0">교사용</span>
+            <div className="flex-1 h-px bg-white/5" />
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {teacherFeatures.map((f, i) => {
+              const ai = i + studentFeatures.length;
+              return (
+                <motion.div key={f.title} variants={fadeUp}>
+                  <Link href={f.href}>
+                    <GlassCard
+                      delay={0}
+                      className="h-full cursor-pointer group card-sheen relative overflow-hidden"
+                    >
+                      <div
+                        className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        style={{
+                          background: `linear-gradient(90deg, transparent, ${featureAccents[ai]}, transparent)`,
+                        }}
+                      />
+                      <span className="relative text-5xl mb-5 block transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
+                        <span
+                          className="absolute inset-0 rounded-full opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-xl"
+                          style={{ background: featureAccents[ai] }}
+                        />
+                        <span className="relative">{f.icon}</span>
+                      </span>
+                      <h3 className="text-xl font-semibold mb-2 transition-colors duration-300">
+                        <span className="group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300" style={{ backgroundImage: `linear-gradient(135deg, ${featureAccents[ai]}, ${featureAccents[(ai + 1) % featureAccents.length]})` }}>
+                          {f.title}
+                        </span>
+                      </h3>
+                      <p className="text-muted text-sm leading-relaxed">
+                        {f.description}
+                      </p>
+                    </GlassCard>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.section>
 
-        {/* ─── CTA Footer ─── */}
+        {/* ─── CTA Footer — Split Student / Teacher ─── */}
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="py-20 sm:py-32 text-center"
+          className="py-20 sm:py-32"
         >
-          <div className="glass-gradient p-12 sm:p-20 relative overflow-hidden">
-            {/* Subtle background glow inside CTA */}
-            <div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full pointer-events-none"
-              style={{
-                background: "radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)",
-                filter: "blur(60px)",
-              }}
-            />
-            <h2 className="relative text-2xl sm:text-5xl font-bold mb-5">
-              지금 바로 시작하세요
-            </h2>
-            <p className="relative text-muted text-base sm:text-lg max-w-md mx-auto mb-10">
-              AI와 함께하는 새로운 교육 경험. 무료로 모든 기능을 체험할 수
-              있습니다.
-            </p>
-            <Link
-              href="/dashboard"
-              className="btn-glow relative inline-block px-10 py-4 rounded-xl bg-primary text-primary-foreground font-medium text-lg transition-all hover:scale-105 active:scale-[0.97]"
-            >
-              대시보드로 이동
-            </Link>
+          <h2 className="text-2xl sm:text-5xl font-bold text-center mb-12">
+            지금 바로 시작하세요
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* 학생 CTA */}
+            <div className="glass-gradient p-8 sm:p-12 relative overflow-hidden text-center">
+              <div
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, transparent)" }}
+              />
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
+                style={{
+                  background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)",
+                  filter: "blur(60px)",
+                }}
+              />
+              <span className="relative text-5xl block mb-5">🎓</span>
+              <h3 className="relative text-xl sm:text-2xl font-bold mb-3">학생이신가요?</h3>
+              <p className="relative text-muted text-sm sm:text-base mb-8 max-w-sm mx-auto">
+                소크라테스 AI 튜터, 기억의 궁전, 영어 회화까지 — 공부가 즐거워집니다.
+              </p>
+              <Link
+                href="/signup"
+                className="btn-glow relative inline-block px-8 py-3.5 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:scale-105 active:scale-[0.97]"
+              >
+                무료로 시작하기
+              </Link>
+            </div>
+
+            {/* 교사 CTA */}
+            <div className="glass-gradient p-8 sm:p-12 relative overflow-hidden text-center">
+              <div
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{ background: "linear-gradient(90deg, transparent, #f97316, transparent)" }}
+              />
+              <div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
+                style={{
+                  background: "radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%)",
+                  filter: "blur(60px)",
+                }}
+              />
+              <span className="relative text-5xl block mb-5">📝</span>
+              <h3 className="relative text-xl sm:text-2xl font-bold mb-3">교사이신가요?</h3>
+              <p className="relative text-muted text-sm sm:text-base mb-8 max-w-sm mx-auto">
+                공문서 자동 교정, 세특 바이트 계산, 금지어 감지 — 업무 시간을 돌려드립니다.
+              </p>
+              <Link
+                href="/signup"
+                className="btn-glow relative inline-block px-8 py-3.5 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:scale-105 active:scale-[0.97]"
+              >
+                교사로 시작하기
+              </Link>
+            </div>
           </div>
         </motion.section>
 

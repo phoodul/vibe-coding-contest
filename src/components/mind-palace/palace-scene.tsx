@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, useEffect, useMemo } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PalaceObjectSVG } from "./palace-objects";
 import type { RoomSceneConfig, SceneObject, ObjectPart } from "@/lib/mind-palace/scene-config";
@@ -23,8 +23,10 @@ interface PalaceSceneProps {
   activeFlatIndex: number;
   /** 나레이터가 지금까지 reveal한 최대 flatIndex (-1 = 없음) */
   revealedUpTo?: number;
-  /** 학습 모드: 클릭으로 선택된 오브젝트 ID (전체 파트 텍스트 표시) */
+  /** 학습 모드: 클릭으로 선택된 오브젝트 ID */
   selectedObjId: string | null;
+  /** 현재 텍스트가 표시 중인 파트 ID (한 번에 1개만) */
+  selectedPartId: string | null;
   /** 복습 모드 3-click 상태 */
   reviewStates: Record<string, ReviewClickState>;
   /** 클릭 시 콜백 */
@@ -44,6 +46,7 @@ export function PalaceScene({
   activeFlatIndex,
   revealedUpTo = -1,
   selectedObjId,
+  selectedPartId,
   reviewStates,
   onPartClick,
   onObjectClick,
@@ -53,11 +56,6 @@ export function PalaceScene({
 
   // 현재 활성 파트 찾기 (나레이터 기반)
   const activePart = findPartByFlatIndex(config, activeFlatIndex);
-
-  // 텍스트 박스 위치를 겹치지 않도록 계산
-  const textPositions = useMemo(() => {
-    return computeTextPositions(config, mode, activeFlatIndex, revealedUpTo, selectedObjId, reviewStates);
-  }, [config, mode, activeFlatIndex, revealedUpTo, selectedObjId, reviewStates]);
 
   return (
     <div className="relative w-full h-full">
@@ -109,9 +107,14 @@ export function PalaceScene({
 
         {/* ── 오브젝트 렌더링 ── */}
         {config.objects.map((obj) => {
-          const isObjActive = activePart?.objId === obj.id || selectedObjId === obj.id;
+          const isObjActive =
+            activePart?.objId === obj.id ||
+            selectedObjId === obj.id ||
+            (selectedPartId != null && obj.parts.some((p) => p.id === selectedPartId));
           const isHovered = hoveredObjId === obj.id;
           const reviewState = reviewStates[obj.id];
+          const showMarkers =
+            mode === "learn" || reviewState === "keyword" || reviewState === "text";
 
           return (
             <g
@@ -131,32 +134,24 @@ export function PalaceScene({
                 dimmed={activeFlatIndex >= 0 && !isObjActive}
               />
 
-              {/* ── keyword 라벨들 (작은 글씨) ── */}
+              {/* ── 파트 마커 (노드) + 텍스트 ── */}
               {obj.parts.map((part, pIdx) => {
-                const isPartActive = activeFlatIndex === part.flatIndex;
                 const partOffsetX = getPartOffsetX(obj.parts.length, pIdx);
                 const partOffsetY = getPartOffsetY(obj.parts.length, pIdx);
-
-                const isObjSelected = selectedObjId === obj.id;
-
-                // 학습: 나레이터 활성 또는 오브젝트 클릭 시 텍스트 표시
-                const showKeyword =
-                  mode === "learn"
-                    ? !isPartActive && !isObjSelected
-                    : reviewState === "keyword";
-
-                const showText =
-                  mode === "learn"
-                    ? isPartActive || isObjSelected
-                    : reviewState === "text";
-
                 const kx = obj.x + partOffsetX;
                 const ky = obj.y + 70 + partOffsetY;
 
-                // 텍스트 박스 위치 (겹침 방지 계산된 위치 사용)
-                const pos = textPositions.get(part.id);
-                const textX = pos ? pos.x : Math.max(0, Math.min(kx - TEXT_BOX_W / 2, SVG_W - TEXT_BOX_W));
-                const textY = pos ? pos.y : Math.max(5, ky - 50);
+                const isThisPartSelected = selectedPartId === part.id;
+                const isNarratorActive = activeFlatIndex === part.flatIndex;
+                const showText = isThisPartSelected || isNarratorActive;
+
+                // 텍스트 박스 위치 (1개만 표시되므로 간단한 경계 클램핑)
+                let textX = obj.x + 70;
+                let textY = ky - 30;
+                if (textX + TEXT_BOX_W > SVG_W - 10) textX = obj.x - TEXT_BOX_W - 10;
+                if (textX < 10) textX = Math.max(10, kx - TEXT_BOX_W / 2);
+                textX = Math.max(5, Math.min(textX, SVG_W - TEXT_BOX_W - 5));
+                textY = Math.max(5, Math.min(textY, SVG_H - TEXT_BOX_H - 5));
 
                 return (
                   <g
@@ -165,20 +160,36 @@ export function PalaceScene({
                       e.stopPropagation();
                       onPartClick(obj, part);
                     }}
+                    className="cursor-pointer"
                   >
-                    {/* 작은 keyword (10px) */}
-                    {showKeyword && (
+                    {/* 마커 dot — 항상 표시 (각 노드의 시각적 존재) */}
+                    {showMarkers && (
                       <motion.g
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3, delay: pIdx * 0.03 }}
                       >
+                        <circle
+                          cx={kx}
+                          cy={ky}
+                          r={showText ? 6 : 4}
+                          fill={
+                            showText
+                              ? "rgba(245,158,11,0.6)"
+                              : isThisPartSelected
+                                ? "rgba(245,158,11,0.4)"
+                                : "rgba(245,158,11,0.15)"
+                          }
+                          stroke={showText ? "#F59E0B" : "rgba(245,158,11,0.35)"}
+                          strokeWidth={showText ? 1.5 : 0.8}
+                        />
                         <text
                           x={kx}
-                          y={ky}
+                          y={ky - 8}
                           textAnchor="middle"
-                          fill="#ffffffa0"
-                          fontSize="10"
+                          fill={showText ? "#F59E0B" : "#ffffff70"}
+                          fontSize={showText ? "10" : "8"}
+                          fontWeight={showText ? "bold" : "normal"}
                           filter="url(#shadow-soft)"
                           className="select-none pointer-events-none"
                         >
@@ -187,7 +198,7 @@ export function PalaceScene({
                       </motion.g>
                     )}
 
-                    {/* 강조 텍스트 (16px) — Scene 위 직접 표시, 겹침 방지 위치 */}
+                    {/* 텍스트 박스 — 선택된 1개 파트만 표시 (겹침 불가) */}
                     {showText && (
                       <foreignObject
                         x={textX}
@@ -195,7 +206,7 @@ export function PalaceScene({
                         width={TEXT_BOX_W}
                         height={TEXT_BOX_H}
                         className="pointer-events-none"
-                        style={{ overflow: "visible", zIndex: 100 }}
+                        style={{ overflow: "visible" }}
                       >
                         <motion.div
                           initial={{ opacity: 0, scale: 0.9 }}
@@ -231,21 +242,6 @@ export function PalaceScene({
                   </g>
                 );
               })}
-
-              {/* 오브젝트 대표 keyword (학습 모드, 활성 아닐 때) */}
-              {mode === "learn" && !isObjActive && activeFlatIndex < 0 && (
-                <text
-                  x={obj.x + 30}
-                  y={obj.y - 8}
-                  textAnchor="middle"
-                  fill="#ffffff50"
-                  fontSize="10"
-                  fontWeight="bold"
-                  className="select-none pointer-events-none"
-                >
-                  {obj.keyword}
-                </text>
-              )}
 
               {/* hover 이름 표시 */}
               {isHovered && !isObjActive && (
@@ -305,118 +301,3 @@ function findPartByFlatIndex(
   return null;
 }
 
-/**
- * 텍스트 박스 위치 계산 (겹침 방지)
- * 현재 표시되어야 하는 모든 텍스트 박스를 수집한 뒤,
- * 겹치는 박스들을 수직으로 분산 배치한다.
- */
-function computeTextPositions(
-  config: RoomSceneConfig,
-  mode: PalaceMode,
-  activeFlatIndex: number,
-  revealedUpTo: number,
-  selectedObjId: string | null,
-  reviewStates: Record<string, ReviewClickState>,
-): Map<string, { x: number; y: number }> {
-  const positions = new Map<string, { x: number; y: number }>();
-  const boxes: { id: string; x: number; y: number; objX: number; objY: number }[] = [];
-
-  for (const obj of config.objects) {
-    const activePart = findPartByFlatIndex(config, activeFlatIndex);
-    const isObjActive = activePart?.objId === obj.id || selectedObjId === obj.id;
-    const reviewState = reviewStates[obj.id];
-
-    for (let pIdx = 0; pIdx < obj.parts.length; pIdx++) {
-      const part = obj.parts[pIdx];
-      const isPartActive = activeFlatIndex === part.flatIndex;
-      const isObjSelected = selectedObjId === obj.id;
-
-      const showText =
-        mode === "learn"
-          ? isPartActive || isObjSelected
-          : reviewState === "text";
-
-      if (!showText) continue;
-
-      const partOffsetX = getPartOffsetX(obj.parts.length, pIdx);
-      const partOffsetY = getPartOffsetY(obj.parts.length, pIdx);
-      const kx = obj.x + partOffsetX;
-      const ky = obj.y + 70 + partOffsetY;
-
-      // 기본 위치: 오브젝트 옆에 배치 (오브젝트를 가리지 않도록)
-      let baseX = obj.x + 70; // 오브젝트 오른쪽에 배치
-      let baseY = ky - 30;
-
-      // 오른쪽 공간이 부족하면 왼쪽에 배치
-      if (baseX + TEXT_BOX_W > SVG_W - 10) {
-        baseX = obj.x - TEXT_BOX_W - 10;
-      }
-      // 왼쪽도 부족하면 아래에 배치
-      if (baseX < 10) {
-        baseX = Math.max(10, kx - TEXT_BOX_W / 2);
-      }
-
-      // 경계 클램핑
-      baseX = Math.max(5, Math.min(baseX, SVG_W - TEXT_BOX_W - 5));
-      baseY = Math.max(5, Math.min(baseY, SVG_H - TEXT_BOX_H - 5));
-
-      boxes.push({ id: part.id, x: baseX, y: baseY, objX: obj.x, objY: obj.y });
-    }
-  }
-
-  // 겹침 해소: 같은 오브젝트의 박스들은 수직으로 분산
-  const byObj = new Map<string, typeof boxes>();
-  for (const box of boxes) {
-    const key = `${box.objX}_${box.objY}`;
-    if (!byObj.has(key)) byObj.set(key, []);
-    byObj.get(key)!.push(box);
-  }
-
-  for (const [, group] of byObj) {
-    if (group.length <= 1) {
-      for (const b of group) positions.set(b.id, { x: b.x, y: b.y });
-      continue;
-    }
-
-    // 수직으로 균등 배분
-    const startY = Math.max(5, group[0].objY - 20);
-    const spacing = Math.min(TEXT_BOX_H + 4, (SVG_H - startY - TEXT_BOX_H) / group.length);
-
-    for (let i = 0; i < group.length; i++) {
-      const y = Math.min(startY + i * spacing, SVG_H - TEXT_BOX_H - 5);
-      positions.set(group[i].id, { x: group[i].x, y });
-    }
-  }
-
-  // 교차 오브젝트 간 겹침 해소 (간단한 push-apart)
-  const allPos = Array.from(positions.entries());
-  for (let iter = 0; iter < 3; iter++) {
-    for (let i = 0; i < allPos.length; i++) {
-      for (let j = i + 1; j < allPos.length; j++) {
-        const a = allPos[i][1];
-        const b = allPos[j][1];
-        // 수평, 수직 겹침 확인
-        const overlapX = (a.x < b.x + TEXT_BOX_W) && (a.x + TEXT_BOX_W > b.x);
-        const overlapY = (a.y < b.y + TEXT_BOX_H) && (a.y + TEXT_BOX_H > b.y);
-        if (overlapX && overlapY) {
-          // 수직으로 밀어내기
-          const pushAmount = (TEXT_BOX_H + 4 - Math.abs(a.y - b.y)) / 2;
-          if (a.y <= b.y) {
-            a.y = Math.max(5, a.y - pushAmount);
-            b.y = Math.min(SVG_H - TEXT_BOX_H - 5, b.y + pushAmount);
-          } else {
-            b.y = Math.max(5, b.y - pushAmount);
-            a.y = Math.min(SVG_H - TEXT_BOX_H - 5, a.y + pushAmount);
-          }
-        }
-      }
-    }
-  }
-
-  // 업데이트된 위치 반영
-  const result = new Map<string, { x: number; y: number }>();
-  for (const [id, pos] of allPos) {
-    result.set(id, pos);
-  }
-  return result;
-}
