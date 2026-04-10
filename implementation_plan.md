@@ -1,66 +1,131 @@
-# 내 길 내비 (Pathfinder) — Implementation Plan
+# Mind Map 구현 계획
 
-## 목표
-"꿈이 있으면 길이 있다" — 학생이 자유 텍스트로 꿈/관심사를 입력하면,
-AI가 진출 직업 + 교육 로드맵 + 교육기관 인프라를 생성하는 기능.
+기억의 궁전(Mind Palace)을 완전히 폐기하고, 교과서 전체를 탐색할 수 있는 **인터랙티브 마인드 맵**으로 교체한다.
 
-## 기존 진로 시뮬레이터와의 차별점
-| | 진로 시뮬레이터 | 내 길 내비 |
-|---|---|---|
-| 질문 | 성향 평가 10+항목 | 꿈/관심사 자유 입력 1줄 |
-| 결과 | 직업 추천 15~20개 | 로드맵 + 학교/기관 안내 |
-| 대상 | 일반 학생 | 비학업 트랙 포함 전체 |
+## 핵심 컨셉
+
+- 교과서 1권의 모든 내용이 루트 → 챕터 → 섹션 → 콘텐츠 → (구조화 노드) 로 이어지는 거대한 트리
+- 클릭으로 점진적 확장 (Progressive Disclosure)
+- 깊이 0~1: 시작 시 바로 보임 (루트 + 챕터), 센터링 없음
+- 깊이 2+: 클릭하면 해당 노드가 화면 중앙으로 이동 + 자식 노드 표시 + 부모와의 연결선 유지
+- 형제 노드 11색 순환: 빨, 노, 초, 주, 파, 보, 갈, 남, 금, 은, 동
+- 노드 스타일: 랜딩페이지 글래스카드 + 색상 입힘 + 가독성 좋은 글씨
+
+## 데이터 소스
+
+| 소스 | 범위 | 깊이 |
+|------|------|------|
+| `ETHICS_TEXTBOOK` (lib/data/textbooks/ethics.ts) | 전체 6챕터 | Chapter → Section → Content (3단계) |
+| `ETHICS_STRUCTURED_CH3` (src/lib/data/textbooks/structured/) | ch3만 | + NoteNode 재귀 트리 (5~6단계) |
+
+**전략**: 전체 교과서는 flat 데이터로 3단계 트리 구성. ch3는 structured 데이터를 병합하여 깊은 트리 제공.
+
+## 트리 구조 (MindMapNode)
+
+```
+Root ("생활과 윤리")
+├── Ch1 "현대 생활과 실천 윤리"
+│   ├── S1 "윤리학의 의미와 분류"
+│   │   ├── C1 "윤리학의 정의" (leaf — detail은 tooltip/패널)
+│   │   ├── C2 "이론 윤리학"
+│   │   └── ...
+│   └── S2 "의무론적 윤리학"
+│       └── ...
+├── Ch3 "사회와 윤리"       ← structured 데이터 병합
+│   ├── S1 "직업과 청렴의 윤리"
+│   │   ├── C1 "직업의 의미와 직업 윤리"
+│   │   │   ├── "직업: 생계 수단 + 사회적 역할..."
+│   │   │   ├── "동양적 관점"
+│   │   │   │   ├── "맹자(孟子)"
+│   │   │   │   │   ├── "사회적 분업 필요성 강조"
+│   │   │   │   │   └── ...
+│   │   │   │   └── ...
+│   │   │   └── ...
+│   │   └── ...
+│   └── ...
+└── ...
+```
 
 ## 파일 구조
 
+### 삭제 (Mind Palace 전체)
+- `src/components/mind-palace/` (전체 디렉토리)
+- `src/lib/mind-palace/` (전체 디렉토리)
+- `src/hooks/use-structured-narrator.ts`
+- `src/app/mind-palace/` (전체 디렉토리)
+
+### 생성
+1. **`src/lib/mind-map/build-tree.ts`**
+   - `MindMapNode` 타입 정의 (id, label, detail?, color, children, depth)
+   - `buildMindMapTree(textbook)` — Textbook → MindMapNode 트리 변환
+   - ch3 structured 데이터 자동 병합
+   - `SIBLING_COLORS` — 11색 배열 + hex 값
+
+2. **`src/lib/mind-map/layout.ts`**
+   - `computeLayout(root, expandedIds)` — 확장된 노드 기준 방사형 좌표 계산
+   - 각 노드에 (x, y) 좌표 부여
+   - 부모-자식 간 연결선 좌표
+
+3. **`src/components/mind-map/mind-map-canvas.tsx`**
+   - Pan/Zoom 캔버스 (CSS transform: translate + scale)
+   - 마우스 드래그 팬, 휠 줌
+   - 노드 렌더링: 글래스카드 스타일 + 색상
+   - SVG 연결선 (부모↔자식)
+   - 클릭 시 expand/collapse + 깊이 2+ 센터링 애니메이션
+   - leaf 노드 클릭 시 detail 텍스트 표시
+
+4. **`src/app/mind-map/page.tsx`**
+   - 전체 화면 마인드 맵 페이지
+   - 헤더: 제목 + 현재 경로 breadcrumb + 홈으로 리셋 버튼
+
+### 수정
+- `src/app/dashboard/page.tsx` — href "/mind-palace" → "/mind-map"
+- `src/app/page.tsx` — 랜딩페이지 mind-palace 참조 → mind-map
+
+## 레이아웃 알고리즘
+
+방사형 트리 레이아웃:
+1. 루트 노드: (0, 0) — 화면 중앙
+2. 자식 노드: 부모로부터 반지름 R 떨어진 호 위에 균등 배치
+3. R은 깊이에 따라 조정 (깊이 0→1: 300px, 1→2: 250px, 2→3: 200px, ...)
+4. 형제가 많으면 호 각도 확장, 겹침 방지
+5. 확장된 노드만 자식 좌표 계산 (비확장 = 자식 숨김)
+
+## 색상 시스템
+
+```ts
+const SIBLING_COLORS = [
+  { name: "빨", bg: "#ef4444", text: "#fff" },
+  { name: "노", bg: "#eab308", text: "#000" },
+  { name: "초", bg: "#22c55e", text: "#fff" },
+  { name: "주", bg: "#f97316", text: "#fff" },
+  { name: "파", bg: "#3b82f6", text: "#fff" },
+  { name: "보", bg: "#a855f7", text: "#fff" },
+  { name: "갈", bg: "#92400e", text: "#fff" },
+  { name: "남", bg: "#1e3a5f", text: "#fff" },
+  { name: "금", bg: "#d4a017", text: "#000" },
+  { name: "은", bg: "#9ca3af", text: "#000" },
+  { name: "동", bg: "#b87333", text: "#fff" },
+];
 ```
-src/
-  app/
-    pathfinder/
-      page.tsx            # 메인 페이지 (입력 → AI 로드맵)
-    api/
-      pathfinder/
-        route.ts          # AI streaming API
-  lib/
-    ai/
-      pathfinder-prompt.ts  # 시스템 프롬프트
-    data/
-      pathfinder-schools.ts # 교육기관 정적 데이터
-```
 
-## UI 흐름
+형제 노드의 인덱스 % 11로 색상 결정. 글래스카드: `bg-{color}/20 backdrop-blur border-{color}/30`.
 
-### Step 1: 입력 화면
-- 큰 텍스트 입력: "어떤 꿈이 있나요?" (placeholder: "요리가 좋아요", "머리 만지는 게 재밌어요")
-- 선택적 추가 정보: 학년(중/고/대), 지역 (시/도)
-- 영감 태그: 미용, 조리, 자동차정비, 반려동물, 드론, 뷰티, 웹툰, 댄스, 체육, 음악, 간호, 농업...
-  - 클릭 시 입력창에 자동 채워짐
+## 인터랙션 상세
 
-### Step 2: AI 로드맵 결과
-- `useChat` + `streamText` (기존 career 패턴)
-- AI 생성 내용:
-  1. 관련 직업군 (5~8개) — 직업명, 설명, 연봉, 전망
-  2. 준비 로드맵 — 학년 기준 타임라인
-  3. 추천 학교/기관 — 특성화고, 마이스터고, 예술고, 체육고, 전문대, 폴리텍, 직업훈련원
-  4. 자격증/포트폴리오
-  5. 정부 지원 — 장학금, 내일배움카드, HRD-Net
-
-## API: POST /api/pathfinder
-- Input: `{ messages }` (useChat 표준)
-- 첫 user 메시지: JSON `{ dream, grade, region }`
-- System prompt: 한국 교육 전문가, 비학업 트랙 전문
-
-## 교육기관 데이터 (정적)
-분야별 대표 기관 + 분야 태그 + 지역 + URL
-
-## 대시보드/랜딩 반영
-- studentItems에 "내 길 내비" 추가 (🌟 아이콘)
-- 랜딩 studentFeatures에도 추가
+1. **초기 상태**: 루트("생활과 윤리") 중앙 + 6개 챕터 노드가 방사형 배치
+2. **챕터 클릭** (깊이 1): 해당 챕터의 섹션들이 펼쳐짐. 센터링 없음.
+3. **섹션 클릭** (깊이 2): 클릭한 섹션이 화면 중앙으로 smooth 이동 + 콘텐츠 자식 노드 표시
+4. **더 깊은 노드 클릭** (깊이 3+): 동일하게 센터링 + 자식 표시
+5. **이미 확장된 노드 클릭**: collapse (자식 숨김)
+6. **leaf 노드 클릭**: detail 텍스트가 있으면 팝오버로 표시
 
 ## 구현 순서
-1. `pathfinder-prompt.ts` — 시스템 프롬프트
-2. `pathfinder-schools.ts` — 교육기관 데이터
-3. `/api/pathfinder/route.ts` — API
-4. `/pathfinder/page.tsx` — 페이지 UI
-5. dashboard + landing 메뉴 추가
-6. 빌드 확인
+
+1. Mind Palace 파일 전부 삭제
+2. `build-tree.ts` — 트리 빌더 + 색상
+3. `layout.ts` — 방사형 좌표 계산
+4. `mind-map-canvas.tsx` — 캔버스 + 노드 + 연결선 + 인터랙션
+5. `page.tsx` — 페이지 + 헤더
+6. dashboard/landing 링크 업데이트
+7. 빌드 검증

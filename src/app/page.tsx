@@ -9,7 +9,7 @@ import { GlassCard } from "@/components/shared/glass-card";
 /* ─── Accent colors per feature card ─── */
 const featureAccents = [
   "#8b5cf6", // violet - 소크라테스
-  "#6366f1", // indigo - 기억의 궁전
+  "#6366f1", // indigo - 마인드 맵
   "#06b6d4", // cyan - 영어 단어
   "#f43f5e", // rose - 영어 회화
   "#f59e0b", // amber - 진로
@@ -31,10 +31,10 @@ const studentFeatures = [
     href: "/tutor",
   },
   {
-    title: "기억의 궁전",
-    description: "카툰 공간 기억법으로 교과서 핵심 내용을 장소에 배치하고 나레이터가 읽어줍니다.",
-    icon: "🏛️",
-    href: "/mind-palace",
+    title: "마인드 맵",
+    description: "교과서 전체 구조를 인터랙티브 마인드 맵으로 탐색하며 핵심 내용을 한눈에 파악합니다.",
+    icon: "🧠",
+    href: "/mind-map",
   },
   {
     title: "영어 단어 학습",
@@ -365,7 +365,7 @@ export default function LandingPage() {
               <span className="relative text-4xl block mb-3">🎓</span>
               <h3 className="relative text-lg font-bold mb-2">학생이신가요?</h3>
               <p className="relative text-muted text-xs sm:text-sm mb-5 max-w-xs mx-auto">
-                AI 튜터, 기억의 궁전, 진로 탐색까지 — 공부가 즐거워집니다.
+                AI 튜터, 마인드 맵, 진로 탐색까지 — 공부가 즐거워집니다.
               </p>
               <Link
                 href="/signup"
