@@ -21,7 +21,7 @@ export default function TutorPage() {
   const [summaryText, setSummaryText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, append } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append, status } =
     useChat({
       api: "/api/tutor",
       body: {
@@ -29,6 +29,7 @@ export default function TutorPage() {
         topic: selectedTopic?.name || "",
         concept: selectedConcept || "",
       },
+      maxSteps: 5,
     });
 
   // 자동 스크롤 — 새 메시지 시 하단으로
@@ -487,11 +488,34 @@ export default function TutorPage() {
                   }`}
                 >
                   {m.role === "assistant" ? (
-                    <div className="prose prose-invert prose-sm max-w-none [&_table]:text-xs [&_th]:px-2 [&_th]:py-1 [&_td]:px-2 [&_td]:py-1 [&_th]:bg-white/5 [&_table]:border-collapse [&_th]:border [&_th]:border-white/10 [&_td]:border [&_td]:border-white/10">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {m.content.replace(/\[CONCEPT_DONE:\s*.+?\]\n?/g, "")}
-                      </ReactMarkdown>
-                    </div>
+                    <>
+                      {/* 검색 tool invocation 표시 */}
+                      {m.parts?.map((p, i) => {
+                        if (p.type !== "tool-invocation") return null;
+                        const ti = p.toolInvocation;
+                        if (ti.state === "call" || ti.state === "partial-call") {
+                          return (
+                            <div key={`tool-${i}`} className="flex items-center gap-2 text-xs text-cyan-400 mb-2">
+                              <span className="animate-spin w-3 h-3 border-2 border-cyan-400 border-t-transparent rounded-full" />
+                              검색 중: {(ti.args as Record<string, string>)?.query || "..."}
+                            </div>
+                          );
+                        }
+                        if (ti.state === "result") {
+                          return (
+                            <div key={`tool-${i}`} className="text-[10px] text-muted/40 mb-2">
+                              검색 완료: {(ti.args as Record<string, string>)?.query}
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
+                      <div className="prose prose-invert prose-sm max-w-none [&_table]:text-xs [&_th]:px-2 [&_th]:py-1 [&_td]:px-2 [&_td]:py-1 [&_th]:bg-white/5 [&_table]:border-collapse [&_th]:border [&_th]:border-white/10 [&_td]:border [&_td]:border-white/10">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {m.content.replace(/\[CONCEPT_DONE:\s*.+?\]\n?/g, "")}
+                        </ReactMarkdown>
+                      </div>
+                    </>
                   ) : (
                     <p className="whitespace-pre-wrap">{m.content}</p>
                   )}
@@ -499,34 +523,21 @@ export default function TutorPage() {
               </motion.div>
             ))}
 
-          {isLoading && (() => {
-            const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
-            const isSearching = lastAssistant?.toolInvocations?.some(
-              (t: { state: string }) => t.state === "call" || t.state === "partial-call"
-            );
-            return (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex justify-start"
-              >
-                <div className="glass rounded-2xl rounded-bl-md px-4 py-3">
-                  {isSearching ? (
-                    <div className="flex items-center gap-2 text-xs text-cyan-400">
-                      <span className="animate-spin w-3.5 h-3.5 border-2 border-cyan-400 border-t-transparent rounded-full" />
-                      최신 정보를 검색하고 있습니다...
-                    </div>
-                  ) : (
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 rounded-full bg-muted animate-bounce" />
-                      <span className="w-2 h-2 rounded-full bg-muted animate-bounce [animation-delay:0.1s]" />
-                      <span className="w-2 h-2 rounded-full bg-muted animate-bounce [animation-delay:0.2s]" />
-                    </div>
-                  )}
+          {(status === "submitted" || status === "streaming") && !messages.some(m => m.role === "assistant" && m.content && !m.content.startsWith("[SYSTEM:")) && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-start"
+            >
+              <div className="glass rounded-2xl rounded-bl-md px-4 py-3">
+                <div className="flex gap-1">
+                  <span className="w-2 h-2 rounded-full bg-muted animate-bounce" />
+                  <span className="w-2 h-2 rounded-full bg-muted animate-bounce [animation-delay:0.1s]" />
+                  <span className="w-2 h-2 rounded-full bg-muted animate-bounce [animation-delay:0.2s]" />
                 </div>
-              </motion.div>
-            );
-          })()}
+              </div>
+            </motion.div>
+          )}
 
           {/* 요약 정리 패널 */}
           <AnimatePresence>
