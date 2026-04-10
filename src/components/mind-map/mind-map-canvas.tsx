@@ -68,36 +68,57 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
       }
     : null;
 
-  // 자식 위치: 루트=360° / 그 외=부채꼴(outward 방향 중심)
+  // depth별 최대 팬 각도 (rad): 360° → 60° → 45° → 40° → 30° → 30°
+  const FAN_BY_DEPTH = [
+    2 * Math.PI,
+    Math.PI / 3,
+    Math.PI / 4,
+    (2 * Math.PI) / 9,
+    Math.PI / 6,
+    Math.PI / 6,
+  ];
+
   const childPositions = useMemo(() => {
     const n = children.length;
     if (n === 0) return [];
 
-    // 노드 텍스트 길이 기반 반지름 계산
-    const estimatedWidths = children.map((c) => c.label.length * 10 + 50);
-    const totalWidth = estimatedWidths.reduce((a, b) => a + b, 0);
-    const totalWithGaps = totalWidth + n * 24;
-
     const isRoot = outwardAngle === null;
+    const depth = angleHistory.length; // 0=root, 1=first drill, ...
+    const childMaxW = size.w >= 640 ? 180 : 140;
+    const childBoxH = 48; // 자식 노드 예상 높이
 
-    // 부채꼴 각도: 루트=360°, 그 외=자식 수에 따라 120~200°
-    const fanAngle = isRoot
-      ? 2 * Math.PI
-      : Math.min(Math.PI * 1.1, Math.PI * 0.5 + n * Math.PI * 0.1);
-
-    const computedR = totalWithGaps / fanAngle;
-    const maxR = Math.min(size.w * 0.42, size.h * 0.38);
-    const minR = Math.min(180, size.w * 0.22);
-    const r = Math.max(minR, Math.min(maxR, computedR));
-
-    // 시작 각도
-    const centerAngle = isRoot ? -Math.PI / 2 : outwardAngle!;
-    const startAngle = centerAngle - fanAngle / 2;
-    // Full circle (root): divide by n so first/last don't overlap
-    // Fan arc (non-root): divide by n-1 so nodes sit at both ends of the arc
+    // 팬 각도: depth별 축소
+    const fanAngle = FAN_BY_DEPTH[Math.min(depth, FAN_BY_DEPTH.length - 1)];
     const step = n <= 1 ? 0 : isRoot ? fanAngle / n : fanAngle / (n - 1);
 
-    // 1. 균등 배치된 위치 계산
+    // ── 반지름 계산: 겹침 방지 최우선 ──
+    let r: number;
+
+    if (isRoot) {
+      // Root: 기존 둘레 기반 계산
+      const estimatedWidths = children.map((c) => c.label.length * 10 + 50);
+      const total = estimatedWidths.reduce((a, b) => a + b, 0) + n * 24;
+      const maxR = Math.min(size.w * 0.42, size.h * 0.38);
+      r = Math.max(Math.min(180, size.w * 0.32), Math.min(maxR, total / fanAngle));
+    } else {
+      // 1) 중앙↔자식 겹침 방지
+      const centerMaxW = Math.min(size.w * 0.45, 280);
+      const centerHalf = Math.min(focused.label.length * 14 + 64, centerMaxW) / 2;
+      const gap = Math.max(4, 16 - depth * 3);
+      const minRCenter = centerHalf + childMaxW / 2 + gap;
+
+      // 2) 자식↔자식 겹침 방지 (인접 노드 chord distance > 노드 높이 + gap)
+      const minRArc = n > 1 && step > 0
+        ? (childBoxH + gap) / (2 * Math.sin(step / 2))
+        : 0;
+
+      r = Math.max(minRCenter, minRArc, 100);
+    }
+
+    // ── 각도 배치 ──
+    const centerAngle = isRoot ? -Math.PI / 2 : outwardAngle!;
+    const startAngle = centerAngle - fanAngle / 2;
+
     const slots = Array.from({ length: n }, (_, i) => {
       const angle = n === 1 ? centerAngle : startAngle + step * i;
       return {
@@ -107,8 +128,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
       };
     });
 
-    // 2. 읽기 순서 정렬 — 표준 수학 각도(0°=우, 반시계) 기준 4영역
-    // 상(45-135):좌→우  좌(135-225):위→아래  하(225-315):좌→우  우(315-45):위→아래
+    // 읽기 순서 정렬
     const readingOrder = slots
       .map((s, idx) => {
         const rad = Math.atan2(cy - s.y, s.x - cx);
@@ -116,25 +136,24 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
         let zone: number;
         let sortKey: number;
         if (deg >= 45 && deg < 135) {
-          zone = 0; sortKey = s.x;          // 상: 좌→우
+          zone = 0; sortKey = s.x;
         } else if (deg >= 135 && deg < 225) {
-          zone = 1; sortKey = s.y;          // 좌: 위→아래
+          zone = 1; sortKey = s.y;
         } else if (deg >= 225 && deg < 315) {
-          zone = 3; sortKey = s.x;          // 하: 좌→우
+          zone = 3; sortKey = s.x;
         } else {
-          zone = 2; sortKey = s.y;          // 우: 위→아래
+          zone = 2; sortKey = s.y;
         }
         return { idx, zone, sortKey };
       })
       .sort((a, b) => a.zone - b.zone || a.sortKey - b.sortKey)
       .map((p) => p.idx);
 
-    // 3. children[i] → 읽기 순서 i번째 위치
     return children.map((child, i) => ({
       node: child,
       ...slots[readingOrder[i]],
     }));
-  }, [children, cx, cy, size, outwardAngle]);
+  }, [children, cx, cy, size, outwardAngle, focused, angleHistory]);
 
   // 자식 클릭: 하위로 drill-in (클릭한 자식의 각도 저장)
   const handleChildClick = useCallback(
@@ -280,7 +299,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
             style={{ left: cx, top: cy }}
           >
             <div
-              className="rounded-2xl px-8 py-4 shadow-2xl border-2"
+              className="rounded-2xl px-5 py-3 sm:px-8 sm:py-4 shadow-2xl border-2"
               style={{
                 background:
                   focused.id === "root"
@@ -291,10 +310,11 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
                     ? "rgba(255,255,255,0.25)"
                     : getNodeColor(focused.siblingIndex).border,
                 boxShadow: `0 0 40px ${focused.id === "root" ? "rgba(99,102,241,0.15)" : getNodeColor(focused.siblingIndex).bg + "25"}`,
+                maxWidth: `min(${Math.round(size.w * 0.45)}px, 280px)`,
               }}
             >
               <p
-                className="text-center font-bold text-xl whitespace-nowrap text-white"
+                className="text-center font-bold text-lg sm:text-xl text-white"
               >
                 {focused.label}
               </p>
@@ -413,14 +433,14 @@ function ChildNode({
           boxShadow: `0 0 24px ${color.bg}50`,
         }}
         whileTap={{ scale: 0.95 }}
-        className="rounded-xl px-3 py-2 sm:px-5 sm:py-2.5 shadow-lg"
+        className="rounded-xl px-3 py-2 sm:px-5 sm:py-2.5 shadow-lg max-w-[140px] sm:max-w-[180px]"
         style={{
           background: color.solid,
           border: `1.5px solid ${color.border}`,
         }}
       >
         <p
-          className="text-[13px] sm:text-[15px] font-semibold whitespace-nowrap text-center"
+          className="text-[13px] sm:text-[15px] font-semibold text-center"
           style={{ color: color.text }}
         >
           {node.label}
