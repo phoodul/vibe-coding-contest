@@ -26,7 +26,7 @@ const studentItems: MenuItem[] = [
   { title: "마인드 맵", desc: "교과서 전체 구조를 한눈에 탐색", icon: "🧠", href: "/mind-map" },
   { title: "영어 단어 학습", desc: "18,000 단어 레벨별 에베레스트 등반", icon: "🏔️", href: "/vocabulary" },
   { title: "AI 영어 회화", desc: "내 수준에 맞는 음성 영어 대화", icon: "🎙️", href: "/conversation" },
-  { title: "영문법 핵심 100문장", desc: "반복 청취로 영문법 체득", icon: "🎧", href: "/grammar-listen" },
+  { title: "영문법 핵심 300문장", desc: "3레벨 반복 청취로 영문법 체득", icon: "🎧", href: "/grammar-listen" },
   { title: "진로 시뮬레이터", desc: "5,000+ 직업에서 나만의 길 찾기", icon: "🧭", href: "/career" },
   { title: "내 길 내비", desc: "꿈이 있으면 길이 있다 — AI 진로 로드맵", icon: "🌟", href: "/pathfinder" },
   { title: "맞춤 도서 추천", desc: "진로 맞춤 도서 큐레이션", icon: "📚", href: "/books" },

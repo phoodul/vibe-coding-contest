@@ -50,8 +50,8 @@ const studentFeatures = [
     href: "/conversation",
   },
   {
-    title: "영문법 핵심 100문장",
-    description: "ESL 연구 기반 핵심 문법 문장 100개를 반복 청취하며 체득. 이동 중 학습에 최적화.",
+    title: "영문법 핵심 300문장",
+    description: "A1~C2 3레벨 핵심 문법 300문장을 반복 청취하며 체득. 이동 중 학습에 최적화.",
     icon: "🎧",
     href: "/grammar-listen",
   },

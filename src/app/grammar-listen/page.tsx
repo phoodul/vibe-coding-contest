@@ -5,25 +5,30 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/glass-card";
 import {
-  GRAMMAR_SENTENCES,
-  GRAMMAR_CATEGORIES,
+  GRAMMAR_LEVELS,
+  type GrammarLevel,
   type GrammarSentence,
-} from "@/lib/data/grammar-sentences";
+} from "@/lib/data/grammar-levels";
 
-const TOTAL = GRAMMAR_SENTENCES.length;
-const STORAGE_KEY = "grammar-listen-pos";
+const LEVEL_KEY = "grammar-listen-level";
 const REPEAT_KEY = "grammar-listen-repeat";
-
-function loadPos(): number {
-  if (typeof window === "undefined") return 0;
-  const v = localStorage.getItem(STORAGE_KEY);
-  return v ? Math.min(Number(v), TOTAL - 1) : 0;
+function posKey(lv: GrammarLevel) {
+  return `grammar-listen-${lv}-pos`;
 }
-function savePos(idx: number) {
-  localStorage.setItem(STORAGE_KEY, String(idx));
+
+function loadLevel(): GrammarLevel {
+  if (typeof window === "undefined") return "lv1";
+  return (localStorage.getItem(LEVEL_KEY) as GrammarLevel) || "lv1";
+}
+
+function loadPos(lv: GrammarLevel, total: number): number {
+  if (typeof window === "undefined") return 0;
+  const v = localStorage.getItem(posKey(lv));
+  return v ? Math.min(Number(v), total - 1) : 0;
 }
 
 export default function GrammarListenPage() {
+  const [level, setLevel] = useState<GrammarLevel>("lv1");
   const [currentIdx, setCurrentIdx] = useState(0);
   const [repeatCount, setRepeatCount] = useState(3);
   const [currentRepeat, setCurrentRepeat] = useState(0);
@@ -31,80 +36,146 @@ export default function GrammarListenPage() {
   const [loading, setLoading] = useState(false);
   const [jumpTo, setJumpTo] = useState("");
   const [showList, setShowList] = useState(false);
+  const [announcingCategory, setAnnouncingCategory] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
   const playingRef = useRef(false);
 
-  // 초기 로드: localStorage에서 위치 복원
+  const info = GRAMMAR_LEVELS.find((l) => l.key === level)!;
+  const sentences = info.sentences;
+  const categories = info.categories;
+  const TOTAL = sentences.length;
+  const sentence = sentences[currentIdx] ?? sentences[0];
+  const progress = ((currentIdx + 1) / TOTAL) * 100;
+
+  // 초기 로드
   useEffect(() => {
-    setCurrentIdx(loadPos());
+    const lv = loadLevel();
+    setLevel(lv);
+    const lvInfo = GRAMMAR_LEVELS.find((l) => l.key === lv)!;
+    setCurrentIdx(loadPos(lv, lvInfo.sentences.length));
     const saved = localStorage.getItem(REPEAT_KEY);
     if (saved) setRepeatCount(Number(saved));
   }, []);
 
-  const sentence = GRAMMAR_SENTENCES[currentIdx];
-  const progress = ((currentIdx + 1) / TOTAL) * 100;
-  const categoryIdx = GRAMMAR_CATEGORIES.indexOf(
-    sentence.category as (typeof GRAMMAR_CATEGORIES)[number],
-  );
+  const switchLevel = (lv: GrammarLevel) => {
+    stopPlayback();
+    setLevel(lv);
+    localStorage.setItem(LEVEL_KEY, lv);
+    const lvInfo = GRAMMAR_LEVELS.find((l) => l.key === lv)!;
+    const pos = loadPos(lv, lvInfo.sentences.length);
+    setCurrentIdx(pos);
+  };
+
+  const savePos = (idx: number) => {
+    localStorage.setItem(posKey(level), String(idx));
+  };
 
   // TTS 재생
-  const playTTS = useCallback(
-    async (text: string): Promise<void> => {
-      return new Promise(async (resolve, reject) => {
-        try {
-          setLoading(true);
-          const res = await fetch("/api/tts", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              text,
-              voice: "nova",
-              instructions:
-                "Speak clearly and at a moderate pace, suitable for English language learners. Enunciate each word distinctly.",
-            }),
-          });
-          if (!res.ok) throw new Error("TTS failed");
-          const blob = await res.blob();
-          const url = URL.createObjectURL(blob);
+  const playTTS = useCallback(async (text: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text,
+            voice: "nova",
+            instructions:
+              "Speak clearly and at a moderate pace, suitable for English language learners. Enunciate each word distinctly.",
+          }),
+        });
+        if (!res.ok) throw new Error("TTS failed");
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
 
-          if (audioRef.current) {
-            audioRef.current.pause();
-            URL.revokeObjectURL(audioRef.current.src);
-          }
-
-          const audio = new Audio(url);
-          audioRef.current = audio;
-          audio.onended = () => {
-            URL.revokeObjectURL(url);
-            resolve();
-          };
-          audio.onerror = () => {
-            URL.revokeObjectURL(url);
-            reject(new Error("Audio error"));
-          };
-          setLoading(false);
-          audio.play();
-        } catch (e) {
-          setLoading(false);
-          reject(e);
+        if (audioRef.current) {
+          audioRef.current.pause();
+          URL.revokeObjectURL(audioRef.current.src);
         }
-      });
-    },
-    [],
-  );
 
-  // 연속 재생 루프
+        const audio = new Audio(url);
+        audioRef.current = audio;
+        audio.onended = () => {
+          URL.revokeObjectURL(url);
+          resolve();
+        };
+        audio.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("Audio error"));
+        };
+        setLoading(false);
+        audio.play();
+      } catch (e) {
+        setLoading(false);
+        reject(e);
+      }
+    });
+  }, []);
+
+  // 카테고리 안내 TTS (한국어)
+  const playCategory = useCallback(async (categoryName: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        setAnnouncingCategory(true);
+        const res = await fetch("/api/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text: categoryName,
+            voice: "nova",
+            instructions: "Announce the grammar category name clearly. Brief and direct.",
+          }),
+        });
+        if (!res.ok) { resolve(); return; }
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+
+        if (audioRef.current) {
+          audioRef.current.pause();
+          URL.revokeObjectURL(audioRef.current.src);
+        }
+
+        const audio = new Audio(url);
+        audioRef.current = audio;
+        audio.onended = () => {
+          URL.revokeObjectURL(url);
+          setAnnouncingCategory(false);
+          resolve();
+        };
+        audio.onerror = () => {
+          URL.revokeObjectURL(url);
+          setAnnouncingCategory(false);
+          resolve(); // 실패해도 문장 재생으로 진행
+        };
+        audio.play();
+      } catch {
+        setAnnouncingCategory(false);
+        resolve();
+      }
+    });
+  }, []);
+
+  // 연속 재생 루프 — 카테고리 전환 시 안내 포함
   const startPlayback = useCallback(
     async (startIdx: number) => {
       playingRef.current = true;
       setIsPlaying(true);
       let idx = startIdx;
+      let prevCategory = idx > 0 ? sentences[idx - 1]?.category : "";
 
       while (idx < TOTAL && playingRef.current) {
         setCurrentIdx(idx);
         savePos(idx);
-        const s = GRAMMAR_SENTENCES[idx];
+        const s = sentences[idx];
+
+        // 카테고리가 바뀌면 안내
+        if (s.category !== prevCategory && playingRef.current) {
+          await playCategory(s.category);
+          if (!playingRef.current) break;
+          await new Promise((r) => setTimeout(r, 600));
+        }
+        prevCategory = s.category;
 
         for (let rep = 0; rep < repeatCount; rep++) {
           if (!playingRef.current) break;
@@ -112,16 +183,13 @@ export default function GrammarListenPage() {
           try {
             await playTTS(s.en);
           } catch {
-            // TTS 실패 시 1초 대기 후 다음으로
             await new Promise((r) => setTimeout(r, 1000));
           }
-          // 반복 사이 짧은 간격
           if (rep < repeatCount - 1 && playingRef.current) {
             await new Promise((r) => setTimeout(r, 800));
           }
         }
 
-        // 문장 사이 간격
         if (playingRef.current) {
           await new Promise((r) => setTimeout(r, 1200));
         }
@@ -132,13 +200,15 @@ export default function GrammarListenPage() {
       setIsPlaying(false);
       setCurrentRepeat(0);
     },
-    [repeatCount, playTTS],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [repeatCount, playTTS, playCategory, sentences, TOTAL],
   );
 
   const stopPlayback = useCallback(() => {
     playingRef.current = false;
     setIsPlaying(false);
     setCurrentRepeat(0);
+    setAnnouncingCategory(false);
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -170,22 +240,24 @@ export default function GrammarListenPage() {
   const handlePrev = () => {
     if (currentIdx > 0) {
       stopPlayback();
-      setCurrentIdx(currentIdx - 1);
-      savePos(currentIdx - 1);
+      const next = currentIdx - 1;
+      setCurrentIdx(next);
+      savePos(next);
     }
   };
 
   const handleNext = () => {
     if (currentIdx < TOTAL - 1) {
       stopPlayback();
-      setCurrentIdx(currentIdx + 1);
-      savePos(currentIdx + 1);
+      const next = currentIdx + 1;
+      setCurrentIdx(next);
+      savePos(next);
     }
   };
 
   // 카테고리별 시작 인덱스
-  const categoryStarts = GRAMMAR_CATEGORIES.map((cat) =>
-    GRAMMAR_SENTENCES.findIndex((s) => s.category === cat),
+  const categoryStarts = categories.map((cat) =>
+    sentences.findIndex((s) => s.category === cat),
   );
 
   return (
@@ -195,7 +267,7 @@ export default function GrammarListenPage() {
           href="/dashboard"
           className="text-sm text-muted hover:text-foreground transition-colors mb-6 block"
         >
-          ← 대시보드
+          &larr; 대시보드
         </Link>
 
         <motion.div
@@ -203,11 +275,31 @@ export default function GrammarListenPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-            🎧 영문법 핵심 100문장
+            🎧 영문법 핵심 문장
           </h1>
-          <p className="text-muted text-sm mb-6">
-            ESL 핵심 문법이 담긴 100문장을 반복 청취하며 체득하세요.
+          <p className="text-muted text-sm mb-4">
+            레벨별 100문장을 반복 청취하며 영문법을 체득하세요.
           </p>
+
+          {/* 레벨 탭 */}
+          <div className="flex gap-2 mb-6">
+            {GRAMMAR_LEVELS.map((lv) => (
+              <button
+                key={lv.key}
+                onClick={() => switchLevel(lv.key)}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  level === lv.key
+                    ? "bg-indigo-500/80 text-white shadow-lg shadow-indigo-500/20"
+                    : "bg-white/5 text-muted hover:bg-white/10"
+                }`}
+              >
+                <div>{lv.label}</div>
+                <div className={`text-[10px] font-normal ${level === lv.key ? "text-indigo-200" : "text-muted/60"}`}>
+                  {lv.sublabel}
+                </div>
+              </button>
+            ))}
+          </div>
 
           {/* 진행도 바 */}
           <div className="mb-6">
@@ -244,9 +336,11 @@ export default function GrammarListenPage() {
             </p>
             {isPlaying && (
               <div className="mt-3 text-xs text-indigo-300">
-                {loading
-                  ? "음성 생성 중..."
-                  : `반복 ${currentRepeat} / ${repeatCount}`}
+                {announcingCategory
+                  ? "카테고리 안내 중..."
+                  : loading
+                    ? "음성 생성 중..."
+                    : `반복 ${currentRepeat} / ${repeatCount}`}
               </div>
             )}
           </GlassCard>
@@ -341,9 +435,9 @@ export default function GrammarListenPage() {
                 className="overflow-hidden"
               >
                 <div className="space-y-2 pb-8">
-                  {GRAMMAR_CATEGORIES.map((cat, ci) => {
+                  {categories.map((cat, ci) => {
                     const startIdx = categoryStarts[ci];
-                    const sentences = GRAMMAR_SENTENCES.filter(
+                    const catSentences = sentences.filter(
                       (s) => s.category === cat,
                     );
                     return (
@@ -362,11 +456,11 @@ export default function GrammarListenPage() {
                               {ci + 1}. {cat}
                             </span>
                             <span className="text-xs text-muted">
-                              #{startIdx + 1}-{startIdx + sentences.length}
+                              #{startIdx + 1}-{startIdx + catSentences.length}
                             </span>
                           </div>
                           <p className="text-xs text-muted">
-                            {sentences[0].grammar} 외 {sentences.length - 1}개
+                            {catSentences[0].grammar} 외 {catSentences.length - 1}개
                           </p>
                         </button>
                       </GlassCard>
