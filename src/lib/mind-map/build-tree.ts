@@ -8,11 +8,8 @@ import { ETHICS_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/ethics-st
 export interface MindMapNode {
   id: string;
   label: string;
-  /** 교과서 원문 (leaf 노드에서 팝오버 표시용) */
   detail?: string;
-  /** 깊이 (root=0) */
   depth: number;
-  /** 형제 인덱스 (색상 결정) */
   siblingIndex: number;
   children: MindMapNode[];
 }
@@ -20,27 +17,94 @@ export interface MindMapNode {
 /* ── 11색 시스템 ── */
 
 export const SIBLING_COLORS = [
-  { name: "빨", bg: "#ef4444", glass: "rgba(239,68,68,0.15)", border: "rgba(239,68,68,0.4)", text: "#fff" },
-  { name: "노", bg: "#eab308", glass: "rgba(234,179,8,0.15)", border: "rgba(234,179,8,0.4)", text: "#000" },
-  { name: "초", bg: "#22c55e", glass: "rgba(34,197,94,0.15)", border: "rgba(34,197,94,0.4)", text: "#fff" },
-  { name: "주", bg: "#f97316", glass: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.4)", text: "#fff" },
-  { name: "파", bg: "#3b82f6", glass: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.4)", text: "#fff" },
-  { name: "보", bg: "#a855f7", glass: "rgba(168,85,247,0.15)", border: "rgba(168,85,247,0.4)", text: "#fff" },
-  { name: "갈", bg: "#92400e", glass: "rgba(146,64,14,0.15)", border: "rgba(146,64,14,0.4)", text: "#fff" },
-  { name: "남", bg: "#1e3a5f", glass: "rgba(30,58,95,0.15)", border: "rgba(30,58,95,0.4)", text: "#fff" },
-  { name: "금", bg: "#d4a017", glass: "rgba(212,160,23,0.15)", border: "rgba(212,160,23,0.4)", text: "#000" },
-  { name: "은", bg: "#9ca3af", glass: "rgba(156,163,175,0.15)", border: "rgba(156,163,175,0.4)", text: "#000" },
-  { name: "동", bg: "#b87333", glass: "rgba(184,115,51,0.15)", border: "rgba(184,115,51,0.4)", text: "#fff" },
+  { name: "빨", bg: "#ef4444", glass: "rgba(239,68,68,0.18)", border: "rgba(239,68,68,0.5)", text: "#fff" },
+  { name: "노", bg: "#eab308", glass: "rgba(234,179,8,0.18)", border: "rgba(234,179,8,0.5)", text: "#1a1a2e" },
+  { name: "초", bg: "#22c55e", glass: "rgba(34,197,94,0.18)", border: "rgba(34,197,94,0.5)", text: "#fff" },
+  { name: "주", bg: "#f97316", glass: "rgba(249,115,22,0.18)", border: "rgba(249,115,22,0.5)", text: "#fff" },
+  { name: "파", bg: "#3b82f6", glass: "rgba(59,130,246,0.18)", border: "rgba(59,130,246,0.5)", text: "#fff" },
+  { name: "보", bg: "#a855f7", glass: "rgba(168,85,247,0.18)", border: "rgba(168,85,247,0.5)", text: "#fff" },
+  { name: "갈", bg: "#92400e", glass: "rgba(146,64,14,0.18)", border: "rgba(146,64,14,0.5)", text: "#fff" },
+  { name: "남", bg: "#1e3a5f", glass: "rgba(30,58,95,0.22)", border: "rgba(30,58,95,0.5)", text: "#fff" },
+  { name: "금", bg: "#d4a017", glass: "rgba(212,160,23,0.18)", border: "rgba(212,160,23,0.5)", text: "#1a1a2e" },
+  { name: "은", bg: "#9ca3af", glass: "rgba(156,163,175,0.18)", border: "rgba(156,163,175,0.5)", text: "#1a1a2e" },
+  { name: "동", bg: "#b87333", glass: "rgba(184,115,51,0.18)", border: "rgba(184,115,51,0.5)", text: "#fff" },
 ] as const;
 
 export function getNodeColor(siblingIndex: number) {
   return SIBLING_COLORS[siblingIndex % SIBLING_COLORS.length];
 }
 
-/* ── 트리 빌더 ── */
+/* ── detail 텍스트 → 트리 자동 파싱 ── */
 
-/** structured ch3 노트를 content ID → NoteNode[] 맵으로 변환 */
-function buildStructuredMap(sections: StructuredSection[]): Map<string, NoteNode[]> {
+/**
+ * "의의: ① X ② Y ③ Z 한계: ① A ② B ③ C" 형태의 detail 텍스트를
+ * 토픽 → 번호 항목 트리로 변환한다.
+ */
+function parseDetailToTree(
+  detail: string,
+  parentId: string,
+  baseDepth: number,
+): MindMapNode[] {
+  // 원형 번호(①②③...)가 없으면 구조 없음
+  if (!/[①②③④⑤⑥⑦⑧⑨⑩]/.test(detail)) return [];
+
+  // 토픽 레이블 찾기: 한글 단어 + ":" + 바로 뒤에 ①
+  const topicRegex = /([가-힣]+(?:\s[가-힣]+)*)\s*[:：]\s*(?=[①②③④⑤⑥⑦⑧⑨⑩])/g;
+  const matches = [...detail.matchAll(topicRegex)];
+
+  if (matches.length >= 2) {
+    // 토픽 기반 분할 (의의/한계 패턴)
+    return matches.map((tm, tIdx) => {
+      const label = tm[1];
+      const start = tm.index! + tm[0].length;
+      const end =
+        tIdx + 1 < matches.length ? matches[tIdx + 1].index! : detail.length;
+      const content = detail.slice(start, end).trim();
+      const bullets = splitBullets(content);
+
+      return {
+        id: `${parentId}_t${tIdx}`,
+        label,
+        depth: baseDepth,
+        siblingIndex: tIdx,
+        children: bullets.map((b, bIdx) => ({
+          id: `${parentId}_t${tIdx}_b${bIdx}`,
+          label: b,
+          depth: baseDepth + 1,
+          siblingIndex: bIdx,
+          children: [],
+        })),
+      };
+    });
+  }
+
+  // 토픽 없이 번호만 있으면 flat 리스트
+  const flat = splitBullets(detail);
+  if (flat.length >= 2) {
+    return flat.map((b, i) => ({
+      id: `${parentId}_b${i}`,
+      label: b,
+      depth: baseDepth,
+      siblingIndex: i,
+      children: [],
+    }));
+  }
+
+  return [];
+}
+
+function splitBullets(text: string): string[] {
+  return text
+    .split(/[①②③④⑤⑥⑦⑧⑨⑩]\s*/)
+    .map((s) => s.replace(/[.。]\s*$/, "").trim())
+    .filter((s) => s.length > 0);
+}
+
+/* ── structured NoteNode → MindMapNode ── */
+
+function buildStructuredMap(
+  sections: StructuredSection[],
+): Map<string, NoteNode[]> {
   const map = new Map<string, NoteNode[]>();
   for (const sec of sections) {
     for (const note of sec.notes) {
@@ -50,26 +114,23 @@ function buildStructuredMap(sections: StructuredSection[]): Map<string, NoteNode
   return map;
 }
 
-/** NoteNode 재귀 트리 → MindMapNode 재귀 변환 */
 function noteNodesToMindMap(
   nodes: NoteNode[],
   parentId: string,
   depth: number,
 ): MindMapNode[] {
-  return nodes.map((node, i) => {
-    const id = `${parentId}_n${i}`;
-    const children = node.children
-      ? noteNodesToMindMap(node.children, id, depth + 1)
-      : [];
-    return {
-      id,
-      label: node.text,
-      depth,
-      siblingIndex: i,
-      children,
-    };
-  });
+  return nodes.map((node, i) => ({
+    id: `${parentId}_n${i}`,
+    label: node.text,
+    depth,
+    siblingIndex: i,
+    children: node.children
+      ? noteNodesToMindMap(node.children, `${parentId}_n${i}`, depth + 1)
+      : [],
+  }));
 }
+
+/* ── 메인 빌더 ── */
 
 export function buildMindMapTree(
   textbook: Textbook = ETHICS_TEXTBOOK,
@@ -77,9 +138,9 @@ export function buildMindMapTree(
 ): MindMapNode {
   const structuredMap = buildStructuredMap(structuredSections);
 
-  const root: MindMapNode = {
+  return {
     id: "root",
-    label: textbook.title.split("—")[0].trim(), // "생활과 윤리"
+    label: textbook.title.split("—")[0].trim(),
     depth: 0,
     siblingIndex: 0,
     children: textbook.chapters.map((ch, ci) => ({
@@ -87,40 +148,71 @@ export function buildMindMapTree(
       label: `${ch.number}. ${ch.title}`,
       depth: 1,
       siblingIndex: ci,
-      children: ch.sections.map((sec, si) => {
-        const sectionNode: MindMapNode = {
-          id: sec.id,
-          label: sec.title,
-          depth: 2,
-          siblingIndex: si,
-          children: sec.contents.map((content, cIdx) => {
-            // ch3 structured 데이터가 있으면 깊은 트리로 대체
-            const structuredNodes = structuredMap.get(content.id);
-            if (structuredNodes && structuredNodes.length > 0) {
-              return {
-                id: content.id,
-                label: content.label,
-                detail: content.detail,
-                depth: 3,
-                siblingIndex: cIdx,
-                children: noteNodesToMindMap(structuredNodes, content.id, 4),
-              };
-            }
-            // flat 데이터: leaf 노드 (detail만 보유)
+      children: ch.sections.map((sec, si) => ({
+        id: sec.id,
+        label: sec.title,
+        depth: 2,
+        siblingIndex: si,
+        children: sec.contents.map((content, cIdx) => {
+          // 1) ch3 structured 데이터가 있으면 그것 사용
+          const structuredNodes = structuredMap.get(content.id);
+          if (structuredNodes && structuredNodes.length > 0) {
             return {
               id: content.id,
               label: content.label,
               detail: content.detail,
               depth: 3,
               siblingIndex: cIdx,
-              children: [],
+              children: noteNodesToMindMap(structuredNodes, content.id, 4),
             };
-          }),
-        };
-        return sectionNode;
-      }),
+          }
+          // 2) detail 텍스트 자동 파싱 시도
+          const parsed = content.detail
+            ? parseDetailToTree(content.detail, content.id, 4)
+            : [];
+          return {
+            id: content.id,
+            label: content.label,
+            detail: parsed.length === 0 ? content.detail : undefined,
+            depth: 3,
+            siblingIndex: cIdx,
+            children: parsed,
+          };
+        }),
+      })),
     })),
   };
+}
 
-  return root;
+/* ── 트리 헬퍼 ── */
+
+export function findNode(
+  node: MindMapNode,
+  id: string,
+): MindMapNode | null {
+  if (node.id === id) return node;
+  for (const child of node.children) {
+    const found = findNode(child, id);
+    if (found) return found;
+  }
+  return null;
+}
+
+export function getAncestors(
+  root: MindMapNode,
+  targetId: string,
+): MindMapNode[] {
+  const path: MindMapNode[] = [];
+  function dfs(node: MindMapNode): boolean {
+    if (node.id === targetId) return true;
+    for (const child of node.children) {
+      if (dfs(child)) {
+        path.unshift(node);
+        return true;
+      }
+    }
+    return false;
+  }
+  dfs(root);
+  return path;
 }
