@@ -19,8 +19,8 @@ export default function MindMapPage() {
     <div className="h-screen bg-gradient-to-br from-[#0a0a1a] via-[#0f1628] to-[#0a0a1a] text-white flex flex-col overflow-hidden">
       {/* 헤더 */}
       <header className="border-b border-white/10 px-4 py-2.5 bg-[#0a0a1a]/90 backdrop-blur-xl z-30 flex-shrink-0">
-        <div className="max-w-[1800px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-[1800px] mx-auto flex flex-wrap items-center gap-2 sm:gap-4 justify-between">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link
               href="/dashboard"
               className="text-white/40 hover:text-white/70 text-sm transition-colors"
@@ -31,24 +31,24 @@ export default function MindMapPage() {
               <span className="text-amber-400">🧠</span>
               마인드 맵
             </h1>
-            {/* 교과목 탭 */}
-            <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5">
-              {SUBJECTS.map((s) => (
-                <button
-                  key={s.key}
-                  onClick={() => setSubject(s.key)}
-                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                    subject === s.key
-                      ? "bg-white/15 text-white shadow-sm"
-                      : "text-white/40 hover:text-white/70"
-                  }`}
-                >
-                  {s.icon} {s.label}
-                </button>
-              ))}
-            </div>
           </div>
-          <div className="text-white/30 text-xs">
+          {/* 교과목 탭 — 모바일에서 별도 줄 */}
+          <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5 order-last sm:order-none w-full sm:w-auto">
+            {SUBJECTS.map((s) => (
+              <button
+                key={s.key}
+                onClick={() => setSubject(s.key)}
+                className={`flex-1 sm:flex-none px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                  subject === s.key
+                    ? "bg-white/15 text-white shadow-sm"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+              >
+                {s.icon} {s.label}
+              </button>
+            ))}
+          </div>
+          <div className="text-white/30 text-xs hidden sm:block">
             클릭으로 확장 · 상단 경로로 이동
           </div>
         </div>

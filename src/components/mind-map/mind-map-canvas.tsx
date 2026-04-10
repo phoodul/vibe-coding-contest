@@ -87,7 +87,8 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
 
     const computedR = totalWithGaps / fanAngle;
     const maxR = Math.min(size.w * 0.42, size.h * 0.38);
-    const r = Math.max(180, Math.min(maxR, computedR));
+    const minR = Math.min(180, size.w * 0.22);
+    const r = Math.max(minR, Math.min(maxR, computedR));
 
     // 시작 각도
     const centerAngle = isRoot ? -Math.PI / 2 : outwardAngle!;
@@ -412,14 +413,14 @@ function ChildNode({
           boxShadow: `0 0 24px ${color.bg}50`,
         }}
         whileTap={{ scale: 0.95 }}
-        className="rounded-xl px-5 py-2.5 shadow-lg"
+        className="rounded-xl px-3 py-2 sm:px-5 sm:py-2.5 shadow-lg"
         style={{
           background: color.solid,
           border: `1.5px solid ${color.border}`,
         }}
       >
         <p
-          className="text-[15px] font-semibold whitespace-nowrap text-center"
+          className="text-[13px] sm:text-[15px] font-semibold whitespace-nowrap text-center"
           style={{ color: color.text }}
         >
           {node.label}
