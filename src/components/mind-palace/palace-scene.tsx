@@ -136,10 +136,11 @@ export function PalaceScene({
 
               {/* ── 파트 마커 (노드) + 텍스트 ── */}
               {obj.parts.map((part, pIdx) => {
-                const partOffsetX = getPartOffsetX(obj.parts.length, pIdx);
-                const partOffsetY = getPartOffsetY(obj.parts.length, pIdx);
+                const s = obj.scale ?? 1;
+                const partOffsetX = getPartOffsetX(obj.parts.length, pIdx) * s;
+                const partOffsetY = getPartOffsetY(obj.parts.length, pIdx) * s;
                 const kx = obj.x + partOffsetX;
-                const ky = obj.y + 70 + partOffsetY;
+                const ky = obj.y + 40 * s + 15 + partOffsetY;
 
                 const isThisPartSelected = selectedPartId === part.id;
                 const isNarratorActive = activeFlatIndex === part.flatIndex;
@@ -224,11 +225,11 @@ export function PalaceScene({
                       </foreignObject>
                     )}
 
-                    {/* 연결선: 오브젝트 → 텍스트 */}
+                    {/* 연결선: 오브젝트 중심 → 텍스트 박스 */}
                     {showText && (
                       <motion.line
-                        x1={obj.x + 30}
-                        y1={obj.y + 50}
+                        x1={obj.x}
+                        y1={obj.y}
                         x2={textX + TEXT_BOX_W / 2}
                         y2={textY + TEXT_BOX_H}
                         stroke="#f59e0b80"
@@ -246,8 +247,8 @@ export function PalaceScene({
               {/* hover 이름 표시 */}
               {isHovered && !isObjActive && (
                 <text
-                  x={obj.x + 30}
-                  y={obj.y - 12}
+                  x={obj.x}
+                  y={obj.y - 20 * (obj.scale ?? 1)}
                   textAnchor="middle"
                   fill="#ffffffaa"
                   fontSize="11"

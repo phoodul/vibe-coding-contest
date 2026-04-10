@@ -179,252 +179,84 @@ export default function LandingPage() {
     offset: ["start start", "end start"],
   });
 
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const titleScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.08]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
 
   return (
     <>
       <Header />
       <main className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* ─── Hero with Kinetic Typography ─── */}
+        {/* ─── Compact Hero ─── */}
         <motion.section
           ref={heroRef}
-          style={{ scale: heroScale, opacity: heroOpacity, y: heroY }}
-          className="relative min-h-screen flex flex-col items-center justify-center text-center pt-16 overflow-hidden"
+          style={{ opacity: heroOpacity }}
+          className="relative pt-24 sm:pt-32 pb-10 sm:pb-14 text-center overflow-hidden"
         >
-          {/* Dot grid background pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.15]"
-            style={{
-              backgroundImage: "radial-gradient(circle, rgba(99,102,241,0.4) 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-            }}
-          />
-
-          {/* Animated gradient orb - large centered glow */}
+          {/* Subtle gradient orb */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-            <motion.div
-              animate={{
-                scale: [1, 1.15, 1],
-                opacity: [0.3, 0.5, 0.3],
-              }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="w-[500px] h-[500px] sm:w-[700px] sm:h-[700px] rounded-full"
+            <div
+              className="w-[400px] h-[400px] rounded-full opacity-40"
               style={{
-                background: "radial-gradient(circle, rgba(99,102,241,0.25) 0%, rgba(139,92,246,0.15) 40%, rgba(6,182,212,0.08) 70%, transparent 100%)",
+                background: "radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.1) 40%, transparent 70%)",
                 filter: "blur(80px)",
               }}
             />
           </div>
 
-          {/* Secondary orbiting orb */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-            <motion.div
-              animate={{
-                scale: [1, 1.2, 1],
-                x: [0, 60, -40, 0],
-                y: [0, -40, 30, 0],
-              }}
-              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-              className="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full"
-              style={{
-                background: "radial-gradient(circle, rgba(6,182,212,0.2) 0%, rgba(139,92,246,0.1) 50%, transparent 100%)",
-                filter: "blur(60px)",
-              }}
-            />
-          </div>
-
-          {/* Badge */}
-          <motion.div
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative mb-6"
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="relative text-3xl sm:text-5xl md:text-6xl font-bold mb-4 leading-[1.15] tracking-tight"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium text-muted">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              학생과 교사를 위한 AI 교육 플랫폼
-            </span>
-          </motion.div>
-
-          {/* Kinetic Title */}
-          <motion.h1
-            style={{ scale: titleScale }}
-            className="relative text-4xl sm:text-6xl md:text-8xl font-bold mb-6 leading-[1.1] tracking-tight"
-          >
-            <motion.span
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="text-shimmer block"
-            >
-              교육에 편안함을,
-            </motion.span>
-            <motion.span
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.8,
-                delay: 0.15,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="block"
-            >
-              배움에 즐거움을
-            </motion.span>
+            <span className="text-shimmer">교육에 편안함을,</span>{" "}
+            <span>배움에 즐거움을</span>
           </motion.h1>
 
-          {/* Subtitle */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="relative text-base sm:text-lg md:text-xl text-muted max-w-2xl mx-auto mb-10 leading-relaxed"
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="relative text-sm sm:text-base text-muted max-w-xl mx-auto mb-6"
           >
-            학생에게는 소크라테스식 AI 튜터링과 진로 탐색을,
-            <br className="hidden sm:block" />
-            교사에게는 공문서 자동화와 생기부 작성 도우미를 제공합니다.
+            학생과 교사 모두를 위한 AI 교육 플랫폼 — 13개 도구를 무료로 사용하세요.
           </motion.p>
 
-          {/* CTA Buttons */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.55 }}
-            className="relative flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="relative flex flex-col sm:flex-row gap-3 justify-center"
           >
             <Link
               href="/signup"
-              className="btn-glow px-8 py-3.5 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:scale-105 active:scale-[0.97]"
+              className="btn-glow px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-all hover:scale-105 active:scale-[0.97]"
             >
               무료로 시작하기
             </Link>
             <Link
-              href="#features"
-              className="px-8 py-3.5 rounded-xl glass text-foreground font-medium hover:bg-card-hover transition-all active:scale-[0.97]"
+              href="/dashboard"
+              className="px-6 py-2.5 rounded-xl glass text-foreground text-sm font-medium hover:bg-card-hover transition-all active:scale-[0.97]"
             >
-              기능 살펴보기
+              바로 체험하기
             </Link>
           </motion.div>
-
-          {/* Scroll Indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center p-1"
-            >
-              <div className="w-1 h-2 rounded-full bg-white/40" />
-            </motion.div>
-          </motion.div>
         </motion.section>
 
-        {/* ─── Stats Counter ─── */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-          className="py-20 sm:py-32"
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.5,
-                  delay: i * 0.1,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="text-center"
-              >
-                <p className="text-3xl sm:text-5xl font-bold text-shimmer">
-                  {stat.value}
-                </p>
-                <p className="text-sm sm:text-base text-muted mt-2">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* ─── Powered By — Trust Indicators ─── */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8 }}
-          className="pb-20 sm:pb-28"
-        >
-          <p className="text-center text-xs uppercase tracking-[0.2em] text-muted/60 mb-8">
-            Powered by
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-white/30">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              className="transition-colors hover:text-white/50"
-            >
-              <ClaudeLogo />
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              className="transition-colors hover:text-white/50"
-            >
-              <NextjsLogo />
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              className="transition-colors hover:text-white/50"
-            >
-              <SupabaseLogo />
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              className="transition-colors hover:text-white/50"
-            >
-              <VercelLogo />
-            </motion.div>
-          </div>
-        </motion.section>
-
-        {/* ─── Features — Bento Grid ─── */}
+        {/* ─── Features — Immediate Access ─── */}
         <motion.section
           id="features"
           variants={stagger}
           initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: "-80px" }}
-          className="pb-20 sm:pb-32"
+          animate="show"
+          className="pb-16 sm:pb-24"
         >
-          <motion.div variants={fadeUp} className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-bold mb-5">
-              모든 교육을{" "}
-              <span className="text-shimmer">하나의 플랫폼</span>에서
-            </h2>
-            <p className="text-muted text-base sm:text-lg max-w-lg mx-auto">
-              학생과 교사 모두를 위한 AI 기반 교육 도구
-            </p>
-          </motion.div>
-
           {/* 학생용 */}
           <motion.div variants={fadeUp} className="flex items-center gap-3 mb-4">
-            <span className="text-xs uppercase tracking-[0.15em] text-muted/60 shrink-0">학생용</span>
+            <span className="text-xs uppercase tracking-[0.15em] text-muted/60 shrink-0">학생 도구</span>
             <div className="flex-1 h-px bg-white/5" />
+            <span className="text-[10px] text-muted/40">{studentFeatures.length}개</span>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
             {studentFeatures.map((f, i) => (
               <motion.div key={f.title} variants={fadeUp}>
                 <Link href={f.href}>
@@ -438,21 +270,25 @@ export default function LandingPage() {
                         background: `linear-gradient(90deg, transparent, ${featureAccents[i]}, transparent)`,
                       }}
                     />
-                    <span className="relative text-5xl mb-5 block transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
-                      <span
-                        className="absolute inset-0 rounded-full opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-xl"
-                        style={{ background: featureAccents[i] }}
-                      />
-                      <span className="relative">{f.icon}</span>
-                    </span>
-                    <h3 className="text-xl font-semibold mb-2 transition-colors duration-300">
-                      <span className="group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300" style={{ backgroundImage: `linear-gradient(135deg, ${featureAccents[i]}, ${featureAccents[(i + 1) % featureAccents.length]})` }}>
-                        {f.title}
+                    <div className="flex items-start gap-3">
+                      <span className="relative text-3xl shrink-0 transition-transform duration-300 group-hover:scale-110">
+                        <span
+                          className="absolute inset-0 rounded-full opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-lg"
+                          style={{ background: featureAccents[i] }}
+                        />
+                        <span className="relative">{f.icon}</span>
                       </span>
-                    </h3>
-                    <p className="text-muted text-sm leading-relaxed">
-                      {f.description}
-                    </p>
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-semibold mb-0.5 transition-colors duration-300">
+                          <span className="group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300" style={{ backgroundImage: `linear-gradient(135deg, ${featureAccents[i]}, ${featureAccents[(i + 1) % featureAccents.length]})` }}>
+                            {f.title}
+                          </span>
+                        </h3>
+                        <p className="text-muted text-xs leading-relaxed">
+                          {f.description}
+                        </p>
+                      </div>
+                    </div>
                   </GlassCard>
                 </Link>
               </motion.div>
@@ -461,10 +297,11 @@ export default function LandingPage() {
 
           {/* 교사용 */}
           <motion.div variants={fadeUp} className="flex items-center gap-3 mb-4">
-            <span className="text-xs uppercase tracking-[0.15em] text-muted/60 shrink-0">교사용</span>
+            <span className="text-xs uppercase tracking-[0.15em] text-muted/60 shrink-0">교사 도구</span>
             <div className="flex-1 h-px bg-white/5" />
+            <span className="text-[10px] text-muted/40">{teacherFeatures.length}개</span>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {teacherFeatures.map((f, i) => {
               const ai = i + studentFeatures.length;
               return (
@@ -480,21 +317,25 @@ export default function LandingPage() {
                           background: `linear-gradient(90deg, transparent, ${featureAccents[ai]}, transparent)`,
                         }}
                       />
-                      <span className="relative text-5xl mb-5 block transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1">
-                        <span
-                          className="absolute inset-0 rounded-full opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-xl"
-                          style={{ background: featureAccents[ai] }}
-                        />
-                        <span className="relative">{f.icon}</span>
-                      </span>
-                      <h3 className="text-xl font-semibold mb-2 transition-colors duration-300">
-                        <span className="group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300" style={{ backgroundImage: `linear-gradient(135deg, ${featureAccents[ai]}, ${featureAccents[(ai + 1) % featureAccents.length]})` }}>
-                          {f.title}
+                      <div className="flex items-start gap-3">
+                        <span className="relative text-3xl shrink-0 transition-transform duration-300 group-hover:scale-110">
+                          <span
+                            className="absolute inset-0 rounded-full opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-lg"
+                            style={{ background: featureAccents[ai] }}
+                          />
+                          <span className="relative">{f.icon}</span>
                         </span>
-                      </h3>
-                      <p className="text-muted text-sm leading-relaxed">
-                        {f.description}
-                      </p>
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-semibold mb-0.5 transition-colors duration-300">
+                            <span className="group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300" style={{ backgroundImage: `linear-gradient(135deg, ${featureAccents[ai]}, ${featureAccents[(ai + 1) % featureAccents.length]})` }}>
+                              {f.title}
+                            </span>
+                          </h3>
+                          <p className="text-muted text-xs leading-relaxed">
+                            {f.description}
+                          </p>
+                        </div>
+                      </div>
                     </GlassCard>
                   </Link>
                 </motion.div>
@@ -509,59 +350,45 @@ export default function LandingPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="py-20 sm:py-32"
+          className="py-16 sm:py-24"
         >
-          <h2 className="text-2xl sm:text-5xl font-bold text-center mb-12">
+          <h2 className="text-2xl sm:text-4xl font-bold text-center mb-8">
             지금 바로 시작하세요
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* 학생 CTA */}
-            <div className="glass-gradient p-8 sm:p-12 relative overflow-hidden text-center">
+            <div className="glass-gradient p-6 sm:p-8 relative overflow-hidden text-center">
               <div
                 className="absolute top-0 left-0 right-0 h-[2px]"
                 style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, transparent)" }}
               />
-              <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
-                style={{
-                  background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)",
-                  filter: "blur(60px)",
-                }}
-              />
-              <span className="relative text-5xl block mb-5">🎓</span>
-              <h3 className="relative text-xl sm:text-2xl font-bold mb-3">학생이신가요?</h3>
-              <p className="relative text-muted text-sm sm:text-base mb-8 max-w-sm mx-auto">
-                소크라테스 AI 튜터, 기억의 궁전, 영어 회화까지 — 공부가 즐거워집니다.
+              <span className="relative text-4xl block mb-3">🎓</span>
+              <h3 className="relative text-lg font-bold mb-2">학생이신가요?</h3>
+              <p className="relative text-muted text-xs sm:text-sm mb-5 max-w-xs mx-auto">
+                AI 튜터, 기억의 궁전, 진로 탐색까지 — 공부가 즐거워집니다.
               </p>
               <Link
                 href="/signup"
-                className="btn-glow relative inline-block px-8 py-3.5 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:scale-105 active:scale-[0.97]"
+                className="btn-glow relative inline-block px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-all hover:scale-105 active:scale-[0.97]"
               >
                 무료로 시작하기
               </Link>
             </div>
 
             {/* 교사 CTA */}
-            <div className="glass-gradient p-8 sm:p-12 relative overflow-hidden text-center">
+            <div className="glass-gradient p-6 sm:p-8 relative overflow-hidden text-center">
               <div
                 className="absolute top-0 left-0 right-0 h-[2px]"
                 style={{ background: "linear-gradient(90deg, transparent, #f97316, transparent)" }}
               />
-              <div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full pointer-events-none"
-                style={{
-                  background: "radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%)",
-                  filter: "blur(60px)",
-                }}
-              />
-              <span className="relative text-5xl block mb-5">📝</span>
-              <h3 className="relative text-xl sm:text-2xl font-bold mb-3">교사이신가요?</h3>
-              <p className="relative text-muted text-sm sm:text-base mb-8 max-w-sm mx-auto">
-                공문서 자동 교정, 세특 바이트 계산, 금지어 감지 — 업무 시간을 돌려드립니다.
+              <span className="relative text-4xl block mb-3">📝</span>
+              <h3 className="relative text-lg font-bold mb-2">교사이신가요?</h3>
+              <p className="relative text-muted text-xs sm:text-sm mb-5 max-w-xs mx-auto">
+                공문서 자동 교정, 세특 도우미 — 업무 시간을 돌려드립니다.
               </p>
               <Link
                 href="/signup"
-                className="btn-glow relative inline-block px-8 py-3.5 rounded-xl bg-primary text-primary-foreground font-medium transition-all hover:scale-105 active:scale-[0.97]"
+                className="btn-glow relative inline-block px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-all hover:scale-105 active:scale-[0.97]"
               >
                 교사로 시작하기
               </Link>
@@ -569,8 +396,52 @@ export default function LandingPage() {
           </div>
         </motion.section>
 
-        {/* Spacer */}
-        <div className="h-16" />
+        {/* ─── Stats + Trust — Bottom ─── */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.8 }}
+          className="pb-16 sm:pb-24"
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-12">
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="text-center"
+              >
+                <p className="text-2xl sm:text-4xl font-bold text-shimmer">
+                  {stat.value}
+                </p>
+                <p className="text-xs sm:text-sm text-muted mt-1">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <p className="text-center text-xs uppercase tracking-[0.2em] text-muted/60 mb-6">
+            Powered by
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-white/30">
+            <motion.div whileHover={{ scale: 1.05 }} className="transition-colors hover:text-white/50">
+              <ClaudeLogo />
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} className="transition-colors hover:text-white/50">
+              <NextjsLogo />
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} className="transition-colors hover:text-white/50">
+              <SupabaseLogo />
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} className="transition-colors hover:text-white/50">
+              <VercelLogo />
+            </motion.div>
+          </div>
+        </motion.section>
+
+        <div className="h-8" />
       </main>
     </>
   );

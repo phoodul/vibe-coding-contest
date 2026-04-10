@@ -874,16 +874,21 @@ export function expandToSinglePartObjects(compact: RoomSceneConfig): RoomSceneCo
     if (!zone) continue;
 
     const count = entries.length;
-    const cols = Math.ceil(Math.sqrt(count * (zone.w / zone.h)));
+    // 오브젝트 시각 영역(scale 0.5 기준 ~36x30)에 대한 패딩
+    const PAD_X = 24;
+    const PAD_Y = 20;
+    const innerW = zone.w - 2 * PAD_X;
+    const innerH = zone.h - 2 * PAD_Y;
+    const cols = Math.ceil(Math.sqrt(count * (innerW / innerH)));
     const rows = Math.ceil(count / cols);
-    const cellW = zone.w / cols;
-    const cellH = zone.h / rows;
+    const cellW = innerW / cols;
+    const cellH = innerH / rows;
 
     entries.forEach((entry, idx) => {
       const col = idx % cols;
       const row = Math.floor(idx / cols);
-      const x = Math.round(zone.x + cellW * col + cellW / 2);
-      const y = Math.round(zone.y + cellH * row + cellH / 2);
+      const x = Math.round(zone.x + PAD_X + cellW * col + cellW / 2);
+      const y = Math.round(zone.y + PAD_Y + cellH * row + cellH / 2);
       const type = entry.isFirst ? entry.parentType : ALT_TYPES[altIdx++ % ALT_TYPES.length];
 
       expanded.push({

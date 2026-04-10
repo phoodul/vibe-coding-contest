@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ETHICS_STRUCTURED_CH3 } from "@/lib/data/textbooks/structured/ethics-structured-ch3";
 import { ETHICS_BUILDING } from "@/lib/mind-palace/building-config";
@@ -39,6 +39,7 @@ export default function MindPalacePage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [fullscreenScene, setFullscreenScene] = useState(false);
   const [activeRoomId, setActiveRoomId] = useState<string | null>("301");
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // ── 나레이터 ──
   const [voice, setVoiceState] = useState("nova");
@@ -83,6 +84,25 @@ export default function MindPalacePage() {
       return { ...prev, [objId]: "scene" };
     });
   }, [sceneConfig]);
+
+  // ── 브라우저 전체화면 API ──
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  }, []);
+
+  useEffect(() => {
+    const handler = () => {
+      const isFs = !!document.fullscreenElement;
+      setFullscreenScene(isFs);
+      if (isFs) setSidebarCollapsed(true);
+    };
+    document.addEventListener("fullscreenchange", handler);
+    return () => document.removeEventListener("fullscreenchange", handler);
+  }, []);
 
   // ── 키보드 이벤트 (복습 모드 방향키) ──
   useEffect(() => {
@@ -180,7 +200,7 @@ export default function MindPalacePage() {
       : 0;
 
   return (
-    <div className="h-screen bg-gradient-to-br from-[#0a0a1a] via-[#0f1628] to-[#0a0a1a] text-white flex flex-col overflow-hidden">
+    <div ref={containerRef} className="h-screen bg-gradient-to-br from-[#0a0a1a] via-[#0f1628] to-[#0a0a1a] text-white flex flex-col overflow-hidden">
       {/* ── 헤더 ── */}
       <header className="border-b border-white/10 px-4 py-2.5 bg-[#0a0a1a]/90 backdrop-blur-xl z-30 flex-shrink-0">
         <div className="max-w-[1800px] mx-auto flex items-center justify-between">
@@ -219,18 +239,15 @@ export default function MindPalacePage() {
             </span>
 
             <button
-              onClick={() => {
-                setFullscreenScene((f) => !f);
-                setSidebarCollapsed(true);
-              }}
+              onClick={toggleFullscreen}
               className={`px-3 py-1.5 text-sm font-bold rounded-lg border transition-all ${
                 fullscreenScene
                   ? "bg-amber-500/30 text-amber-200 border-amber-400/40 shadow-lg shadow-amber-500/10"
                   : "bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border-white/10"
               }`}
-              title={fullscreenScene ? "사이드바 복원" : "전체보기 (사이드바 숨김)"}
+              title={fullscreenScene ? "전체화면 종료 (Esc)" : "전체보기"}
             >
-              {fullscreenScene ? "◧ 사이드바 복원" : "⛶ 전체보기"}
+              {fullscreenScene ? "✕ 전체화면 종료" : "⛶ 전체보기"}
             </button>
           </div>
 
