@@ -1,8 +1,8 @@
 # Claude Code
 .claude/
 
-# Docs
-docs/
+# User local docs (not tracked)
+user_docs/
 
 # Logs
 logs
@@ -177,3 +177,4 @@ claude_history/
 .supabase/
 supabase/.temp/
 supabase/migrations/.empty
+.vercel

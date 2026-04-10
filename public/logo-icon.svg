@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a103a"/>
+      <stop offset="100%" stop-color="#0f1628"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+
+  <!-- Open book -->
+  <path d="M128,175 Q95,168 60,155 L60,100 Q95,112 128,118 Z" fill="#2a2050" stroke="#A78BFA" stroke-width="1.5" opacity="0.9"/>
+  <path d="M128,175 Q161,168 196,155 L196,100 Q161,112 128,118 Z" fill="#2a2050" stroke="#A78BFA" stroke-width="1.5" opacity="0.9"/>
+  <line x1="128" y1="118" x2="128" y2="175" stroke="#A78BFA" stroke-width="2" opacity="0.6"/>
+
+  <!-- AI neural nodes -->
+  <circle cx="128" cy="72" r="12" fill="url(#accent)" opacity="0.9"/>
+  <circle cx="128" cy="72" r="6" fill="#1a103a"/>
+  <circle cx="128" cy="72" r="3" fill="#F59E0B"/>
+
+  <circle cx="90" cy="52" r="7" fill="url(#glow)" opacity="0.7"/>
+  <circle cx="90" cy="52" r="3" fill="#1a103a"/>
+  <circle cx="166" cy="52" r="7" fill="url(#glow)" opacity="0.7"/>
+  <circle cx="166" cy="52" r="3" fill="#1a103a"/>
+
+  <circle cx="72" cy="85" r="5" fill="url(#glow)" opacity="0.5"/>
+  <circle cx="72" cy="85" r="2" fill="#1a103a"/>
+  <circle cx="184" cy="85" r="5" fill="url(#glow)" opacity="0.5"/>
+  <circle cx="184" cy="85" r="2" fill="#1a103a"/>
+
+  <!-- Connections -->
+  <line x1="120" y1="64" x2="97" y2="55" stroke="#A78BFA" stroke-width="1.5" opacity="0.4"/>
+  <line x1="136" y1="64" x2="159" y2="55" stroke="#A78BFA" stroke-width="1.5" opacity="0.4"/>
+  <line x1="86" y1="58" x2="76" y2="80" stroke="#A78BFA" stroke-width="1" opacity="0.3"/>
+  <line x1="170" y1="58" x2="180" y2="80" stroke="#A78BFA" stroke-width="1" opacity="0.3"/>
+
+  <!-- Flow lines book → brain -->
+  <path d="M115,118 Q118,95 124,82" fill="none" stroke="#F59E0B" stroke-width="1.5" opacity="0.3" stroke-dasharray="3 2"/>
+  <path d="M141,118 Q138,95 132,82" fill="none" stroke="#F59E0B" stroke-width="1.5" opacity="0.3" stroke-dasharray="3 2"/>
+
+  <!-- Text -->
+  <text x="128" y="212" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="28" fill="white" letter-spacing="1">EduFlow</text>
+  <text x="128" y="236" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="300" font-size="18" fill="url(#accent)" letter-spacing="4">AI</text>
+</svg>

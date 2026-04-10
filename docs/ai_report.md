@@ -1,0 +1,182 @@
+# AI report format
+
+- 팀명: 정성수
+- 휴대폰 번호: (나중에 사용자가 작성)
+- 프로젝트명: EduAgent Building
+
+## 1. 기획
+
+- 설정한 사용자는 누구이며, 해결하려는 구체적인 문제점/불편함은 무엇인가요?
+
+**대상 사용자**: 중고등학교 학생과 교사
+
+**학생 측 문제점**:
+1. 개인화된 학습 도구의 부재 — 모든 학생이 같은 방식으로 공부하지만, 개인별 수준과 관심사에 맞는 AI 학습 경험이 없음
+2. 영어 회화 연습 기회 부족 — 원어민 대화 연습은 비용이 높고 접근성이 떨어짐. 특히 말하기(Speaking) 연습을 할 수 있는 디지털 도구가 없음
+3. 진로 탐색의 한계 — 학교 진로 상담은 제한된 시간에 진행되며, 5,000개 이상의 직업군 중 학생 성향에 맞는 직업을 체계적으로 탐색하기 어려움
+4. 단어 학습의 지루함 — 기존 단어 암기 앱은 단순 반복 방식으로, 장기 기억 형성에 효과적이지 않음
+
+**교사 측 문제점**:
+1. 공문서 작성의 비효율 — K-에듀파인 양식 규격(항목 기호 순서, 날짜/시간/금액 표기법 등)을 수작업으로 맞추는 데 많은 시간 소요
+2. 공문서 발급 절차의 수동 관리 — 업로드, 승인, 번호 발급, 위변조 검증까지의 워크플로우가 체계적으로 디지털화되어 있지 않음
+
+- 문제를 해결하기 위한 솔루션의 핵심 기능은 무엇인가요?
+
+EduFlow AI는 학생과 교사를 위한 6개 핵심 AI 기능을 제공합니다:
+
+**학생용 (4개)**:
+1. **소크라테스 AI 튜터** (`/tutor`) — 교과목(생활과 윤리, 생명과학I, 언어와 매체)을 선택하면 AI가 소크라틱 방식으로 질문을 던져 학습을 이끄는 대화형 학습. 학습 요약 정리와 Markdown 학습 노트 다운로드 기능 포함
+2. **AI 영어 회화** (`/conversation`) — 레벨 테스트(10문항 퀴즈) 후 수준별 시나리오 기반 음성 영어 대화. Push-to-Talk(스페이스바) 방식의 STT + OpenAI TTS 음성 출력 + 대화 종료 후 AI 리포트(강점, 개선점, 표현 교정, 신규 어휘)
+3. **진로 시뮬레이터** (`/career`) — MBTI, 관심분야, 적성, 학업 성적 등 12개 항목 입력 후 AI가 5,000+ 직업에서 15~20개 맞춤 추천. 진로 경로(현재 → 과목 선택 → 전공 → 직업) 제시
+4. **AI 도서 추천** (`/books`) — 학년, 희망 학과, 진로 목표 입력 후 AI가 10~15권 맞춤 도서를 난이도순으로 큐레이션
+
+**교사용 (2개 + 영어 단어 학습)**:
+5. **공문서 포맷터** (`/teacher/formatter`) — 파일 업로드(드래그 앤 드롭) 또는 텍스트 붙여넣기 후 K-에듀파인 양식 규칙 위반을 자동 탐지하고 원클릭 교정. 정규식 기반 로컬 분석으로 실시간 처리
+6. **공문서 발급 시스템** (`/teacher/generator`, `/teacher/documents`) — 문서 업로드 → 승인 → 공문번호 자동 발급 → SHA-256 해시 기반 위변조 검증까지의 전체 워크플로우
+
+**공통**:
+7. **에베레스트 단어 학습** (`/vocabulary`) — 18,000개 영어 단어를 10단계 레벨로 분류, 그룹 학습 + 4지선다 퀴즈 + 에베레스트 등반 시각화로 학습 진행도를 직관적으로 표현
+
+- 이 솔루션이 도입되었을 때 기대되는 개선점이 무엇인가요?
+
+1. **학생 학습 효율 향상** — 소크라틱 방식의 AI 튜터는 단순 암기가 아닌 사고력 기반 학습을 유도하여, 학생이 스스로 개념을 발견하고 장기 기억으로 연결할 수 있음
+2. **영어 말하기 연습 접근성 확대** — 시간/장소 제약 없이 수준별 AI 영어 회화가 가능하며, 대화 후 AI가 문법 교정, 더 나은 표현, 신규 어휘를 정리해주어 자기주도 학습이 가능
+3. **진로 탐색 범위 확대** — 전통적 진로 상담에서 다루기 어려운 신직업, 융합 직업까지 AI가 학생 성향에 기반해 추천하고 구체적 진로 경로를 제시
+4. **교사 행정 업무 시간 절감** — 공문서 양식 교정이 수작업에서 원클릭으로 전환되며, 발급 번호 관리와 위변조 검증이 자동화
+5. **단어 학습 동기 부여** — 에베레스트 등반이라는 시각적 메타포를 통해 18,000개 단어 학습의 진행 상황을 직관적으로 확인하여 학습 동기 지속
+
+## 2. AI 할용 전략
+
+- 이 프로젝트에서 사용할 AI 도구(Claude Code, Cursor, Codex 등)와 모델은 무엇이며, 선택한 이유는 무엇인가요?
+
+**개발 도구**: Claude Code CLI (claude-opus-4-6, 1M context window)
+
+선택 이유:
+1. **1M 토큰 컨텍스트** — 프로젝트 전체 코드베이스(15개 페이지, 8개 API, 수십 개 컴포넌트)를 한 번에 파악하고 수정할 수 있어, 파일 간 정합성을 유지하면서 작업 가능
+2. **CLI 기반 워크플로우** — 에이전트(`.claude/agents/`)와 스킬(`.claude/skills/`)을 파일 시스템에 정의하여, 역할별로 도구 제한과 행동 규칙을 설정할 수 있음. GUI IDE에서는 불가능한 수준의 AI 워크플로우 커스터마이징
+3. **Hooks 시스템** — PreToolUse, PostToolUse, Stop 4개 hooks로 보안 가드, 환경변수 보호, 자동 린트, 빌드 체크를 자동화
+4. **MCP 서버 연동** — Supabase, Playwright, Context7, Vercel 등 6개 MCP 서버와 직접 연동하여 DB 마이그레이션, 브라우저 테스트, 문서 조회, 배포를 CLI 안에서 수행
+
+**프로덕트 AI 모델** (Vercel AI SDK + @ai-sdk/anthropic 사용):
+| 용도 | 모델 | 선택 이유 |
+|------|------|-----------|
+| 소크라테스 AI 튜터 | `claude-sonnet-4-20250514` | 교육적 대화에 필요한 깊은 추론 능력과 한국어 품질 |
+| AI 영어 회화 (대화) | `claude-haiku-4-5-20251001` | 2~3문장 짧은 응답에 최적, 응답 속도 3~5배 빠름 (실시간 회화에 필수) |
+| AI 영어 회화 (리포트) | `claude-sonnet-4-20250514` | 대화 전체를 분석해 강점/개선점/교정을 정리하는 깊은 분석 필요 |
+| 진로 시뮬레이터 | `claude-sonnet-4-20250514` | 12개 입력 항목을 종합 분석하여 15~20개 직업 추천 + 진로 경로 생성 |
+| AI 도서 추천 | `claude-sonnet-4-20250514` | 학년/전공/진로를 고려한 맞춤 도서 큐레이션 |
+| 공문서 생성 | `claude-sonnet-4-20250514` | K-에듀파인 공문서 양식(두문-본문-결문) 규격에 맞는 텍스트 생성 |
+| 공문서 양식 검사 | `claude-sonnet-4-20250514` | 양식 규칙 위반 탐지 및 교정안 제시 |
+| TTS (음성 합성) | OpenAI `gpt-4o-mini-tts` | 영어 회화 AI 음성 출력용, 자연스러운 영어 발음과 감정 표현 |
+
+- 각 AI 도구별 활용 전략을 작성해주세요. (도구/모델별 페르소나와 핵심 전략, 제약 사항, 에이전트 구성 방식, 데이터 흐름 등 자유롭게 AI활용 기법을 작성)
+
+### (1) Claude Code CLI — 개발 에이전트 시스템
+
+**7개 서브 에이전트 구성** (`.claude/agents/`):
+
+| 에이전트 | 역할 | 도구 제한 |
+|----------|------|-----------|
+| **Architect** | PRD 작성, DB 스키마/API 설계, implementation_plan.md 작성 | Read, Write, Edit, Glob, Grep, Context7, Sequential Thinking (Bash 사용 불가) |
+| **Designer** | UI/UX 피드백, 디자인 토큰 관리, Vibe Score 평가 | Read, Write, Edit, Glob, Grep, Playwright (스크린샷/스냅샷) |
+| **Implementer** | implementation_plan.md에 따라 코드 구현 | 전체 도구 사용 가능 |
+| **Researcher** | 기술 문서 조사, 최신 트렌드 분석 | WebSearch, WebFetch, Read, Glob, Grep, Context7 (코드 작성 불가) |
+| **Reviewer** | 코드 리뷰, 보안 점검, 빌드 테스트 | Read, Glob, Grep, Bash, Playwright (코드 수정 불가) |
+| **Debugger** | 빌드/런타임 에러 탐지 및 자동 수정 | Read, Edit, Write, Glob, Grep, Bash, Playwright |
+| **Reporter** | AI 빌딩 리포트 자동 생성 | Read, Write, Edit, Glob, Grep, Bash |
+
+핵심 설계 원칙:
+- **역할 분리(Separation of Concerns)**: 각 에이전트가 자기 역할에만 집중하도록 도구 접근을 제한. Architect는 Bash 사용 불가(설계만 담당), Researcher는 코드 작성 불가(조사만 담당), Reviewer는 코드 수정 불가(보고만 담당)
+- **순서 강제**: Architect → Implementer → Reviewer → Debugger 순으로 작업이 흘러가도록, 각 에이전트의 프롬프트에 선행 산출물(implementation_plan.md 등)을 읽도록 명시
+
+**6개 스킬 구성** (`.claude/skills/`):
+
+| 스킬 | 용도 |
+|------|------|
+| `nextjs-dev` | Next.js 15 App Router + Shadcn/ui + Supabase + Vercel AI SDK 개발 패턴 |
+| `modern-glass-bento` | 벤토 그리드 + 글래스모피즘 디자인 시스템 (Layer-Depth-Rhythm 원칙) |
+| `code-review` | 심각도별(Critical/Warning/Suggestion/Nitpick) 코드 리뷰 체크리스트 |
+| `git-workflow` | Conventional Commits 형식 + GitHub Flow 브랜치 전략 |
+| `web-testing` | Playwright E2E + Vitest 단위 테스트 + Supabase 모킹 패턴 |
+| `explain-code` | 비유 → 다이어그램 → 단계별 워크스루 → 주의점 순서로 코드 설명 |
+
+**4개 Hooks** (`.claude/settings.local.json`):
+
+| 타이밍 | Hook | 기능 |
+|--------|------|------|
+| PreToolUse (Bash) | `security-guard.sh` | 위험 명령어(rm -rf, env 노출 등) 차단 |
+| PreToolUse (Edit/Write) | `env-guard.sh` | .env 파일 직접 수정 방지 |
+| PostToolUse (Edit/Write) | `post-edit-lint.sh` | 코드 수정 후 자동 TypeScript 타입 체크 |
+| Stop | `stop-build-check.sh` | 작업 종료 시 자동 빌드 검증 |
+
+**6개 MCP 서버 연동**:
+- **Supabase MCP** — DB 마이그레이션, SQL 실행, 테이블 관리를 CLI에서 직접 수행
+- **Playwright MCP** — 브라우저 네비게이션, 스크린샷, 스냅샷, 클릭 등 E2E 테스트
+- **Context7 MCP** — Next.js, Vercel AI SDK 등 라이브러리 최신 문서 실시간 조회
+- **Vercel MCP** — 배포 상태 확인, 빌드 로그, 런타임 로그 조회
+- **Sequential Thinking MCP** — 복잡한 설계 문제를 단계적으로 사고
+- **Firebase MCP** — 추가 인프라 옵션
+
+### (2) 프로덕트 AI — Vercel AI SDK 스트리밍 아키텍처
+
+**데이터 흐름**:
+```
+클라이언트 (useChat/useCompletion)
+    │ POST /api/{feature}
+    ▼
+Next.js API Route (route.ts)
+    │ streamText({ model, system, messages })
+    ▼
+Vercel AI SDK → Anthropic API
+    │ SSE 스트리밍 응답
+    ▼
+클라이언트 실시간 렌더링
+```
+
+- 모든 AI API 엔드포인트(8개)에서 `streamText`를 사용하여 스트리밍 응답을 구현. 사용자는 AI 응답이 한 글자씩 나타나는 것을 실시간으로 확인
+- 각 API Route에 `system` 프롬프트로 역할과 규칙을 정의 (예: 소크라테스 튜터는 Guided Learning 방식, 영어 회화는 수준별 시나리오)
+- 영어 회화는 대화용으로 빠른 Haiku 모델, 리포트용으로 정확한 Sonnet 모델을 분리 사용하여 응답 속도와 분석 품질을 동시에 최적화
+
+### (3) 모델별 세부 전략
+
+**소크라테스 AI 튜터** (`/api/tutor`):
+- 페르소나: 소크라틱 방식의 교사. 답을 직접 알려주지 않고 질문으로 학생의 사고를 이끔
+- 시스템 프롬프트에 교과목, 단원, 핵심 개념 목록을 동적으로 주입 (`SUBJECTS` 데이터에서 추출)
+- "혹시 ~에 대해서도 생각해볼 수 있지 않을까요?" 식의 부드러운 유도 전략
+- 요약 정리와 학습 노트 생성 시 동일 API를 재활용하여 `[SYSTEM:]` 태그로 모드 전환
+
+**AI 영어 회화** (`/api/conversation` + `/api/tts`):
+- 대화 모드: Haiku 모델 + 시나리오별 프롬프트 (카페 주문, 공항, 면접 등)
+- 리포트 모드: Sonnet 모델 + 대화 전문을 입력하여 강점/개선점/교정/어휘 분석
+- 음성 흐름: 사용자 스페이스바(Push-to-Talk) → Web Speech API STT → AI 텍스트 응답 → OpenAI gpt-4o-mini-tts → 오디오 재생
+- 에코 방지: AI 발화 중 마이크 자동 중지 → 발화 완료 후 자동 재개
+
+- 토큰 낭비를 최소화하고 유지보수성 및 재현성을 높이기 위한 전략이 있다면 작성해주세요.
+
+1. **에이전트/스킬 분리를 통한 컨텍스트 절약** — 7개 에이전트에 각각 역할에 맞는 도구만 허용하여, 불필요한 코드 탐색이나 시행착오를 방지. 예를 들어 Researcher는 코드를 작성할 수 없으므로 리서치에만 토큰을 소비
+2. **스킬 파일(.claude/skills/)로 반복 프롬프트 제거** — 글래스모피즘 CSS 레시피, Next.js 개발 패턴, 테스트 패턴 등을 스킬 파일에 사전 정의하여, 매번 디자인 규칙이나 코드 패턴을 설명하는 토큰 낭비를 제거
+3. **Hooks로 자동화** — 코드 수정 후 자동 린트(post-edit-lint), 작업 종료 시 자동 빌드 체크(stop-build-check)를 hooks로 실행하여, AI가 "빌드 확인해볼까요?"라는 추가 대화 없이 자동으로 품질 검증
+4. **모델 분리 전략** — 영어 회화 대화에는 빠르고 저렴한 Haiku 모델, 리포트 분석에는 정확한 Sonnet 모델을 분리 사용하여 비용 대비 품질 최적화
+5. **implementation_plan.md 기반 작업 흐름** — 구현 전 항상 설계 문서를 먼저 작성하고 승인받은 후 코드를 작성하는 방식으로, 잘못된 방향으로의 구현 후 재작업(토큰 낭비)을 최소화
+6. **Memory 시스템** (`.claude/projects/*/memory/MEMORY.md`) — 프로젝트 컨텍스트(기술 스택, 진행 상황, 사용자 선호 등)를 메모리 파일로 유지하여, 새 대화 세션에서도 프로젝트 상태를 즉시 파악
+7. **CLAUDE.md 프로젝트 규칙** — "Simplicity First(최소 코드)", "Surgical Changes(최소 변경)" 등의 행동 규칙을 CLAUDE.md에 명시하여, AI가 불필요한 코드를 생성하거나 관련 없는 코드를 수정하는 것을 방지
+
+### 재현성 확보
+
+- 프로젝트의 모든 AI 설정 파일(에이전트 7개, 스킬 6개, hooks 4개, CLAUDE.md)이 Git으로 추적되어, 동일한 환경을 재현 가능
+- 각 API Route의 시스템 프롬프트가 코드에 명시되어 있어, AI 동작이 코드 수준에서 추적 가능
+- 총 91개 커밋이 Conventional Commits 형식으로 기록되어, 프로젝트의 발전 과정을 추적 가능
+
+### 정량 데이터 요약
+
+| 항목 | 수치 |
+|------|------|
+| 총 커밋 수 | 91개 |
+| 페이지(라우트) 수 | 15개 |
+| API 엔드포인트 수 | 8개 |
+| AI 모델 종류 | 3종 (Sonnet 4, Haiku 4.5, gpt-4o-mini-tts) |
+| 서브 에이전트 | 7개 |
+| 스킬 파일 | 6개 |
+| Hooks | 4개 (PreToolUse 2 + PostToolUse 1 + Stop 1) |
+| MCP 서버 | 6개 |
+| 개발 도구 | Claude Code CLI (Opus 4.6, 1M context) |
