@@ -173,7 +173,11 @@ desktop.ini
 claude_history/
 *.local
 
-# 5. Supabase / Database
+# 5. Test artifacts
+.playwright-mcp/
+test-screenshots/
+
+# 6. Supabase / Database
 .supabase/
 supabase/.temp/
 supabase/migrations/.empty
