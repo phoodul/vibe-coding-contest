@@ -46,6 +46,14 @@ export default function GrammarListenPage() {
   const sentence = sentences[currentIdx] ?? sentences[0];
   const progress = ((currentIdx + 1) / TOTAL) * 100;
 
+  // Audio 엘리먼트 1회 생성 (모바일 autoplay 정책 대응)
+  useEffect(() => {
+    audioRef.current = new Audio();
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, []);
+
   // 초기 로드
   useEffect(() => {
     const lv = loadLevel();
@@ -88,13 +96,11 @@ export default function GrammarListenPage() {
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
 
-        if (audioRef.current) {
-          audioRef.current.pause();
-          URL.revokeObjectURL(audioRef.current.src);
-        }
+        const audio = audioRef.current!;
+        audio.pause();
+        const prevSrc = audio.src;
+        if (prevSrc && prevSrc.startsWith("blob:")) URL.revokeObjectURL(prevSrc);
 
-        const audio = new Audio(url);
-        audioRef.current = audio;
         audio.onended = () => {
           URL.revokeObjectURL(url);
           resolve();
@@ -103,6 +109,7 @@ export default function GrammarListenPage() {
           URL.revokeObjectURL(url);
           reject(new Error("Audio error"));
         };
+        audio.src = url;
         setLoading(false);
         audio.play();
       } catch (e) {
@@ -157,6 +164,8 @@ export default function GrammarListenPage() {
     setCurrentRepeat(0);
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
     }
   }, []);
 
