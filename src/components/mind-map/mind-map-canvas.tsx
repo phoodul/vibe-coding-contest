@@ -92,7 +92,9 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
     // 시작 각도
     const centerAngle = isRoot ? -Math.PI / 2 : outwardAngle!;
     const startAngle = centerAngle - fanAngle / 2;
-    const step = n <= 1 ? 0 : fanAngle / (n - 1);
+    // Full circle (root): divide by n so first/last don't overlap
+    // Fan arc (non-root): divide by n-1 so nodes sit at both ends of the arc
+    const step = n <= 1 ? 0 : isRoot ? fanAngle / n : fanAngle / (n - 1);
 
     return children.map((child, i) => {
       const angle = n === 1 ? centerAngle : startAngle + step * i;
@@ -230,7 +232,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
                 className="rounded-xl px-4 py-2 border border-white/15 bg-[#1a1a3a]/90"
               >
                 <p className="text-white/60 text-sm font-medium whitespace-nowrap text-center">
-                  ↑ {parent.label}
+                  ← {parent.label}
                 </p>
               </motion.div>
             </motion.div>
