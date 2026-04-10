@@ -21,6 +21,8 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
   const [focusedId, setFocusedId] = useState("root");
   const [detailNode, setDetailNode] = useState<MindMapNode | null>(null);
   const [size, setSize] = useState({ w: 1000, h: 700 });
+  // 방향 히스토리: 각 depth에서 부모가 어느 각도에 있는지 (incoming angle)
+  const [angleHistory, setAngleHistory] = useState<number[]>([]);
 
   // 컨테이너 크기 추적
   useEffect(() => {
@@ -50,49 +52,92 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
   const cx = size.w / 2;
   const cy = size.h / 2;
 
-  // 부모 위치
-  const parentY = cy - size.h * 0.32;
+  // 현재 incoming angle (부모 방향)
+  const incomingAngle =
+    angleHistory.length > 0 ? angleHistory[angleHistory.length - 1] : null;
+  // outward angle (자식이 펼쳐질 중심 방향) = incoming 반대편
+  const outwardAngle =
+    incomingAngle !== null ? incomingAngle + Math.PI : null;
 
-  // 자식 위치: 하단 반원 배치
+  // 부모 위치: incoming 방향으로 배치
+  const parentDist = Math.min(size.w, size.h) * 0.28;
+  const parentPos = parent
+    ? {
+        x: incomingAngle !== null ? cx + parentDist * Math.cos(incomingAngle) : cx,
+        y: incomingAngle !== null ? cy + parentDist * Math.sin(incomingAngle) : cy - size.h * 0.32,
+      }
+    : null;
+
+  // 자식 위치: 루트=360° / 그 외=부채꼴(outward 방향 중심)
   const childPositions = useMemo(() => {
     const n = children.length;
     if (n === 0) return [];
 
-    const maxR = Math.min(size.w * 0.42, size.h * 0.32);
-    const r = Math.max(160, Math.min(maxR, n * 55));
+    // 노드 텍스트 길이 기반 반지름 계산
+    const estimatedWidths = children.map((c) => c.label.length * 10 + 50);
+    const totalWidth = estimatedWidths.reduce((a, b) => a + b, 0);
+    const totalWithGaps = totalWidth + n * 24;
 
-    // 하단 반원: 20° ~ 160° (직각좌표에서 아래쪽)
-    const startAngle = Math.PI * 0.12;
-    const endAngle = Math.PI * 0.88;
-    const step = n <= 1 ? 0 : (endAngle - startAngle) / (n - 1);
+    const isRoot = outwardAngle === null;
+
+    // 부채꼴 각도: 루트=360°, 그 외=자식 수에 따라 120~200°
+    const fanAngle = isRoot
+      ? 2 * Math.PI
+      : Math.min(Math.PI * 1.1, Math.PI * 0.5 + n * Math.PI * 0.1);
+
+    const computedR = totalWithGaps / fanAngle;
+    const maxR = Math.min(size.w * 0.42, size.h * 0.38);
+    const r = Math.max(180, Math.min(maxR, computedR));
+
+    // 시작 각도
+    const centerAngle = isRoot ? -Math.PI / 2 : outwardAngle!;
+    const startAngle = centerAngle - fanAngle / 2;
+    const step = n <= 1 ? 0 : fanAngle / (n - 1);
 
     return children.map((child, i) => {
-      const angle = n === 1 ? Math.PI / 2 : startAngle + i * step;
+      const angle = n === 1 ? centerAngle : startAngle + step * i;
       return {
         node: child,
         x: cx + r * Math.cos(angle),
         y: cy + r * Math.sin(angle),
+        angle,
       };
     });
-  }, [children, cx, cy, size]);
+  }, [children, cx, cy, size, outwardAngle]);
 
-  // 자식 클릭: 하위로 drill-in
-  const handleChildClick = useCallback((node: MindMapNode) => {
-    if (node.children.length === 0) {
-      if (node.detail) {
-        setDetailNode((prev) => (prev?.id === node.id ? null : node));
+  // 자식 클릭: 하위로 drill-in (클릭한 자식의 각도 저장)
+  const handleChildClick = useCallback(
+    (node: MindMapNode, angle: number) => {
+      if (node.children.length === 0) {
+        if (node.detail) {
+          setDetailNode((prev) => (prev?.id === node.id ? null : node));
+        }
+        return;
       }
-      return;
-    }
-    setFocusedId(node.id);
-    setDetailNode(null);
-  }, []);
+      setFocusedId(node.id);
+      // 부모(현재 중앙)는 클릭 방향의 반대편에 위치
+      setAngleHistory((prev) => [...prev, angle + Math.PI]);
+      setDetailNode(null);
+    },
+    [],
+  );
 
-  // 브레드크럼 / 부모 클릭: 상위로 이동
-  const goTo = useCallback((id: string) => {
-    setFocusedId(id);
-    setDetailNode(null);
-  }, []);
+  // 브레드크럼 / 부모 클릭: 상위로 이동 (히스토리 트림)
+  const goTo = useCallback(
+    (id: string) => {
+      if (id === "root") {
+        setAngleHistory([]);
+      } else {
+        const targetIdx = ancestors.findIndex((a) => a.id === id);
+        if (targetIdx >= 0) {
+          setAngleHistory((prev) => prev.slice(0, targetIdx));
+        }
+      }
+      setFocusedId(id);
+      setDetailNode(null);
+    },
+    [ancestors],
+  );
 
   return (
     <div className="relative w-full h-full flex flex-col overflow-hidden">
@@ -133,14 +178,14 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
           style={{ overflow: "visible" }}
         >
           {/* 부모 → 중앙 연결선 */}
-          {parent && (
+          {parent && parentPos && (
             <motion.line
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.3 }}
-              x1={cx}
-              y1={parentY + 20}
+              x1={parentPos.x}
+              y1={parentPos.y}
               x2={cx}
-              y2={cy - 30}
+              y2={cy}
               stroke="#ffffff"
               strokeWidth={2}
               strokeDasharray="6 4"
@@ -156,7 +201,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
                 animate={{ opacity: 0.4 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
                 x1={cx}
-                y1={cy + 20}
+                y1={cy}
                 x2={x}
                 y2={y}
                 stroke={color.bg}
@@ -166,23 +211,23 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
           })}
         </svg>
 
-        {/* ── 부모 노드 (위) ── */}
+        {/* ── 부모 노드 (incoming 방향) ── */}
         <AnimatePresence mode="wait">
-          {parent && (
+          {parent && parentPos && (
             <motion.div
               key={`parent-${parent.id}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
               transition={{ duration: 0.3 }}
-              className="absolute -translate-x-1/2 z-10 cursor-pointer"
-              style={{ left: cx, top: parentY }}
+              className="absolute -translate-x-1/2 -translate-y-1/2 z-10 cursor-pointer"
+              style={{ left: parentPos.x, top: parentPos.y }}
               onClick={() => goTo(parent.id)}
             >
               <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
-                className="rounded-xl px-4 py-2 border border-white/15 bg-white/5 backdrop-blur-xl"
+                className="rounded-xl px-4 py-2 border border-white/15 bg-[#1a1a3a]/90"
               >
                 <p className="text-white/60 text-sm font-medium whitespace-nowrap text-center">
                   ↑ {parent.label}
@@ -204,12 +249,12 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
             style={{ left: cx, top: cy }}
           >
             <div
-              className="rounded-2xl px-8 py-4 shadow-2xl backdrop-blur-2xl border-2"
+              className="rounded-2xl px-8 py-4 shadow-2xl border-2"
               style={{
                 background:
                   focused.id === "root"
                     ? "rgba(15,22,40,0.95)"
-                    : getNodeColor(focused.siblingIndex).glass,
+                    : getNodeColor(focused.siblingIndex).solid,
                 borderColor:
                   focused.id === "root"
                     ? "rgba(255,255,255,0.25)"
@@ -218,13 +263,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
               }}
             >
               <p
-                className="text-center font-bold text-xl whitespace-nowrap"
-                style={{
-                  color:
-                    focused.id === "root"
-                      ? "#fff"
-                      : getNodeColor(focused.siblingIndex).text,
-                }}
+                className="text-center font-bold text-xl whitespace-nowrap text-white"
               >
                 {focused.label}
               </p>
@@ -242,16 +281,16 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
           </motion.div>
         </AnimatePresence>
 
-        {/* ── 자식 노드 (하단 반원) ── */}
+        {/* ── 자식 노드 (부채꼴 배치) ── */}
         <AnimatePresence>
-          {childPositions.map(({ node, x, y }, i) => (
+          {childPositions.map(({ node, x, y, angle }, i) => (
             <ChildNode
               key={node.id}
               node={node}
               x={x}
               y={y}
               delay={i * 0.04}
-              onClick={() => handleChildClick(node)}
+              onClick={() => handleChildClick(node, angle)}
             />
           ))}
         </AnimatePresence>
@@ -343,9 +382,9 @@ function ChildNode({
           boxShadow: `0 0 24px ${color.bg}50`,
         }}
         whileTap={{ scale: 0.95 }}
-        className="rounded-xl px-5 py-2.5 shadow-lg backdrop-blur-xl"
+        className="rounded-xl px-5 py-2.5 shadow-lg"
         style={{
-          background: color.glass,
+          background: color.solid,
           border: `1.5px solid ${color.border}`,
         }}
       >

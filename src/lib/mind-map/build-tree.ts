@@ -17,17 +17,18 @@ export interface MindMapNode {
 /* ── 11색 시스템 ── */
 
 export const SIBLING_COLORS = [
-  { name: "빨", bg: "#ef4444", glass: "rgba(239,68,68,0.18)", border: "rgba(239,68,68,0.5)", text: "#fff" },
-  { name: "노", bg: "#eab308", glass: "rgba(234,179,8,0.18)", border: "rgba(234,179,8,0.5)", text: "#1a1a2e" },
-  { name: "초", bg: "#22c55e", glass: "rgba(34,197,94,0.18)", border: "rgba(34,197,94,0.5)", text: "#fff" },
-  { name: "주", bg: "#f97316", glass: "rgba(249,115,22,0.18)", border: "rgba(249,115,22,0.5)", text: "#fff" },
-  { name: "파", bg: "#3b82f6", glass: "rgba(59,130,246,0.18)", border: "rgba(59,130,246,0.5)", text: "#fff" },
-  { name: "보", bg: "#a855f7", glass: "rgba(168,85,247,0.18)", border: "rgba(168,85,247,0.5)", text: "#fff" },
-  { name: "갈", bg: "#92400e", glass: "rgba(146,64,14,0.18)", border: "rgba(146,64,14,0.5)", text: "#fff" },
-  { name: "남", bg: "#1e3a5f", glass: "rgba(30,58,95,0.22)", border: "rgba(30,58,95,0.5)", text: "#fff" },
-  { name: "금", bg: "#d4a017", glass: "rgba(212,160,23,0.18)", border: "rgba(212,160,23,0.5)", text: "#1a1a2e" },
-  { name: "은", bg: "#9ca3af", glass: "rgba(156,163,175,0.18)", border: "rgba(156,163,175,0.5)", text: "#1a1a2e" },
-  { name: "동", bg: "#b87333", glass: "rgba(184,115,51,0.18)", border: "rgba(184,115,51,0.5)", text: "#fff" },
+  { name: "분홍", bg: "#ec4899", solid: "rgba(236,72,153,0.85)", border: "rgba(236,72,153,0.6)", text: "#fff" },
+  { name: "파랑", bg: "#3b82f6", solid: "rgba(59,130,246,0.85)", border: "rgba(59,130,246,0.6)", text: "#fff" },
+  { name: "주황", bg: "#f97316", solid: "rgba(249,115,22,0.85)", border: "rgba(249,115,22,0.6)", text: "#fff" },
+  { name: "초록", bg: "#22c55e", solid: "rgba(34,197,94,0.85)", border: "rgba(34,197,94,0.6)", text: "#fff" },
+  { name: "보라", bg: "#a855f7", solid: "rgba(168,85,247,0.85)", border: "rgba(168,85,247,0.6)", text: "#fff" },
+  { name: "노랑", bg: "#eab308", solid: "rgba(234,179,8,0.85)", border: "rgba(234,179,8,0.6)", text: "#fff" },
+  { name: "남색", bg: "#6366f1", solid: "rgba(99,102,241,0.85)", border: "rgba(99,102,241,0.6)", text: "#fff" },
+  { name: "갈색", bg: "#78350f", solid: "rgba(120,53,15,0.85)", border: "rgba(120,53,15,0.6)", text: "#fff" },
+  { name: "청록", bg: "#14b8a6", solid: "rgba(20,184,166,0.85)", border: "rgba(20,184,166,0.6)", text: "#fff" },
+  { name: "금", bg: "#ca8a04", solid: "rgba(202,138,4,0.85)", border: "rgba(202,138,4,0.6)", text: "#fff" },
+  { name: "은", bg: "#64748b", solid: "rgba(100,116,139,0.85)", border: "rgba(100,116,139,0.6)", text: "#fff" },
+  { name: "동", bg: "#b87333", solid: "rgba(184,115,51,0.85)", border: "rgba(184,115,51,0.6)", text: "#fff" },
 ] as const;
 
 export function getNodeColor(siblingIndex: number) {
