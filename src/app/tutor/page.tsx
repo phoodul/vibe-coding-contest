@@ -18,10 +18,11 @@ export default function TutorPage() {
   const [completedConcepts, setCompletedConcepts] = useState<Set<string>>(new Set());
   const [started, setStarted] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [summaryText, setSummaryText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, append, status } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append, status, setMessages } =
     useChat({
       api: "/api/tutor",
       body: {
@@ -196,6 +197,21 @@ export default function TutorPage() {
       setSummaryLoading(false);
     }
   }, [messages, selectedSubject, selectedTopic]);
+
+  // 사이드바에서 단원 변경
+  function switchTopic(topic: Topic) {
+    setSelectedTopic(topic);
+    setSelectedConcept(null);
+    setCompletedConcepts(new Set());
+    setSidebarOpen(false);
+    setMessages([]);
+    setSummaryText("");
+    setStarted(true);
+    append({
+      role: "user",
+      content: `[SYSTEM: 학생이 "${selectedSubject?.name}" 과목의 "${topic.name}" 단원을 선택했습니다. 다음 질문으로 수업을 시작하세요: "${topic.opener}"]`,
+    });
+  }
 
   // 학습 시작 — AI가 먼저 opener 질문을 던짐
   function startLesson() {
@@ -413,35 +429,45 @@ export default function TutorPage() {
     <div className="min-h-screen flex flex-col">
       {/* 헤더 */}
       <div className="glass border-b border-white/5 px-4 sm:px-6 py-3 sm:py-4">
-        <div className="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="min-w-0">
-            <h1 className="text-base sm:text-lg font-semibold">
-              {selectedSubject?.icon} 소크라테스 AI 튜터
-            </h1>
-            <p className="text-xs text-muted truncate">
-              {selectedSubject?.name} &gt; {selectedTopic?.name || "자유 질문"}
-            </p>
-            {/* 개념 진행 칩 */}
-            {selectedTopic && selectedTopic.concepts.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {selectedTopic.concepts.map((c) => {
-                  const done = completedConcepts.has(c);
-                  return (
-                    <span
-                      key={c}
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-all ${
-                        done
-                          ? "bg-emerald-500/20 text-emerald-300"
-                          : "bg-white/5 text-muted/60"
-                      }`}
-                    >
-                      {done ? "✓ " : ""}{c}
-                    </span>
-                  );
-                })}
-              </div>
-            )}
+        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* 사이드바 토글 */}
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="text-muted hover:text-foreground transition-colors shrink-0"
+              title="단원 목록"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            </button>
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-lg font-semibold">
+                {selectedSubject?.icon} 소크라테스
+              </h1>
+              <p className="text-xs text-muted truncate">
+                {selectedSubject?.name} &gt; {selectedTopic?.name || "자유 질문"}
+              </p>
+            </div>
           </div>
+          {/* 개념 진행 칩 */}
+          {selectedTopic && selectedTopic.concepts.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 order-last w-full sm:order-none sm:w-auto sm:flex-1 sm:justify-center">
+              {selectedTopic.concepts.map((c) => {
+                const done = completedConcepts.has(c);
+                return (
+                  <span
+                    key={c}
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-all ${
+                      done
+                        ? "bg-emerald-500/20 text-emerald-300"
+                        : "bg-white/5 text-muted/60"
+                    }`}
+                  >
+                    {done ? "✓ " : ""}{c}
+                  </span>
+                );
+              })}
+            </div>
+          )}
           <div className="flex items-center gap-2 shrink-0">
             {messages.filter((m) => !m.content.startsWith("[SYSTEM:")).length >= 3 && (
               <>
@@ -471,6 +497,66 @@ export default function TutorPage() {
         </div>
       </div>
 
+      {/* 사이드바 + 채팅 영역 */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* 사이드바 — 단원 목록 */}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <>
+              {/* 모바일 오버레이 */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSidebarOpen(false)}
+                className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+              />
+              <motion.aside
+                initial={{ x: -280 }}
+                animate={{ x: 0 }}
+                exit={{ x: -280 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className="fixed lg:relative left-0 top-0 lg:top-auto h-full w-[280px] z-40 lg:z-auto glass border-r border-white/5 overflow-y-auto shrink-0"
+              >
+                <div className="p-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-sm font-semibold text-muted">단원 목록</h2>
+                    <button onClick={() => setSidebarOpen(false)} className="text-muted hover:text-foreground lg:hidden">✕</button>
+                  </div>
+                  {selectedSubject?.topics.map((topic, i) => {
+                    const isCurrent = selectedTopic?.name === topic.name;
+                    return (
+                      <button
+                        key={topic.name}
+                        onClick={() => switchTopic(topic)}
+                        className={`w-full text-left p-3 rounded-xl text-sm transition-all ${
+                          isCurrent
+                            ? "bg-primary/15 border border-primary/30 text-foreground"
+                            : "hover:bg-white/5 text-muted hover:text-foreground"
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <span className="text-xs text-muted/50 shrink-0 mt-0.5">{i + 1}</span>
+                          <div className="min-w-0">
+                            <p className={`font-medium leading-snug ${isCurrent ? "text-primary" : ""}`}>
+                              {topic.name}
+                            </p>
+                            <p className="text-[10px] text-muted/50 mt-1 line-clamp-2">
+                              {topic.concepts.join(" · ")}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 메인 채팅 영역 */}
+        <div className="flex-1 flex flex-col overflow-hidden">
       {/* 메시지 목록 */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
         <div className="max-w-3xl mx-auto space-y-4">
@@ -630,6 +716,8 @@ export default function TutorPage() {
           </form>
         </div>
       </div>
+        </div>{/* /메인 채팅 영역 */}
+      </div>{/* /사이드바 + 채팅 */}
     </div>
   );
 }
