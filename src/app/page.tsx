@@ -483,6 +483,32 @@ export default function LandingPage() {
           </div>
         </motion.section>
 
+        {/* ─── 위기 상담 안내 ─── */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="pb-12"
+        >
+          <Link href="/crisis">
+            <div className="glass-gradient p-5 sm:p-6 relative overflow-hidden text-center group cursor-pointer hover:border-rose-500/20 transition-all">
+              <div
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{ background: "linear-gradient(90deg, transparent, #f43f5e, transparent)" }}
+              />
+              <p className="text-lg sm:text-xl mb-1">
+                <span className="text-rose-400">💛</span> 혼자 힘들어하고 있나요?
+              </p>
+              <p className="text-sm text-muted mb-3">
+                자해·자살·학교폭력으로 고민하고 있다면, 24시간 도움을 받을 수 있어요.
+              </p>
+              <span className="inline-block px-4 py-2 rounded-lg bg-rose-500/15 text-rose-300 text-sm font-medium group-hover:bg-rose-500/25 transition-colors">
+                위기 상담 안내 보기 →
+              </span>
+            </div>
+          </Link>
+        </motion.section>
+
         {/* ─── Footer ─── */}
         <footer className="border-t border-white/5 py-8 mt-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted/50">
