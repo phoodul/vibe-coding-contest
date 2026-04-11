@@ -23,8 +23,20 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const passwordRules = [
+    { test: (p: string) => p.length >= 8, label: "8자 이상" },
+    { test: (p: string) => /[A-Za-z]/.test(p), label: "영문 포함" },
+    { test: (p: string) => /[0-9]/.test(p), label: "숫자 포함" },
+    { test: (p: string) => /[^A-Za-z0-9]/.test(p), label: "특수문자 포함" },
+  ];
+  const passwordValid = passwordRules.every((r) => r.test(password));
+
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+    if (!passwordValid) {
+      setError("비밀번호 조건을 모두 충족해주세요.");
+      return;
+    }
     setLoading(true);
     setError("");
 
@@ -148,10 +160,25 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
                 className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-primary transition-colors"
-                placeholder="6자 이상"
+                placeholder="8자 이상, 영문+숫자+특수문자"
               />
+              {password.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {passwordRules.map((r) => (
+                    <span
+                      key={r.label}
+                      className={`text-xs px-2 py-0.5 rounded-full ${
+                        r.test(password)
+                          ? "bg-green-500/20 text-green-400"
+                          : "bg-white/5 text-muted/50"
+                      }`}
+                    >
+                      {r.test(password) ? "✓" : "○"} {r.label}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {error && (
