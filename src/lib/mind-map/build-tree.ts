@@ -63,7 +63,7 @@ export interface MindMapNode {
   children: MindMapNode[];
 }
 
-/* ── 11색 시스템 ── */
+/* ── 10색 시스템 ── */
 
 export const SIBLING_COLORS = [
   { name: "분홍", bg: "#ec4899", solid: "rgba(236,72,153,0.85)", border: "rgba(236,72,153,0.6)", text: "#fff" },
@@ -72,23 +72,42 @@ export const SIBLING_COLORS = [
   { name: "초록", bg: "#22c55e", solid: "rgba(34,197,94,0.85)", border: "rgba(34,197,94,0.6)", text: "#fff" },
   { name: "보라", bg: "#a855f7", solid: "rgba(168,85,247,0.85)", border: "rgba(168,85,247,0.6)", text: "#fff" },
   { name: "노랑", bg: "#eab308", solid: "rgba(234,179,8,0.85)", border: "rgba(234,179,8,0.6)", text: "#fff" },
-  { name: "남색", bg: "#6366f1", solid: "rgba(99,102,241,0.85)", border: "rgba(99,102,241,0.6)", text: "#fff" },
+  { name: "남색", bg: "#1e3a8a", solid: "rgba(30,58,138,0.85)", border: "rgba(30,58,138,0.6)", text: "#fff" },
   { name: "갈색", bg: "#78350f", solid: "rgba(120,53,15,0.85)", border: "rgba(120,53,15,0.6)", text: "#fff" },
+  { name: "자주", bg: "#be185d", solid: "rgba(190,24,93,0.85)", border: "rgba(190,24,93,0.6)", text: "#fff" },
   { name: "청록", bg: "#14b8a6", solid: "rgba(20,184,166,0.85)", border: "rgba(20,184,166,0.6)", text: "#fff" },
-  { name: "금", bg: "#ca8a04", solid: "rgba(202,138,4,0.85)", border: "rgba(202,138,4,0.6)", text: "#fff" },
-  { name: "은", bg: "#64748b", solid: "rgba(100,116,139,0.85)", border: "rgba(100,116,139,0.6)", text: "#fff" },
-  { name: "동", bg: "#b87333", solid: "rgba(184,115,51,0.85)", border: "rgba(184,115,51,0.6)", text: "#fff" },
 ] as const;
 
 export function getNodeColor(siblingIndex: number) {
   return SIBLING_COLORS[siblingIndex % SIBLING_COLORS.length];
 }
 
-/** 부모 색상을 제외한 팔레트에서 자식 색상 선택 */
-export function getChildColor(siblingIndex: number, parentSiblingIndex: number) {
-  const parentIdx = parentSiblingIndex % SIBLING_COLORS.length;
-  const filtered = SIBLING_COLORS.filter((_, i) => i !== parentIdx);
+/** 부모의 팔레트 인덱스를 제외한 팔레트에서 자식 색상 선택 */
+export function getChildColor(siblingIndex: number, parentColorIdx: number) {
+  const filtered = SIBLING_COLORS.filter((_, i) => i !== parentColorIdx);
   return filtered[siblingIndex % filtered.length];
+}
+
+/** 색상의 팔레트 내 실제 인덱스 반환 */
+export function getColorIdx(siblingIndex: number, parentColorIdx: number): number {
+  const filtered = SIBLING_COLORS.filter((_, i) => i !== parentColorIdx);
+  const color = filtered[siblingIndex % filtered.length];
+  return SIBLING_COLORS.indexOf(color);
+}
+
+/** ancestor 체인을 순회하여 특정 노드의 실제 팔레트 인덱스를 계산 */
+export function resolveColorIdx(ancestors: MindMapNode[], node: MindMapNode): number {
+  if (ancestors.length === 0) {
+    return node.siblingIndex % SIBLING_COLORS.length;
+  }
+  // root의 팔레트 인덱스
+  let colorIdx = ancestors[0].siblingIndex % SIBLING_COLORS.length;
+  // 중간 ancestor 순회 (root 다음부터)
+  for (let i = 1; i < ancestors.length; i++) {
+    colorIdx = getColorIdx(ancestors[i].siblingIndex, colorIdx);
+  }
+  // 최종 node의 팔레트 인덱스
+  return getColorIdx(node.siblingIndex, colorIdx);
 }
 
 /* ── detail 텍스트 → 트리 자동 파싱 ── */

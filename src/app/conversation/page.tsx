@@ -447,10 +447,10 @@ export default function ConversationPage() {
             >
               <GlassCard hover={false} className="mb-4">
                 <p className="text-sm text-muted mb-2">이 단어의 뜻은?</p>
-                <p className="text-3xl font-bold text-primary">{q.word}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary">{q.word}</p>
               </GlassCard>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {q.choices.map((choice, i) => (
                   <button
                     key={i}
@@ -662,7 +662,7 @@ export default function ConversationPage() {
                   {/* 마지막 사용자 메시지 */}
                   {messages.filter((m) => m.role === "user" && !m.content.startsWith("[SYSTEM:")).length > 0 && (
                     <div className="text-right">
-                      <span className="inline-block px-4 py-2 rounded-2xl rounded-br-md bg-primary/20 text-sm">
+                      <span className="inline-block px-4 py-2 rounded-2xl rounded-br-md bg-primary/20 text-sm max-w-[85%] break-words">
                         {messages.filter((m) => m.role === "user" && !m.content.startsWith("[SYSTEM:")).slice(-1)[0]?.content}
                       </span>
                     </div>
@@ -670,7 +670,7 @@ export default function ConversationPage() {
                   {/* 마지막 AI 메시지 */}
                   {messages.filter((m) => m.role === "assistant").length > 0 && (
                     <div className="text-left">
-                      <span className="inline-block px-4 py-2 rounded-2xl rounded-bl-md glass text-sm">
+                      <span className="inline-block px-4 py-2 rounded-2xl rounded-bl-md glass text-sm max-w-[85%] break-words">
                         {messages.filter((m) => m.role === "assistant").slice(-1)[0]?.content}
                       </span>
                     </div>
@@ -693,7 +693,7 @@ export default function ConversationPage() {
                 startMic();
               }
             }}
-            className={`w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all ${
+            className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full flex flex-col items-center justify-center transition-all ${
               micActive
                 ? "bg-red-500 shadow-lg shadow-red-500/40 animate-pulse"
                 : aiState === "speaking"
@@ -891,7 +891,7 @@ export default function ConversationPage() {
             >
               <button
                 onClick={startConversation}
-                className="px-10 py-4 rounded-xl bg-primary text-primary-foreground font-medium text-lg hover:bg-primary/90 transition-all hover:scale-105"
+                className="px-6 sm:px-10 py-3 sm:py-4 rounded-xl bg-primary text-primary-foreground font-medium text-base sm:text-lg hover:bg-primary/90 transition-all hover:scale-105"
               >
                 회화 시작하기
               </button>
@@ -906,7 +906,7 @@ export default function ConversationPage() {
 // --- AI Persona Orb Component ---
 function PersonaOrb({ state }: { state: AIState }) {
   return (
-    <div className="relative w-32 h-32">
+    <div className="relative w-24 h-24 sm:w-32 sm:h-32">
       {/* 외부 링 */}
       <motion.div
         className="absolute inset-0 rounded-full border-2 border-primary/30"

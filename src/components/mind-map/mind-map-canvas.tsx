@@ -10,7 +10,7 @@ import {
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { MindMapNode } from "@/lib/mind-map/build-tree";
-import { getNodeColor, getChildColor, findNode, getAncestors } from "@/lib/mind-map/build-tree";
+import { getNodeColor, getChildColor, findNode, getAncestors, resolveColorIdx, SIBLING_COLORS } from "@/lib/mind-map/build-tree";
 
 interface MindMapCanvasProps {
   root: MindMapNode;
@@ -191,10 +191,12 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
 
   const isMobile = size.w < 640;
 
-  // 포커스 노드 색상: 자식일 때 보았던 색상과 동일하게 유지
-  const focusedColor = parent
-    ? getChildColor(focused.siblingIndex, parent.siblingIndex)
-    : getNodeColor(focused.siblingIndex);
+  // 포커스 노드의 실제 팔레트 인덱스 (ancestor 체인 기반)
+  const focusedColorIdx = useMemo(
+    () => resolveColorIdx(ancestors, focused),
+    [ancestors, focused],
+  );
+  const focusedColor = SIBLING_COLORS[focusedColorIdx];
 
   return (
     <div ref={containerRef} className="relative w-full h-full flex flex-col overflow-hidden">
@@ -279,7 +281,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
               <div className="absolute left-0 top-0 bottom-0 w-px bg-white/20" />
 
               {children.map((child, i) => {
-                const color = getChildColor(child.siblingIndex, focused.siblingIndex);
+                const color = getChildColor(child.siblingIndex, focusedColorIdx);
                 const hasKids = child.children.length > 0;
                 const hasDetail = !!child.detail;
                 const isActive = detailNode?.id === child.id;
@@ -376,7 +378,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
               />
             )}
             {childPositions.map(({ node, x, y }) => {
-              const color = getChildColor(node.siblingIndex, focused.siblingIndex);
+              const color = getChildColor(node.siblingIndex, focusedColorIdx);
               return (
                 <motion.line
                   key={`edge-${node.id}`}
@@ -469,7 +471,7 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
               <ChildNode
                 key={node.id}
                 node={node}
-                parentSiblingIndex={focused.siblingIndex}
+                parentColorIdx={focusedColorIdx}
                 x={x}
                 y={y}
                 delay={i * 0.04}
@@ -532,20 +534,20 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
 
 function ChildNode({
   node,
-  parentSiblingIndex,
+  parentColorIdx,
   x,
   y,
   delay,
   onClick,
 }: {
   node: MindMapNode;
-  parentSiblingIndex: number;
+  parentColorIdx: number;
   x: number;
   y: number;
   delay: number;
   onClick: () => void;
 }) {
-  const color = getChildColor(node.siblingIndex, parentSiblingIndex);
+  const color = getChildColor(node.siblingIndex, parentColorIdx);
   const hasChildren = node.children.length > 0;
   const hasDetail = !!node.detail;
 

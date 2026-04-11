@@ -288,17 +288,17 @@ export default function GrammarListenPage() {
           </GlassCard>
 
           {/* 컨트롤러 */}
-          <div className="flex items-center justify-center gap-4 mb-6">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6">
             <button
               onClick={handlePrev}
               disabled={currentIdx === 0}
-              className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-all flex items-center justify-center text-xl"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-all flex items-center justify-center text-xl"
             >
               ⏮
             </button>
             <button
               onClick={handleToggle}
-              className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all hover:scale-105 ${
+              className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-2xl transition-all hover:scale-105 ${
                 isPlaying
                   ? "bg-red-500/80 hover:bg-red-500"
                   : "bg-indigo-500/80 hover:bg-indigo-500"
@@ -309,7 +309,7 @@ export default function GrammarListenPage() {
             <button
               onClick={handleNext}
               disabled={currentIdx >= TOTAL - 1}
-              className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-all flex items-center justify-center text-xl"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 disabled:opacity-30 transition-all flex items-center justify-center text-xl"
             >
               ⏭
             </button>

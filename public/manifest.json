@@ -1,0 +1,18 @@
+{
+  "name": "EasyEdu AI — AI 기반 차세대 교육 솔루션",
+  "short_name": "EasyEdu AI",
+  "description": "학생과 교사 모두를 위한 AI 교육 플랫폼",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo-icon.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

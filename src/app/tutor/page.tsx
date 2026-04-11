@@ -67,18 +67,31 @@ export default function TutorPage() {
             ...messages.filter((m) => !m.content.startsWith("[SYSTEM:")),
             {
               role: "user",
-              content: `[SYSTEM: 지금까지 대화에서 학생이 배운 핵심 개념을 요약 정리해주세요.
+              content: `[SYSTEM: 지금까지 대화에서 다룬 내용을 구조화된 지식 체계로 정리해주세요.
+
 형식:
-📚 오늘 배운 핵심 개념
-1. **개념명**: 설명 (2-3문장)
-2. **개념명**: 설명
-...
 
-💡 아직 더 알아볼 내용
-- 내용1
-- 내용2
+## 📚 학습한 개념 체계
 
-한국어로 작성하되 간결하고 명확하게 정리해주세요.]`,
+### 1. 대주제명
+| 개념 | 설명 | 핵심 포인트 |
+|------|------|-------------|
+| 개념명 | 한 줄 정의 | 실전에서 중요한 이유 |
+
+### 2. 대주제명
+(동일 형태)
+
+## 🔗 개념 간 관계
+- A → B: A가 B를 가능하게 하는 이유
+- C vs D: 핵심 차이점
+
+## 🛠️ 실전 명령어·코드 정리
+(코드 블록으로 명령어나 코드를 정리)
+
+## 💡 다음에 배울 내용
+- 아직 다루지 않은 관련 개념들
+
+한국어로 작성. 대화에서 실제로 다룬 내용만 포함하되, 체계적으로 구조화해주세요.]`,
             },
           ],
           subject: selectedSubject?.name || "",
@@ -399,13 +412,13 @@ export default function TutorPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* 헤더 */}
-      <div className="glass border-b border-white/5 px-6 py-4">
-        <div className="max-w-3xl mx-auto flex items-center justify-between">
+      <div className="glass border-b border-white/5 px-4 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="min-w-0">
-            <h1 className="text-lg font-semibold">
+            <h1 className="text-base sm:text-lg font-semibold">
               {selectedSubject?.icon} 소크라테스 AI 튜터
             </h1>
-            <p className="text-xs text-muted">
+            <p className="text-xs text-muted truncate">
               {selectedSubject?.name} &gt; {selectedTopic?.name || "자유 질문"}
             </p>
             {/* 개념 진행 칩 */}
@@ -429,7 +442,7 @@ export default function TutorPage() {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             {messages.filter((m) => !m.content.startsWith("[SYSTEM:")).length >= 3 && (
               <>
                 <button
@@ -437,14 +450,14 @@ export default function TutorPage() {
                   disabled={summaryLoading}
                   className="text-xs px-2.5 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50"
                 >
-                  {summaryLoading ? "..." : "&#128218; 요약 정리"}
+                  {summaryLoading ? "..." : "&#128218; 요약"}
                 </button>
                 <button
                   onClick={generateStudyNote}
                   disabled={summaryLoading}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-50"
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-50 hidden sm:inline-flex"
                 >
-                  {summaryLoading ? "..." : "&#128190; 노트 저장"}
+                  {summaryLoading ? "..." : "&#128190; 노트"}
                 </button>
               </>
             )}
@@ -452,14 +465,14 @@ export default function TutorPage() {
               onClick={() => setStarted(false)}
               className="text-xs text-muted hover:text-foreground transition-colors"
             >
-              교과 변경
+              변경
             </button>
           </div>
         </div>
       </div>
 
       {/* 메시지 목록 */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
         <div className="max-w-3xl mx-auto space-y-4">
           {messages.length === 0 && (
             <GlassCard hover={false}>
@@ -481,7 +494,7 @@ export default function TutorPage() {
                 }`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                  className={`max-w-[90%] sm:max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                     m.role === "user"
                       ? "bg-primary text-primary-foreground rounded-br-md"
                       : "glass rounded-bl-md"
@@ -573,7 +586,7 @@ export default function TutorPage() {
       </div>
 
       {/* 사고 가이드 칩 + 입력 */}
-      <div className="glass border-t border-white/5 px-6 py-3">
+      <div className="glass border-t border-white/5 px-4 sm:px-6 py-3">
         <div className="max-w-3xl mx-auto">
           {/* Think-Articulate 가이드 칩 */}
           <div className="flex flex-wrap gap-1.5 mb-2">
@@ -599,18 +612,18 @@ export default function TutorPage() {
           </div>
           <form
             onSubmit={handleSubmit}
-            className="flex gap-3"
+            className="flex gap-2 sm:gap-3"
           >
             <input
               value={input}
               onChange={handleInputChange}
               placeholder="생각을 정리해서 답변해보세요..."
-              className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-primary transition-colors"
+              className="flex-1 min-w-0 px-3 sm:px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-foreground placeholder:text-muted/50 focus:outline-none focus:border-primary transition-colors"
             />
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+              className="shrink-0 px-4 sm:px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
             >
               전송
             </button>

@@ -208,6 +208,21 @@ body {
   75% { transform: translate(-45%, -55%) scale(1.05); }
 }
 
+@media (max-width: 640px) {
+  .mesh-gradient::before {
+    width: 300px;
+    height: 300px;
+  }
+  .mesh-gradient::after {
+    width: 250px;
+    height: 250px;
+  }
+  .mesh-blob-3 {
+    width: 200px;
+    height: 200px;
+  }
+}
+
 /* ─── Noise Texture ─── */
 .noise::before {
   content: "";

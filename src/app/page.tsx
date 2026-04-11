@@ -201,7 +201,7 @@ export default function LandingPage() {
           {/* Subtle gradient orb */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
             <div
-              className="w-[400px] h-[400px] rounded-full opacity-40"
+              className="w-[250px] h-[250px] sm:w-[400px] sm:h-[400px] rounded-full opacity-40"
               style={{
                 background: "radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.1) 40%, transparent 70%)",
                 filter: "blur(80px)",
@@ -448,7 +448,26 @@ export default function LandingPage() {
           </div>
         </motion.section>
 
-        <div className="h-8" />
+        {/* ─── Footer ─── */}
+        <footer className="border-t border-white/5 py-8 mt-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted/50">
+            <p>&copy; 2026 EasyEdu AI — 바이브코딩 2026</p>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/crisis"
+                className="hover:text-rose-400 transition-colors"
+              >
+                위기 상담 안내
+              </Link>
+              <Link
+                href="/dashboard"
+                className="hover:text-foreground transition-colors"
+              >
+                대시보드
+              </Link>
+            </div>
+          </div>
+        </footer>
       </main>
     </>
   );

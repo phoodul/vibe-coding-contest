@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { GlassCard } from "@/components/shared/glass-card";
+import { CrisisButton } from "@/components/shared/crisis-button";
 
 interface Profile {
   display_name: string | null;
@@ -99,6 +100,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
+      <CrisisButton />
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <motion.div
