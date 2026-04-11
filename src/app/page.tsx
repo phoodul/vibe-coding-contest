@@ -260,7 +260,9 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="relative text-sm sm:text-base text-muted max-w-xl mx-auto mb-6"
           >
-            학생과 교사 모두를 위한 AI 교육 플랫폼 — 13개 도구를 무료로 사용하세요.
+            학생과 교사 모두를 위한 AI 교육 플랫폼 — 15개 도구를 무료로 사용하세요.
+            <br />
+            <span className="text-xs text-muted/60">로그인하면 학습 진행도 저장 · 세션 이어하기 · 독서기록 동기화가 가능합니다.</span>
           </motion.p>
 
           <motion.div
@@ -414,10 +416,10 @@ export default function LandingPage() {
                 AI 튜터, 마인드 맵, 진로 탐색까지 — 공부가 즐거워집니다.
               </p>
               <Link
-                href="/signup"
+                href="/dashboard"
                 className="btn-glow relative inline-block px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-all hover:scale-105 active:scale-[0.97]"
               >
-                무료로 시작하기
+                바로 체험하기
               </Link>
             </div>
 
@@ -430,13 +432,13 @@ export default function LandingPage() {
               <span className="relative text-4xl block mb-3">📝</span>
               <h3 className="relative text-lg font-bold mb-2">교사이신가요?</h3>
               <p className="relative text-muted text-xs sm:text-sm mb-5 max-w-xs mx-auto">
-                공문서 자동 교정, 세특 도우미 — 업무 시간을 돌려드립니다.
+                원클릭 수업준비, 공문서 교정, 세특 도우미 — 업무 시간을 돌려드립니다.
               </p>
               <Link
-                href="/signup"
+                href="/dashboard"
                 className="btn-glow relative inline-block px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-all hover:scale-105 active:scale-[0.97]"
               >
-                교사로 시작하기
+                바로 체험하기
               </Link>
             </div>
           </div>
