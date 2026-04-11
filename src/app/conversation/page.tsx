@@ -19,6 +19,7 @@ import {
   LEVEL_QUIZ,
 } from "@/lib/ai/conversation-prompt";
 import Link from "next/link";
+import { fireQuizConfetti } from "@/lib/confetti";
 
 // --- Types ---
 type Phase = "setup" | "quiz" | "conversation" | "report";
@@ -284,6 +285,7 @@ export default function ConversationPage() {
       const rec = recommendLevel(newCorrect);
       setQuizResult({ correct: newCorrect, total: LEVEL_QUIZ.length, recommendedLevel: rec });
       setLevel(rec);
+      fireQuizConfetti();
     }
   }
 

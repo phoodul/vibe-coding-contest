@@ -8,6 +8,7 @@ import type { Subject, Topic } from "@/lib/ai/tutor-prompt";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
+import { fireMiniConfetti } from "@/lib/confetti";
 import Link from "next/link";
 
 export default function TutorPage() {
@@ -63,6 +64,7 @@ export default function TutorPage() {
       }
     }
     if (newCompleted.size !== completedConcepts.size) {
+      if (newCompleted.size > completedConcepts.size) fireMiniConfetti();
       setCompletedConcepts(newCompleted);
       try { localStorage.setItem(PROGRESS_KEY, JSON.stringify([...newCompleted])); } catch { /* ignore */ }
     }

@@ -12,6 +12,7 @@ import {
 } from "@/lib/data/vocabulary-data";
 import type { VocabGroup } from "@/lib/data/vocabulary-data";
 import Link from "next/link";
+import { fireQuizConfetti, fireSummitConfetti } from "@/lib/confetti";
 
 type Tab = "learn" | "quiz" | "progress";
 
@@ -480,6 +481,7 @@ function QuizTab({
           if (!newPassed[camp].includes(selectedGroup)) {
             newPassed[camp] = [...newPassed[camp], selectedGroup];
           }
+          fireQuizConfetti();
         }
         onUpdateProgress({
           ...progress,
@@ -748,6 +750,14 @@ function ProgressTab({ progress }: { progress: Progress }) {
   const currentPos = getPointOnRoute(currentCampIdx, currentGroupIdx);
   const reachedSummit = currentCampIdx >= 9 && currentGroupIdx >= GROUPS_PER_LEVEL;
 
+  // Summit 축하
+  useEffect(() => {
+    if (reachedSummit && !sessionStorage.getItem("summit-celebrated")) {
+      sessionStorage.setItem("summit-celebrated", "true");
+      fireSummitConfetti();
+    }
+  }, [reachedSummit]);
+
   // 캠프 도착 축하 감지
   useEffect(() => {
     for (let i = progress.startCamp; i <= 10; i++) {
@@ -757,6 +767,7 @@ function ProgressTab({ progress }: { progress: Progress }) {
         if (!sessionStorage.getItem(key)) {
           sessionStorage.setItem(key, "true");
           setShowCelebration(campData.name);
+          fireQuizConfetti();
           setTimeout(() => setShowCelebration(""), 3000);
           break;
         }
