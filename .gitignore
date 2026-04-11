@@ -4,6 +4,13 @@
 # User local docs (not tracked)
 user_docs/
 
+# Source assets (not deployed)
+logo_image/
+
+# Test screenshots
+*.png
+!public/**/*.png
+
 # Logs
 logs
 *.log
