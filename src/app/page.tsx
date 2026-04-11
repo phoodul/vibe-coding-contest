@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useInView, useSpring, useMotionValue } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
 
@@ -34,7 +35,7 @@ const studentFeatures = [
   {
     title: "오일러 튜터",
     description: "계산은 AI가 할게요. 수학 문제의 논리적 사고과정을 따뜻한 멘토와 함께 훈련합니다.",
-    icon: "🧮",
+    icon: "euler",
     href: "/euler-tutor",
   },
   {
@@ -317,7 +318,11 @@ export default function LandingPage() {
                           className="absolute inset-0 rounded-full opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-lg"
                           style={{ background: featureAccents[i] }}
                         />
-                        <span className="relative">{f.icon}</span>
+                        {f.icon === "euler" ? (
+                          <Image src="/euler-portrait.jpg" alt="Euler" width={32} height={32} className="relative w-8 h-8 rounded-full object-cover border border-amber-500/30" />
+                        ) : (
+                          <span className="relative">{f.icon}</span>
+                        )}
                       </span>
                       <div className="min-w-0">
                         <h3 className="text-sm font-semibold mb-0.5 transition-colors duration-300">

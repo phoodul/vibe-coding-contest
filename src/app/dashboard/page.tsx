@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { GlassCard } from "@/components/shared/glass-card";
 import { CrisisButton } from "@/components/shared/crisis-button";
@@ -25,7 +26,7 @@ interface MenuItem {
 // 학생 메뉴 — 2열 그리드
 const studentItems: MenuItem[] = [
   { title: "소크라테스 AI 튜터", desc: "질문으로 이끄는 AI 학습", icon: "🎓", href: "/tutor" },
-  { title: "오일러 튜터", desc: "수학 사고과정 코칭 — 계산은 AI가", icon: "🧮", href: "/euler-tutor" },
+  { title: "오일러 튜터", desc: "수학 사고과정 코칭 — 계산은 AI가", icon: "euler", href: "/euler-tutor" },
   { title: "마인드 맵", desc: "교과서 전체 구조를 한눈에 탐색", icon: "🧠", href: "/mind-map" },
   { title: "영어 단어 학습", desc: "18,000 단어 레벨별 에베레스트 등반", icon: "🏔️", href: "/vocabulary" },
   { title: "AI 영어 회화", desc: "내 수준에 맞는 음성 영어 대화", icon: "🎙️", href: "/conversation" },
@@ -151,7 +152,9 @@ export default function DashboardPage() {
                         className="text-4xl mb-3 block"
                         whileHover={{ scale: 1.2, y: -4, rotate: [0, -5, 5, 0], transition: { duration: 0.4 } }}
                       >
-                        {item.icon}
+                        {item.icon === "euler" ? (
+                          <Image src="/euler-portrait.jpg" alt="Euler" width={40} height={40} className="w-10 h-10 rounded-full object-cover border border-amber-500/30" />
+                        ) : item.icon}
                       </motion.span>
                       <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors duration-300">
                         {item.title}
@@ -183,7 +186,9 @@ export default function DashboardPage() {
                           className="text-4xl mb-3 block"
                           whileHover={{ scale: 1.2, y: -4, rotate: [0, -5, 5, 0], transition: { duration: 0.4 } }}
                         >
-                          {item.icon}
+                          {item.icon === "euler" ? (
+                            <Image src="/euler-portrait.jpg" alt="Euler" width={40} height={40} className="w-10 h-10 rounded-full object-cover border border-amber-500/30" />
+                          ) : item.icon}
                         </motion.span>
                         <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors duration-300">
                           {item.title}
