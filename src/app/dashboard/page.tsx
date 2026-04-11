@@ -39,6 +39,7 @@ const studentItems: MenuItem[] = [
 
 // 교사 메뉴 — 2열 그리드
 const teacherItems: MenuItem[] = [
+  { title: "원클릭 수업준비", desc: "주제 입력 → 슬라이드·워크시트·테스트·영상 한번에", icon: "🚀", href: "/teacher/lesson-prep" },
   { title: "공문서 포맷터", desc: "HWPX 업로드 → 원클릭 양식 교정", icon: "📄", href: "/teacher/formatter" },
   { title: "공문서 초안 작성기", desc: "주제 입력 → AI 공문서 초안 자동 생성", icon: "✍️", href: "/teacher/generator" },
   { title: "생기부 세특 도우미", desc: "NEIS 바이트 계산 · 금지어 감지 · 유사도 분석", icon: "📝", href: "/teacher/record" },

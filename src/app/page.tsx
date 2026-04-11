@@ -95,6 +95,12 @@ const studentFeatures = [
 
 const teacherFeatures = [
   {
+    title: "원클릭 수업준비",
+    description: "주제 하나면 슬라이드, 워크시트, 모의 테스트, 교육 영상까지 한번에 생성됩니다.",
+    icon: "🚀",
+    href: "/teacher/lesson-prep",
+  },
+  {
     title: "공문서 포맷터",
     description: "HWP/HWPX 업로드 → K-에듀파인 공문서 양식 원클릭 교정. 교사의 시간을 돌려드립니다.",
     icon: "📄",
@@ -117,7 +123,7 @@ const teacherFeatures = [
 const stats = [
   { num: 18000, suffix: "+", label: "영어 단어" },
   { num: 5000, suffix: "+", label: "직업 데이터" },
-  { num: 13, suffix: "개", label: "AI 기반 도구" },
+  { num: 14, suffix: "개", label: "AI 기반 도구" },
   { num: 100, suffix: "%", label: "무료" },
 ];
 
