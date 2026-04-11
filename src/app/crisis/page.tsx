@@ -298,10 +298,10 @@ export default function CrisisPage() {
         {/* 헤더 */}
         <div>
           <Link
-            href="/dashboard"
+            href="/"
             className="inline-flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors mb-6"
           >
-            ← 대시보드
+            ← 홈으로
           </Link>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
