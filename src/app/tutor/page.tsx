@@ -746,6 +746,46 @@ ${materialText.slice(0, 20000)}
                     <h2 className="text-sm font-semibold text-muted">단원 목록</h2>
                     <button onClick={() => setSidebarOpen(false)} className="text-muted hover:text-foreground lg:hidden">✕</button>
                   </div>
+
+                  {/* 네비게이션 링크 */}
+                  <div className="flex gap-2">
+                    <Link href="/dashboard" className="flex-1 text-center text-xs py-2 rounded-lg glass border border-white/5 hover:border-primary/30 text-muted hover:text-foreground transition-colors">
+                      🏠 대시보드
+                    </Link>
+                    <Link href="/" className="flex-1 text-center text-xs py-2 rounded-lg glass border border-white/5 hover:border-primary/30 text-muted hover:text-foreground transition-colors">
+                      🌐 홈
+                    </Link>
+                  </div>
+
+                  {/* 다른 교과 전환 */}
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-muted/40 mb-2">교과 전환</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SUBJECTS.filter((s) => s.id !== selectedSubject?.id).map((s) => (
+                        <button
+                          key={s.id}
+                          onClick={() => {
+                            setSelectedSubject(s);
+                            setSelectedTopic(null);
+                            setSelectedConcept(null);
+                            setStarted(false);
+                            setMessages([]);
+                            setSessionId(null);
+                            setSidebarOpen(false);
+                          }}
+                          className="text-xs px-2 py-1 rounded-lg glass hover:bg-white/5 text-muted hover:text-foreground transition-colors"
+                          title={s.name}
+                        >
+                          {s.icon} {s.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-white/5" />
+
+                  {/* 현재 교과 단원 목록 */}
+                  <p className="text-[10px] uppercase tracking-wider text-muted/40">{selectedSubject?.name} 단원</p>
                   {selectedSubject?.topics.map((topic, i) => {
                     const isCurrent = selectedTopic?.name === topic.name;
                     return (
