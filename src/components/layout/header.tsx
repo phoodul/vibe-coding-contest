@@ -13,7 +13,7 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="EasyEdu" width={48} height={48} className="w-12 h-12" />
+          <Image src="/logo.png" alt="EasyEdu" width={48} height={48} className="w-12 h-12" priority />
           <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
             EasyEdu AI
           </span>
@@ -29,7 +29,7 @@ export function Header() {
             href="/signup"
             className="btn-glow text-sm px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all active:scale-[0.97]"
           >
-            시작하기
+            회원가입
           </Link>
         </nav>
       </div>
