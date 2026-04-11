@@ -130,7 +130,7 @@ const teacherFeatures = [
 const stats = [
   { num: 18000, suffix: "+", label: "영어 단어" },
   { num: 5000, suffix: "+", label: "직업 데이터" },
-  { num: 15, suffix: "개", label: "AI 기반 도구" },
+  { num: 16, suffix: "개", label: "AI 기반 도구" },
   { num: 100, suffix: "%", label: "무료" },
 ];
 
@@ -260,7 +260,7 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="relative text-sm sm:text-base text-muted max-w-xl mx-auto mb-6"
           >
-            학생과 교사 모두를 위한 AI 교육 플랫폼 — 15개 도구를 무료로 사용하세요.
+            학생과 교사 모두를 위한 AI 교육 플랫폼 — 16개 도구를 무료로 사용하세요.
             <br />
             <span className="text-xs text-muted/60">로그인하면 학습 진행도 저장 · 세션 이어하기 · 독서기록 동기화가 가능합니다.</span>
           </motion.p>
