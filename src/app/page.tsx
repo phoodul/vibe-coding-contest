@@ -32,6 +32,12 @@ const studentFeatures = [
     href: "/tutor",
   },
   {
+    title: "오일러 튜터",
+    description: "계산은 AI가 할게요. 수학 문제의 논리적 사고과정을 따뜻한 멘토와 함께 훈련합니다.",
+    icon: "🧮",
+    href: "/euler-tutor",
+  },
+  {
     title: "마인드 맵",
     description: "교과서 전체 구조를 인터랙티브 마인드 맵으로 탐색하며 핵심 내용을 한눈에 파악합니다.",
     icon: "🧠",
@@ -123,7 +129,7 @@ const teacherFeatures = [
 const stats = [
   { num: 18000, suffix: "+", label: "영어 단어" },
   { num: 5000, suffix: "+", label: "직업 데이터" },
-  { num: 14, suffix: "개", label: "AI 기반 도구" },
+  { num: 15, suffix: "개", label: "AI 기반 도구" },
   { num: 100, suffix: "%", label: "무료" },
 ];
 

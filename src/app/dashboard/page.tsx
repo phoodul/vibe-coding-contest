@@ -25,6 +25,7 @@ interface MenuItem {
 // 학생 메뉴 — 2열 그리드
 const studentItems: MenuItem[] = [
   { title: "소크라테스 AI 튜터", desc: "질문으로 이끄는 AI 학습", icon: "🎓", href: "/tutor" },
+  { title: "오일러 튜터", desc: "수학 사고과정 코칭 — 계산은 AI가", icon: "🧮", href: "/euler-tutor" },
   { title: "마인드 맵", desc: "교과서 전체 구조를 한눈에 탐색", icon: "🧠", href: "/mind-map" },
   { title: "영어 단어 학습", desc: "18,000 단어 레벨별 에베레스트 등반", icon: "🏔️", href: "/vocabulary" },
   { title: "AI 영어 회화", desc: "내 수준에 맞는 음성 영어 대화", icon: "🎙️", href: "/conversation" },
