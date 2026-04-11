@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
 import { fireMiniConfetti } from "@/lib/confetti";
+import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
 export default function TutorPage() {
@@ -25,7 +26,11 @@ export default function TutorPage() {
   const [materialSource, setMaterialSource] = useState("");
   const [materialUrl, setMaterialUrl] = useState("");
   const [materialLoading, setMaterialLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [previousSessions, setPreviousSessions] = useState<{ id: string; subject: string; topic: string; updated_at: string }[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, append, status, setMessages } =
     useChat({
@@ -37,6 +42,61 @@ export default function TutorPage() {
       },
       maxSteps: 5,
     });
+
+  // 로그인 사용자 확인 + 이전 세션 불러오기
+  useEffect(() => {
+    (async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      setUserId(user.id);
+      const { data } = await supabase
+        .from("tutor_sessions")
+        .select("id, subject, topic, updated_at")
+        .eq("user_id", user.id)
+        .order("updated_at", { ascending: false })
+        .limit(5);
+      if (data) setPreviousSessions(data);
+    })();
+  }, []);
+
+  // 메시지 변경 시 세션 자동 저장 (디바운스 3초)
+  useEffect(() => {
+    if (!userId || !selectedSubject || messages.length === 0) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(async () => {
+      const supabase = createClient();
+      const sessionData = {
+        user_id: userId,
+        subject: selectedSubject.name,
+        topic: selectedTopic?.name || "자유 질문",
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      };
+      if (sessionId) {
+        await supabase.from("tutor_sessions").update(sessionData).eq("id", sessionId);
+      } else {
+        const { data } = await supabase.from("tutor_sessions").insert(sessionData).select("id").single();
+        if (data) setSessionId(data.id);
+      }
+    }, 3000);
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
+  }, [messages, userId, selectedSubject, selectedTopic, sessionId]);
+
+  // 이전 세션 이어하기
+  const resumeSession = useCallback(async (id: string) => {
+    const supabase = createClient();
+    const { data } = await supabase.from("tutor_sessions").select("*").eq("id", id).single();
+    if (!data) return;
+    const subject = SUBJECTS.find((s) => s.name === data.subject);
+    if (subject) {
+      setSelectedSubject(subject);
+      const topic = subject.topics.find((t) => t.name === data.topic);
+      if (topic) setSelectedTopic(topic);
+    }
+    setSessionId(id);
+    setMessages(data.messages || []);
+    setStarted(true);
+  }, [setMessages]);
 
   // 자동 스크롤 — 새 메시지 시 하단으로
   useEffect(() => {
@@ -336,6 +396,32 @@ ${materialText.slice(0, 20000)}
           </motion.div>
 
           <div className="space-y-6">
+            {/* 이전 세션 이어하기 */}
+            {previousSessions.length > 0 && !selectedSubject && (
+              <div>
+                <h2 className="text-lg font-semibold mb-3">이전 학습 이어하기</h2>
+                <div className="space-y-2">
+                  {previousSessions.map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => resumeSession(s.id)}
+                      className="w-full text-left glass p-3 rounded-xl border border-white/5 hover:border-primary/30 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-sm font-medium">{s.subject}</span>
+                          <span className="text-xs text-muted ml-2">{s.topic}</span>
+                        </div>
+                        <span className="text-xs text-muted/50">
+                          {new Date(s.updated_at).toLocaleDateString("ko-KR")}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* 교과 선택 */}
             <div>
               <h2 className="text-lg font-semibold mb-3">교과를 선택하세요</h2>
