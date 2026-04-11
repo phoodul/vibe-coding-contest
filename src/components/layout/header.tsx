@@ -13,7 +13,7 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/logo.png" alt="EasyEdu" width={32} height={32} className="w-8 h-8" />
+          <Image src="/logo.png" alt="EasyEdu" width={48} height={48} className="w-12 h-12" />
           <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
             EasyEdu AI
           </span>
