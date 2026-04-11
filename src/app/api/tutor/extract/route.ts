@@ -56,7 +56,6 @@ export async function POST(req: Request) {
     if (name.endsWith(".pdf")) {
       try {
         const buffer = Buffer.from(await file.arrayBuffer());
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mod = await import("pdf-parse") as any;
         const PDFParse = mod.PDFParse;
         const parser = new PDFParse(buffer);
