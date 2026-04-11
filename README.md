@@ -1,32 +1,47 @@
-# EduFlow AI
+# EasyEdu AI
 
-**AI 기반 차세대 교육 솔루션** — 학생 맞춤 학습 + 교사 행정 자동화
+**AI 활용 차세대 교육 솔루션** — 학생 맞춤 학습 16개 도구 + 교사 업무 자동화
 
-> 바이브코딩 2026 공모전 출품작 | [Live Demo](https://vibe-coding-contest-git-version2-phoodul-6034s-projects.vercel.app)
+> 바이브코딩 2026 공모전 출품작 | [프로덕션 URL](https://vibe-coding-contest.vercel.app)
 
 ---
 
 ## 해결하는 문제
 
-| 대상 | Pain Point | EduFlow AI 솔루션 |
+| 대상 | Pain Point | EasyEdu AI 솔루션 |
 |------|-----------|-------------------|
-| **학생** | 수동적 암기 학습, 진로 불안 | 소크라테스 AI 튜터, 진로 시뮬레이터, 맞춤 도서 추천 |
-| **교사** | 반복적 공문서 행정 업무 | 공문서 포맷터/생성기, 문서 발급 워크플로우 |
+| **학생** | 수동적 암기 학습, 진로 불안, 영어 회화 기회 부족 | 소크라테스 AI 튜터, 오일러 수학 튜터, 진로 시뮬레이터, AI 영어 회화 |
+| **교사** | 반복적 행정 업무, 수업 준비 과부하 | 원클릭 수업준비, 공문서 포맷터/생성기, 생기부 도우미 |
 
 ---
 
-## 주요 기능
+## 주요 기능 (학생 12개 + 교사 4개 = 16개)
 
-### 학생용
-- **소크라테스 AI 튜터** — 답을 주지 않고 질문으로 이끄는 대화형 학습 (국어/사회/과학)
-- **진로 시뮬레이터** — MBTI/적성/흥미 분석 -> 5,000+ 직업 매칭
-- **맞춤 도서 추천** — 학년/희망학과/진로 기반 AI 큐레이션
+### 학생용 (12개)
 
-### 교사용
-- **공문서 포맷터** — K-에듀파인 양식 자동 교정 (날짜/시간/금액/항목기호)
-- **공문서 생성기** — 자유 텍스트 -> AI가 두문-본문-결문 구조로 자동 작성
-- **문서 발급 워크플로우** — 업로드 -> 양식 검토 -> 승인 -> 번호 발급
-- **위변조 검증** — SHA-256 해시 기반 원본 확인 + 변경 이력 추적
+| # | 기능 | 경로 | 설명 |
+|---|------|------|------|
+| 1 | **소크라테스 AI 튜터** | `/tutor` | 질문으로 이끄는 Guided Learning, 세션 이어하기, 단원 퀴즈, 자료 업로드(PDF/MD/URL) |
+| 2 | **오일러 수학 튜터** | `/euler-tutor` | 수학 사고과정 코칭, 이미지 입력, backward reasoning |
+| 3 | **AI 영어 회화** | `/conversation` | PTT(스페이스바) 음성 대화, 레벨 테스트, AI 리포트(강점/교정/어휘) |
+| 4 | **진로 시뮬레이터** | `/career` | MBTI/적성/흥미 → 5,000+ 직업 매칭 + 대학·학과 추천 |
+| 5 | **AI 도서 추천** | `/books` | 학년·진로 기반 AI 큐레이션 + 국립중앙도서관 API 연동 + 독서 기록 |
+| 6 | **인터랙티브 마인드맵** | `/mind-map` | 3과목 교과서 PDF 원문 기반 방사형 트리 시각화 |
+| 7 | **에베레스트 단어 학습** | `/vocabulary` | 18,000개 영어 단어, 10단계 레벨, 에베레스트 등반 시각화 |
+| 8 | **영문법 핵심 문장 듣기** | `/grammar-listen` | 3레벨(A1~C2) × 100문장 = 300문장 반복 청취 |
+| 9 | **진로 탐색기** | `/pathfinder` | AI 기반 진로 경로 탐색 |
+| 10 | **PAPS 체력 분석** | `/paps` | 체력 등급 분석 + AI 맞춤 운동 프로그램 |
+| 11 | **음악 감상 도우미** | `/music-review` | AI 기반 음악 감상문 작성 지원 |
+| 12 | **위기 개입 자원** | `/crisis` | 상담 전화·기관·행동 가이드 종합 자원 페이지 |
+
+### 교사용 (4개)
+
+| # | 기능 | 경로 | 설명 |
+|---|------|------|------|
+| 1 | **원클릭 수업준비** | `/teacher/lesson-prep` | 주제/파일 입력 → 슬라이드·워크시트·테스트·영상 4개 산출물 동시 생성 |
+| 2 | **공문서 포맷터** | `/teacher/formatter` | K-에듀파인 양식 규칙 자동 교정 (HWP/DOCX/PDF/PPTX 파싱) |
+| 3 | **공문서 생성/발급** | `/teacher/generator` | AI 공문서 생성 + 승인 + 번호 발급 + SHA-256 위변조 검증 |
+| 4 | **생기부 도우미** | `/teacher/record` | NEIS 바이트 계산 + 금지어 감지 + AI 세특 작성 지원 |
 
 ---
 
@@ -34,12 +49,14 @@
 
 | 영역 | 기술 |
 |------|------|
-| Frontend | Next.js 15 (App Router), React 19, Tailwind CSS v4, Framer Motion |
+| Frontend | Next.js 15 (App Router), React 19, Tailwind CSS, Shadcn UI, Framer Motion |
 | Backend | Next.js API Routes, Vercel AI SDK (`streamText`) |
-| AI | Claude API (Sonnet) |
+| AI 모델 | Claude Sonnet 4 (15개 API), Claude Haiku 4.5 (영어 회화), OpenAI gpt-4o-mini-tts |
+| 웹 검색 | Tavily (웹 검색 + 영상 검색) |
 | DB/Auth | Supabase (PostgreSQL + Auth + Storage + RLS) |
 | 배포 | Vercel |
-| UI 패턴 | 글래스모피즘 + 벤토 그리드 + Mesh Gradient |
+| UI 패턴 | 글래스모피즘 + 메시 그라디언트 + 다크모드 |
+| 개발 도구 | Claude Code CLI (Opus 4.6, 1M context) |
 
 ---
 
@@ -49,25 +66,27 @@
 src/
 ├── app/
 │   ├── page.tsx                    # 랜딩 페이지
-│   ├── (auth)/login, signup/       # 인증
+│   ├── (auth)/login, signup/       # 인증 (Google/GitHub/Kakao OAuth)
 │   ├── dashboard/                  # 역할별 대시보드
 │   ├── tutor/                      # 소크라테스 AI 튜터
+│   ├── euler-tutor/                # 오일러 수학 튜터
+│   ├── conversation/               # AI 영어 회화
 │   ├── career/                     # 진로 시뮬레이터
-│   ├── books/                      # 도서 추천
-│   ├── teacher/
-│   │   ├── formatter/              # 공문서 포맷터
-│   │   ├── generator/              # 공문서 생성기
-│   │   └── documents/              # 문서 발급 워크플로우
-│   │       ├── upload/             #   업로드 + 양식 검토
-│   │       ├── [id]/               #   상세 (승인/수정/발급)
-│   │       └── verify/             #   위변조 검증
-│   └── api/                        # API Routes (6개)
-├── components/
-│   ├── layout/header.tsx
-│   └── shared/glass-card.tsx
+│   ├── books/                      # AI 도서 추천 + 독서 기록
+│   ├── mind-map/                   # 인터랙티브 마인드맵
+│   ├── vocabulary/                 # 에베레스트 단어 학습
+│   ├── grammar-listen/             # 영문법 핵심 문장 듣기
+│   ├── pathfinder/                 # 진로 탐색기
+│   ├── paps/                       # PAPS 체력 분석
+│   ├── music-review/               # 음악 감상 도우미
+│   ├── internship/                 # 직업 체험 시뮬레이터
+│   ├── crisis/                     # 위기 개입 자원
+│   ├── teacher/                    # 교사용 도구 4종
+│   └── api/                        # API Routes (18개 엔드포인트)
+├── components/                     # 공통 UI 컴포넌트
 └── lib/
-    ├── ai/                         # 프롬프트 (tutor, career)
-    ├── data/                       # 규칙 엔진, 해시 유틸
+    ├── ai/                         # 시스템 프롬프트
+    ├── data/                       # 교과서 데이터, 규칙 엔진
     └── supabase/                   # 클라이언트/서버/미들웨어
 ```
 
@@ -81,7 +100,11 @@ npm install
 
 # 2. 환경변수 설정
 cp .env.example .env
-# NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, ANTHROPIC_API_KEY 입력
+# 아래 변수를 입력:
+# NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
+# ANTHROPIC_API_KEY
+# OPENAI_API_KEY (TTS용)
+# TAVILY_API_KEY (웹 검색용)
 
 # 3. 개발 서버 실행
 npm run dev
@@ -89,23 +112,13 @@ npm run dev
 
 ---
 
-## 환경변수
-
-| 변수 | 설명 |
-|------|------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase 프로젝트 URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase 공개 키 |
-| `ANTHROPIC_API_KEY` | Claude API 키 |
-
----
-
 ## AI 활용
 
-이 프로젝트는 **Claude Code (Opus 4.6)**를 활용하여 설계부터 배포까지 전 과정을 AI와 협업하여 개발했습니다.
+이 프로젝트는 **Claude Code CLI (Opus 4.6, 1M context)**를 활용하여 설계부터 배포까지 전 과정을 AI와 협업하여 개발했습니다.
 
-- **Supabase MCP**: 자연어로 DB 마이그레이션 실행
-- **Vercel MCP**: 배포 상태 모니터링 및 빌드 에러 진단
-- **Context7 MCP**: 최신 라이브러리 문서 실시간 조회
+- 7개 서브 에이전트 + 6개 스킬 + 4개 Hooks로 AI 개발 워크플로우 체계화
+- 6개 MCP 서버 연동 (Supabase, Playwright, Context7, Vercel, Sequential Thinking, Firebase)
+- 173개 커밋, 25개 페이지, 18개 API 엔드포인트
 
 자세한 내용은 [AI 활용 리포트](docs/ai_report.md)를 참고하세요.
 
