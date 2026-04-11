@@ -497,7 +497,7 @@ export default function LandingPage() {
                 style={{ background: "linear-gradient(90deg, transparent, #f43f5e, transparent)" }}
               />
               <p className="text-lg sm:text-xl mb-1">
-                <span className="text-rose-400">💛</span> 혼자 힘들어하고 있나요?
+                <span className="text-rose-400">🚨</span> 혼자 힘들어하고 있나요?
               </p>
               <p className="text-sm text-muted mb-3">
                 자해·자살·학교폭력으로 고민하고 있다면, 24시간 도움을 받을 수 있어요.
@@ -511,22 +511,8 @@ export default function LandingPage() {
 
         {/* ─── Footer ─── */}
         <footer className="border-t border-white/5 py-8 mt-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted/50">
+          <div className="text-center text-xs text-muted/50">
             <p>&copy; 2026 EasyEdu AI — 바이브코딩 2026</p>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/crisis"
-                className="hover:text-rose-400 transition-colors"
-              >
-                위기 상담 안내
-              </Link>
-              <Link
-                href="/dashboard"
-                className="hover:text-foreground transition-colors"
-              >
-                대시보드
-              </Link>
-            </div>
           </div>
         </footer>
       </main>

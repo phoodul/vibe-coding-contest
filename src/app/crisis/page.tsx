@@ -14,6 +14,7 @@ interface Hotline {
   target: string;
   methods: string[];
   desc: string;
+  url?: string;
 }
 
 const emergencyLines: Hotline[] = [
@@ -22,13 +23,13 @@ const emergencyLines: Hotline[] = [
 ];
 
 const hotlines: Hotline[] = [
-  { name: "자살예방상담전화", org: "보건복지부", number: "109", hours: "24시간", target: "전 연령", methods: ["전화", "카카오톡", "앱", "문자"], desc: "자살 위험 시 전문상담사가 감정 지지와 위기 개입을 합니다. 기존 129·1393을 통합한 단축번호입니다." },
-  { name: "정신건강위기상담전화", org: "보건복지부", number: "1577-0199", hours: "24시간", target: "전 연령", methods: ["전화"], desc: "중증 우울, 자해 충동, 급격한 위기 등 정신건강 문제에 전문상담원이 대응합니다." },
-  { name: "청소년전화", org: "한국청소년상담복지개발원", number: "1388", hours: "24시간", target: "만 9~24세 / 보호자", methods: ["전화", "문자", "카카오톡", "웹", "챗봇"], desc: "학교·가정·자살충동 등 청소년 전용 상담. 인터넷 상담게시판, 심리검사도 제공합니다." },
-  { name: "생명의전화", org: "한국생명의전화", number: "1588-9191", hours: "24시간", target: "전 연령", methods: ["전화", "카카오톡 '채널 라임'"], desc: "자살 위기·외로움 상담. 한강교량 등 고위험 장소에 SOS 현장전화도 운영합니다." },
-  { name: "학교폭력신고", org: "", number: "117", hours: "24시간", target: "전 연령", methods: ["전화"], desc: "학교폭력 신고·상담. 학교장·교육청 조치를 요청할 수 있습니다." },
-  { name: "다 들어줄 개", org: "교육부", number: "1661-5004", hours: "24시간", target: "만 9~24세", methods: ["카카오톡", "앱", "문자"], desc: "익명 SNS 상담 앱. 전문상담원이 연결됩니다." },
-  { name: "여성긴급전화", org: "", number: "1366", hours: "24시간", target: "전 연령", methods: ["전화"], desc: "가정폭력·성폭력 위기 상담을 받을 수 있습니다." },
+  { name: "자살예방상담전화", org: "보건복지부", number: "109", hours: "24시간", target: "전 연령", methods: ["전화", "카카오톡", "앱", "문자"], desc: "자살 위험 시 전문상담사가 감정 지지와 위기 개입을 합니다.", url: "https://www.129.go.kr" },
+  { name: "정신건강위기상담전화", org: "보건복지부", number: "1577-0199", hours: "24시간", target: "전 연령", methods: ["전화"], desc: "중증 우울, 자해 충동, 급격한 위기 등 정신건강 문제에 전문상담원이 대응합니다.", url: "https://www.mentalhealth.go.kr" },
+  { name: "청소년전화", org: "한국청소년상담복지개발원", number: "1388", hours: "24시간", target: "만 9~24세 / 보호자", methods: ["전화", "문자", "카카오톡", "웹", "챗봇"], desc: "학교·가정·자살충동 등 청소년 전용 상담. 인터넷 상담게시판, 심리검사도 제공합니다.", url: "https://www.cyber1388.kr" },
+  { name: "생명의전화", org: "한국생명의전화", number: "1588-9191", hours: "24시간", target: "전 연령", methods: ["전화", "카카오톡 '채널 라임'"], desc: "자살 위기·외로움 상담.", url: "https://www.lifeline.or.kr" },
+  { name: "학교폭력신고", org: "", number: "117", hours: "24시간", target: "전 연령", methods: ["전화"], desc: "학교폭력 신고·상담. 학교장·교육청 조치를 요청할 수 있습니다.", url: "https://www.117.go.kr" },
+  { name: "다 들어줄 개", org: "교육부", number: "1661-5004", hours: "24시간", target: "만 9~24세", methods: ["카카오톡", "앱", "문자"], desc: "익명 SNS 상담 앱. 전문상담원이 연결됩니다.", url: "https://www.dadlg.kr" },
+  { name: "여성긴급전화", org: "", number: "1366", hours: "24시간", target: "전 연령", methods: ["전화"], desc: "가정폭력·성폭력 위기 상담을 받을 수 있습니다.", url: "https://www.women1366.kr" },
 ];
 
 interface SituationGuide {
@@ -90,17 +91,17 @@ const schoolSupport = [
 ];
 
 const medicalSupport = [
-  { title: "생명사랑위기대응센터", desc: "전국 75개 병원에 설치. 응급실 이송 후 집중치료와 재발 방지 프로그램을 제공합니다." },
-  { title: "응급 지원비", desc: "교육청에서 응급 입원·진료비를 일부 보조하는 제도를 운영합니다. 소득 기준에 따라 지원 가능합니다." },
-  { title: "정신건강의학과", desc: "종합병원 정신건강센터에서 상담·안전계획 수립. 지역 정신건강복지센터나 외래에서 상담, 약물·심리치료를 받을 수 있습니다." },
+  { title: "생명사랑위기대응센터", desc: "전국 75개 병원에 설치. 응급실 이송 후 집중치료와 재발 방지 프로그램을 제공합니다.", url: "https://www.spckorea.or.kr" },
+  { title: "응급 지원비", desc: "교육청에서 응급 입원·진료비를 일부 보조하는 제도를 운영합니다.", url: "https://www.moe.go.kr" },
+  { title: "정신건강복지센터 찾기", desc: "가까운 지역 정신건강복지센터에서 상담, 약물·심리치료를 받을 수 있습니다.", url: "https://www.mentalhealth.go.kr/portal/health/centerIntro.do" },
 ];
 
 const digitalResources = [
-  { title: "다 들어줄 개", desc: "교육부 지원 모바일 상담 앱. 카카오톡 플러스친구, 문자 1661-5004로 24시간 익명 상담.", tag: "앱/카카오" },
-  { title: "마음 콕 / 디지털 마음정원", desc: "보건복지부·교육부 배포 심리검진 앱. 우울·불안·자기파괴 위험도를 자가 측정할 수 있습니다.", tag: "앱" },
-  { title: "마음검진 사이트", desc: "정신건강복지센터 운영 온라인 심리검진. 스마트폰 설문으로 간편하게 체크.", tag: "웹" },
-  { title: "사이버상담 게시판", desc: "1388·109 외 1:1 온라인 비공개 상담. 상담사가 정해진 시간 내 답변합니다.", tag: "웹" },
-  { title: "카카오톡 채팅 상담", desc: "채널 라임(생명의전화), 카카오톡 오픈채팅 등을 통해 익명 상담이 가능합니다.", tag: "카카오" },
+  { title: "다 들어줄 개", desc: "교육부 지원 모바일 상담 앱. 카카오톡·문자로 24시간 익명 상담.", tag: "앱/카카오", url: "https://www.dadlg.kr" },
+  { title: "마음 콕", desc: "보건복지부 심리검진 앱. 우울·불안·자기파괴 위험도를 자가 측정.", tag: "앱", url: "https://www.mentalhealth.go.kr/portal/selfCheck/selfCheckList.do" },
+  { title: "마음검진 사이트", desc: "정신건강복지센터 운영 온라인 심리검진. 스마트폰 설문으로 간편하게 체크.", tag: "웹", url: "https://www.mentalhealth.go.kr" },
+  { title: "사이버상담 (1388)", desc: "1:1 온라인 비공개 상담. 상담사가 정해진 시간 내 답변합니다.", tag: "웹", url: "https://www.cyber1388.kr" },
+  { title: "카카오톡 채널 라임", desc: "생명의전화 카카오톡 채널을 통해 익명 상담이 가능합니다.", tag: "카카오", url: "https://pf.kakao.com/_xkAlxgC" },
 ];
 
 interface RegionInfo {
@@ -319,17 +320,16 @@ export default function CrisisPage() {
         <Section title="🚨 지금 위험한 상황이라면">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {emergencyLines.map((line) => (
-              <a
+              <div
                 key={line.number}
-                href={`tel:${line.number}`}
-                className="flex items-center gap-4 p-4 rounded-2xl border border-rose-500/30 bg-rose-500/5 hover:bg-rose-500/10 transition-all active:scale-[0.98]"
+                className="flex items-center gap-4 p-4 rounded-2xl border border-rose-500/30 bg-rose-500/5"
               >
                 <span className="text-3xl font-mono font-black text-rose-400">{line.number}</span>
                 <div>
                   <div className="font-semibold text-sm">{line.name}</div>
                   <div className="text-xs text-muted">{line.desc}</div>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         </Section>
@@ -353,9 +353,15 @@ export default function CrisisPage() {
                 className="p-4 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm space-y-2"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                  <PhoneLink number={h.number} className="text-lg text-primary" />
+                  <span className="text-lg font-mono font-bold text-muted/70">{h.number}</span>
                   <div className="flex-1">
-                    <span className="font-semibold text-sm">{h.name}</span>
+                    {h.url ? (
+                      <a href={h.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-sm text-primary hover:underline">
+                        {h.name} →
+                      </a>
+                    ) : (
+                      <span className="font-semibold text-sm">{h.name}</span>
+                    )}
                     {h.org && <span className="text-xs text-muted ml-2">{h.org}</span>}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted">
@@ -392,7 +398,14 @@ export default function CrisisPage() {
           <div className="space-y-2">
             {medicalSupport.map((item) => (
               <div key={item.title} className="p-4 rounded-xl border border-white/5 bg-white/[0.02]">
-                <div className="font-semibold text-sm mb-1">{item.title}</div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-semibold text-sm">{item.title}</span>
+                  {item.url && (
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors">
+                      🔗 바로가기
+                    </a>
+                  )}
+                </div>
                 <p className="text-sm text-muted leading-relaxed">{item.desc}</p>
               </div>
             ))}
@@ -410,6 +423,11 @@ export default function CrisisPage() {
                     <MethodBadge label={item.tag} />
                   </div>
                   <p className="text-sm text-muted leading-relaxed">{item.desc}</p>
+                  {item.url && (
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-xs px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors">
+                      바로 연결하기 →
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
