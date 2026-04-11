@@ -20,6 +20,10 @@ export default function TutorPage() {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [summaryText, setSummaryText] = useState("");
+  const [materialText, setMaterialText] = useState("");
+  const [materialSource, setMaterialSource] = useState("");
+  const [materialUrl, setMaterialUrl] = useState("");
+  const [materialLoading, setMaterialLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, append, status, setMessages } =
@@ -197,6 +201,59 @@ export default function TutorPage() {
       setSummaryLoading(false);
     }
   }, [messages, selectedSubject, selectedTopic]);
+
+  // 자료 업로드 (PDF/MD/TXT)
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMaterialLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/tutor/extract", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.error) { alert(data.error); return; }
+      setMaterialText(data.text);
+      setMaterialSource(data.source);
+    } catch { alert("파일 처리에 실패했습니다."); }
+    finally { setMaterialLoading(false); e.target.value = ""; }
+  }
+
+  // URL에서 내용 추출
+  async function handleUrlExtract() {
+    if (!materialUrl.trim()) return;
+    setMaterialLoading(true);
+    try {
+      const res = await fetch("/api/tutor/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: materialUrl.trim() }),
+      });
+      const data = await res.json();
+      if (data.error) { alert(data.error); return; }
+      setMaterialText(data.text);
+      setMaterialSource(data.source);
+    } catch { alert("URL 내용을 가져올 수 없습니다."); }
+    finally { setMaterialLoading(false); }
+  }
+
+  // 자료 기반 학습 시작
+  function startMaterialLesson() {
+    if (!materialText) return;
+    setStarted(true);
+    append({
+      role: "user",
+      content: `[SYSTEM: 학생이 자료 기반 학습을 선택했습니다. 아래 자료의 내용을 바탕으로 소크라테스 Guided Learning을 진행하세요.
+
+자료 출처: ${materialSource}
+
+먼저 자료를 분석하여 핵심 개념 5~8개를 파악하고, 첫 번째 개념부터 가이드 질문으로 수업을 시작하세요. 각 개념을 가르칠 때 반드시 자료의 원문 내용을 근거로 설명하세요.
+
+--- 자료 내용 ---
+${materialText.slice(0, 20000)}
+--- 자료 끝 ---]`,
+    });
+  }
 
   // 사이드바에서 단원 변경
   function switchTopic(topic: Topic) {
@@ -377,6 +434,71 @@ export default function TutorPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* 자료 기반 학습 */}
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+            >
+              <GlassCard hover={false} className="border-cyan-500/20">
+                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <span className="text-cyan-400">📎</span> 자료 기반 학습
+                </h3>
+                <p className="text-xs text-muted mb-4">
+                  PDF, MD 파일을 업로드하거나 웹 주소를 입력하면 해당 내용을 바탕으로 소크라테스 학습을 진행합니다.
+                </p>
+
+                {/* 파일 업로드 */}
+                <div className="flex flex-col sm:flex-row gap-2 mb-3">
+                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/15 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all cursor-pointer text-sm text-muted">
+                    <span>📄 PDF / MD / TXT 업로드</span>
+                    <input
+                      type="file"
+                      accept=".pdf,.md,.txt"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                {/* URL 입력 */}
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="url"
+                    value={materialUrl}
+                    onChange={(e) => setMaterialUrl(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleUrlExtract()}
+                    placeholder="https://docs.anthropic.com/en/docs/..."
+                    className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-cyan-500/50 transition-colors"
+                  />
+                  <button
+                    onClick={handleUrlExtract}
+                    disabled={materialLoading || !materialUrl.trim()}
+                    className="px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-400 text-sm font-medium hover:bg-cyan-500/30 transition-colors disabled:opacity-40"
+                  >
+                    {materialLoading ? "..." : "추출"}
+                  </button>
+                </div>
+
+                {/* 추출 결과 */}
+                {materialText && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-emerald-400">
+                        ✓ {materialSource} — {Math.round(materialText.length / 100) * 100}자 추출됨
+                      </p>
+                      <button onClick={() => { setMaterialText(""); setMaterialSource(""); }} className="text-xs text-muted hover:text-foreground">초기화</button>
+                    </div>
+                    <button
+                      onClick={startMaterialLesson}
+                      className="w-full btn-glow px-6 py-3 rounded-xl bg-cyan-600 text-white font-medium hover:bg-cyan-500 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      이 자료로 학습 시작하기
+                    </button>
+                  </div>
+                )}
+              </GlassCard>
+            </motion.div>
 
             {/* 자유 질문 진입 */}
             <AnimatePresence>
