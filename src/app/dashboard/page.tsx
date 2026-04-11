@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { GlassCard } from "@/components/shared/glass-card";
 import { CrisisButton } from "@/components/shared/crisis-button";
+import { SUBJECTS } from "@/lib/ai/tutor-prompt";
 
 interface Profile {
   display_name: string | null;
@@ -130,6 +131,9 @@ export default function DashboardPage() {
         </motion.div>
 
         <div className="space-y-10">
+          {/* 학습 진행도 */}
+          <TutorProgress />
+
           {/* 학생 기능 — 2열 그리드 */}
           <motion.div variants={sectionVariants} initial="hidden" animate="show">
             <div className="flex items-center gap-3 mb-4">
@@ -221,5 +225,79 @@ export default function DashboardPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+function TutorProgress() {
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("easyedu-tutor-progress");
+      if (saved) setCompleted(new Set(JSON.parse(saved)));
+    } catch { /* ignore */ }
+  }, []);
+
+  // 교과별 진행도 계산
+  const subjectProgress = SUBJECTS.filter((s) => s.topics.length > 0).map((subject) => {
+    const allConcepts = subject.topics.flatMap((t) => t.concepts);
+    const done = allConcepts.filter((c) => completed.has(c)).length;
+    return { name: subject.name, icon: subject.icon, total: allConcepts.length, done, topics: subject.topics.length };
+  });
+
+  const totalConcepts = subjectProgress.reduce((a, s) => a + s.total, 0);
+  const totalDone = subjectProgress.reduce((a, s) => a + s.done, 0);
+
+  if (totalDone === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <h2 className="text-sm font-medium text-muted uppercase tracking-wider">학습 진행도</h2>
+        <div className="flex-1 h-px bg-white/5" />
+        <span className="text-xs text-muted">{totalDone} / {totalConcepts} 개념</span>
+      </div>
+      <div className="glass-gradient p-5 space-y-4">
+        {/* 전체 프로그레스 바 */}
+        <div>
+          <div className="flex justify-between text-xs text-muted mb-1.5">
+            <span>전체 진행률</span>
+            <span>{totalConcepts > 0 ? Math.round((totalDone / totalConcepts) * 100) : 0}%</span>
+          </div>
+          <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-primary to-cyan-400 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${totalConcepts > 0 ? (totalDone / totalConcepts) * 100 : 0}%` }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
+        </div>
+        {/* 교과별 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {subjectProgress.filter((s) => s.done > 0).map((s) => (
+            <Link key={s.name} href="/tutor" className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/5 transition-colors">
+              <span className="text-2xl">{s.icon}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium truncate">{s.name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary/60 rounded-full"
+                      style={{ width: `${(s.done / s.total) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] text-muted shrink-0">{s.done}/{s.total}</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </motion.div>
   );
 }

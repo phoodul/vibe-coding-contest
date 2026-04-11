@@ -42,7 +42,17 @@ export default function TutorPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  // AI 응답에서 [CONCEPT_DONE: ...] 마커 감지
+  const PROGRESS_KEY = "easyedu-tutor-progress";
+
+  // localStorage에서 진행도 로드
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(PROGRESS_KEY);
+      if (saved) setCompletedConcepts(new Set(JSON.parse(saved)));
+    } catch { /* ignore */ }
+  }, []);
+
+  // AI 응답에서 [CONCEPT_DONE: ...] 마커 감지 + localStorage 저장
   useEffect(() => {
     const assistantMsgs = messages.filter((m) => m.role === "assistant");
     const newCompleted = new Set(completedConcepts);
@@ -54,6 +64,7 @@ export default function TutorPage() {
     }
     if (newCompleted.size !== completedConcepts.size) {
       setCompletedConcepts(newCompleted);
+      try { localStorage.setItem(PROGRESS_KEY, JSON.stringify([...newCompleted])); } catch { /* ignore */ }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
