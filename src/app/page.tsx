@@ -108,6 +108,12 @@ const teacherFeatures = [
     href: "/teacher/lesson-prep",
   },
   {
+    title: "생기부 세특 도우미",
+    description: "NEIS 바이트 실시간 계산, 금지어 자동 감지, 학생별 유사도 분석. AI가 못하는 것을 해결합니다.",
+    icon: "📝",
+    href: "/teacher/record",
+  },
+  {
     title: "공문서 포맷터",
     description: "HWP/HWPX 업로드 → K-에듀파인 공문서 양식 원클릭 교정. 교사의 시간을 돌려드립니다.",
     icon: "📄",
@@ -118,12 +124,6 @@ const teacherFeatures = [
     description: "주제만 입력하면 K-에듀파인 양식에 맞는 공문서 초안을 AI가 즉시 생성합니다.",
     icon: "✍️",
     href: "/teacher/generator",
-  },
-  {
-    title: "생기부 세특 도우미",
-    description: "NEIS 바이트 실시간 계산, 금지어 자동 감지, 학생별 유사도 분석. AI가 못하는 것을 해결합니다.",
-    icon: "📝",
-    href: "/teacher/record",
   },
 ];
 
@@ -343,7 +343,7 @@ export default function LandingPage() {
             <div className="flex-1 h-px bg-white/5" />
             <span className="text-[10px] text-muted/40">{teacherFeatures.length}개</span>
           </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {teacherFeatures.map((f, i) => {
               const ai = i + studentFeatures.length;
               return (
@@ -407,7 +407,8 @@ export default function LandingPage() {
               <span className="relative text-4xl block mb-3">🎓</span>
               <h3 className="relative text-lg font-bold mb-2">학생이신가요?</h3>
               <p className="relative text-muted text-xs sm:text-sm mb-5 max-w-xs mx-auto">
-                AI 튜터, 마인드 맵, 진로 탐색까지 — 공부가 즐거워집니다.
+                AI 튜터, 마인드 맵, 진로 탐색까지<br />
+                공부가 즐거워집니다.
               </p>
               <Link
                 href="/dashboard"
@@ -426,7 +427,8 @@ export default function LandingPage() {
               <span className="relative text-4xl block mb-3">📝</span>
               <h3 className="relative text-lg font-bold mb-2">교사이신가요?</h3>
               <p className="relative text-muted text-xs sm:text-sm mb-5 max-w-xs mx-auto">
-                원클릭 수업준비, 공문서 교정, 세특 도우미 — 업무 시간을 돌려드립니다.
+                원클릭 수업준비, 공문서 교정, 세특 도우미<br />
+                업무 시간을 돌려드립니다.
               </p>
               <Link
                 href="/dashboard"
