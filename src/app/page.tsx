@@ -269,17 +269,11 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.25 }}
-            className="relative flex flex-col sm:flex-row gap-3 justify-center"
+            className="relative flex justify-center"
           >
             <Link
-              href="/signup"
-              className="btn-glow px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-all hover:scale-105 active:scale-[0.97]"
-            >
-              무료로 시작하기
-            </Link>
-            <Link
               href="/dashboard"
-              className="px-6 py-2.5 rounded-xl glass text-foreground text-sm font-medium hover:bg-card-hover transition-all active:scale-[0.97]"
+              className="btn-glow px-8 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium transition-all hover:scale-105 active:scale-[0.97]"
             >
               바로 체험하기
             </Link>
