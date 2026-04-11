@@ -28,7 +28,6 @@ const hotlines: Hotline[] = [
   { name: "청소년전화", org: "한국청소년상담복지개발원", number: "1388", hours: "24시간", target: "만 9~24세 / 보호자", methods: ["전화", "문자", "카카오톡", "웹", "챗봇"], desc: "학교·가정·자살충동 등 청소년 전용 상담. 인터넷 상담게시판, 심리검사도 제공합니다.", url: "https://www.1388.go.kr" },
   { name: "생명의전화", org: "한국생명의전화", number: "1588-9191", hours: "24시간", target: "전 연령", methods: ["전화", "카카오톡"], desc: "자살 위기·외로움 상담.", url: "https://www.lifeline.or.kr" },
   { name: "학교폭력신고 (안전Dream)", org: "", number: "117", hours: "24시간", target: "전 연령", methods: ["전화"], desc: "학교폭력 신고·상담. 학교장·교육청 조치를 요청할 수 있습니다.", url: "https://www.safe182.go.kr/index.do?main=117" },
-  { name: "다 들어줄 개", org: "교육부", number: "1661-5004", hours: "24시간", target: "만 9~24세", methods: ["카카오톡", "앱", "문자"], desc: "익명 SNS 상담 앱. 전문상담원이 연결됩니다." },
   { name: "여성긴급전화", org: "", number: "1366", hours: "24시간", target: "전 연령", methods: ["전화"], desc: "가정폭력·성폭력 위기 상담을 받을 수 있습니다.", url: "https://www.women1366.kr" },
 ];
 
@@ -97,7 +96,6 @@ const medicalSupport = [
 ];
 
 const digitalResources = [
-  { title: "다 들어줄 개", desc: "교육부 지원 모바일 상담 앱. 카카오톡·문자로 24시간 익명 상담.", tag: "앱/카카오" },
   { title: "마음 콕 (자가 심리검진)", desc: "보건복지부 심리검진. 우울·불안·자기파괴 위험도를 자가 측정.", tag: "웹", url: "https://www.mentalhealth.go.kr/portal/mdexmn/selectMdexmnList.do" },
   { title: "국가정신건강정보포털", desc: "정신건강복지센터 운영 온라인 심리검진·정보 제공.", tag: "웹", url: "https://www.mentalhealth.go.kr" },
   { title: "사이버상담 (1388)", desc: "1:1 온라인 비공개 상담. 상담사가 정해진 시간 내 답변합니다.", tag: "웹", url: "https://www.1388.go.kr" },
