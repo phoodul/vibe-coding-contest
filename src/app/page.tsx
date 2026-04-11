@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform, useInView, useSpring, useMotionValue } from "framer-motion";
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { GlassCard } from "@/components/shared/glass-card";
@@ -115,10 +115,10 @@ const teacherFeatures = [
 ];
 
 const stats = [
-  { value: "18,000+", label: "영어 단어" },
-  { value: "5,000+", label: "직업 데이터" },
-  { value: "13", label: "AI 기반 도구" },
-  { value: "100%", label: "무료" },
+  { num: 18000, suffix: "+", label: "영어 단어" },
+  { num: 5000, suffix: "+", label: "직업 데이터" },
+  { num: 13, suffix: "개", label: "AI 기반 도구" },
+  { num: 100, suffix: "%", label: "무료" },
 ];
 
 const stagger = {
@@ -137,6 +137,28 @@ const fadeUp = {
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
+
+/* ─── Count-up number component ─── */
+function CountUp({ target, suffix }: { target: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const mv = useMotionValue(0);
+  const spring = useSpring(mv, { stiffness: 50, damping: 20 });
+  const [display, setDisplay] = useState("0");
+
+  useEffect(() => {
+    if (inView) mv.set(target);
+  }, [inView, mv, target]);
+
+  useEffect(() => {
+    const unsub = spring.on("change", (v) => {
+      setDisplay(Math.round(v).toLocaleString());
+    });
+    return unsub;
+  }, [spring]);
+
+  return <span ref={ref}>{display}{suffix}</span>;
+}
 
 /* ─── Inline SVG logos for "Powered by" section ─── */
 function ClaudeLogo() {
@@ -422,7 +444,7 @@ export default function LandingPage() {
                 className="text-center"
               >
                 <p className="text-2xl sm:text-4xl font-bold text-shimmer">
-                  {stat.value}
+                  <CountUp target={stat.num} suffix={stat.suffix} />
                 </p>
                 <p className="text-xs sm:text-sm text-muted mt-1">{stat.label}</p>
               </motion.div>
