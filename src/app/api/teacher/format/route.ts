@@ -1,14 +1,16 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { NextResponse } from "next/server";
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { text } = await req.json();
+  try {
+    const { text } = await req.json();
 
-  const result = streamText({
-    model: anthropic("claude-sonnet-4-20250514"),
-    system: `당신은 K-에듀파인 공문서 양식 전문가입니다.
+    const result = streamText({
+      model: anthropic("claude-sonnet-4-20250514"),
+      system: `당신은 K-에듀파인 공문서 양식 전문가입니다.
 
 주어진 텍스트에서 공문서 양식 규칙 위반 사항을 찾아내세요.
 
@@ -24,13 +26,16 @@ export async function POST(req: Request) {
 
 각 위반에 대해 줄 번호, 원본, 교정안, 위반 규칙을 알려주세요.
 존댓말을 사용하세요.`,
-    messages: [
-      {
-        role: "user",
-        content: `다음 텍스트의 공문서 양식 규칙 위반을 찾아주세요:\n\n${text}`,
-      },
-    ],
-  });
+      messages: [
+        {
+          role: "user",
+          content: `다음 텍스트의 공문서 양식 규칙 위반을 찾아주세요:\n\n${text}`,
+        },
+      ],
+    });
 
-  return result.toDataStreamResponse();
+    return result.toDataStreamResponse();
+  } catch {
+    return NextResponse.json({ error: "요청 처리 중 오류가 발생했습니다." }, { status: 500 });
+  }
 }

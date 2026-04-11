@@ -1,18 +1,20 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { NextResponse } from "next/server";
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  try {
+    const { messages } = await req.json();
 
-  // useChat에서 보낸 마지막 user 메시지에서 요청사항+독서기록 추출
-  const lastMsg = messages?.filter((m: { role: string }) => m.role === "user").pop();
-  const userContent = lastMsg?.content || "";
+    // useChat에서 보낸 마지막 user 메시지에서 요청사항+독서기록 추출
+    const lastMsg = messages?.filter((m: { role: string }) => m.role === "user").pop();
+    const userContent = lastMsg?.content || "";
 
-  const result = streamText({
-    model: anthropic("claude-sonnet-4-20250514"),
-    system: `당신은 학생의 독서 기록을 바탕으로 맞춤형 독서기록 요약문을 작성하는 교육 전문가입니다.
+    const result = streamText({
+      model: anthropic("claude-sonnet-4-20250514"),
+      system: `당신은 학생의 독서 기록을 바탕으로 맞춤형 독서기록 요약문을 작성하는 교육 전문가입니다.
 
 사용자가 [요청사항]과 [독서 기록 목록]을 함께 보냅니다.
 
@@ -27,8 +29,11 @@ export async function POST(req: Request) {
 ## 출력 형식
 - 요청에 맞는 요약문을 바로 출력하세요
 - 부가 설명 없이 요약문 본문만 출력하세요`,
-    messages: [{ role: "user" as const, content: userContent }],
-  });
+      messages: [{ role: "user" as const, content: userContent }],
+    });
 
-  return result.toDataStreamResponse();
+    return result.toDataStreamResponse();
+  } catch {
+    return NextResponse.json({ error: "요청 처리 중 오류가 발생했습니다." }, { status: 500 });
+  }
 }

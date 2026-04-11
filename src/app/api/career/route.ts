@@ -1,22 +1,24 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { NextResponse } from "next/server";
 import { CAREER_SYSTEM_PROMPT } from "@/lib/ai/career-prompt";
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
-
-  // useChat이 전송한 messages에서 첫 번째 user 메시지(assessment JSON)를 추출
-  const userMsg = messages?.find((m: { role: string }) => m.role === "user");
-  let assessment: Record<string, string | string[]> = {};
   try {
-    assessment = JSON.parse(userMsg?.content || "{}");
-  } catch {
-    assessment = {};
-  }
+    const { messages } = await req.json();
 
-  const userMessage = `다음은 학생의 프로필입니다:
+    // useChat이 전송한 messages에서 첫 번째 user 메시지(assessment JSON)를 추출
+    const userMsg = messages?.find((m: { role: string }) => m.role === "user");
+    let assessment: Record<string, string | string[]> = {};
+    try {
+      assessment = JSON.parse(userMsg?.content || "{}");
+    } catch {
+      assessment = {};
+    }
+
+    const userMessage = `다음은 학생의 프로필입니다:
 
 - 성별: ${assessment.gender || "미입력"}
 - 나이: ${assessment.age || "미입력"}
@@ -51,11 +53,14 @@ export async function POST(req: Request) {
 마지막에 진로 경로(현재 → 과목 선택 → 대학 전공 → 직업)도 제시해주세요.
 Markdown 형식으로 보기 좋게 정리해주세요. 각 섹션 제목에 어떤 분야 조합인지 표시해주세요.`;
 
-  const result = streamText({
-    model: anthropic("claude-sonnet-4-20250514"),
-    system: CAREER_SYSTEM_PROMPT,
-    messages: [{ role: "user", content: userMessage }],
-  });
+    const result = streamText({
+      model: anthropic("claude-sonnet-4-20250514"),
+      system: CAREER_SYSTEM_PROMPT,
+      messages: [{ role: "user", content: userMessage }],
+    });
 
-  return result.toDataStreamResponse();
+    return result.toDataStreamResponse();
+  } catch {
+    return NextResponse.json({ error: "요청 처리 중 오류가 발생했습니다." }, { status: 500 });
+  }
 }

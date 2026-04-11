@@ -1,14 +1,16 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { NextResponse } from "next/server";
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { prompt, docType } = await req.json();
+  try {
+    const { prompt, docType } = await req.json();
 
-  const result = streamText({
-    model: anthropic("claude-sonnet-4-20250514"),
-    system: `당신은 K-에듀파인 공문서 작성 전문가입니다.
+    const result = streamText({
+      model: anthropic("claude-sonnet-4-20250514"),
+      system: `당신은 K-에듀파인 공문서 작성 전문가입니다.
 
 교사가 전달할 내용/주제를 입력하면, 한국 공문서 양식(두문-본문-결문)에 맞게 완전한 공문서를 생성합니다.
 
@@ -45,18 +47,21 @@ export async function POST(req: Request) {
 교사의 자유 텍스트를 위 규칙에 맞는 완결된 공문서로 변환해주세요.
 한국어 존댓말을 사용하고, 공문서 특유의 격식체를 유지하세요.
 구체적 내용이 불분명한 부분은 (괄호) 안에 안내 텍스트를 넣어주세요.`,
-    messages: [
-      {
-        role: "user",
-        content: `문서 유형: ${docType || "안내문"}
+      messages: [
+        {
+          role: "user",
+          content: `문서 유형: ${docType || "안내문"}
 
 주제/내용:
 ${prompt}
 
 위 내용을 K-에듀파인 공문서 양식으로 변환해주세요.`,
-      },
-    ],
-  });
+        },
+      ],
+    });
 
-  return result.toDataStreamResponse();
+    return result.toDataStreamResponse();
+  } catch {
+    return NextResponse.json({ error: "요청 처리 중 오류가 발생했습니다." }, { status: 500 });
+  }
 }

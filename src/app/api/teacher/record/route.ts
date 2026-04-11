@@ -1,14 +1,16 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
+import { NextResponse } from "next/server";
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { prompt, subject, byteLimit } = await req.json();
+  try {
+    const { prompt, subject, byteLimit } = await req.json();
 
-  const result = streamText({
-    model: anthropic("claude-sonnet-4-20250514"),
-    system: `당신은 한국 학교 생활기록부 세부능력 및 특기사항(세특) 작성 전문가입니다.
+    const result = streamText({
+      model: anthropic("claude-sonnet-4-20250514"),
+      system: `당신은 한국 학교 생활기록부 세부능력 및 특기사항(세특) 작성 전문가입니다.
 
 ## 규칙
 1. NEIS EUC-KR 기준 ${byteLimit || 500}바이트 이내로 작성 (한글 1자=2바이트, 영문/숫자=1바이트)
@@ -27,18 +29,21 @@ export async function POST(req: Request) {
 
 ## 좋은 세특 예시
 "수업 중 토론 활동에서 자신의 주장을 논리적으로 전개하며 상대방 의견을 경청하는 자세가 돋보임. 특히 '기본권 제한의 한계' 주제에서 비례원칙의 4가지 요소를 실제 판례와 연결하여 분석하는 능력을 보여줌."`,
-    messages: [
-      {
-        role: "user",
-        content: `과목: ${subject || "교과"}
+      messages: [
+        {
+          role: "user",
+          content: `과목: ${subject || "교과"}
 
 학생 특성/활동 키워드:
 ${prompt}
 
 위 내용을 바탕으로 세부능력 및 특기사항을 작성해주세요. ${byteLimit || 500}바이트 이내로 작성하세요.`,
-      },
-    ],
-  });
+        },
+      ],
+    });
 
-  return result.toDataStreamResponse();
+    return result.toDataStreamResponse();
+  } catch {
+    return NextResponse.json({ error: "요청 처리 중 오류가 발생했습니다." }, { status: 500 });
+  }
 }
