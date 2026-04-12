@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
 import { MATH_AREAS } from "@/lib/ai/euler-prompt";
-import { mathProblems, filterProblems, MATH_AREAS as PROBLEM_AREAS, EXAM_YEARS, type MathProblem } from "@/lib/data/math-problems";
+import { filterProblems, EXAM_YEARS, EXAM_TYPES, TOTAL_PROBLEMS, type MathProblem } from "@/lib/data/math-problems";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -19,8 +19,8 @@ export default function EulerTutorPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // 기출문제
-  const [examArea, setExamArea] = useState<string>("공통수학");
-  const [examYear, setExamYear] = useState<number | null>(null);
+  const [examYear, setExamYear] = useState<number>(2026);
+  const [examType, setExamType] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,13 +40,12 @@ export default function EulerTutorPage() {
   }
 
   function startWithProblem(problem: MathProblem) {
-    setArea(problem.area);
+    setArea(problem.type);
     setPhase("chat");
-    // 문제를 첫 메시지로 보내기
     setTimeout(() => {
       append({
         role: "user",
-        content: `[${problem.year}학년도 ${problem.exam} ${problem.number}번 — ${problem.subArea}]\n\n${problem.question}\n\n이 문제를 함께 풀어보고 싶어요. 어떻게 접근해야 할까요?`,
+        content: `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? "객관식" : "주관식"}]\n\n이 문제를 함께 풀어보고 싶어요. 문제를 보여주시면 같이 풀어볼게요!\n\n(힌트: 정답은 ${problem.answer}${problem.isMultipleChoice ? "번" : ""}입니다. 하지만 정답을 바로 알려주지 말고, 제가 사고과정을 통해 스스로 도달할 수 있도록 코칭해주세요.)`,
       });
     }, 300);
   }
@@ -206,7 +205,7 @@ export default function EulerTutorPage() {
               />
               <span className="text-2xl block mb-2">📝</span>
               <p className="font-bold text-sm mb-1">수능 기출문제 연습</p>
-              <p className="text-xs text-muted">2015~2024 수능 · 6월 · 9월 평가원 | 영역별 기출과 함께 사고과정 훈련</p>
+              <p className="text-xs text-muted">2017~2026학년도 수능 전 문항 | {TOTAL_PROBLEMS}문제 | 사고과정 훈련</p>
             </button>
           </motion.div>
         </main>
@@ -216,10 +215,9 @@ export default function EulerTutorPage() {
 
   // 기출문제 선택 화면
   if (phase === "past-exam") {
-    const filtered = filterProblems({
-      area: examArea,
-      ...(examYear ? { year: examYear } : {}),
-    });
+    const types = EXAM_TYPES[examYear] || [];
+    const selectedType = examType || types[0] || "";
+    const filtered = filterProblems({ year: examYear, type: selectedType });
 
     return (
       <div className="min-h-screen bg-background">
@@ -229,55 +227,47 @@ export default function EulerTutorPage() {
               ← 영역 선택
             </button>
             <h1 className="text-sm font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
-              수능 기출문제
+              수능 기출 ({TOTAL_PROBLEMS}문제)
             </h1>
             <div className="w-16" />
           </div>
         </header>
 
         <main className="max-w-2xl mx-auto px-4 py-8">
-          {/* 영역 선택 */}
+          {/* 학년도 선택 */}
           <div className="flex gap-2 flex-wrap mb-4">
-            {PROBLEM_AREAS.map((a) => (
+            {EXAM_YEARS.map((y) => (
               <button
-                key={a}
-                onClick={() => setExamArea(a)}
+                key={y}
+                onClick={() => { setExamYear(y); setExamType(""); }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  examArea === a
+                  examYear === y
                     ? "bg-violet-500 text-white shadow-lg shadow-violet-500/25"
                     : "glass hover:bg-white/10"
                 }`}
               >
-                {a}
+                {y}학년도
               </button>
             ))}
           </div>
 
-          {/* 연도 필터 */}
+          {/* 유형 선택 */}
           <div className="flex gap-2 flex-wrap mb-6">
-            <button
-              onClick={() => setExamYear(null)}
-              className={`px-2.5 py-1 rounded-md text-[11px] transition-all ${
-                !examYear ? "bg-white/15 text-white" : "text-muted hover:text-foreground"
-              }`}
-            >
-              전체
-            </button>
-            {EXAM_YEARS.map((y) => (
+            {types.map((t) => (
               <button
-                key={y}
-                onClick={() => setExamYear(y)}
+                key={t}
+                onClick={() => setExamType(t)}
                 className={`px-2.5 py-1 rounded-md text-[11px] transition-all ${
-                  examYear === y ? "bg-white/15 text-white" : "text-muted hover:text-foreground"
+                  selectedType === t ? "bg-white/15 text-white" : "text-muted hover:text-foreground"
                 }`}
               >
-                {y}
+                {t}
               </button>
             ))}
           </div>
 
           {/* 문제 목록 */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             {filtered.length === 0 ? (
               <p className="text-center text-muted text-sm py-8">해당 조건의 문제가 없습니다.</p>
             ) : (
@@ -289,22 +279,17 @@ export default function EulerTutorPage() {
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   onClick={() => startWithProblem(p)}
-                  className="w-full text-left glass-gradient p-4 relative overflow-hidden group hover:border-violet-500/20 transition-all"
+                  className="w-full text-left glass-gradient p-3 relative overflow-hidden group hover:border-violet-500/20 transition-all"
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300">
-                          {p.year} {p.exam}
-                        </span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted">
-                          {p.subArea}
-                        </span>
-                        <span className="text-[10px] text-muted">
-                          {"⭐".repeat(p.difficulty)}
-                        </span>
-                      </div>
-                      <p className="text-sm leading-relaxed line-clamp-2">{p.question}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono font-bold text-violet-400 w-8">{p.number}번</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted">
+                        {p.isMultipleChoice ? "객관식" : "주관식"}
+                      </span>
+                      <span className="text-xs text-muted">
+                        {p.isMultipleChoice ? `정답: ${p.answer}번` : `정답: ${p.answer}`}
+                      </span>
                     </div>
                     <span className="text-muted text-xs shrink-0 group-hover:text-violet-400 transition-colors">
                       풀기 →
@@ -316,7 +301,7 @@ export default function EulerTutorPage() {
           </div>
 
           <p className="text-center text-[10px] text-muted/40 mt-6">
-            {filtered.length}개 문제 | 출처: 한국교육과정평가원 (KICE)
+            {filtered.length}문항 | {examYear}학년도 수능 {selectedType} | 출처: 한국교육과정평가원
           </p>
         </main>
       </div>
