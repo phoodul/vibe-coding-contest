@@ -7,15 +7,20 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
 import { MATH_AREAS } from "@/lib/ai/euler-prompt";
+import { mathProblems, filterProblems, MATH_AREAS as PROBLEM_AREAS, EXAM_YEARS, type MathProblem } from "@/lib/data/math-problems";
 import Image from "next/image";
 import Link from "next/link";
 
-type Phase = "select" | "chat";
+type Phase = "select" | "past-exam" | "chat";
 
 export default function EulerTutorPage() {
   const [phase, setPhase] = useState<Phase>("select");
   const [area, setArea] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // 기출문제
+  const [examArea, setExamArea] = useState<string>("공통수학");
+  const [examYear, setExamYear] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,6 +37,18 @@ export default function EulerTutorPage() {
   function startChat(selectedArea: string) {
     setArea(selectedArea);
     setPhase("chat");
+  }
+
+  function startWithProblem(problem: MathProblem) {
+    setArea(problem.area);
+    setPhase("chat");
+    // 문제를 첫 메시지로 보내기
+    setTimeout(() => {
+      append({
+        role: "user",
+        content: `[${problem.year}학년도 ${problem.exam} ${problem.number}번 — ${problem.subArea}]\n\n${problem.question}\n\n이 문제를 함께 풀어보고 싶어요. 어떻게 접근해야 할까요?`,
+      });
+    }, 300);
   }
 
   const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,6 +153,136 @@ export default function EulerTutorPage() {
               </motion.button>
             ))}
           </motion.div>
+
+          {/* 기출문제 연습 버튼 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8"
+          >
+            <button
+              onClick={() => setPhase("past-exam")}
+              className="w-full glass-gradient p-5 text-center relative overflow-hidden group hover:border-violet-500/30 transition-all"
+            >
+              <div
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, transparent)" }}
+              />
+              <span className="text-2xl block mb-2">📝</span>
+              <p className="font-bold text-sm mb-1">수능 기출문제 연습</p>
+              <p className="text-xs text-muted">2015~2024 수능 · 6월 · 9월 평가원 | 영역별 기출과 함께 사고과정 훈련</p>
+            </button>
+          </motion.div>
+        </main>
+      </div>
+    );
+  }
+
+  // 기출문제 선택 화면
+  if (phase === "past-exam") {
+    const filtered = filterProblems({
+      area: examArea,
+      ...(examYear ? { year: examYear } : {}),
+    });
+
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-30 glass border-b border-white/5">
+          <div className="max-w-3xl mx-auto flex items-center justify-between px-4 h-14">
+            <button onClick={() => setPhase("select")} className="text-sm text-muted hover:text-foreground transition-colors">
+              ← 영역 선택
+            </button>
+            <h1 className="text-sm font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+              수능 기출문제
+            </h1>
+            <div className="w-16" />
+          </div>
+        </header>
+
+        <main className="max-w-2xl mx-auto px-4 py-8">
+          {/* 영역 선택 */}
+          <div className="flex gap-2 flex-wrap mb-4">
+            {PROBLEM_AREAS.map((a) => (
+              <button
+                key={a}
+                onClick={() => setExamArea(a)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  examArea === a
+                    ? "bg-violet-500 text-white shadow-lg shadow-violet-500/25"
+                    : "glass hover:bg-white/10"
+                }`}
+              >
+                {a}
+              </button>
+            ))}
+          </div>
+
+          {/* 연도 필터 */}
+          <div className="flex gap-2 flex-wrap mb-6">
+            <button
+              onClick={() => setExamYear(null)}
+              className={`px-2.5 py-1 rounded-md text-[11px] transition-all ${
+                !examYear ? "bg-white/15 text-white" : "text-muted hover:text-foreground"
+              }`}
+            >
+              전체
+            </button>
+            {EXAM_YEARS.map((y) => (
+              <button
+                key={y}
+                onClick={() => setExamYear(y)}
+                className={`px-2.5 py-1 rounded-md text-[11px] transition-all ${
+                  examYear === y ? "bg-white/15 text-white" : "text-muted hover:text-foreground"
+                }`}
+              >
+                {y}
+              </button>
+            ))}
+          </div>
+
+          {/* 문제 목록 */}
+          <div className="space-y-3">
+            {filtered.length === 0 ? (
+              <p className="text-center text-muted text-sm py-8">해당 조건의 문제가 없습니다.</p>
+            ) : (
+              filtered.map((p) => (
+                <motion.button
+                  key={p.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => startWithProblem(p)}
+                  className="w-full text-left glass-gradient p-4 relative overflow-hidden group hover:border-violet-500/20 transition-all"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300">
+                          {p.year} {p.exam}
+                        </span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted">
+                          {p.subArea}
+                        </span>
+                        <span className="text-[10px] text-muted">
+                          {"⭐".repeat(p.difficulty)}
+                        </span>
+                      </div>
+                      <p className="text-sm leading-relaxed line-clamp-2">{p.question}</p>
+                    </div>
+                    <span className="text-muted text-xs shrink-0 group-hover:text-violet-400 transition-colors">
+                      풀기 →
+                    </span>
+                  </div>
+                </motion.button>
+              ))
+            )}
+          </div>
+
+          <p className="text-center text-[10px] text-muted/40 mt-6">
+            {filtered.length}개 문제 | 출처: 한국교육과정평가원 (KICE)
+          </p>
         </main>
       </div>
     );
