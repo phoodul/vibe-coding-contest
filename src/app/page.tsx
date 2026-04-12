@@ -29,7 +29,7 @@ const studentFeatures = [
   {
     title: "소크라테스 AI 튜터",
     description: "답을 주지 않고 질문으로 이끄는 대화형 학습. 스스로 깨닫는 진짜 공부.",
-    icon: "🎓",
+    icon: "socrates",
     href: "/tutor",
   },
   {
@@ -108,8 +108,8 @@ const teacherFeatures = [
     href: "/teacher/lesson-prep",
   },
   {
-    title: "생기부 세특 도우미",
-    description: "NEIS 바이트 실시간 계산, 금지어 자동 감지, 학생별 유사도 분석. AI가 못하는 것을 해결합니다.",
+    title: "학생부 기재 도우미",
+    description: "2026 기재요령 기반 10개 영역 관리, 금지어 감지, AI 맞춤법 검사, 가명처리로 개인정보 보호.",
     icon: "📝",
     href: "/teacher/record",
   },
@@ -125,6 +125,18 @@ const teacherFeatures = [
     icon: "✍️",
     href: "/teacher/generator",
   },
+];
+
+const impactStats = [
+  { num: 20, suffix: "%↑", label: "학습 성취도 향상" },
+  { num: 5, suffix: "시간+", label: "교사 주당 업무 절감" },
+  { num: 40, suffix: "만원", label: "월 사교육비 절감" },
+];
+
+const impactSources = [
+  "학습 성취도: Bloom(1984) 2 Sigma 연구 — 1:1 튜터링 시 상위 98% 도달. MIT RAISE(2025) 소크라틱 AI 튜터 연구 보수적 적용",
+  "업무 절감: OECD TALIS 2024 — 한국 교사 행정업무 주 6시간(OECD 1위) + 수업준비 6.8시간 중 AI 보조분",
+  "사교육비: 통계청 2025 — 참여학생 월평균 60.4만원 중 AI 튜터링으로 대체 가능한 1~2과목분",
 ];
 
 const stats = [
@@ -316,6 +328,8 @@ export default function LandingPage() {
                         />
                         {f.icon === "euler" ? (
                           <Image src="/euler-portrait.jpg" alt="Euler" width={32} height={32} className="relative w-8 h-8 rounded-full object-cover border border-amber-500/30" />
+                        ) : f.icon === "socrates" ? (
+                          <Image src="/socrates-portrait.jpg" alt="Socrates" width={32} height={32} className="relative w-8 h-8 rounded-full object-cover border border-violet-500/30" />
                         ) : (
                           <span className="relative">{f.icon}</span>
                         )}
@@ -437,6 +451,49 @@ export default function LandingPage() {
                 바로 체험하기
               </Link>
             </div>
+          </div>
+        </motion.section>
+
+        {/* ─── 예상 절감 효과 ─── */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="py-16 sm:py-24"
+        >
+          <h2 className="text-2xl sm:text-4xl font-bold text-center mb-3">
+            EasyEdu AI와 함께라면
+          </h2>
+          <p className="text-center text-sm text-muted mb-10">연구 데이터 기반 예상 절감 효과</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            {impactStats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+                className="glass-gradient p-6 sm:p-8 text-center relative overflow-hidden"
+              >
+                <p className="text-3xl sm:text-5xl font-bold text-shimmer mb-2">
+                  <CountUp target={stat.num} suffix={stat.suffix} />
+                </p>
+                <p className="text-sm text-muted">{stat.label}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="glass-gradient p-4 sm:p-5">
+            <p className="text-[10px] sm:text-xs text-muted/60 font-medium mb-2 uppercase tracking-wider">근거</p>
+            <ul className="space-y-1">
+              {impactSources.map((src, i) => (
+                <li key={i} className="text-[10px] sm:text-xs text-muted/50 leading-relaxed">
+                  • {src}
+                </li>
+              ))}
+            </ul>
           </div>
         </motion.section>
 

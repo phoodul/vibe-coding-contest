@@ -25,7 +25,7 @@ interface MenuItem {
 
 // 학생 메뉴 — 2열 그리드
 const studentItems: MenuItem[] = [
-  { title: "소크라테스 AI 튜터", desc: "질문으로 이끄는 AI 학습", icon: "🎓", href: "/tutor" },
+  { title: "소크라테스 AI 튜터", desc: "질문으로 이끄는 AI 학습", icon: "socrates", href: "/tutor" },
   { title: "오일러 튜터", desc: "수학 사고과정 코칭 — 계산은 AI가", icon: "euler", href: "/euler-tutor" },
   { title: "마인드 맵", desc: "교과서 전체 구조를 한눈에 탐색", icon: "🧠", href: "/mind-map" },
   { title: "영어 단어 학습", desc: "18,000 단어 레벨별 에베레스트 등반", icon: "🏔️", href: "/vocabulary" },
@@ -44,7 +44,7 @@ const teacherItems: MenuItem[] = [
   { title: "원클릭 수업준비", desc: "주제 입력 → 슬라이드·워크시트·테스트·영상 한번에", icon: "🚀", href: "/teacher/lesson-prep" },
   { title: "공문서 포맷터", desc: "HWPX 업로드 → 원클릭 양식 교정", icon: "📄", href: "/teacher/formatter" },
   { title: "공문서 초안 작성기", desc: "주제 입력 → AI 공문서 초안 자동 생성", icon: "✍️", href: "/teacher/generator" },
-  { title: "생기부 세특 도우미", desc: "NEIS 바이트 계산 · 금지어 감지 · 유사도 분석", icon: "📝", href: "/teacher/record" },
+  { title: "학생부 기재 도우미", desc: "10개 영역 · 금지어 감지 · 가명처리 · 맞춤법 검사", icon: "📝", href: "/teacher/record" },
 ];
 
 const sectionVariants = {
@@ -154,6 +154,8 @@ export default function DashboardPage() {
                       >
                         {item.icon === "euler" ? (
                           <Image src="/euler-portrait.jpg" alt="Euler" width={40} height={40} className="w-10 h-10 rounded-full object-cover border border-amber-500/30" />
+                        ) : item.icon === "socrates" ? (
+                          <Image src="/socrates-portrait.jpg" alt="Socrates" width={40} height={40} className="w-10 h-10 rounded-full object-cover border border-violet-500/30" />
                         ) : item.icon}
                       </motion.span>
                       <h3 className="text-lg font-semibold mb-1 group-hover:text-primary transition-colors duration-300">

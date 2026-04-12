@@ -1,50 +1,56 @@
 /**
- * NEIS 생활기록부 세부능력 및 특기사항(세특) 작성 규칙
- * - EUC-KR 바이트 계산
+ * NEIS 학교생활기록부 작성 규칙 (2026학년도 기재요령 기준)
+ * - UTF-8 바이트 계산 (한글 3바이트, 영문/숫자 1바이트, 엔터 1바이트)
+ * - 영역별 글자수 제한
  * - 금지어 감지
  * - 유사도 분석
+ * - 가명처리 (개인정보 보호)
  */
 
-// ── EUC-KR 바이트 계산 ──
-// NEIS는 EUC-KR 인코딩 기준: 한글 2바이트, 영문/숫자/공백 1바이트
-// 정확한 EUC-KR 인코딩 없이도 한글/비한글 판별로 근사 계산 가능
+// ── NEIS 바이트 계산 (2026 기재요령 p.208) ──
+// "교육정보시스템에서 입력 글자의 단위는 Byte이며,
+//  한글 1자는 3Byte, 영문·숫자 1자는 1Byte, 엔터(Enter)는 1Byte임."
 export function calcNeisBytes(text: string): number {
   let bytes = 0;
   for (const char of text) {
     const code = char.charCodeAt(0);
-    // 한글 완성형 (가-힣): 2바이트
-    if (code >= 0xac00 && code <= 0xd7a3) {
-      bytes += 2;
-    }
-    // 한글 자모 (ㄱ-ㅎ, ㅏ-ㅣ): 2바이트
-    else if (code >= 0x3131 && code <= 0x318e) {
-      bytes += 2;
-    }
-    // 줄바꿈: CR+LF = 2바이트
-    else if (char === "\n") {
-      bytes += 2;
-    }
-    // 나머지 (영문, 숫자, 공백, ASCII 특수문자): 1바이트
-    else if (code <= 0x7e) {
-      bytes += 1;
-    }
-    // 전각 특수문자, CJK 기호 등: 2바이트
-    else {
-      bytes += 2;
-    }
+    if (code >= 0xac00 && code <= 0xd7a3) bytes += 3;      // 한글 완성형
+    else if (code >= 0x3131 && code <= 0x318e) bytes += 3;  // 한글 자모
+    else if (char === "\n") bytes += 1;                      // 엔터
+    else if (code <= 0x7e) bytes += 1;                       // ASCII
+    else bytes += 3;                                          // 기타 유니코드
   }
   return bytes;
 }
 
-// ── 과목별 바이트 제한 ──
-export const BYTE_LIMITS: Record<string, number> = {
-  "세부능력 및 특기사항": 500,
-  "행동특성 및 종합의견": 500,
-  자율활동: 500,
-  동아리활동: 500,
-  진로활동: 500,
-  봉사활동: 500,
-};
+// ── 학생부 영역별 글자수 제한 (2026 기재요령 p.208) ──
+// "최대 글자수 (한글 기준)" → 바이트 한도 = charLimit × 3
+export interface RecordArea {
+  id: string;
+  label: string;
+  charLimit: number;   // 한글 기준 최대 글자수
+  byteLimit: number;   // charLimit × 3
+  hasSubject?: boolean; // 과목 선택 필요 여부
+  description: string;  // 작성 안내
+}
+
+export const RECORD_AREAS: RecordArea[] = [
+  { id: "subject_specific", label: "과목별 세부능력 및 특기사항", charLimit: 500, byteLimit: 1500, hasSubject: true, description: "교과 수업에서 관찰한 학생의 구체적 활동·태도·성장을 서술" },
+  { id: "individual_specific", label: "개인별 세부능력 및 특기사항", charLimit: 500, byteLimit: 1500, description: "교과 전반에 걸친 학생의 개별 특성과 성장을 종합 서술" },
+  { id: "behavior", label: "행동특성 및 종합의견", charLimit: 300, byteLimit: 900, description: "학생의 인성, 사회성, 자기관리 등 행동 특성을 종합적으로 서술" },
+  { id: "autonomous", label: "자율·자치활동", charLimit: 500, byteLimit: 1500, description: "학생회, 자치법정, 학급활동 등 자율·자치 참여 내용 서술" },
+  { id: "club", label: "동아리활동", charLimit: 500, byteLimit: 1500, description: "정규/자율 동아리에서의 활동 내용과 역할 서술" },
+  { id: "career", label: "진로활동", charLimit: 500, byteLimit: 1500, description: "진로 탐색, 직업 체험, 상담 등 진로 관련 활동 서술" },
+  { id: "reading_common", label: "독서활동상황(공통)", charLimit: 500, byteLimit: 1500, description: "특정 교과 구분 없이 읽은 도서와 독서 활동 서술" },
+  { id: "reading_subject", label: "독서활동상황(과목별)", charLimit: 250, byteLimit: 750, hasSubject: true, description: "해당 교과 관련 도서의 독서 활동 서술" },
+  { id: "attendance", label: "출결상황", charLimit: 500, byteLimit: 1500, description: "출결 관련 특기사항 서술" },
+  { id: "daily_life", label: "일상생활 활동상황", charLimit: 1000, byteLimit: 3000, description: "일상생활에서 관찰되는 학생의 특성 서술 (초등)" },
+];
+
+// 레거시 호환
+export const BYTE_LIMITS: Record<string, number> = Object.fromEntries(
+  RECORD_AREAS.map((a) => [a.label, a.byteLimit])
+);
 
 export const SUBJECTS = [
   "국어", "수학", "영어", "사회", "과학", "역사",
@@ -138,4 +144,32 @@ export function calcSimilarity(a: string, b: string): number {
     if (gramsB.has(g)) intersection++;
   }
   return intersection / Math.max(gramsA.size, gramsB.size);
+}
+
+// ── 가명처리 (개인정보 보호) ──
+const PSEUDO_LABELS = ["학생A","학생B","학생C","학생D","학생E","학생F","학생G","학생H","학생I","학생J","학생K","학생L","학생M","학생N","학생O","학생P","학생Q","학생R","학생S","학생T"];
+
+export interface NameMapping { real: string; pseudo: string; }
+
+export function buildNameMap(names: string[]): NameMapping[] {
+  return names.filter(Boolean).map((name, i) => ({
+    real: name.trim(),
+    pseudo: PSEUDO_LABELS[i] || `학생${i + 1}`,
+  }));
+}
+
+export function pseudonymize(text: string, map: NameMapping[]): string {
+  let result = text;
+  for (const { real, pseudo } of map) {
+    if (real) result = result.replaceAll(real, pseudo);
+  }
+  return result;
+}
+
+export function depseudonymize(text: string, map: NameMapping[]): string {
+  let result = text;
+  for (const { real, pseudo } of map) {
+    result = result.replaceAll(pseudo, real);
+  }
+  return result;
 }
