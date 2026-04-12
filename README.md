@@ -23,7 +23,7 @@
 | # | 기능 | 경로 | 설명 |
 |---|------|------|------|
 | 1 | **소크라테스 AI 튜터** | `/tutor` | 질문으로 이끄는 Guided Learning, 세션 이어하기, 단원 퀴즈, 자료 업로드(PDF/MD/URL) |
-| 2 | **오일러 수학 튜터** | `/euler-tutor` | 수학 사고과정 코칭, 이미지 입력, backward reasoning |
+| 2 | **오일러 수학 튜터** | `/euler-tutor` | 수학 사고과정 코칭 (Sonnet 4.5), 이미지 입력, 수능 기출문제 연습 (2015~2024, 4영역 50문제) |
 | 3 | **AI 영어 회화** | `/conversation` | PTT(스페이스바) 음성 대화, 레벨 테스트, AI 리포트(강점/교정/어휘) |
 | 4 | **진로 시뮬레이터** | `/career` | MBTI/적성/흥미 → 5,000+ 직업 매칭 + 대학·학과 추천 |
 | 5 | **AI 도서 추천** | `/books` | 학년·진로 기반 AI 큐레이션 + 국립중앙도서관 API 연동 + 독서 기록 |
@@ -52,7 +52,7 @@
 |------|------|
 | Frontend | Next.js 15 (App Router), React 19, Tailwind CSS, Shadcn UI, Framer Motion |
 | Backend | Next.js API Routes, Vercel AI SDK (`streamText`) |
-| AI 모델 | Claude Sonnet 4 (16개 API), Claude Haiku 4.5 (영어 회화 + 맞춤법 검사), OpenAI gpt-4o-mini-tts |
+| AI 모델 | Claude Sonnet 4.5 (오일러 튜터), Claude Sonnet 4 (15개 API), Claude Haiku 4.5 (영어 회화 + 맞춤법 검사), OpenAI gpt-4o-mini-tts |
 | 웹 검색 | Tavily (웹 검색 + 영상 검색) |
 | DB/Auth | Supabase (PostgreSQL + Auth + Storage + RLS) |
 | 배포 | Vercel |
@@ -119,7 +119,7 @@ npm run dev
 
 - 7개 서브 에이전트 + 6개 스킬 + 4개 Hooks로 AI 개발 워크플로우 체계화
 - 6개 MCP 서버 연동 (Supabase, Playwright, Context7, Vercel, Sequential Thinking, Firebase)
-- 178개+ 커밋, 25개 페이지, 20개 API 엔드포인트
+- 182개+ 커밋, 25개 페이지, 20개 API 엔드포인트
 - "아이디어는 사람, 구현은 AI, 검증은 함께" — 사람이 교육 현장의 문제를 정의하고 AI가 구현, Playwright로 함께 검증
 
 자세한 내용은 [AI 활용 리포트](docs/ai_report.md)를 참고하세요.
