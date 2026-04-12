@@ -61,22 +61,57 @@ export default function EulerTutorPage() {
     reader.readAsDataURL(file);
   }, []);
 
-  const sendImage = useCallback(() => {
-    if (!imagePreview) return;
-    // data:image/jpeg;base64,... → extract parts
-    const [header, base64] = imagePreview.split(",");
-    const mimeMatch = header.match(/data:(.+);base64/);
-    const mimeType = mimeMatch?.[1] || "image/jpeg";
+  const [parsing, setParsing] = useState(false);
 
-    append({
-      role: "user",
-      content: [
-        { type: "image", image: `data:${mimeType};base64,${base64}` },
-        { type: "text", text: input.trim() || "이 문제를 같이 풀어보고 싶어요." },
-      ] as any,
-    });
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  const sendImage = useCallback(async () => {
+    if (!imagePreview) return;
+    setParsing(true);
+
+    try {
+      // 1단계: Upstage Document Parse로 수식 텍스트 추출 시도
+      const parseRes = await fetch("/api/euler-tutor/parse-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imagePreview }),
+      });
+      const parseData = await parseRes.json();
+
+      if (parseData.text && !parseData.fallback) {
+        // Upstage 파싱 성공 → text-only로 전송 (벤치마크 만점 조건)
+        append({
+          role: "user",
+          content: `[수학 문제 이미지에서 추출된 텍스트]\n\n${parseData.text}\n\n${input.trim() || "이 문제를 같이 풀어보고 싶어요."}`,
+        });
+      } else {
+        // Fallback: Vision으로 직접 전송
+        const [header, base64] = imagePreview.split(",");
+        const mimeMatch = header.match(/data:(.+);base64/);
+        const mimeType = mimeMatch?.[1] || "image/jpeg";
+        append({
+          role: "user",
+          content: [
+            { type: "image", image: `data:${mimeType};base64,${base64}` },
+            { type: "text", text: input.trim() || "이 문제를 같이 풀어보고 싶어요." },
+          ] as any,
+        });
+      }
+    } catch {
+      // 에러 시 Vision fallback
+      const [header, base64] = imagePreview.split(",");
+      const mimeMatch = header.match(/data:(.+);base64/);
+      const mimeType = mimeMatch?.[1] || "image/jpeg";
+      append({
+        role: "user",
+        content: [
+          { type: "image", image: `data:${mimeType};base64,${base64}` },
+          { type: "text", text: input.trim() || "이 문제를 같이 풀어보고 싶어요." },
+        ] as any,
+      });
+    } finally {
+      setParsing(false);
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }, [imagePreview, input, append]);
 
   const onSubmit = useCallback((e: React.FormEvent) => {
