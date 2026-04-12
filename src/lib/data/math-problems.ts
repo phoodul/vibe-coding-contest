@@ -14,6 +14,7 @@ export interface MathProblem {
   difficulty: 1 | 2 | 3 | 4 | 5;
   question: string;
   answer: string;
+  solution?: string; // 단계별 풀이 과정 (교사용 정답지)
   choices?: string[];
 }
 
