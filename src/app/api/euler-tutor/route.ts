@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 "안녕! 오일러 튜터예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"`;
 
     const result = streamText({
-      model: anthropic("claude-sonnet-4-5-20250514"),
+      model: anthropic("claude-sonnet-4-5-20250929"),
       system: systemPrompt,
       messages,
     });

@@ -570,8 +570,11 @@ export default function LandingPage() {
 
         {/* ─── Footer ─── */}
         <footer className="border-t border-white/5 py-8 mt-8">
-          <div className="text-center text-xs text-muted/50">
+          <div className="text-center text-xs text-muted/50 space-y-1">
             <p>&copy; 2026 EasyEdu AI — 바이브코딩 2026</p>
+            <p className="text-[9px] text-muted/30">
+              Euler portrait: Jakob Emanuel Handmann (1753), Public Domain | Socrates bust photo: Eric Gaba (Sting), CC BY-SA 2.5, via Wikimedia Commons
+            </p>
           </div>
         </footer>
       </main>
