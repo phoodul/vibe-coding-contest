@@ -10,8 +10,9 @@
 
 | 대상 | Pain Point | EasyEdu AI 솔루션 |
 |------|-----------|-------------------|
-| **학생** | 수동적 암기 학습, 진로 불안, 영어 회화 기회 부족 | 소크라테스 AI 튜터, 오일러 수학 튜터, 진로 시뮬레이터, AI 영어 회화 |
-| **교사** | 반복적 행정 업무, 수업 준비 과부하 | 원클릭 수업준비, 공문서 포맷터/생성기, 생기부 도우미 |
+| **학생** | 사교육 의존, 개인화 학습 부재, 영어 회화 기회 부족, 수학 사고과정 훈련 부재 | 소크라테스 AI 튜터(실시간 웹 검색), 오일러 수학 튜터, 진로 시뮬레이터, AI 영어 회화 |
+| **학부모** | 연간 수백만 원 사교육비 부담 | 무료 AI 1:1 튜터링으로 월 최대 40만원 절감 |
+| **교사** | 학생부 10개 영역 작성 부담, 개인정보 노출 우려, 수업 준비 과부하 | 학생부 기재 도우미(가명처리), 원클릭 수업준비, 공문서 도구 |
 
 ---
 
@@ -40,8 +41,8 @@
 |---|------|------|------|
 | 1 | **원클릭 수업준비** | `/teacher/lesson-prep` | 주제/파일 입력 → 슬라이드·워크시트·테스트·영상 4개 산출물 동시 생성 |
 | 2 | **공문서 포맷터** | `/teacher/formatter` | K-에듀파인 양식 규칙 자동 교정 (HWP/DOCX/PDF/PPTX 파싱) |
-| 3 | **공문서 생성/발급** | `/teacher/generator` | AI 공문서 생성 + 승인 + 번호 발급 + SHA-256 위변조 검증 |
-| 4 | **생기부 도우미** | `/teacher/record` | NEIS 바이트 계산 + 금지어 감지 + AI 세특 작성 지원 |
+| 3 | **공문서 초안 작성기** | `/teacher/generator` | K-에듀파인 양식에 맞는 공문서 초안 AI 생성 |
+| 4 | **학생부 기재 도우미** | `/teacher/record` | 2026 기재요령 기반 10개 영역 관리 + 금지어 감지 + **가명처리(개인정보 보호)** + AI 맞춤법 검사 + 스크린샷 첨부 |
 
 ---
 
@@ -51,7 +52,7 @@
 |------|------|
 | Frontend | Next.js 15 (App Router), React 19, Tailwind CSS, Shadcn UI, Framer Motion |
 | Backend | Next.js API Routes, Vercel AI SDK (`streamText`) |
-| AI 모델 | Claude Sonnet 4 (15개 API), Claude Haiku 4.5 (영어 회화), OpenAI gpt-4o-mini-tts |
+| AI 모델 | Claude Sonnet 4 (16개 API), Claude Haiku 4.5 (영어 회화 + 맞춤법 검사), OpenAI gpt-4o-mini-tts |
 | 웹 검색 | Tavily (웹 검색 + 영상 검색) |
 | DB/Auth | Supabase (PostgreSQL + Auth + Storage + RLS) |
 | 배포 | Vercel |
@@ -82,7 +83,7 @@ src/
 │   ├── internship/                 # 직업 체험 시뮬레이터
 │   ├── crisis/                     # 위기 개입 자원
 │   ├── teacher/                    # 교사용 도구 4종
-│   └── api/                        # API Routes (18개 엔드포인트)
+│   └── api/                        # API Routes (20개 엔드포인트)
 ├── components/                     # 공통 UI 컴포넌트
 └── lib/
     ├── ai/                         # 시스템 프롬프트
@@ -118,7 +119,8 @@ npm run dev
 
 - 7개 서브 에이전트 + 6개 스킬 + 4개 Hooks로 AI 개발 워크플로우 체계화
 - 6개 MCP 서버 연동 (Supabase, Playwright, Context7, Vercel, Sequential Thinking, Firebase)
-- 173개 커밋, 25개 페이지, 18개 API 엔드포인트
+- 178개+ 커밋, 25개 페이지, 20개 API 엔드포인트
+- "아이디어는 사람, 구현은 AI, 검증은 함께" — 사람이 교육 현장의 문제를 정의하고 AI가 구현, Playwright로 함께 검증
 
 자세한 내용은 [AI 활용 리포트](docs/ai_report.md)를 참고하세요.
 
