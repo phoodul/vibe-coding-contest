@@ -160,6 +160,21 @@ export default function GrammarListenPage() {
     }
   }, []);
 
+  // 페이지 이탈 시 재생 중지
+  useEffect(() => {
+    return () => {
+      playingRef.current = false;
+      if (sourceRef.current) {
+        try { sourceRef.current.stop(); } catch { /* */ }
+        sourceRef.current = null;
+      }
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close().catch(() => {});
+        audioCtxRef.current = null;
+      }
+    };
+  }, []);
+
   const handleToggle = () => {
     if (isPlaying) {
       stopPlayback();
