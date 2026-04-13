@@ -1,6 +1,7 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 import { searchWeb } from "@/lib/search";
+import { parsePdf } from "@/lib/parse-document";
 
 export const maxDuration = 60;
 
@@ -25,13 +26,10 @@ async function extractText(file: File): Promise<string> {
     return (result.markdown || "").slice(0, 30000);
   }
 
-  // PDF
+  // PDF (Upstage 우선 → pdf-parse fallback)
   if (name.endsWith(".pdf")) {
-    const mod = await import("pdf-parse") as any;
-    const PDFParse = mod.PDFParse;
-    const parser = new PDFParse(buffer);
-    await parser.load();
-    return ((await parser.getText()) as string).slice(0, 30000);
+    const result = await parsePdf(buffer, name);
+    return result.text;
   }
 
   // DOCX, PPTX, DOC, PPT (officeparser)

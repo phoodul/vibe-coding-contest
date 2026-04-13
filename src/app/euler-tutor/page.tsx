@@ -5,9 +5,9 @@ import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { GlassCard } from "@/components/shared/glass-card";
 import { MATH_AREAS } from "@/lib/ai/euler-prompt";
 import { filterProblems, EXAM_YEARS, EXAM_TYPES, TOTAL_PROBLEMS, type MathProblem } from "@/lib/data/math-problems";
+import problemTexts from "@/lib/data/problem-texts.json";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -17,6 +17,7 @@ export default function EulerTutorPage() {
   const [phase, setPhase] = useState<Phase>("select");
   const [area, setArea] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [useGpt, setUseGpt] = useState(false);
 
   // 기출문제
   const [examYear, setExamYear] = useState<number>(2026);
@@ -27,7 +28,7 @@ export default function EulerTutorPage() {
   const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
       api: "/api/euler-tutor",
-      body: { area },
+      body: { area, useGpt },
     });
 
   useEffect(() => {
@@ -43,10 +44,15 @@ export default function EulerTutorPage() {
     setArea(problem.type);
     setPhase("chat");
     setTimeout(() => {
-      append({
-        role: "user",
-        content: `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? "객관식" : "주관식"}]\n\n이 문제를 함께 풀어보고 싶어요. 문제를 보여주시면 같이 풀어볼게요!\n\n(힌트: 정답은 ${problem.answer}${problem.isMultipleChoice ? "번" : ""}입니다. 하지만 정답을 바로 알려주지 말고, 제가 사고과정을 통해 스스로 도달할 수 있도록 코칭해주세요.)`,
-      });
+      // 파싱된 문제 원문 조회
+      const textKey = `${problem.year}_${problem.type}_${problem.number}`;
+      const problemText = (problemTexts as Record<string, string>)[textKey];
+
+      const content = problemText
+        ? `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? "객관식" : "주관식"}]\n\n${problemText}\n\n이 문제를 같이 풀어보고 싶어요.\n\n(힌트: 정답은 ${problem.answer}${problem.isMultipleChoice ? "번" : ""}입니다. 하지만 정답을 바로 알려주지 말고, 제가 사고과정을 통해 스스로 도달할 수 있도록 코칭해주세요.)`
+        : `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? "객관식" : "주관식"}]\n\n이 문제를 함께 풀어보고 싶어요. 문제를 보여주시면 같이 풀어볼게요!\n\n(힌트: 정답은 ${problem.answer}${problem.isMultipleChoice ? "번" : ""}입니다. 하지만 정답을 바로 알려주지 말고, 제가 사고과정을 통해 스스로 도달할 수 있도록 코칭해주세요.)`;
+
+      append({ role: "user", content });
     }, 300);
   }
 
@@ -61,6 +67,22 @@ export default function EulerTutorPage() {
   }, []);
 
   const [parsing, setParsing] = useState(false);
+
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith("image/")) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => setImagePreview(reader.result as string);
+        reader.readAsDataURL(file);
+        return;
+      }
+    }
+  }, []);
 
   const sendImage = useCallback(async () => {
     if (!imagePreview) return;
@@ -321,19 +343,31 @@ export default function EulerTutorPage() {
             ← 영역 선택
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full overflow-hidden border border-amber-500/30">
-              <Image src="/euler-portrait.jpg" alt="Euler" width={28} height={28} className="object-cover w-full h-full" />
+            <div className={`w-7 h-7 rounded-full overflow-hidden border ${useGpt ? "border-blue-500/30" : "border-amber-500/30"}`}>
+              <Image src={useGpt ? "/gauss-portrait.jpg" : "/euler-portrait.jpg"} alt={useGpt ? "Gauss" : "Euler"} width={28} height={28} className="object-cover w-full h-full" />
             </div>
             <div className="text-center">
-              <h1 className="text-sm font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-                오일러 튜터
+              <h1 className={`text-sm font-bold bg-gradient-to-r bg-clip-text text-transparent ${useGpt ? "from-blue-400 to-cyan-400" : "from-amber-400 to-orange-400"}`}>
+                {useGpt ? "가우스 튜터" : "오일러 튜터"}
               </h1>
               <p className="text-[10px] text-muted">{area}</p>
             </div>
           </div>
-          <Link href="/dashboard" className="text-xs text-muted hover:text-foreground transition-colors">
-            대시보드
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setUseGpt(!useGpt)}
+              className={`text-[10px] px-2 py-1 rounded-full border transition-colors ${
+                useGpt
+                  ? "border-blue-500/50 bg-blue-500/10 text-blue-400"
+                  : "border-amber-500/50 bg-amber-500/10 text-amber-400"
+              }`}
+            >
+              {useGpt ? "→ 오일러" : "→ 가우스"}
+            </button>
+            <Link href="/dashboard" className="text-xs text-muted hover:text-foreground transition-colors">
+              대시보드
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -346,8 +380,8 @@ export default function EulerTutorPage() {
               animate={{ opacity: 1 }}
               className="text-center py-12"
             >
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border border-amber-500/20 opacity-60">
-                <Image src="/euler-portrait.jpg" alt="Euler" width={64} height={64} className="object-cover w-full h-full" />
+              <div className={`w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border opacity-60 ${useGpt ? "border-blue-500/20" : "border-amber-500/20"}`}>
+                <Image src={useGpt ? "/gauss-portrait.jpg" : "/euler-portrait.jpg"} alt={useGpt ? "Gauss" : "Euler"} width={64} height={64} className="object-cover w-full h-full" />
               </div>
               <p className="text-muted text-sm mb-1">
                 문제를 입력하거나 📷 사진으로 올려주세요.
@@ -366,10 +400,10 @@ export default function EulerTutorPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className={`flex ${m.role === "user" ? "justify-end" : "justify-start gap-2"}`}
               >
-                {/* 오일러 아바타 */}
+                {/* 튜터 아바타 */}
                 {m.role === "assistant" && (
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-500/30 flex-shrink-0 mt-1">
-                    <Image src="/euler-portrait.jpg" alt="Euler" width={32} height={32} className="object-cover w-full h-full" />
+                  <div className={`w-8 h-8 rounded-full overflow-hidden border flex-shrink-0 mt-1 ${useGpt ? "border-blue-500/30" : "border-amber-500/30"}`}>
+                    <Image src={useGpt ? "/gauss-portrait.jpg" : "/euler-portrait.jpg"} alt={useGpt ? "Gauss" : "Euler"} width={32} height={32} className="object-cover w-full h-full" />
                   </div>
                 )}
                 <div
@@ -407,8 +441,8 @@ export default function EulerTutorPage() {
               animate={{ opacity: 1 }}
               className="flex justify-start gap-2"
             >
-              <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-500/30 flex-shrink-0">
-                <Image src="/euler-portrait.jpg" alt="Euler" width={32} height={32} className="object-cover w-full h-full" />
+              <div className={`w-8 h-8 rounded-full overflow-hidden border flex-shrink-0 ${useGpt ? "border-blue-500/30" : "border-amber-500/30"}`}>
+                <Image src={useGpt ? "/gauss-portrait.jpg" : "/euler-portrait.jpg"} alt={useGpt ? "Gauss" : "Euler"} width={32} height={32} className="object-cover w-full h-full" />
               </div>
               <div className="glass border border-white/5 px-4 py-3 rounded-2xl">
                 <span className="text-sm text-muted animate-pulse">문제를 분석하고 있어요...</span>
@@ -420,71 +454,75 @@ export default function EulerTutorPage() {
         </div>
       </div>
 
-      {/* 이미지 미리보기 */}
-      <AnimatePresence>
-        {imagePreview && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="px-4"
-          >
-            <div className="max-w-3xl mx-auto flex items-center gap-3 p-2 glass rounded-xl border border-amber-500/20 mb-2">
-              <img src={imagePreview} alt="미리보기" className="h-16 rounded-lg" />
-              <p className="text-xs text-muted flex-1">수학 문제 이미지</p>
-              <button
-                onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-                className="text-xs text-rose-400 hover:text-rose-300 px-2"
-              >
-                ✕ 삭제
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* 입력 */}
       <div className="sticky bottom-0 glass border-t border-white/5 px-4 py-3">
-        <form
-          onSubmit={onSubmit}
-          className="max-w-3xl mx-auto flex gap-2"
-        >
-          {/* 이미지 업로드 버튼 */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="px-3 py-3 rounded-xl glass border border-white/10 text-lg hover:border-amber-500/30 transition-colors"
-            title="문제 사진 업로드"
+        <div className="max-w-3xl mx-auto">
+          {/* 이미지 미리보기 (입력창 위에 통합) */}
+          <AnimatePresence>
+            {imagePreview && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-2"
+              >
+                <div className="relative inline-block">
+                  <img src={imagePreview} alt="미리보기" className="max-h-40 rounded-xl border border-white/10" />
+                  <button
+                    onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-rose-500 text-white text-xs flex items-center justify-center hover:bg-rose-400 transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <form
+            onSubmit={onSubmit}
+            className="flex gap-2 items-end"
           >
-            📷
-          </motion.button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handleImageUpload}
-          />
-          <input
-            value={input}
-            onChange={handleInputChange}
-            placeholder={imagePreview ? "추가 설명 (선택)..." : "수학 문제를 입력하거나 사진을 올려주세요..."}
-            className="flex-1 px-4 py-3 rounded-xl glass border border-white/10 bg-transparent text-foreground placeholder:text-muted/50 focus:outline-none focus:border-amber-500/50 transition-colors text-sm"
-            disabled={isLoading}
-          />
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            type="submit"
-            disabled={isLoading || (!input.trim() && !imagePreview)}
-            className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium text-sm disabled:opacity-40 transition-all"
-          >
-            전송
-          </motion.button>
-        </form>
+            {/* 이미지 업로드 버튼 */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3 py-3 rounded-xl glass border border-white/10 text-lg hover:border-amber-500/30 transition-colors flex-shrink-0"
+              title="문제 사진 업로드"
+            >
+              📷
+            </motion.button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handleImageUpload}
+            />
+            <textarea
+              value={input}
+              onChange={handleInputChange}
+              onPaste={handlePaste}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSubmit(e as any); } }}
+              placeholder={imagePreview ? "추가 설명 (선택)..." : "문제를 한 문제씩 입력하세요 (Ctrl+V로 스크린샷 붙여넣기 가능)"}
+              rows={1}
+              className="flex-1 px-4 py-3 rounded-xl glass border border-white/10 bg-transparent text-foreground placeholder:text-muted/50 focus:outline-none focus:border-amber-500/50 transition-colors text-sm resize-none overflow-hidden"
+              disabled={isLoading}
+              onInput={(e) => { const t = e.currentTarget; t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 160) + "px"; }}
+            />
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="submit"
+              disabled={isLoading || (!input.trim() && !imagePreview)}
+              className={`px-5 py-3 rounded-xl bg-gradient-to-r text-white font-medium text-sm disabled:opacity-40 transition-all flex-shrink-0 ${useGpt ? "from-blue-500 to-cyan-500" : "from-amber-500 to-orange-500"}`}
+            >
+              전송
+            </motion.button>
+          </form>
+        </div>
       </div>
     </div>
   );
