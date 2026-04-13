@@ -26,6 +26,9 @@ export default function TutorPage() {
   const [materialSource, setMaterialSource] = useState("");
   const [materialUrl, setMaterialUrl] = useState("");
   const [materialLoading, setMaterialLoading] = useState(false);
+  const [learningDepth, setLearningDepth] = useState<"overview" | "practical">("practical");
+  const [materialSections, setMaterialSections] = useState<{ title: string; content: string }[]>([]);
+  const [selectedSections, setSelectedSections] = useState<Set<number>>(new Set());
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [previousSessions, setPreviousSessions] = useState<{ id: string; subject: string; topic: string; updated_at: string }[]>([]);
@@ -308,6 +311,12 @@ export default function TutorPage() {
       if (data.error) { alert(data.error); return; }
       setMaterialText(data.text);
       setMaterialSource(data.source);
+      if (data.sections?.length > 0) {
+        setMaterialSections(data.sections);
+        setSelectedSections(new Set());
+      } else {
+        setMaterialSections([]);
+      }
     } catch { alert("URL 내용을 가져올 수 없습니다."); }
     finally { setMaterialLoading(false); }
   }
@@ -315,17 +324,46 @@ export default function TutorPage() {
   // 자료 기반 학습 시작
   function startMaterialLesson() {
     if (!materialText) return;
+
+    // 선택된 섹션이 있으면 그것만 전달, 없으면 전체
+    let contentToSend: string;
+    let sectionNames: string;
+    if (materialSections.length > 0 && selectedSections.size > 0) {
+      const picked = materialSections.filter((_, i) => selectedSections.has(i));
+      contentToSend = picked.map((s) => `## ${s.title}\n${s.content}`).join("\n\n");
+      sectionNames = picked.map((s) => s.title).join(", ");
+    } else {
+      contentToSend = materialText.slice(0, 30000);
+      sectionNames = "전체";
+    }
+
+    const depthGuide = learningDepth === "overview"
+      ? `## 학습 모드: 개요 (넓고 빠르게)
+- 자료의 전체 구조를 파악하고 핵심 개념을 빠르게 훑어줍니다.
+- 각 개념당 1~2턴으로 간결하게 진행합니다.
+- "이게 뭔지, 왜 중요한지"에 집중합니다.`
+      : `## 학습 모드: 실무 (깊고 실전적으로)
+- 각 개념을 실무에서 바로 활용할 수 있는 수준까지 다룹니다.
+- 실제 코드, 명령어, 설정 방법, 주의사항을 반드시 포함합니다.
+- 각 개념당 3~5턴으로 이해→적용→확인 단계를 거칩니다.
+- 단순히 "이런 게 있다"가 아니라 "이렇게 쓴다"까지 가르칩니다.
+- 최소 10개 이상의 핵심 내용을 다루세요.`;
+
     setStarted(true);
     append({
       role: "user",
       content: `[SYSTEM: 학생이 자료 기반 학습을 선택했습니다. 아래 자료의 내용을 바탕으로 소크라테스 Guided Learning을 진행하세요.
 
 자료 출처: ${materialSource}
+선택 섹션: ${sectionNames}
 
-먼저 자료를 분석하여 핵심 개념 5~8개를 파악하고, 첫 번째 개념부터 가이드 질문으로 수업을 시작하세요. 각 개념을 가르칠 때 반드시 자료의 원문 내용을 근거로 설명하세요.
+${depthGuide}
+
+자료를 분석하여 핵심 개념들을 파악하고, 첫 번째 개념부터 가이드 질문으로 수업을 시작하세요.
+각 개념을 가르칠 때 반드시 자료의 원문 내용을 근거로 설명하세요. 자료에 없는 내용을 지어내지 마세요.
 
 --- 자료 내용 ---
-${materialText.slice(0, 20000)}
+${contentToSend}
 --- 자료 끝 ---]`,
     });
   }
@@ -583,18 +621,87 @@ ${materialText.slice(0, 20000)}
 
                 {/* 추출 결과 */}
                 {materialText && (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <p className="text-xs text-emerald-400">
                         ✓ {materialSource} — {Math.round(materialText.length / 100) * 100}자 추출됨
+                        {materialSections.length > 0 && ` · ${materialSections.length}개 섹션`}
                       </p>
-                      <button onClick={() => { setMaterialText(""); setMaterialSource(""); }} className="text-xs text-muted hover:text-foreground">초기화</button>
+                      <button onClick={() => { setMaterialText(""); setMaterialSource(""); setMaterialSections([]); setSelectedSections(new Set()); }} className="text-xs text-muted hover:text-foreground">초기화</button>
                     </div>
+
+                    {/* 학습 깊이 선택 */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setLearningDepth("overview")}
+                        className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                          learningDepth === "overview"
+                            ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/50"
+                            : "bg-white/5 text-muted border border-white/10 hover:text-foreground"
+                        }`}
+                      >
+                        📖 개요 모드<br /><span className="text-[10px] opacity-70">넓고 빠르게 훑기</span>
+                      </button>
+                      <button
+                        onClick={() => setLearningDepth("practical")}
+                        className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                          learningDepth === "practical"
+                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/50"
+                            : "bg-white/5 text-muted border border-white/10 hover:text-foreground"
+                        }`}
+                      >
+                        🔧 실무 모드<br /><span className="text-[10px] opacity-70">실전 활용 수준까지</span>
+                      </button>
+                    </div>
+
+                    {/* 섹션 선택 (섹션이 있을 때만) */}
+                    {materialSections.length > 0 && (
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted mb-1">배우고 싶은 섹션을 선택하세요:</p>
+                        <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
+                          {materialSections.map((sec, i) => {
+                            const checked = selectedSections.has(i);
+                            return (
+                              <label
+                                key={i}
+                                className={`flex items-start gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors text-xs ${
+                                  checked ? "bg-cyan-500/10 border border-cyan-500/30" : "bg-white/5 border border-white/5 hover:border-white/20"
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() => {
+                                    const next = new Set(selectedSections);
+                                    checked ? next.delete(i) : next.add(i);
+                                    setSelectedSections(next);
+                                  }}
+                                  className="mt-0.5 accent-cyan-500"
+                                />
+                                <span className={checked ? "text-foreground" : "text-muted"}>{sec.title}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                        {selectedSections.size > 0 && (
+                          <p className="text-[10px] text-cyan-400">
+                            {selectedSections.size}개 섹션 선택 · 약 {Math.ceil(selectedSections.size * 3)}분+ 예상
+                            {selectedSections.size >= 3 && " · 시작할 수 있습니다!"}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
                     <button
                       onClick={startMaterialLesson}
-                      className="w-full btn-glow px-6 py-3 rounded-xl bg-cyan-600 text-white font-medium hover:bg-cyan-500 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      disabled={materialSections.length > 0 && selectedSections.size === 0}
+                      className="w-full btn-glow px-6 py-3 rounded-xl bg-cyan-600 text-white font-medium hover:bg-cyan-500 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40"
                     >
-                      이 자료로 학습 시작하기
+                      {materialSections.length > 0 && selectedSections.size === 0
+                        ? "섹션을 선택해주세요"
+                        : materialSections.length > 0
+                          ? `선택한 ${selectedSections.size}개 섹션으로 학습 시작`
+                          : "이 자료로 학습 시작하기"}
                     </button>
                   </div>
                 )}

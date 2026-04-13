@@ -19,18 +19,52 @@ export async function POST(req: Request) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const html = await res.text();
       // HTML → 텍스트 추출 (태그 제거, 스크립트/스타일 제거)
-      const text = html
+      const cleaned = html
         .replace(/<script[\s\S]*?<\/script>/gi, "")
         .replace(/<style[\s\S]*?<\/style>/gi, "")
         .replace(/<nav[\s\S]*?<\/nav>/gi, "")
         .replace(/<footer[\s\S]*?<\/footer>/gi, "")
-        .replace(/<header[\s\S]*?<\/header>/gi, "")
+        .replace(/<header[\s\S]*?<\/header>/gi, "");
+
+      // 섹션 분리: h1~h3 태그 또는 구분선 기준
+      const sections: { title: string; content: string }[] = [];
+      const sectionRegex = /<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/gi;
+      const headings: { title: string; index: number }[] = [];
+      let match;
+      while ((match = sectionRegex.exec(cleaned)) !== null) {
+        const title = match[1].replace(/<[^>]+>/g, "").trim();
+        if (title.length > 0 && title.length < 200) {
+          headings.push({ title, index: match.index });
+        }
+      }
+
+      if (headings.length >= 3) {
+        for (let i = 0; i < headings.length; i++) {
+          const start = headings[i].index;
+          const end = i + 1 < headings.length ? headings[i + 1].index : cleaned.length;
+          const chunk = cleaned.slice(start, end)
+            .replace(/<[^>]+>/g, " ")
+            .replace(/&[a-z]+;/gi, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (chunk.length > 50) {
+            sections.push({ title: headings[i].title, content: chunk.slice(0, 5000) });
+          }
+        }
+      }
+
+      const fullText = cleaned
         .replace(/<[^>]+>/g, " ")
         .replace(/&[a-z]+;/gi, " ")
         .replace(/\s+/g, " ")
         .trim()
-        .slice(0, 30000); // 토큰 제한
-      return NextResponse.json({ text, source: url });
+        .slice(0, 50000);
+
+      return NextResponse.json({
+        text: fullText,
+        sections: sections.length >= 3 ? sections : [],
+        source: url,
+      });
     } catch (e) {
       return NextResponse.json({ error: `URL을 가져올 수 없습니다: ${e}` }, { status: 400 });
     }
