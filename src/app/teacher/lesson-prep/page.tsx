@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "@/components/shared/glass-card";
@@ -249,6 +249,8 @@ export default function LessonPrepPage() {
                             다음 →
                           </button>
                         </div>
+                        {/* PPT 다운로드 */}
+                        <PptDownload content={sections.slides} />
                       </>
                     ) : (
                       <p className="text-muted text-sm py-8 text-center">
@@ -339,6 +341,89 @@ export default function LessonPrepPage() {
           )}
         </AnimatePresence>
       </main>
+    </div>
+  );
+}
+
+/** 2Slides API로 PPT 다운로드 */
+function PptDownload({ content }: { content: string }) {
+  const [status, setStatus] = useState<"idle" | "generating" | "polling" | "ready" | "error">("idle");
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [pageCount, setPageCount] = useState<number | null>(null);
+
+  async function generate() {
+    setStatus("generating");
+    try {
+      const res = await fetch("/api/teacher/lesson-prep/slides", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      const data = await res.json();
+      if (data.error) { setStatus("error"); return; }
+
+      const jobId = data.jobId;
+      setStatus("polling");
+
+      // 폴링 (최대 60초)
+      for (let i = 0; i < 30; i++) {
+        await new Promise((r) => setTimeout(r, 2000));
+        const pollRes = await fetch(`/api/teacher/lesson-prep/slides?jobId=${jobId}`);
+        const pollData = await pollRes.json();
+
+        if (pollData.status === "success" && pollData.downloadUrl) {
+          setDownloadUrl(pollData.downloadUrl);
+          setPageCount(pollData.slidePageCount);
+          setStatus("ready");
+          return;
+        }
+        if (pollData.status === "failed") {
+          setStatus("error");
+          return;
+        }
+      }
+      setStatus("error"); // 타임아웃
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  if (!content) return null;
+
+  return (
+    <div className="mt-4 pt-4 border-t border-white/5">
+      {status === "idle" && (
+        <button
+          onClick={generate}
+          className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm hover:from-indigo-400 hover:to-purple-400 transition-all"
+        >
+          📥 PPT 슬라이드 다운로드 (.pptx)
+        </button>
+      )}
+      {(status === "generating" || status === "polling") && (
+        <div className="flex items-center justify-center gap-3 py-3">
+          <div className="animate-spin w-5 h-5 border-2 border-indigo-400 border-t-transparent rounded-full" />
+          <span className="text-sm text-muted">
+            {status === "generating" ? "슬라이드 생성 요청 중..." : "디자인된 슬라이드 생성 중... (약 30초)"}
+          </span>
+        </div>
+      )}
+      {status === "ready" && downloadUrl && (
+        <a
+          href={downloadUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full text-center px-4 py-3 rounded-xl bg-green-600 text-white font-medium text-sm hover:bg-green-500 transition-all"
+        >
+          ✅ PPT 다운로드 {pageCount ? `(${pageCount}장)` : ""}
+        </a>
+      )}
+      {status === "error" && (
+        <div className="text-center">
+          <p className="text-sm text-red-400 mb-2">슬라이드 생성에 실패했습니다.</p>
+          <button onClick={() => setStatus("idle")} className="text-xs text-muted hover:text-foreground">다시 시도</button>
+        </div>
+      )}
     </div>
   );
 }
