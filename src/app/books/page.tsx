@@ -402,22 +402,19 @@ function ReadingLogForm({
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // 검색 입력 시 debounce 자동 검색
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
-    if (value.trim().length < 2) {
-      setSearchResults([]);
-      setShowResults(false);
-      return;
-    }
-    searchTimerRef.current = setTimeout(() => doSearch(value.trim()), 500);
+  };
+
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim().length < 2) return;
+    doSearch(searchQuery.trim());
   };
 
   const doSearch = async (kwd: string) => {
     setSearching(true);
     try {
-      const params = new URLSearchParams({ kwd, pageNum: "1", pageSize: "8" });
+      const params = new URLSearchParams({ kwd, pageNum: "1", pageSize: "20" });
       const res = await fetch(`/api/books/search?${params}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -476,20 +473,24 @@ function ReadingLogForm({
           <label className="text-xs text-muted mb-1 block">
             도서 검색 (제목 또는 저자)
           </label>
-          <div className="relative">
+          <div className="flex gap-2">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
               onFocus={() => searchResults.length > 0 && setShowResults(true)}
               placeholder="읽은 책의 제목이나 저자를 입력하세요..."
-              className="w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-emerald-500/50 transition-colors pr-10"
+              className="flex-1 px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm focus:outline-none focus:border-emerald-500/50 transition-colors"
             />
-            {searching && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                <div className="animate-spin w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full" />
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={handleSearchSubmit}
+              disabled={searching || searchQuery.trim().length < 2}
+              className="px-4 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 transition-colors disabled:opacity-40 shrink-0"
+            >
+              {searching ? "..." : "검색"}
+            </button>
           </div>
 
           {/* 검색 결과 드롭다운 */}
