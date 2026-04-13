@@ -418,7 +418,8 @@ function ReadingLogForm({
       const res = await fetch(`/api/books/search?${params}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setSearchResults(books);
+      const sorted = (data.books || []).sort((a: NLBook, b: NLBook) => (b.year || "0").localeCompare(a.year || "0"));
+      setSearchResults(sorted);
       setShowResults(true);
     } catch {
       setSearchResults([]);
