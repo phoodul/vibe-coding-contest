@@ -396,6 +396,7 @@ function ReadingLogForm({
 
   // 인라인 도서 검색
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchType, setSearchType] = useState<"title" | "author">("title");
   const [searchResults, setSearchResults] = useState<NLBook[]>([]);
   const [searching, setSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
@@ -414,7 +415,7 @@ function ReadingLogForm({
   const doSearch = async (kwd: string) => {
     setSearching(true);
     try {
-      const params = new URLSearchParams({ kwd, pageNum: "1", pageSize: "20" });
+      const params = new URLSearchParams({ kwd, pageNum: "1", pageSize: "20", searchType });
       const res = await fetch(`/api/books/search?${params}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -471,9 +472,19 @@ function ReadingLogForm({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* 도서 검색 */}
         <div className="relative" ref={resultsRef}>
-          <label className="text-xs text-muted mb-1 block">
-            도서 검색 (제목 또는 저자)
-          </label>
+          <div className="flex items-center gap-2 mb-1">
+            <label className="text-xs text-muted">도서 검색</label>
+            <div className="flex gap-1">
+              <button type="button" onClick={() => setSearchType("title")}
+                className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${searchType === "title" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-white/5 text-muted border border-white/10"}`}>
+                제목
+              </button>
+              <button type="button" onClick={() => setSearchType("author")}
+                className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${searchType === "author" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-white/5 text-muted border border-white/10"}`}>
+                저자
+              </button>
+            </div>
+          </div>
           <div className="flex gap-2">
             <input
               type="text"

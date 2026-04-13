@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
   const pageNum = searchParams.get("pageNum") || "1";
   const pageSize = searchParams.get("pageSize") || "10";
   const isbn = searchParams.get("isbn") || "";
+  const searchType = searchParams.get("searchType") || "title"; // "title" | "author"
 
   if (!kwd && !isbn) {
     return NextResponse.json(
@@ -47,57 +48,57 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const params = new URLSearchParams({
-      key: apiKey,
-      apiType: "json",
-      srchTarget: "total",
-      pageNum,
-      pageSize: String(Math.max(Number(pageSize), 30)), // 도서 필터링을 위해 넉넉히 요청
-    });
+    async function searchNL(target: string, keyword: string): Promise<NLBookResult[]> {
+      const params = new URLSearchParams({
+        key: apiKey!,
+        apiType: "json",
+        srchTarget: target,
+        pageNum: "1",
+        pageSize: "30",
+        kwd: keyword,
+      });
+      const res = await fetch(`${NL_API_URL}?${params.toString()}`, {
+        headers: { "Accept-Charset": "UTF-8" },
+      });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return (data.result || [])
+        .map((item: Record<string, string>) => ({
+          isbn: item.isbn || "",
+          title: stripHtml(item.titleInfo || ""),
+          author: stripHtml(item.authorInfo || ""),
+          publisher: stripHtml(item.pubInfo || ""),
+          year: item.pubYearInfo || "",
+          classNo: item.classNo || "",
+          className: stripHtml(item.kdcName1s || ""),
+          detailLink: item.detailLink ? `https://www.nl.go.kr${item.detailLink}` : "",
+          imageUrl: item.imageUrl || "",
+          type: stripHtml(item.typeName || ""),
+        }))
+        .filter((b: NLBookResult) => b.type === "도서");
+    }
+
+    let books: NLBookResult[];
 
     if (isbn) {
-      params.set("isbn", isbn);
-    } else {
-      params.set("kwd", kwd);
-    }
-
-    const res = await fetch(`${NL_API_URL}?${params.toString()}`, {
-      headers: { "Accept-Charset": "UTF-8" },
-    });
-
-    if (!res.ok) {
-      return NextResponse.json(
-        { error: `국립중앙도서관 API 오류: ${res.status}` },
-        { status: res.status }
-      );
-    }
-
-    const data = await res.json();
-
-    const allResults = (data.result || []).map(
-      (item: Record<string, string>) => ({
-        isbn: item.isbn || "",
-        title: stripHtml(item.titleInfo || ""),
-        author: stripHtml(item.authorInfo || ""),
-        publisher: stripHtml(item.pubInfo || ""),
-        year: item.pubYearInfo || "",
-        classNo: item.classNo || "",
+      const params = new URLSearchParams({ key: apiKey, apiType: "json", isbn });
+      const res = await fetch(`${NL_API_URL}?${params.toString()}`);
+      const data = res.ok ? await res.json() : { result: [] };
+      books = (data.result || []).map((item: Record<string, string>) => ({
+        isbn: item.isbn || "", title: stripHtml(item.titleInfo || ""),
+        author: stripHtml(item.authorInfo || ""), publisher: stripHtml(item.pubInfo || ""),
+        year: item.pubYearInfo || "", classNo: item.classNo || "",
         className: stripHtml(item.kdcName1s || ""),
-        detailLink: item.detailLink
-          ? `https://www.nl.go.kr${item.detailLink}`
-          : "",
-        imageUrl: item.imageUrl || "",
-        type: stripHtml(item.typeName || ""),
-      })
-    );
-
-    // 도서만 표시 — 기사, 학위논문, 잡지, 웹사이트 등 제외
-    const books: NLBookResult[] = allResults.filter(
-      (b: NLBookResult) => b.type === "도서"
-    );
+        detailLink: item.detailLink ? `https://www.nl.go.kr${item.detailLink}` : "",
+        imageUrl: item.imageUrl || "", type: stripHtml(item.typeName || ""),
+      }));
+    } else {
+      // 사용자가 선택한 검색 타입으로 검색
+      books = await searchNL(searchType === "author" ? "author" : "title", kwd);
+    }
 
     return NextResponse.json({
-      total: data.total || 0,
+      total: books.length,
       pageNum: Number(pageNum),
       pageSize: Number(pageSize),
       books,
