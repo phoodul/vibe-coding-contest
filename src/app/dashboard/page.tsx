@@ -67,6 +67,7 @@ const cardVariants = {
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"student" | "teacher">("student");
   const router = useRouter();
 
   useEffect(() => {
@@ -83,7 +84,9 @@ export default function DashboardPage() {
           .eq("id", user.id)
           .single();
 
-        setProfile(data as Profile | null);
+        const p = data as Profile | null;
+        setProfile(p);
+        if (p?.role === "teacher") setActiveTab("teacher");
       }
       // 비로그인도 허용 — 게스트 모드
       setLoading(false);
@@ -100,7 +103,6 @@ export default function DashboardPage() {
   }
 
   const isLoggedIn = !!profile;
-  const isTeacher = profile?.role === "teacher";
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
@@ -111,7 +113,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-10"
+          className="mb-6"
         >
           <h1 className="text-3xl font-bold mb-2">
             {isLoggedIn
@@ -128,16 +130,41 @@ export default function DashboardPage() {
           </h1>
           <p className="text-muted">
             {isLoggedIn
-              ? `${isTeacher ? "교사" : "학생"} 대시보드`
+              ? `${activeTab === "teacher" ? "교사" : "학생"} 대시보드`
               : "로그인 없이 체험할 수 있습니다"}
           </p>
         </motion.div>
 
-        <div className="space-y-10">
-          {/* 학습 진행도 */}
-          <TutorProgress />
+        {/* 역할 전환 탭 */}
+        <div className="flex gap-2 mb-8">
+          <button
+            onClick={() => setActiveTab("student")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              activeTab === "student"
+                ? "bg-primary/20 text-primary border border-primary/30"
+                : "glass text-muted hover:text-foreground border border-white/10"
+            }`}
+          >
+            학생 도구
+          </button>
+          <button
+            onClick={() => setActiveTab("teacher")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              activeTab === "teacher"
+                ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                : "glass text-muted hover:text-foreground border border-white/10"
+            }`}
+          >
+            교사 도구
+          </button>
+        </div>
 
-          {/* 학생 기능 — 2열 그리드 */}
+        <div className="space-y-10">
+          {/* 학습 진행도 — 학생 탭에서만 */}
+          {activeTab === "student" && <TutorProgress />}
+
+          {/* 학생 기능 */}
+          {activeTab === "student" && (
           <motion.div variants={sectionVariants} initial="hidden" animate="show">
             <div className="flex items-center gap-3 mb-4">
               <h2 className="text-sm font-medium text-muted uppercase tracking-wider">학습 도구</h2>
@@ -168,15 +195,13 @@ export default function DashboardPage() {
               ))}
             </div>
           </motion.div>
+          )}
 
-          {/* 교사 기능 — 로그인+교사 역할만 표시 */}
-          {isTeacher && (
+          {/* 교사 기능 */}
+          {activeTab === "teacher" && (
             <motion.div variants={sectionVariants} initial="hidden" animate="show">
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-sm font-medium text-muted uppercase tracking-wider">교사 도구</h2>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                  NEIS 승인 필요
-                </span>
                 <div className="flex-1 h-px bg-white/5" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
