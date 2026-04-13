@@ -11,6 +11,8 @@ declare global {
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
 import { FeatureIntro } from "@/components/shared/feature-intro";
 import {
@@ -32,14 +34,7 @@ interface QuizResult {
   recommendedLevel: string;
 }
 
-interface Report {
-  strengths: string[];
-  improvements: { original: string; correction: string; explanation: string }[];
-  betterExpressions: { used: string; native: string; explanation: string }[];
-  newVocabulary: { word: string; meaning: string; example: string }[];
-  studyDirection: string;
-  levelFeedback: string;
-}
+// Report is now a plain markdown string
 
 // --- Helpers ---
 function recommendLevel(correct: number): string {
@@ -72,7 +67,7 @@ export default function ConversationPage() {
   const [micActive, setMicActive] = useState(false);
   const [muted, setMuted] = useState(false);
   const [interimText, setInterimText] = useState("");
-  const [report, setReport] = useState<Report | null>(null);
+  const [report, setReport] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
 
   const recognitionRef = useRef<any>(null);
@@ -337,46 +332,18 @@ export default function ConversationPage() {
       }
 
       // Vercel AI SDK data stream에서 텍스트 추출
-      const textParts = fullText
+      const reportText = fullText
         .split("\n")
         .filter((line) => line.startsWith("0:"))
         .map((line) => {
-          try {
-            return JSON.parse(line.slice(2));
-          } catch {
-            return "";
-          }
+          try { return JSON.parse(line.slice(2)); }
+          catch { return ""; }
         })
         .join("");
 
-      // JSON 블록 추출 (```json ... ``` 또는 순수 JSON)
-      let jsonStr = textParts;
-      const jsonMatch = textParts.match(/\{[\s\S]*\}/);
-      if (jsonMatch) jsonStr = jsonMatch[0];
-
-      try {
-        const parsed = JSON.parse(jsonStr);
-        setReport(parsed);
-      } catch {
-        // JSON 파싱 실패 — 텍스트 그대로 표시
-        setReport({
-          strengths: [textParts || "리포트를 생성했지만 형식 변환에 실패했습니다."],
-          improvements: [],
-          betterExpressions: [],
-          newVocabulary: [],
-          studyDirection: textParts ? "" : "다시 시도해주세요.",
-          levelFeedback: "",
-        });
-      }
+      setReport(reportText || "리포트를 생성하지 못했습니다. 다시 시도해주세요.");
     } catch {
-      setReport({
-        strengths: ["리포트 생성 중 네트워크 오류가 발생했습니다."],
-        improvements: [],
-        betterExpressions: [],
-        newVocabulary: [],
-        studyDirection: "다시 시도해주세요.",
-        levelFeedback: "",
-      });
+      setReport("리포트 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
     } finally {
       setReportLoading(false);
     }
@@ -497,79 +464,12 @@ export default function ConversationPage() {
             </GlassCard>
           ) : report ? (
             <div className="space-y-4">
-              {/* 잘한 점 */}
-              <GlassCard hover={false} delay={0}>
-                <h3 className="text-lg font-semibold mb-3 text-green-400">잘한 점</h3>
-                <ul className="space-y-2">
-                  {report.strengths.map((s, i) => (
-                    <li key={i} className="text-sm flex gap-2">
-                      <span className="text-green-400 shrink-0">+</span>
-                      {s}
-                    </li>
-                  ))}
-                </ul>
+              <GlassCard hover={false}>
+                <div className="prose prose-invert prose-sm max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{report}</ReactMarkdown>
+                </div>
               </GlassCard>
 
-              {/* 개선할 점 */}
-              {report.improvements.length > 0 && (
-                <GlassCard hover={false} delay={0.1}>
-                  <h3 className="text-lg font-semibold mb-3 text-amber-400">개선할 점</h3>
-                  <div className="space-y-3">
-                    {report.improvements.map((item, i) => (
-                      <div key={i} className="glass p-3 rounded-lg text-sm">
-                        <p className="text-red-400/80 line-through">{item.original}</p>
-                        <p className="text-green-400 font-medium">{item.correction}</p>
-                        <p className="text-muted mt-1">{item.explanation}</p>
-                      </div>
-                    ))}
-                  </div>
-                </GlassCard>
-              )}
-
-              {/* 원어민 표현 제안 */}
-              {report.betterExpressions?.length > 0 && (
-                <GlassCard hover={false} delay={0.15}>
-                  <h3 className="text-lg font-semibold mb-3 text-cyan-400">더 자연스러운 표현</h3>
-                  <div className="space-y-3">
-                    {report.betterExpressions.map((item, i) => (
-                      <div key={i} className="glass p-3 rounded-lg text-sm">
-                        <p className="text-muted">{item.used}</p>
-                        <p className="text-cyan-400 font-medium">→ {item.native}</p>
-                        <p className="text-muted mt-1">{item.explanation}</p>
-                      </div>
-                    ))}
-                  </div>
-                </GlassCard>
-              )}
-
-              {/* 새 어휘 */}
-              {report.newVocabulary?.length > 0 && (
-                <GlassCard hover={false} delay={0.2}>
-                  <h3 className="text-lg font-semibold mb-3 text-purple-400">새로운 어휘</h3>
-                  <div className="space-y-2">
-                    {report.newVocabulary.map((item, i) => (
-                      <div key={i} className="glass p-3 rounded-lg text-sm">
-                        <span className="text-primary font-bold">{item.word}</span>
-                        <span className="text-muted ml-2">{item.meaning}</span>
-                        <p className="text-muted/70 mt-1 text-xs italic">{item.example}</p>
-                      </div>
-                    ))}
-                  </div>
-                </GlassCard>
-              )}
-
-              {/* 학습 방향 */}
-              <GlassCard hover={false} delay={0.25}>
-                <h3 className="text-lg font-semibold mb-3 text-primary">학습 방향 추천</h3>
-                <p className="text-sm leading-relaxed">{report.studyDirection}</p>
-                {report.levelFeedback && (
-                  <p className="text-sm text-muted mt-3 pt-3 border-t border-white/10">
-                    {report.levelFeedback}
-                  </p>
-                )}
-              </GlassCard>
-
-              {/* 버튼 */}
               <div className="flex gap-3 pt-2">
                 <Link
                   href="/dashboard"
