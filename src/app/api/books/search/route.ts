@@ -91,11 +91,10 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    // 도서 타입만 우선, 나머지는 뒤로
-    const books: NLBookResult[] = [
-      ...allResults.filter((b: NLBookResult) => b.type === "도서"),
-      ...allResults.filter((b: NLBookResult) => b.type !== "도서"),
-    ];
+    // 도서만 표시 — 기사, 학위논문, 잡지, 웹사이트 등 제외
+    const books: NLBookResult[] = allResults.filter(
+      (b: NLBookResult) => b.type === "도서"
+    );
 
     return NextResponse.json({
       total: data.total || 0,
