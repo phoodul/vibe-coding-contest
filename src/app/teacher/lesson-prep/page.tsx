@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "@/components/shared/glass-card";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -107,6 +108,19 @@ export default function LessonPrepPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <FeatureIntro storageKey="lesson">
+        <div className="text-5xl mb-4">📋</div>
+        <h2 className="text-xl font-bold mb-3">원클릭 수업준비</h2>
+        <div className="space-y-2 my-6 text-sm">
+          {["📊 슬라이드", "📝 활동지", "✅ 형성평가"].map((item, i) => (
+            <motion.div key={i} className="flex items-center justify-between" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.7 }}>
+              <span className="text-indigo-300">{item}</span>
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 + i * 0.7 }} className="text-emerald-400">생성됨 ✓</motion.span>
+            </motion.div>
+          ))}
+        </div>
+        <p className="text-xs text-muted mt-4">주제 입력 → 4개 산출물 동시 생성</p>
+      </FeatureIntro>
       {/* 헤더 */}
       <header className="sticky top-0 z-30 glass border-b border-white/5">
         <div className="max-w-5xl mx-auto flex items-center justify-between px-4 h-14">

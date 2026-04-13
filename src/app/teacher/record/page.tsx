@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCompletion } from "ai/react";
 import Link from "next/link";
 import { GlassCard } from "@/components/shared/glass-card";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import {
   calcNeisBytes,
   detectForbidden,
@@ -158,6 +159,17 @@ export default function RecordPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
+      <FeatureIntro storageKey="record">
+        <div className="text-5xl mb-4">📋</div>
+        <h2 className="text-xl font-bold mb-3">학생부 기재 도우미</h2>
+        <div className="flex flex-wrap justify-center gap-2 my-4">
+          {["과학", "탐구", "실험"].map((tag, i) => (
+            <motion.span key={tag} className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-sm" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 + i * 0.4 }}>{tag}</motion.span>
+          ))}
+        </div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.0 }} className="text-sm text-emerald-400">✅ AI 세특 초안 자동 생성</motion.div>
+        <p className="text-xs text-muted mt-4">10개 영역 관리 + 가명처리 + AI 초안</p>
+      </FeatureIntro>
       <style jsx global>{`
         .forbidden-word {
           background: rgba(239, 68, 68, 0.25);

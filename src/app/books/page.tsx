@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/glass-card";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import Link from "next/link";
 import {
   getReadingLogs,
@@ -43,6 +44,16 @@ export default function BooksPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
+      <FeatureIntro storageKey="books">
+        <div className="text-5xl mb-4">📚</div>
+        <h2 className="text-xl font-bold mb-3">맞춤 도서 추천</h2>
+        <div className="space-y-2 my-6 text-sm">
+          {["📖 사피엔스 — 유발 하라리", "📗 코스모스 — 칼 세이건", "📘 정의란 무엇인가 — 마이클 샌델"].map((title, i) => (
+            <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.7 }} className="text-emerald-300">{title}</motion.div>
+          ))}
+        </div>
+        <p className="text-xs text-muted mt-4">학년·진로에 맞는 도서를 AI가 선별</p>
+      </FeatureIntro>
       <div className="max-w-4xl mx-auto">
         <Link
           href="/dashboard"

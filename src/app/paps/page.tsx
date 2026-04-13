@@ -5,6 +5,7 @@ import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "@/components/shared/glass-card";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import { PAPS_ITEMS } from "@/lib/ai/paps-prompt";
 
 const GRADE_OPTIONS = [
@@ -40,6 +41,21 @@ export default function PapsPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
+      <FeatureIntro storageKey="paps">
+        <div className="text-5xl mb-4">💪</div>
+        <h2 className="text-xl font-bold mb-3">PAPS AI 코치</h2>
+        <div className="space-y-3 my-6 text-sm w-48 mx-auto">
+          {[{ label: "유연성", w: "75%", color: "bg-green-400" }, { label: "근력", w: "60%", color: "bg-blue-400" }, { label: "심폐", w: "85%", color: "bg-red-400" }].map((bar, i) => (
+            <div key={bar.label}>
+              <div className="flex justify-between text-xs text-muted mb-1"><span>{bar.label}</span><span>{bar.w}</span></div>
+              <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                <motion.div className={`h-full rounded-full ${bar.color}`} initial={{ width: 0 }} animate={{ width: bar.w }} transition={{ delay: 0.5 + i * 0.7, duration: 0.8 }} />
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-muted mt-4">체력평가 분석 + 맞춤 운동 프로그램</p>
+      </FeatureIntro>
       <div className="max-w-4xl mx-auto">
         <Link
           href="/dashboard"

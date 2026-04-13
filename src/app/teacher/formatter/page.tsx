@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import JSZip from "jszip";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import {
   analyzeDocument,
   applyAllFixes,
@@ -234,6 +235,19 @@ export default function FormatterPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
+      <FeatureIntro storageKey="formatter">
+        <div className="text-5xl mb-4">📄</div>
+        <h2 className="text-xl font-bold mb-3">공문서 포맷터</h2>
+        <div className="space-y-2 my-6 text-sm">
+          {[{ label: "글꼴 (HY신명조)", ok: true }, { label: "여백 (좌우 20mm)", ok: false }, { label: "쪽번호 (하단 중앙)", ok: true }].map((item, i) => (
+            <motion.div key={i} className="flex items-center justify-between" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.7 }}>
+              <span className="text-slate-300">{item.label}</span>
+              <span className={item.ok ? "text-emerald-400" : "text-red-400"}>{item.ok ? "✓" : "✗"}</span>
+            </motion.div>
+          ))}
+        </div>
+        <p className="text-xs text-muted mt-4">K-에듀파인 양식 규칙 자동 교정</p>
+      </FeatureIntro>
       {/* 문서 미리보기 스타일 */}
       <style jsx global>{`
         .doc-table {

@@ -12,6 +12,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/glass-card";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import {
   LEVELS,
   TOPICS,
@@ -739,6 +740,20 @@ export default function ConversationPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
+      <FeatureIntro storageKey="conversation">
+        <div className="text-5xl mb-4">🎙️</div>
+        <h2 className="text-xl font-bold mb-3">AI 영어 회화</h2>
+        <div className="flex justify-center items-center gap-1 my-6">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <motion.div key={i} className="w-2 rounded-full bg-primary" initial={{ height: 8 }} animate={{ height: [8, 24, 8] }} transition={{ delay: 0.5 + i * 0.15, repeat: Infinity, duration: 0.8 }} />
+          ))}
+        </div>
+        <div className="space-y-2 text-sm">
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2 }} className="text-primary">&quot;Hello! How are you?&quot;</motion.div>
+          <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 2.0 }} className="text-emerald-400">&quot;I&apos;m fine, thank you!&quot;</motion.div>
+        </div>
+        <p className="text-xs text-muted mt-4">AI 원어민과 실시간 음성 대화</p>
+      </FeatureIntro>
       <div className="max-w-3xl mx-auto">
         <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors mb-8 block">
           ← 대시보드

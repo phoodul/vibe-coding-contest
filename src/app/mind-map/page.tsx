@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { buildMindMapTree, type SubjectKey } from "@/lib/mind-map/build-tree";
 import { MindMapCanvas } from "@/components/mind-map/mind-map-canvas";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 
 const SUBJECTS: { key: SubjectKey; label: string; icon: string }[] = [
   { key: "ethics", label: "생활과 윤리", icon: "⚖️" },
@@ -17,6 +19,24 @@ export default function MindMapPage() {
 
   return (
     <div className="h-screen bg-gradient-to-br from-[#0a0a1a] via-[#0f1628] to-[#0a0a1a] text-white flex flex-col overflow-hidden">
+      <FeatureIntro storageKey="mindmap">
+        <div className="text-5xl mb-4">🧠</div>
+        <h2 className="text-xl font-bold mb-3">인터랙티브 마인드 맵</h2>
+        <div className="flex justify-center my-6">
+          <svg width="200" height="140" viewBox="0 0 200 140">
+            <motion.circle cx="100" cy="70" r="18" fill="#8b5cf6" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 }} />
+            <motion.line x1="100" y1="70" x2="45" y2="30" stroke="#8b5cf6" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.2 }} />
+            <motion.circle cx="45" cy="30" r="10" fill="#a78bfa" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.2 }} />
+            <motion.line x1="100" y1="70" x2="155" y2="30" stroke="#8b5cf6" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.5 }} />
+            <motion.circle cx="155" cy="30" r="10" fill="#a78bfa" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.5 }} />
+            <motion.line x1="100" y1="70" x2="45" y2="110" stroke="#8b5cf6" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.8 }} />
+            <motion.circle cx="45" cy="110" r="10" fill="#a78bfa" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.8 }} />
+            <motion.line x1="100" y1="70" x2="155" y2="110" stroke="#8b5cf6" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 2.0 }} />
+            <motion.circle cx="155" cy="110" r="10" fill="#a78bfa" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.0 }} />
+          </svg>
+        </div>
+        <p className="text-xs text-muted mt-2">교과서 전체 구조를 한눈에 파악합니다</p>
+      </FeatureIntro>
       {/* 헤더 */}
       <header className="border-b border-white/10 px-4 py-2.5 bg-[#0a0a1a]/90 backdrop-blur-xl z-30 flex-shrink-0">
         <div className="max-w-[1800px] mx-auto flex flex-wrap items-center gap-2 sm:gap-4 justify-between">

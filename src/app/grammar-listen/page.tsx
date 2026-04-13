@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/glass-card";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import {
   GRAMMAR_LEVELS,
   type GrammarLevel,
@@ -208,6 +209,17 @@ export default function GrammarListenPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-8 sm:py-16">
+      <FeatureIntro storageKey="grammar">
+        <div className="text-5xl mb-4">🎧</div>
+        <h2 className="text-xl font-bold mb-3">영문법 핵심 300문장</h2>
+        <div className="flex justify-center items-end gap-1 my-6 h-10">
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <motion.div key={i} className="w-1.5 rounded-full bg-cyan-400" initial={{ height: 4 }} animate={{ height: [4, 16 + i * 4, 4] }} transition={{ delay: 0.5 + i * 0.1, repeat: Infinity, duration: 1 }} />
+          ))}
+        </div>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="text-sm italic text-cyan-300">&quot;She has been studying since morning.&quot;</motion.p>
+        <p className="text-xs text-muted mt-4">반복 청취로 문법을 체득합니다</p>
+      </FeatureIntro>
       <div className="max-w-lg mx-auto">
         <Link
           href="/dashboard"

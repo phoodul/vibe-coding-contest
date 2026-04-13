@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/glass-card";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import {
   VOCAB_DATA,
   CAMP_INFO,
@@ -88,6 +89,18 @@ export default function VocabularyPage() {
   if (!hasStarted) {
     return (
       <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
+        <FeatureIntro storageKey="vocabulary">
+          <div className="text-5xl mb-4">🏔️</div>
+          <h2 className="text-xl font-bold mb-3">에베레스트 단어 학습</h2>
+          <div className="flex justify-center my-6">
+            <svg width="200" height="140" viewBox="0 0 200 140">
+              <motion.path d="M10 130 L100 20 L190 130" stroke="#38bdf8" strokeWidth="3" fill="none" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.5, duration: 1 }} />
+              <motion.circle cx="60" cy="90" r="6" fill="#fbbf24" initial={{ opacity: 0 }} animate={{ opacity: 1, y: [0, -5, 0] }} transition={{ delay: 1.2, y: { repeat: Infinity, duration: 1.5 } }} />
+              <motion.text x="100" y="15" textAnchor="middle" fill="#fbbf24" fontSize="14" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.0 }}>🏔️</motion.text>
+            </svg>
+          </div>
+          <p className="text-xs text-muted mt-2">18,000 단어를 정복하며 정상을 향해</p>
+        </FeatureIntro>
         <div className="max-w-3xl mx-auto">
           <Link
             href="/dashboard"

@@ -68,92 +68,73 @@ export function MindMapCanvas({ root }: MindMapCanvasProps) {
       }
     : null;
 
-  // depth별 최대 팬 각도 (rad): 360° → 60° → 45° → 40° → 30° → 30°
-  const FAN_BY_DEPTH = [
-    2 * Math.PI,
-    Math.PI / 3,
-    Math.PI / 4,
-    (2 * Math.PI) / 9,
-    Math.PI / 6,
-    Math.PI / 6,
-  ];
-
   const childPositions = useMemo(() => {
     const n = children.length;
     if (n === 0) return [];
 
     const isRoot = outwardAngle === null;
-    const depth = angleHistory.length; // 0=root, 1=first drill, ...
-    const childMaxW = size.w >= 640 ? 180 : 140;
-    const childBoxH = 48; // 자식 노드 예상 높이
-
-    // 팬 각도: depth별 축소
-    const fanAngle = FAN_BY_DEPTH[Math.min(depth, FAN_BY_DEPTH.length - 1)];
-    const step = n <= 1 ? 0 : isRoot ? fanAngle / n : fanAngle / (n - 1);
-
-    // ── 반지름 계산: 겹침 방지 최우선 ──
-    let r: number;
+    const childBoxW = size.w >= 640 ? 180 : 140;
+    const childBoxH = 52;
+    const minGap = 20; // ~5mm 간격
 
     if (isRoot) {
-      // Root: 기존 둘레 기반 계산
-      const estimatedWidths = children.map((c) => c.label.length * 10 + 50);
-      const total = estimatedWidths.reduce((a, b) => a + b, 0) + n * 24;
-      const maxR = Math.min(size.w * 0.42, size.h * 0.38);
-      r = Math.max(Math.min(180, size.w * 0.32), Math.min(maxR, total / fanAngle));
-    } else {
-      // 1) 중앙↔자식 겹침 방지
-      const centerMaxW = Math.min(size.w * 0.45, 280);
-      const centerHalf = Math.min(focused.label.length * 14 + 64, centerMaxW) / 2;
-      const gap = Math.max(4, 16 - depth * 3);
-      const minRCenter = centerHalf + childMaxW / 2 + gap;
+      // ── Root: 360도 균등 분할 ──
+      const step = (2 * Math.PI) / n;
+      const margin = size.w >= 640 ? 100 : 70;
+      const maxR = Math.min(size.w / 2 - margin, size.h / 2 - margin);
+      const r = Math.max(Math.min(maxR, Math.min(size.w, size.h) * 0.32), 80);
 
-      // 2) 자식↔자식 겹침 방지 (인접 노드 chord distance > 노드 높이 + gap)
-      const minRArc = n > 1 && step > 0
-        ? (childBoxH + gap) / (2 * Math.sin(step / 2))
-        : 0;
-
-      r = Math.max(minRCenter, minRArc, 100);
+      return children.map((child, i) => {
+        const angle = -Math.PI / 2 + step * i;
+        return { node: child, x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle), angle };
+      });
     }
 
-    // ── 각도 배치 ──
-    const centerAngle = isRoot ? -Math.PI / 2 : outwardAngle!;
-    const startAngle = centerAngle - fanAngle / 2;
+    // ── 하위 레벨: 부모→현재 축의 반대편을 중심으로 좁은 부채꼴 ──
+    const centerAngle = outwardAngle!;
 
-    const slots = Array.from({ length: n }, (_, i) => {
+    // 반지름: 중앙 박스와 겹치지 않되, 화면 안에 들어오는 범위
+    const centerNodeHalfW = Math.min(focused.label.length * 12 + 40, 240) / 2;
+    const minR = centerNodeHalfW + childBoxW / 2 + minGap;
+    const padX = childBoxW / 2 + 16;
+    const padY = childBoxH / 2 + 16;
+    const maxR = Math.min(size.w / 2 - padX, size.h / 2 - padY);
+    let r = Math.max(Math.min(maxR, Math.min(size.w, size.h) * 0.30), minR);
+
+    // 인접 자식 쌍 간 겹침 방지: 실제 박스 크기 기반
+    // 인접한 두 노드의 너비 평균 + 간격으로 최소 arc distance 계산
+    const childWidths = children.map(c => Math.min(c.label.length * 11 + 40, childBoxW));
+    let maxPairSize = childBoxH + minGap; // 기본: 높이 기준
+    for (let i = 0; i < n - 1; i++) {
+      const pairSize = (childWidths[i] + childWidths[i + 1]) / 2 + minGap;
+      maxPairSize = Math.max(maxPairSize, pairSize);
+    }
+
+    // 반지름을 키워서 겹침 해결 시도
+    while (r < maxR) {
+      const arcStep = 2 * Math.asin(Math.min(0.95, maxPairSize / (2 * r)));
+      const fan = arcStep * (n - 1);
+      if (fan <= Math.PI * 0.75) break; // 부채꼴이 충분히 좁으면 OK
+      r = Math.min(maxR, r + 20);
+    }
+
+    const arcStep = n > 1 ? 2 * Math.asin(Math.min(0.95, maxPairSize / (2 * r))) : 0;
+    const totalFan = arcStep * (n - 1);
+    const step = n > 1 ? totalFan / (n - 1) : 0;
+    const startAngle = centerAngle - totalFan / 2;
+
+    return children.map((child, i) => {
       const angle = n === 1 ? centerAngle : startAngle + step * i;
-      return {
-        x: cx + r * Math.cos(angle),
-        y: cy + r * Math.sin(angle),
-        angle,
-      };
+      let x = cx + r * Math.cos(angle);
+      let y = cy + r * Math.sin(angle);
+
+      // 화면 밖 클램핑
+      x = Math.max(padX, Math.min(size.w - padX, x));
+      y = Math.max(padY, Math.min(size.h - padY, y));
+
+      return { node: child, x, y, angle };
     });
-
-    // 읽기 순서 정렬
-    const readingOrder = slots
-      .map((s, idx) => {
-        const rad = Math.atan2(cy - s.y, s.x - cx);
-        const deg = ((rad * 180) / Math.PI + 360) % 360;
-        let zone: number;
-        let sortKey: number;
-        if (deg >= 45 && deg < 135) {
-          zone = 0; sortKey = s.x;
-        } else if (deg >= 135 && deg < 225) {
-          zone = 1; sortKey = s.y;
-        } else if (deg >= 225 && deg < 315) {
-          zone = 3; sortKey = s.x;
-        } else {
-          zone = 2; sortKey = s.y;
-        }
-        return { idx, zone, sortKey };
-      })
-      .sort((a, b) => a.zone - b.zone || a.sortKey - b.sortKey)
-      .map((p) => p.idx);
-
-    return children.map((child, i) => ({
-      node: child,
-      ...slots[readingOrder[i]],
-    }));
-  }, [children, cx, cy, size, outwardAngle, focused, angleHistory]);
+  }, [children, cx, cy, size, outwardAngle, focused]);
 
   // 자식 클릭: 하위로 drill-in (클릭한 자식의 각도 저장)
   const handleChildClick = useCallback(
