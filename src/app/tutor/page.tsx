@@ -342,12 +342,13 @@ export default function TutorPage() {
 - 자료의 전체 구조를 파악하고 핵심 개념을 빠르게 훑어줍니다.
 - 각 개념당 1~2턴으로 간결하게 진행합니다.
 - "이게 뭔지, 왜 중요한지"에 집중합니다.`
-      : `## 학습 모드: 실무 (깊고 실전적으로)
+      : `## 학습 모드: 실무 (깊고 실전적으로, 섹션당 20~30분)
 - 각 개념을 실무에서 바로 활용할 수 있는 수준까지 다룹니다.
 - 실제 코드, 명령어, 설정 방법, 주의사항을 반드시 포함합니다.
 - 각 개념당 3~5턴으로 이해→적용→확인 단계를 거칩니다.
 - 단순히 "이런 게 있다"가 아니라 "이렇게 쓴다"까지 가르칩니다.
-- 최소 10개 이상의 핵심 내용을 다루세요.`;
+- 한 섹션에서 최소 10개 이상의 핵심 내용을 깊이 있게 다루세요.
+- 20~30분 분량이 되도록 충분한 깊이로 가르치세요.`;
 
     setStarted(true);
     append({
@@ -359,8 +360,15 @@ export default function TutorPage() {
 
 ${depthGuide}
 
-자료를 분석하여 핵심 개념들을 파악하고, 첫 번째 개념부터 가이드 질문으로 수업을 시작하세요.
+## 수업 계획 수립 (필수 — 첫 응답 전에 반드시 수행)
+자료를 분석하여 다음을 내부적으로 결정하세요 (학생에게 보여주지 않음):
+1. 이 자료에서 가르쳐야 할 **핵심 내용 목록**을 도출하세요 (실무 모드: 10개 이상, 개요 모드: 핵심만).
+2. 각 내용의 **학습 순서**를 정하세요 (기초 → 심화, 의존 관계 고려).
+3. 각 내용마다 **반드시 다뤄야 할 실전 포인트**를 메모하세요.
+
+이 계획을 따라 첫 번째 개념부터 가이드 질문으로 자연스럽게 수업을 시작하세요.
 각 개념을 가르칠 때 반드시 자료의 원문 내용을 근거로 설명하세요. 자료에 없는 내용을 지어내지 마세요.
+하나의 개념이 끝나면 [CONCEPT_DONE: 개념명] 마커를 찍고 다음으로 넘어가세요.
 
 --- 자료 내용 ---
 ${contentToSend}
@@ -685,7 +693,7 @@ ${contentToSend}
                         </div>
                         {selectedSections.size > 0 && (
                           <p className="text-[10px] text-cyan-400">
-                            {selectedSections.size}개 섹션 선택 · 약 {learningDepth === "practical" ? Math.ceil(selectedSections.size * 10) : Math.ceil(selectedSections.size * 3)}분 예상
+                            {selectedSections.size}개 섹션 선택 · 약 {learningDepth === "practical" ? selectedSections.size * 25 : selectedSections.size * 10}분 예상
                           </p>
                         )}
                       </div>
