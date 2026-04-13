@@ -519,9 +519,11 @@ export default function ConversationPage() {
               </button>
               <button
                 onClick={generateReport}
-                className="text-sm text-amber-400 hover:text-amber-300 transition-colors"
+                disabled={messages.filter(m => m.role === "user").length < 10}
+                className={`text-sm transition-colors ${messages.filter(m => m.role === "user").length < 10 ? "text-muted/40 cursor-not-allowed" : "text-amber-400 hover:text-amber-300"}`}
+                title={messages.filter(m => m.role === "user").length < 10 ? `리포트는 10턴 이상 대화 후 가능합니다 (현재 ${messages.filter(m => m.role === "user").length}턴)` : ""}
               >
-                종료 & 리포트
+                종료 & 리포트 {messages.filter(m => m.role === "user").length < 10 && `(${messages.filter(m => m.role === "user").length}/10)`}
               </button>
             </div>
           </div>
