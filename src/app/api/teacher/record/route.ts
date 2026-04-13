@@ -75,7 +75,7 @@ export async function POST(req: Request) {
 
     const result = streamText({
       model: anthropic("claude-sonnet-4-20250514"),
-      temperature: 0.3, // 사실 기반 + 장점 부각, 허위/과장 방지
+      temperature: 0.6, // 사실 기반 + 표현 다양성
       system: `${areaPrompt}
 ${COMMON_RULES}
 5. NEIS UTF-8 기준 ${limit}바이트 이내로 작성 (한글 1자=3바이트, 영문/숫자=1바이트)
