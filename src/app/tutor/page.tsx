@@ -325,28 +325,31 @@ export default function TutorPage() {
   function startMaterialLesson() {
     if (!materialText) return;
 
-    // 선택된 섹션이 있으면 그것만 전달, 없으면 전체
+    // 모드에 따라 전달 분량 조절: 개요=넓게(30K), 실무=좁게(10K) 깊게
+    const maxChars = learningDepth === "overview" ? 30000 : 10000;
+
     let contentToSend: string;
     let sectionNames: string;
     if (materialSections.length > 0 && selectedSections.size > 0) {
       const picked = materialSections.filter((_, i) => selectedSections.has(i));
-      contentToSend = picked.map((s) => `## ${s.title}\n${s.content}`).join("\n\n");
+      const joined = picked.map((s) => `## ${s.title}\n${s.content}`).join("\n\n");
+      contentToSend = joined.slice(0, maxChars);
       sectionNames = picked.map((s) => s.title).join(", ");
     } else {
-      contentToSend = materialText.slice(0, 30000);
+      contentToSend = materialText.slice(0, maxChars);
       sectionNames = "전체";
     }
 
     const depthGuide = learningDepth === "overview"
-      ? `## 학습 모드: 개요 (넓게, 섹션당 15~20분)
-- 범위를 최대한 넓혀서 자료의 전체 내용을 빠짐없이 다룹니다.
+      ? `## 학습 모드: 개요 (많은 내용을 빠르게, 섹션당 15~20분)
+- 주어진 자료의 내용을 최대한 많이 커버합니다.
 - 각 개념당 1~2턴, 핵심만 짚고 빠르게 넘어갑니다.
 - "이게 뭔지, 왜 중요한지, 언제 쓰는지"에 집중합니다.
-- 자료에 있는 모든 주요 내용을 가능한 한 많이 커버하세요.
-- 세부 코드나 설정 방법은 생략하고 큰 그림을 그려줍니다.`
-      : `## 학습 모드: 실무 (깊게, 섹션당 25~30분)
-- 범위를 좁히더라도 다루는 내용은 실무 활용 수준까지 깊이 파고듭니다.
-- 실제 코드, 명령어, 설정 방법, 주의사항, 흔한 실수를 반드시 포함합니다.
+- 코드나 설정 세부사항은 생략하고 큰 그림을 그려줍니다.
+- 자료에 등장하는 모든 주요 개념을 빠짐없이 훑는 것이 목표입니다.`
+      : `## 학습 모드: 실무 (적은 내용을 깊게, 섹션당 25~30분)
+- 자료의 내용을 하나하나 실무에서 바로 쓸 수 있는 수준으로 상세히 다룹니다.
+- 실제 코드를 직접 보여주고, 명령어, 설정 방법, 주의사항, 흔한 실수를 반드시 포함합니다.
 - 각 개념당 3~5턴으로 이해→적용→확인 단계를 거칩니다.
 - 단순히 "이런 게 있다"가 아니라 "이렇게 쓴다, 이걸 조심해라"까지 가르칩니다.
 - 학생이 세션 후 바로 실무에 적용할 수 있는 수준이 목표입니다.`;
