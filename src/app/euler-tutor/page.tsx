@@ -5,6 +5,9 @@ import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 import { MATH_AREAS } from "@/lib/ai/euler-prompt";
 import { filterProblems, EXAM_YEARS, EXAM_TYPES, TOTAL_PROBLEMS, type MathProblem } from "@/lib/data/math-problems";
 import problemTexts from "@/lib/data/problem-texts.json";
@@ -416,7 +419,7 @@ export default function EulerTutorPage() {
                 >
                   {m.role === "assistant" ? (
                     <div className="prose prose-invert prose-sm max-w-none">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
                         {m.content}
                       </ReactMarkdown>
                     </div>
@@ -428,7 +431,11 @@ export default function EulerTutorPage() {
                           <img key={i} src={att.url} alt="문제 이미지" className="rounded-lg mb-2 max-h-48" />
                         )
                       ))}
-                      <p className="whitespace-pre-wrap">{m.content}</p>
+                      <div className="prose prose-invert prose-sm max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
+                          {m.content}
+                        </ReactMarkdown>
+                      </div>
                     </>
                   )}
                 </div>
