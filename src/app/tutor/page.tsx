@@ -685,8 +685,7 @@ ${contentToSend}
                         </div>
                         {selectedSections.size > 0 && (
                           <p className="text-[10px] text-cyan-400">
-                            {selectedSections.size}개 섹션 선택 · 약 {Math.ceil(selectedSections.size * 3)}분+ 예상
-                            {selectedSections.size >= 3 && " · 시작할 수 있습니다!"}
+                            {selectedSections.size}개 섹션 선택 · 약 {learningDepth === "practical" ? Math.ceil(selectedSections.size * 10) : Math.ceil(selectedSections.size * 3)}분 예상
                           </p>
                         )}
                       </div>
