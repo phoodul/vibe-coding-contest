@@ -49,16 +49,17 @@
 - 16개 도구 각각이 교사와 학생이 실제로 사용할 수 있는 품질이어야 했기 때문에, 코드 품질·아키텍처 설계·프롬프트 엔지니어링 모두에서 최고 성능의 모델이 필요했음
 - Sonnet으로는 복잡한 시스템 설계(멀티 에이전트, OCR 파이프라인, 풀이 DB 아키텍처 등)를 한 번에 정확하게 구현하기 어려웠고, Opus의 깊은 추론 능력이 프로덕션 품질 달성의 핵심이었음
 
-**7개 서브 에이전트 시스템** (`.claude/agents/`):
+**8개 서브 에이전트 시스템** (`.claude/agents/`):
 
 | 에이전트 | 역할 | 도구 제한 |
 |----------|------|-----------|
-| Architect | PRD/스키마 설계, implementation_plan.md 작성 | Bash 사용 불가 |
-| Designer | UI/UX 피드백, 디자인 토큰 관리 | Playwright 스크린샷 기반 |
-| Implementer | 코드 구현 | 전체 도구 사용 |
-| Researcher | 기술 문서 조사, 트렌드 분석 | 코드 작성 불가 |
-| Reviewer | 코드 리뷰, 보안 점검 | 코드 수정 불가 |
-| Debugger | 에러 진단-수정-재검증 루프 | 디버깅 전용 |
+| Architect | 아키텍처 설계, PRD 작성, DB 스키마 설계 | 코드 실행 불가 — 설계만 |
+| Designer | UI/UX 피드백, 디자인 토큰 관리, 스크린샷 기반 검토 | Playwright 스크린샷 기반 |
+| Implementer | implementation_plan.md에 따라 기능 코드 구현 | 전체 도구 사용 |
+| Improver | 코드 품질 개선, 리팩토링, 성능 최적화 | 기존 코드 분석 후 개선 |
+| Researcher | 기술 문서 조사, 트렌드 분석, 라이브러리 비교 | 코드 작성 불가 |
+| Reviewer | 코드 리뷰, 보안 점검, OWASP 취약점 검사 | 코드 수정 불가 — 검토만 |
+| Debugger | 빌드/런타임 에러 자동 탐지 → 수정 → 재검증 루프 | 터미널 + Playwright |
 | Reporter | AI 빌딩 리포트 자동 생성 | Read/Write 전용 |
 
 **6개 스킬 파일** (`.claude/skills/`):
