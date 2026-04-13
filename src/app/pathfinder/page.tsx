@@ -218,20 +218,19 @@ export default function PathfinderPage() {
               {/* AI 결과 */}
               {lastAssistant && (
                 <GlassCard hover={false} delay={0} className="mt-4">
-                  <div className="prose prose-invert max-w-none">
-                    <div className="prose prose-invert prose-sm max-w-none">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          a: ({ href, children }) => (
-                            <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                              {children}
-                            </a>
-                          ),
-                        }}
-                      >
-                        {lastAssistant.content}
-                      </ReactMarkdown>
+                  <div className="prose prose-invert prose-sm max-w-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        a: ({ href, children }) => (
+                          <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                            {children}
+                          </a>
+                        ),
+                      }}
+                    >
+                      {lastAssistant.content}
+                    </ReactMarkdown>
                   </div>
                 </GlassCard>
               )}
