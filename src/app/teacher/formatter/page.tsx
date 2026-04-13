@@ -313,7 +313,7 @@ export default function FormatterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-3xl font-bold mb-2">&#128196; 공문서 포맷터</h1>
+          <h1 className="text-3xl font-bold mb-2">📄 공문서 포맷터</h1>
           <p className="text-muted mb-8">
             HWP/HWPX 파일을 업로드하면 K-에듀파인 양식 규격에 맞지 않는 부분을
             찾아 원클릭 교정합니다.
@@ -340,7 +340,7 @@ export default function FormatterPage() {
                   : "hover:bg-white/[0.04]"
               }`}
             >
-              <div className="text-5xl mb-4">&#128195;</div>
+              <div className="text-5xl mb-4">📃</div>
               <p className="font-medium mb-2">
                 공문서 파일을 드래그 앤 드롭하세요
               </p>
@@ -409,7 +409,7 @@ export default function FormatterPage() {
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 {fileName && (
                   <span className="text-sm font-medium glass px-3 py-1 rounded-lg">
-                    &#128196; {fileName}
+                    📄 {fileName}
                   </span>
                 )}
                 <span
@@ -420,8 +420,8 @@ export default function FormatterPage() {
                   }`}
                 >
                   {issues.length === 0
-                    ? "&#9989; 문제 없음"
-                    : `&#9888;&#65039; ${issues.length}개 교정 필요`}
+                    ? "✅ 문제 없음"
+                    : `⚠️ ${issues.length}개 교정 필요`}
                 </span>
                 {Object.entries(categoryCounts).map(([cat, count]) => (
                   <span
@@ -534,7 +534,7 @@ export default function FormatterPage() {
                   <div className="flex-1 overflow-y-auto space-y-3">
                     {issues.length === 0 ? (
                       <div className="flex flex-col items-center justify-center h-full gap-2">
-                        <span className="text-4xl">&#9989;</span>
+                        <span className="text-4xl">✅</span>
                         <p className="text-success text-sm font-medium">
                           모든 양식이 올바릅니다!
                         </p>
@@ -574,7 +574,7 @@ export default function FormatterPage() {
                               )}
                               {isApplied && (
                                 <span className="text-xs text-success">
-                                  &#10003; 적용됨
+                                  ✓ 적용됨
                                 </span>
                               )}
                             </div>
@@ -599,13 +599,13 @@ export default function FormatterPage() {
                         onClick={applyAll}
                         className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all"
                       >
-                        &#9889; 모두 적용 ({issues.length}개)
+                        ⚡ 모두 적용 ({issues.length}개)
                       </button>
                       <button
                         onClick={downloadFixed}
                         className="flex-1 py-2 rounded-lg glass text-sm font-medium hover:bg-white/10 transition-all"
                       >
-                        &#128190; 교정본 다운로드
+                        💾 교정본 다운로드
                       </button>
                     </div>
                   )}
@@ -616,7 +616,7 @@ export default function FormatterPage() {
                         onClick={downloadFixed}
                         className="w-full py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all"
                       >
-                        &#128190; 다운로드
+                        💾 다운로드
                       </button>
                     </div>
                   )}

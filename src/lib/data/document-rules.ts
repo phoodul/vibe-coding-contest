@@ -273,6 +273,23 @@ export function analyzeDocument(text: string): FormatIssue[] {
       issues.push({ line: lineNum, original: current, corrected: endFix, rule: "끝 표시 (끝.)", category: "marker" });
       current = endFix;
     }
+
+    // 영문 혼용 검사: 괄호 밖의 영문 단어 감지 (URL, 이메일, 참조번호 제외)
+    const stripped = current
+      .replace(/\([^)]*\)/g, "") // 괄호 안 제거
+      .replace(/https?:\/\/\S+/g, "") // URL 제거
+      .replace(/\S+@\S+/g, "") // 이메일 제거
+      .replace(/[A-Za-z]+-\d+/g, ""); // 참조번호 (교육과-1234) 제거
+    const engMatch = stripped.match(/[A-Za-z]{2,}/g);
+    if (engMatch) {
+      issues.push({
+        line: lineNum,
+        original: current,
+        corrected: current,
+        rule: `영문 혼용: "${engMatch.slice(0, 3).join(", ")}" — 공문서는 한글 표기 원칙`,
+        category: "structure",
+      });
+    }
   });
 
   return issues;
