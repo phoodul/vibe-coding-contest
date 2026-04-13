@@ -75,6 +75,16 @@ function MiniDemo({ type }: { type: string }) {
   );
   if (type === "career") return <MiniDemoCareer />;
   if (type === "lesson") return <MiniDemoLesson />;
+  if (type === "mindmap") return <MiniDemoMindMap />;
+  if (type === "grammar") return <MiniDemoGrammar />;
+  if (type === "pathfinder") return <MiniDemoPathfinder />;
+  if (type === "books") return <MiniDemoBooks />;
+  if (type === "paps") return <MiniDemoPaps />;
+  if (type === "internship") return <MiniDemoInternship />;
+  if (type === "music") return <MiniDemoMusic />;
+  if (type === "formatter") return <MiniDemoFormatter />;
+  if (type === "draft") return <MiniDemoDraft />;
+  if (type === "record") return <MiniDemoRecord />;
   if (type === "conversation") return (
     <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col items-center justify-center gap-1">
       <motion.div initial={{ scale: 0 }} animate={{ scale: [0, 1.2, 1] }} transition={{ delay: 0.5, duration: 0.5 }} className="flex gap-1">
@@ -118,13 +128,163 @@ function MiniDemoLesson() {
   );
 }
 
+function MiniDemoMindMap() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex items-center justify-center">
+      <svg viewBox="0 0 120 50" className="w-28 h-12">
+        <motion.circle cx="60" cy="25" r="8" fill="#6366f1" opacity="0.3" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
+        <motion.text x="60" y="27" fontSize="5" fill="white" textAnchor="middle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>핵심</motion.text>
+        {[[25,12],[95,12],[25,38],[95,38]].map(([x,y],i) => (
+          <g key={i}>
+            <motion.line x1="60" y1="25" x2={x} y2={y} stroke="#6366f1" strokeWidth="0.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.8+i*0.2, duration: 0.4 }} />
+            <motion.circle cx={x} cy={y} r="4" fill="#6366f1" opacity="0.2" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1+i*0.2 }} />
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function MiniDemoGrammar() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col items-center justify-center gap-1.5">
+      <motion.div className="flex gap-1 items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+        <span className="text-[9px] text-cyan-300">🔊</span>
+        {[0,1,2,3,4].map(i => (
+          <motion.div key={i} className="w-0.5 bg-cyan-400 rounded-full" style={{ height: 4+Math.random()*8 }}
+            animate={{ height: [4, 4+Math.random()*10, 4] }} transition={{ delay: 0.6+i*0.1, duration: 0.5, repeat: Infinity, repeatDelay: 0.8 }} />
+        ))}
+      </motion.div>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="text-[9px] text-muted italic">&quot;She has been studying...&quot;</motion.p>
+    </div>
+  );
+}
+
+function MiniDemoPathfinder() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col items-center justify-center gap-1">
+      <motion.div className="flex gap-1 items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+        {["꿈","→","학교","→","직업"].map((s,i) => (
+          <motion.span key={i} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5+i*0.4 }}
+            className={`text-[9px] ${i%2===0 ? "px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-300 border border-yellow-500/20" : "text-muted/50"}`}>{s}</motion.span>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+function MiniDemoBooks() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col gap-1 justify-center">
+      {["📖 데미안 — 헤르만 헤세", "📗 코스모스 — 칼 세이건", "📘 사피엔스 — 유발 하라리"].map((b,i) => (
+        <motion.p key={b} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5+i*0.4 }}
+          className="text-[9px] text-muted">{b}</motion.p>
+      ))}
+    </div>
+  );
+}
+
+function MiniDemoPaps() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex items-center justify-center gap-3">
+      {[{l:"유연성",v:75,c:"#22c55e"},{l:"근력",v:45,c:"#ef4444"},{l:"심폐",v:88,c:"#22c55e"}].map((s,i) => (
+        <motion.div key={s.l} className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5+i*0.3 }}>
+          <div className="w-8 h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <motion.div className="h-full rounded-full" style={{ background: s.c }} initial={{ width: 0 }} animate={{ width: `${s.v}%` }} transition={{ delay: 0.8+i*0.3, duration: 0.8 }} />
+          </div>
+          <p className="text-[7px] text-muted mt-0.5">{s.l}</p>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function MiniDemoInternship() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col gap-1 justify-center">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex items-center gap-1.5">
+        <span className="text-[9px]">📝</span>
+        <motion.span initial={{ width: 0 }} animate={{ width: "auto" }} transition={{ delay: 0.8, duration: 1.5 }} className="text-[9px] text-muted inline-block overflow-hidden whitespace-nowrap">오늘 배운 내용: 고객 응대 매뉴얼...</motion.span>
+      </motion.div>
+      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }} className="text-[8px] text-green-400">✓ AI 일지 자동 작성</motion.span>
+    </div>
+  );
+}
+
+function MiniDemoMusic() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col items-center justify-center gap-1">
+      <motion.div className="flex gap-0.5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+        {[0,1,2,3,4,5,6,7].map(i => (
+          <motion.div key={i} className="w-1 bg-purple-400 rounded-full" animate={{ height: [3, 6+Math.random()*8, 3] }}
+            transition={{ delay: 0.5+i*0.1, duration: 0.6, repeat: Infinity, repeatDelay: 0.5 }} style={{ height: 3 }} />
+        ))}
+      </motion.div>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="text-[9px] text-muted">베토벤 — 월광 소나타</motion.p>
+    </div>
+  );
+}
+
+function MiniDemoFormatter() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col gap-1 justify-center">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex items-center gap-1">
+        <span className="text-[9px]">📄</span><span className="text-[9px] text-muted">공문서.hwp</span>
+      </motion.div>
+      {[{t:"글꼴 규격",ok:true},{t:"여백 설정",ok:false},{t:"쪽번호",ok:true}].map((r,i) => (
+        <motion.div key={r.t} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8+i*0.3 }}
+          className="flex items-center gap-1">
+          <span className={`text-[8px] ${r.ok?"text-green-400":"text-red-400"}`}>{r.ok?"✓":"✗"}</span>
+          <span className="text-[8px] text-muted">{r.t}</span>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function MiniDemoRecord() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col gap-1 justify-center">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex gap-1">
+        {["과학","탐구","실험"].map((k,i) => (
+          <motion.span key={k} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6+i*0.2 }}
+            className="px-1 py-0.5 rounded text-[7px] bg-orange-500/10 text-orange-300 border border-orange-500/20">{k}</motion.span>
+        ))}
+      </motion.div>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="text-[8px] text-muted">→ AI 세특 초안 자동 생성</motion.p>
+    </div>
+  );
+}
+
+function MiniDemoDraft() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col gap-1 justify-center">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex items-center gap-1">
+        <span className="text-[9px]">✏️</span>
+        <motion.span initial={{ width: 0 }} animate={{ width: "auto" }} transition={{ delay: 0.8, duration: 1.2 }} className="text-[9px] text-muted inline-block overflow-hidden whitespace-nowrap">주제 입력 → 공문서 초안...</motion.span>
+      </motion.div>
+      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }} className="text-[8px] text-sky-400">✓ 6-하 체계 자동 적용</motion.span>
+    </div>
+  );
+}
+
 const demoTypes: Record<string, string> = {
   "소크라테스 AI 튜터": "tutor",
   "오일러 튜터": "euler",
+  "마인드 맵": "mindmap",
   "영어 단어 학습": "vocab",
   "AI 영어 회화": "conversation",
+  "영문법 핵심 300문장": "grammar",
   "진로 시뮬레이터": "career",
+  "내 길 내비": "pathfinder",
+  "맞춤 도서 추천": "books",
+  "PAPS AI 코치": "paps",
+  "현장실습 일지 도우미": "internship",
+  "음악 감상문 도우미": "music",
   "수업 자료 생성기": "lesson",
+  "공문서 포맷터": "formatter",
+  "공문서 초안 작성기": "draft",
+  "생기부 세특 도우미": "record",
 };
 
 const studentFeatures = [
