@@ -68,15 +68,19 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "주제 또는 파일이 필요합니다" }), { status: 400 });
     }
 
-    // 영상 검색 (Tavily) — 주제 기반
+    // 영상 검색 (Tavily) — 주제 기반, YouTube 우선 + 일반 영상
     const searchQuery = topic || docContent.slice(0, 200);
-    const videoSearch = await searchWeb(`${searchQuery} 수업 교육 영상 site:youtube.com`);
-    const videos = videoSearch.results
+    const videoSearch = await searchWeb(`${searchQuery} 교육 영상 강의 YouTube`);
+    const ytVideos = videoSearch.results
       .filter((r) => r.url.includes("youtube.com") || r.url.includes("youtu.be"))
       .slice(0, 3)
       .map((r) => ({ title: r.title, url: r.url }));
+
+    // YouTube 결과 부족 시 일반 검색으로 보충
+    const videos = [...ytVideos];
     if (videos.length < 3) {
-      for (const r of videoSearch.results) {
+      const fallback = await searchWeb(`${searchQuery} 강의 영상`);
+      for (const r of fallback.results) {
         if (videos.length >= 3) break;
         if (!videos.find((v) => v.url === r.url)) {
           videos.push({ title: r.title, url: r.url });
