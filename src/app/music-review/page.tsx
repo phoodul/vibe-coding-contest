@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
 
 import { MUSIC_GENRES } from "@/lib/ai/music-review-prompt";
@@ -149,10 +151,8 @@ export default function MusicReviewPage() {
 
               {lastAssistant && (
                 <GlassCard hover={false}>
-                  <div className="prose prose-invert max-w-none">
-                    <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                      {lastAssistant.content}
-                    </div>
+                  <div className="prose prose-invert prose-sm max-w-none">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{lastAssistant.content}</ReactMarkdown>
                   </div>
                 </GlassCard>
               )}

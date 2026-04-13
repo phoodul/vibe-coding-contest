@@ -17,13 +17,16 @@ export async function POST(req: Request) {
       input = {};
     }
 
+    const today = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+
     const userMessage = `현장실습 정보:
+- 실습일자: ${today}
 - 실습 분야: ${input.field || "미입력"}
 - 실습 업체: ${input.company || "미입력"}
 - 오늘 한 일: ${input.tasks || "미입력"}
 - 배운 점: ${input.learned || "미입력"}
 
-이 내용을 바탕으로 학교 제출용 현장실습 일지를 작성해주세요.`;
+이 내용을 바탕으로 학교 제출용 현장실습 일지를 작성해주세요. 실습일자는 ${today}입니다.`;
 
     const result = streamText({
       model: anthropic("claude-sonnet-4-20250514"),
