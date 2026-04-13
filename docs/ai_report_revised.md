@@ -71,7 +71,7 @@
 
 ### 각 AI 도구별 활용 전략을 작성해주세요.
 
-**1. 7개 서브 에이전트 시스템 (`.claude/agents/`)**
+**1. 8개 서브 에이전트 시스템 (`.claude/agents/`)**
 
 역할별로 분리된 에이전트가 각자의 도구 제한 내에서 작업합니다:
 - **Architect**: PRD/스키마 설계, implementation_plan.md 작성 (Bash 사용 불가 → 실행 없이 설계만)

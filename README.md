@@ -118,7 +118,7 @@ npm run dev
 
 이 프로젝트는 **Claude Code CLI (Opus 4.6, 1M context)**를 활용하여 설계부터 배포까지 전 과정을 AI와 협업하여 개발했습니다.
 
-- 7개 서브 에이전트 + 6개 스킬 + 4개 Hooks로 AI 개발 워크플로우 체계화
+- 8개 서브 에이전트 + 6개 스킬 + 4개 Hooks로 AI 개발 워크플로우 체계화
 - 6개 MCP 서버 연동 (Supabase, Playwright, Context7, Vercel, Sequential Thinking, Firebase)
 - 200개+ 커밋, 25개+ 페이지, 20개+ API 엔드포인트
 - 10년치 수능 530문항 풀이 DB (Tavily 웹 검색 → Supabase 캐싱)
