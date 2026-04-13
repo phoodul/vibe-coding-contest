@@ -25,8 +25,9 @@ const featureAccents = [
   "#f97316", // orange - 생기부 세특
 ];
 
-/* ─── Mini demo animations for feature cards ─── */
-function MiniDemo({ type }: { type: string }) {
+// MiniDemo removed from landing — now shown on individual feature pages
+
+function _MiniDemoUnused({ type }: { type: string }) {
   if (type === "tutor") return (
     <div className="mt-2 pt-2 border-t border-white/5 space-y-1.5 overflow-hidden h-16">
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.4 }} className="flex gap-1.5 items-start">
@@ -605,7 +606,6 @@ export default function LandingPage() {
                         <p className="text-muted text-xs leading-relaxed">
                           {f.description}
                         </p>
-                        {demoTypes[f.title] && <MiniDemo type={demoTypes[f.title]} />}
                       </div>
                     </div>
                   </GlassCard>
@@ -653,7 +653,6 @@ export default function LandingPage() {
                           <p className="text-muted text-xs leading-relaxed">
                             {f.description}
                           </p>
-                          {demoTypes[f.title] && <MiniDemo type={demoTypes[f.title]} />}
                         </div>
                       </div>
                     </GlassCard>

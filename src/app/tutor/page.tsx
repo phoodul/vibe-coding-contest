@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { FeatureIntro } from "@/components/shared/feature-intro";
 import { SUBJECTS } from "@/lib/ai/tutor-prompt";
 import type { Subject, Topic } from "@/lib/ai/tutor-prompt";
 import ReactMarkdown from "react-markdown";
@@ -424,6 +425,26 @@ ${contentToSend}
   if (!started) {
     return (
       <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
+        <FeatureIntro storageKey="tutor">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden border-2 border-violet-500/30">
+            <img src="/socrates-portrait.jpg" alt="Socrates" className="w-full h-full object-cover" />
+          </div>
+          <h2 className="text-xl font-bold mb-3">소크라테스 AI 튜터</h2>
+          <div className="space-y-2 text-sm text-muted">
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="flex gap-2 items-start">
+              <span className="w-5 h-5 rounded-full bg-violet-500/30 flex-shrink-0 mt-0.5" />
+              <span>이것이 왜 중요할까요?</span>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2 }} className="flex gap-2 items-start justify-end">
+              <span className="px-3 py-1 rounded-lg bg-violet-500/10 text-violet-300">음... 효율성 때문인가요?</span>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 2.0 }} className="flex gap-2 items-start">
+              <span className="w-5 h-5 rounded-full bg-violet-500/30 flex-shrink-0 mt-0.5" />
+              <span>정확해요! 👏 그러면 다음으로...</span>
+            </motion.div>
+          </div>
+          <p className="text-xs text-muted mt-4">답을 주지 않고 질문으로 이끄는 1:1 과외</p>
+        </FeatureIntro>
         <div className="max-w-3xl mx-auto">
           <Link
             href="/dashboard"
