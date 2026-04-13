@@ -55,7 +55,7 @@ export default function ConversationPage() {
   const [customTopic, setCustomTopic] = useState("");
   const [voiceId, setVoiceId] = useState("nova");
   const [starter, setStarter] = useState<"me" | "ai">("ai");
-  const [subtitles, setSubtitles] = useState(true);
+  const [subtitles, setSubtitles] = useState(false);
 
   // Quiz state
   const [quizIndex, setQuizIndex] = useState(0);
