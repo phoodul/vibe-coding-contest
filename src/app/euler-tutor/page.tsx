@@ -314,9 +314,6 @@ export default function EulerTutorPage() {
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted">
                         {p.isMultipleChoice ? "객관식" : "주관식"}
                       </span>
-                      <span className="text-xs text-muted">
-                        {p.isMultipleChoice ? `정답: ${p.answer}번` : `정답: ${p.answer}`}
-                      </span>
                     </div>
                     <span className="text-muted text-xs shrink-0 group-hover:text-violet-400 transition-colors">
                       풀기 →
