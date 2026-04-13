@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
       apiType: "json",
       srchTarget: "total",
       pageNum,
-      pageSize,
+      pageSize: String(Math.max(Number(pageSize), 30)), // 도서 필터링을 위해 넉넉히 요청
     });
 
     if (isbn) {
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
 
     const data = await res.json();
 
-    const books: NLBookResult[] = (data.result || []).map(
+    const allResults = (data.result || []).map(
       (item: Record<string, string>) => ({
         isbn: item.isbn || "",
         title: stripHtml(item.titleInfo || ""),
@@ -90,6 +90,12 @@ export async function GET(req: NextRequest) {
         type: stripHtml(item.typeName || ""),
       })
     );
+
+    // 도서 타입만 우선, 나머지는 뒤로
+    const books: NLBookResult[] = [
+      ...allResults.filter((b: NLBookResult) => b.type === "도서"),
+      ...allResults.filter((b: NLBookResult) => b.type !== "도서"),
+    ];
 
     return NextResponse.json({
       total: data.total || 0,
