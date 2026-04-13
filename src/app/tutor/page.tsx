@@ -810,24 +810,6 @@ ${contentToSend}
             </div>
           )}
           <div className="flex items-center gap-2 shrink-0">
-            {messages.filter((m) => !m.content.startsWith("[SYSTEM:")).length >= 3 && (
-              <>
-                <button
-                  onClick={generateSummary}
-                  disabled={summaryLoading}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50"
-                >
-                  {summaryLoading ? "..." : "&#128218; 요약"}
-                </button>
-                <button
-                  onClick={generateStudyNote}
-                  disabled={summaryLoading}
-                  className="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-50 hidden sm:inline-flex"
-                >
-                  {summaryLoading ? "..." : "&#128190; 노트"}
-                </button>
-              </>
-            )}
             <button
               onClick={() => setStarted(false)}
               className="text-xs text-muted hover:text-foreground transition-colors"
@@ -1019,42 +1001,55 @@ ${contentToSend}
             </motion.div>
           )}
 
-          {/* 요약 정리 패널 */}
-          <AnimatePresence>
-            {summaryText && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-              >
-                <div className="glass-gradient p-5 rounded-2xl">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold text-primary">
-                      &#128218; 학습 요약 정리
-                    </span>
-                    <button
-                      onClick={() => setSummaryText("")}
-                      className="text-xs text-muted hover:text-foreground transition-colors"
-                    >
-                      닫기
-                    </button>
-                  </div>
-                  <div className="prose prose-invert prose-sm max-w-none [&_table]:text-xs [&_th]:px-2 [&_th]:py-1 [&_td]:px-2 [&_td]:py-1 [&_th]:bg-white/5 [&_table]:border-collapse [&_th]:border [&_th]:border-white/10 [&_td]:border [&_td]:border-white/10">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{summaryText}</ReactMarkdown>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* 자동 스크롤 앵커 */}
           <div ref={messagesEndRef} />
         </div>
       </div>
 
-      {/* 사고 가이드 칩 + 입력 */}
+      {/* 요약 결과 (하단 고정 위) */}
+      <AnimatePresence>
+        {summaryText && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="glass border-t border-white/5 px-4 sm:px-6 py-3 max-h-[50vh] overflow-y-auto"
+          >
+            <div className="max-w-3xl mx-auto">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-primary">학습 요약 정리</span>
+                <button onClick={() => setSummaryText("")} className="text-xs text-muted hover:text-foreground">닫기</button>
+              </div>
+              <div className="prose prose-invert prose-sm max-w-none [&_table]:text-xs [&_th]:px-2 [&_th]:py-1 [&_td]:px-2 [&_td]:py-1 [&_th]:bg-white/5 [&_table]:border-collapse [&_th]:border [&_th]:border-white/10 [&_td]:border [&_td]:border-white/10">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{summaryText}</ReactMarkdown>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 요약/노트 버튼 + 가이드 칩 + 입력 */}
       <div className="glass border-t border-white/5 px-4 sm:px-6 py-3">
         <div className="max-w-3xl mx-auto">
+          {/* 요약/노트 버튼 */}
+          {messages.filter((m) => !m.content.startsWith("[SYSTEM:")).length >= 3 && (
+            <div className="flex gap-2 mb-2">
+              <button
+                onClick={generateSummary}
+                disabled={summaryLoading}
+                className="text-xs px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors disabled:opacity-50"
+              >
+                {summaryLoading ? "생성 중..." : "요약 정리"}
+              </button>
+              <button
+                onClick={generateStudyNote}
+                disabled={summaryLoading}
+                className="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-50"
+              >
+                {summaryLoading ? "생성 중..." : "노트 다운로드"}
+              </button>
+            </div>
+          )}
           {/* Think-Articulate 가이드 칩 */}
           <div className="flex flex-wrap gap-1.5 mb-2">
             {[
