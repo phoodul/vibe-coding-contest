@@ -108,7 +108,7 @@ export default function VocabularyPage() {
           </motion.div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {CAMP_INFO.map((info, i) => (
+            {CAMP_INFO.filter((info) => info.camp <= 10).map((info, i) => (
               <GlassCard key={info.camp} delay={i * 0.05} className="cursor-pointer">
                 <button
                   onClick={() => handleStart(info.camp)}
@@ -403,6 +403,7 @@ function QuizTab({
   const [currentQ, setCurrentQ] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  const [climbAnim, setClimbAnim] = useState<{ from: [number, number]; to: [number, number] } | null>(null);
 
   const bestScore =
     progress.groupScores[camp]?.[selectedGroup] ?? 0;
@@ -479,6 +480,15 @@ function QuizTab({
         if (finalScore >= PASS_SCORE) {
           if (!newPassed[camp]) newPassed[camp] = [];
           if (!newPassed[camp].includes(selectedGroup)) {
+            // 클라이밍 애니메이션: 이전 위치 → 새 위치
+            const oldCount = (progress.passedGroups[camp] || []).length;
+            const newCount = oldCount + 1;
+            const campIdx = camp - 1;
+            const fromPos = getPointOnRoute(campIdx, oldCount);
+            const toPos = getPointOnRoute(campIdx, newCount);
+            setClimbAnim({ from: fromPos, to: toPos });
+            setTimeout(() => setClimbAnim(null), 3500);
+
             newPassed[camp] = [...newPassed[camp], selectedGroup];
           }
           fireQuizConfetti();
@@ -643,6 +653,65 @@ function QuizTab({
         </div>
       )}
 
+      {/* 클라이밍 애니메이션 오버레이 */}
+      <AnimatePresence>
+        {climbAnim && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="glass-gradient rounded-2xl p-4 text-center"
+            >
+              <svg viewBox={`${climbAnim.from[0] - 60} ${climbAnim.to[1] - 40} 120 ${climbAnim.from[1] - climbAnim.to[1] + 80}`} className="w-48 h-64 mx-auto" xmlns="http://www.w3.org/2000/svg">
+                {/* 배경 산 조각 */}
+                <rect x={climbAnim.from[0] - 60} y={climbAnim.to[1] - 40} width="120" height={climbAnim.from[1] - climbAnim.to[1] + 80} fill="#1a2744" rx="8" />
+                {/* 루트 선 */}
+                <line x1={climbAnim.from[0]} y1={climbAnim.from[1]} x2={climbAnim.to[0]} y2={climbAnim.to[1]} stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeDasharray="4 3" />
+                <line x1={climbAnim.from[0]} y1={climbAnim.from[1]} x2={climbAnim.to[0]} y2={climbAnim.to[1]} stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round">
+                  <animate attributeName="stroke-dashoffset" from="50" to="0" dur="2.5s" fill="freeze" />
+                  <animate attributeName="stroke-dasharray" from="0 50" to="50 0" dur="2.5s" fill="freeze" />
+                </line>
+                {/* 등산객 — from에서 to로 이동 */}
+                <g>
+                  <animateMotion dur="2.5s" fill="freeze" path={`M ${climbAnim.from[0]} ${climbAnim.from[1]} L ${climbAnim.to[0]} ${climbAnim.to[1]}`} />
+                  {/* 몸통 */}
+                  <rect x="-3" y="-18" width="6" height="10" rx="2" fill="#f97316" />
+                  <rect x="3" y="-17" width="4" height="8" rx="1" fill="#78350f" />
+                  {/* 머리 + 모자 */}
+                  <circle cx="0" cy="-22" r="4" fill="#fcd34d" />
+                  <rect x="-5" y="-27" width="10" height="3" rx="1" fill="#dc2626" />
+                  {/* 다리 걷기 */}
+                  <line x1="-1" y1="-8" x2="-4" y2="0" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round">
+                    <animate attributeName="x2" values="-4;0;-4" dur="0.5s" repeatCount="5" />
+                  </line>
+                  <line x1="1" y1="-8" x2="4" y2="0" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round">
+                    <animate attributeName="x2" values="4;0;4" dur="0.5s" repeatCount="5" />
+                  </line>
+                  {/* 스틱 */}
+                  <line x1="-3" y1="-15" x2="-8" y2="-2" stroke="#a8a29e" strokeWidth="1">
+                    <animate attributeName="x2" values="-8;-4;-8" dur="0.5s" repeatCount="5" />
+                  </line>
+                  <line x1="3" y1="-15" x2="8" y2="-2" stroke="#a8a29e" strokeWidth="1">
+                    <animate attributeName="x2" values="8;4;8" dur="0.5s" repeatCount="5" />
+                  </line>
+                </g>
+                {/* 도착 지점 마커 */}
+                <circle cx={climbAnim.to[0]} cy={climbAnim.to[1]} r="4" fill="#22c55e" opacity="0.5">
+                  <animate attributeName="r" values="4;7;4" dur="1s" repeatCount="indefinite" />
+                </circle>
+              </svg>
+              <p className="text-sm font-bold text-green-400 mt-2">등반 중... 🏔️</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {quizState === "result" && (
         <GlassCard hover={false}>
           <div className="text-center py-8">
@@ -695,15 +764,16 @@ function QuizTab({
 // Base Camp(하단 좌측) → Summit(상단 중앙) 지그재그 경로
 const ROUTE_POINTS: [number, number][] = [
   [120, 540], // 1: Base Camp (5,364m)
-  [160, 480], // 2: Camp I (6,065m)
-  [240, 420], // 3: Camp II (6,500m)
-  [330, 370], // 4: Camp III (7,162m)
-  [420, 320], // 5: Camp IV (7,920m)
-  [480, 270], // 6: Camp V (8,000m)
-  [530, 225], // 7: Camp VI (8,200m)
-  [560, 180], // 8: Camp VII (8,400m)
-  [510, 135], // 9: Camp VIII (8,600m)
-  [430, 75],  // 10: Summit (8,849m)
+  [155, 490], // 2: Camp 1 (5,943m)
+  [210, 440], // 3: Camp 2 (6,500m)
+  [290, 395], // 4: Camp 3 (7,162m)
+  [370, 350], // 5: Camp 4 (7,600m)
+  [430, 305], // 6: Camp 5 (7,920m)
+  [480, 260], // 7: Camp 6 (8,000m)
+  [530, 215], // 8: Camp 7 (8,200m)
+  [555, 170], // 9: Camp 8 (8,400m)
+  [510, 125], // 10: Camp 9 (8,600m)
+  [430, 75],  // 11: Summit (8,849m)
 ];
 
 function lerp(a: number, b: number, t: number) {
@@ -740,7 +810,7 @@ function ProgressTab({ progress }: { progress: Progress }) {
 
   // 현재 위치 계산
   const { currentCampIdx, currentGroupIdx } = useMemo(() => {
-    for (let i = progress.startCamp - 1; i < 10; i++) {
+    for (let i = progress.startCamp - 1; i < 11; i++) {
       const passedCount = (progress.passedGroups[CAMP_INFO[i].camp] || []).length;
       if (passedCount < GROUPS_PER_LEVEL) {
         return { currentCampIdx: i, currentGroupIdx: passedCount };
@@ -750,7 +820,7 @@ function ProgressTab({ progress }: { progress: Progress }) {
   }, [progress.passedGroups, progress.startCamp]);
 
   const currentPos = getPointOnRoute(currentCampIdx, currentGroupIdx);
-  const reachedSummit = currentCampIdx >= 9 && currentGroupIdx >= GROUPS_PER_LEVEL;
+  const reachedSummit = currentCampIdx >= 10 && currentGroupIdx >= GROUPS_PER_LEVEL;
 
   // Summit 축하
   useEffect(() => {
@@ -800,7 +870,7 @@ function ProgressTab({ progress }: { progress: Progress }) {
       completedPoints.push(ROUTE_POINTS[i]);
     } else {
       completedPoints.push(ROUTE_POINTS[i]);
-      if (currentGroupIdx > 0 && i < 9) {
+      if (currentGroupIdx > 0 && i < 10) {
         completedPoints.push(currentPos);
       }
     }
@@ -1034,7 +1104,7 @@ function ProgressTab({ progress }: { progress: Progress }) {
       </div>
 
       {/* 하단 캠프 진도 요약 */}
-      <div className="mt-4 grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+      <div className="mt-4 grid grid-cols-4 sm:grid-cols-11 gap-1.5">
         {camps.map((camp) => {
           const pct = camp.passedCount / GROUPS_PER_LEVEL;
           const isCurrent = camp.camp - 1 === currentCampIdx;
