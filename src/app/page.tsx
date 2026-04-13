@@ -25,6 +25,108 @@ const featureAccents = [
   "#f97316", // orange - 생기부 세특
 ];
 
+/* ─── Mini demo animations for feature cards ─── */
+function MiniDemo({ type }: { type: string }) {
+  if (type === "tutor") return (
+    <div className="mt-2 pt-2 border-t border-white/5 space-y-1.5 overflow-hidden h-16">
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.4 }} className="flex gap-1.5 items-start">
+        <div className="w-4 h-4 rounded-full bg-violet-500/30 shrink-0 mt-0.5" />
+        <div className="px-2 py-1 rounded-lg bg-white/5 text-[9px] text-muted">이것이 왜 중요할까요?</div>
+      </motion.div>
+      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2, duration: 0.4 }} className="flex gap-1.5 items-start justify-end">
+        <div className="px-2 py-1 rounded-lg bg-violet-500/10 text-[9px] text-violet-300">음... 효율성 때문인가요?</div>
+      </motion.div>
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 2.0, duration: 0.4 }} className="flex gap-1.5 items-start">
+        <div className="w-4 h-4 rounded-full bg-violet-500/30 shrink-0 mt-0.5" />
+        <div className="px-2 py-1 rounded-lg bg-white/5 text-[9px] text-muted">정확해요! 👏</div>
+      </motion.div>
+    </div>
+  );
+  if (type === "euler") return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="flex gap-1.5 items-start">
+        <div className="w-4 h-4 rounded-full bg-amber-500/30 shrink-0 mt-0.5" />
+        <div className="px-2 py-1 rounded-lg bg-white/5 text-[9px] text-muted">
+          <motion.span initial={{ width: 0 }} animate={{ width: "auto" }} transition={{ delay: 0.8, duration: 1.5 }} className="inline-block overflow-hidden whitespace-nowrap">
+            x² + 3x - 4 = 0 → 인수분해하면?
+          </motion.span>
+        </div>
+      </motion.div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }} className="text-center mt-1">
+        <span className="text-[9px] text-amber-400">(x+4)(x-1) = 0 ✓</span>
+      </motion.div>
+    </div>
+  );
+  if (type === "vocab") return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex items-center justify-center">
+      <svg viewBox="0 0 120 50" className="w-24 h-12">
+        <line x1="10" y1="45" x2="110" y2="5" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 2" />
+        <motion.line x1="10" y1="45" x2="110" y2="5" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round"
+          initial={{ pathLength: 0 }} animate={{ pathLength: 0.3 }} transition={{ delay: 0.5, duration: 2 }} />
+        <g>
+          <motion.g initial={{ x: 10, y: 45 }} animate={{ x: 40, y: 35 }} transition={{ delay: 0.5, duration: 2 }}>
+            <rect x="-2" y="-10" width="4" height="6" rx="1" fill="#f97316" />
+            <circle cx="0" cy="-13" r="2.5" fill="#fcd34d" />
+          </motion.g>
+        </g>
+        <text x="60" y="48" fill="rgba(255,255,255,0.3)" fontSize="6" textAnchor="middle">Camp 1 → Camp 2</text>
+      </svg>
+    </div>
+  );
+  if (type === "career") return <MiniDemoCareer />;
+  if (type === "lesson") return <MiniDemoLesson />;
+  if (type === "conversation") return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col items-center justify-center gap-1">
+      <motion.div initial={{ scale: 0 }} animate={{ scale: [0, 1.2, 1] }} transition={{ delay: 0.5, duration: 0.5 }} className="flex gap-1">
+        {[0,1,2].map(i => (
+          <motion.div key={i} className="w-2 h-2 rounded-full bg-rose-400" animate={{ y: [0, -4, 0] }} transition={{ delay: 0.8 + i * 0.15, duration: 0.4, repeat: Infinity, repeatDelay: 1 }} />
+        ))}
+      </motion.div>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="text-[9px] text-rose-300">Hello! How are you today?</motion.p>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }} className="text-[9px] text-muted">I&apos;m fine, thank you!</motion.p>
+    </div>
+  );
+  return null;
+}
+
+function MiniDemoCareer() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col items-center justify-center gap-1">
+      <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 }} className="flex gap-2">
+        {["ENFP", "예술", "창의"].map((tag, i) => (
+          <motion.span key={tag} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 + i * 0.3 }}
+            className="px-1.5 py-0.5 rounded text-[8px] bg-amber-500/15 text-amber-300 border border-amber-500/20">{tag}</motion.span>
+        ))}
+      </motion.div>
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }} className="text-[9px] text-muted">→ UX 디자이너, 콘텐츠 크리에이터...</motion.p>
+    </div>
+  );
+}
+
+function MiniDemoLesson() {
+  return (
+    <div className="mt-2 pt-2 border-t border-white/5 overflow-hidden h-16 flex flex-col gap-1 justify-center">
+      {["📋 수업 슬라이드", "📝 학습 활동지", "✅ 형성평가"].map((item, i) => (
+        <motion.div key={item} initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.5 }}
+          className="flex items-center gap-1.5">
+          <motion.div className="w-1 h-1 rounded-full bg-sky-400" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + i * 0.5 }} />
+          <span className="text-[9px] text-muted">{item}</span>
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 + i * 0.5 }} className="text-[8px] text-green-400 ml-auto">생성됨</motion.span>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+const demoTypes: Record<string, string> = {
+  "소크라테스 AI 튜터": "tutor",
+  "오일러 튜터": "euler",
+  "영어 단어 학습": "vocab",
+  "AI 영어 회화": "conversation",
+  "진로 시뮬레이터": "career",
+  "수업 자료 생성기": "lesson",
+};
+
 const studentFeatures = [
   {
     title: "소크라테스 AI 튜터",
@@ -334,7 +436,7 @@ export default function LandingPage() {
                           <span className="relative">{f.icon}</span>
                         )}
                       </span>
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <h3 className="text-sm font-semibold mb-0.5 transition-colors duration-300">
                           <span className="group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300" style={{ backgroundImage: `linear-gradient(135deg, ${featureAccents[i]}, ${featureAccents[(i + 1) % featureAccents.length]})` }}>
                             {f.title}
@@ -343,6 +445,7 @@ export default function LandingPage() {
                         <p className="text-muted text-xs leading-relaxed">
                           {f.description}
                         </p>
+                        {demoTypes[f.title] && <MiniDemo type={demoTypes[f.title]} />}
                       </div>
                     </div>
                   </GlassCard>
@@ -381,7 +484,7 @@ export default function LandingPage() {
                           />
                           <span className="relative">{f.icon}</span>
                         </span>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <h3 className="text-sm font-semibold mb-0.5 transition-colors duration-300">
                             <span className="group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300" style={{ backgroundImage: `linear-gradient(135deg, ${featureAccents[ai]}, ${featureAccents[(ai + 1) % featureAccents.length]})` }}>
                               {f.title}
@@ -390,6 +493,7 @@ export default function LandingPage() {
                           <p className="text-muted text-xs leading-relaxed">
                             {f.description}
                           </p>
+                          {demoTypes[f.title] && <MiniDemo type={demoTypes[f.title]} />}
                         </div>
                       </div>
                     </GlassCard>
