@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useCompletion } from "ai/react";
 import Link from "next/link";
 import { GlassCard } from "@/components/shared/glass-card";
-import { FeatureIntro } from "@/components/shared/feature-intro";
+
 import {
   DOC_TYPES,
   TEMPLATES,
@@ -130,16 +130,6 @@ export default function DraftPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
-      <FeatureIntro storageKey="generator">
-        <div className="text-5xl mb-4">✏️</div>
-        <h2 className="text-xl font-bold mb-3">공문서 초안 작성기</h2>
-        <div className="space-y-2 my-6 text-sm">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-muted">주제 입력 →</motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="text-indigo-300">📄 공문서 초안 생성 중...</motion.div>
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.0 }} className="text-emerald-400 text-xs">✅ 6-하 체계 자동 적용</motion.div>
-        </div>
-        <p className="text-xs text-muted mt-4">AI가 양식에 맞는 공문서를 생성</p>
-      </FeatureIntro>
       <div className="max-w-5xl mx-auto">
         <Link
           href="/dashboard"

@@ -5,7 +5,7 @@ import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "@/components/shared/glass-card";
-import { FeatureIntro } from "@/components/shared/feature-intro";
+
 import { INTERNSHIP_FIELDS } from "@/lib/ai/internship-prompt";
 
 export default function InternshipPage() {
@@ -31,16 +31,6 @@ export default function InternshipPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
-      <FeatureIntro storageKey="internship">
-        <div className="text-5xl mb-4">📝</div>
-        <h2 className="text-xl font-bold mb-3">현장실습 일지 도우미</h2>
-        <div className="space-y-2 my-6 text-sm">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-muted">오늘 배운 내용...</motion.div>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: [0, 1] }} transition={{ delay: 1.2 }} className="text-cyan-300 typing-effect">✍️ 용접 실습에서 TIG 기법을 배웠다...</motion.div>
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.0 }} className="text-emerald-400 text-xs">✅ AI 일지 자동 작성</motion.div>
-        </div>
-        <p className="text-xs text-muted mt-4">매일의 배움을 AI가 기록합니다</p>
-      </FeatureIntro>
       <div className="max-w-4xl mx-auto">
         <Link
           href="/dashboard"

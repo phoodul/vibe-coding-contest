@@ -7,7 +7,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
-import { FeatureIntro } from "@/components/shared/feature-intro";
+
 import {
   DREAM_TAGS,
   GRADE_OPTIONS,
@@ -46,19 +46,6 @@ export default function PathfinderPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
-      <FeatureIntro storageKey="pathfinder">
-        <div className="text-5xl mb-4">🌟</div>
-        <h2 className="text-xl font-bold mb-3">내 길 내비</h2>
-        <div className="flex items-center justify-center gap-2 my-6 text-sm">
-          {["꿈", "학교", "직업"].map((step, i) => (
-            <motion.span key={step} className="flex items-center gap-2" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.7 }}>
-              <span className="px-3 py-1 rounded-full bg-violet-500/20 text-violet-300">{step}</span>
-              {i < 2 && <span className="text-muted">→</span>}
-            </motion.span>
-          ))}
-        </div>
-        <p className="text-xs text-muted mt-4">어떤 꿈이든 AI가 로드맵을 안내</p>
-      </FeatureIntro>
       <div className="max-w-4xl mx-auto">
         <Link
           href="/dashboard"

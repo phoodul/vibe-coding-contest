@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ASSESSMENT_FIELDS } from "@/lib/ai/career-prompt";
 import { GlassCard } from "@/components/shared/glass-card";
-import { FeatureIntro } from "@/components/shared/feature-intro";
+
 import Link from "next/link";
 
 export default function CareerPage() {
@@ -53,17 +53,6 @@ export default function CareerPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
-      <FeatureIntro storageKey="career">
-        <div className="text-5xl mb-4">🧭</div>
-        <h2 className="text-xl font-bold mb-3">진로 시뮬레이터</h2>
-        <div className="flex flex-wrap justify-center gap-2 my-6">
-          {["ENFP", "예술", "창의"].map((tag, i) => (
-            <motion.span key={tag} className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-sm" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 + i * 0.4 }}>{tag}</motion.span>
-          ))}
-        </div>
-        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.0 }} className="text-sm text-emerald-400">→ UX 디자이너 · 콘텐츠 크리에이터</motion.p>
-        <p className="text-xs text-muted mt-4">5,000+ 직업에서 나만의 진로 발견</p>
-      </FeatureIntro>
       <div className="max-w-4xl mx-auto">
         <Link
           href="/dashboard"

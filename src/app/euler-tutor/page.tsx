@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FeatureIntro } from "@/components/shared/feature-intro";
+
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -153,24 +153,6 @@ export default function EulerTutorPage() {
   if (phase === "select") {
     return (
       <div className="min-h-screen bg-background">
-        <FeatureIntro storageKey="euler">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden border-2 border-amber-500/30">
-            <img src="/euler-portrait.jpg" alt="Euler" className="w-full h-full object-cover" />
-          </div>
-          <h2 className="text-xl font-bold mb-3">오일러 수학 튜터</h2>
-          <div className="space-y-2 text-sm">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-muted">
-              <span className="text-amber-400 font-mono">x² + 3x - 4 = 0</span>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }} className="text-muted">
-              이 식을 인수분해하려면 어떤 두 수가 필요할까요?
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2.2 }} className="text-amber-300">
-              (x + 4)(x - 1) = 0 ✓
-            </motion.div>
-          </div>
-          <p className="text-xs text-muted mt-4">계산은 AI가 할게요. 사고과정을 함께 훈련합니다.</p>
-        </FeatureIntro>
         <header className="sticky top-0 z-30 glass border-b border-white/5">
           <div className="max-w-3xl mx-auto flex items-center justify-between px-4 h-14">
             <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors">

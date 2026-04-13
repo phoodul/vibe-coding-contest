@@ -5,7 +5,7 @@ import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { GlassCard } from "@/components/shared/glass-card";
-import { FeatureIntro } from "@/components/shared/feature-intro";
+
 import { MUSIC_GENRES } from "@/lib/ai/music-review-prompt";
 
 export default function MusicReviewPage() {
@@ -31,17 +31,6 @@ export default function MusicReviewPage() {
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
-      <FeatureIntro storageKey="music">
-        <div className="text-5xl mb-4">🎵</div>
-        <h2 className="text-xl font-bold mb-3">음악 감상문 도우미</h2>
-        <div className="flex justify-center items-end gap-1 my-6 h-10">
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <motion.div key={i} className="w-1.5 rounded-full bg-pink-400" initial={{ height: 4 }} animate={{ height: [4, 12 + i * 5, 4] }} transition={{ delay: 0.5 + i * 0.12, repeat: Infinity, duration: 0.9 }} />
-          ))}
-        </div>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }} className="text-sm text-pink-300">🎹 베토벤 — 월광 소나타</motion.p>
-        <p className="text-xs text-muted mt-4">AI와 함께 음악의 감동을 글로 표현</p>
-      </FeatureIntro>
       <div className="max-w-4xl mx-auto">
         <Link
           href="/dashboard"
