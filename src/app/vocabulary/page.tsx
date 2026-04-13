@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/shared/glass-card";
 import {
@@ -721,6 +721,8 @@ function getPointOnRoute(campIdx: number, groupIdx: number): [number, number] {
 
 function ProgressTab({ progress }: { progress: Progress }) {
   const [showCelebration, setShowCelebration] = useState("");
+  const [isClimbing, setIsClimbing] = useState(false);
+  const prevPassedRef = useRef(JSON.stringify(progress.passedGroups));
 
   // progress.passedGroups에서 직접 계산 (의존성 명확화)
   const camps = useMemo(
@@ -757,6 +759,17 @@ function ProgressTab({ progress }: { progress: Progress }) {
       fireSummitConfetti();
     }
   }, [reachedSummit]);
+
+  // 등산 애니메이션: passedGroups 변경 시 3초간 걷기
+  useEffect(() => {
+    const current = JSON.stringify(progress.passedGroups);
+    if (current !== prevPassedRef.current) {
+      prevPassedRef.current = current;
+      setIsClimbing(true);
+      const timer = setTimeout(() => setIsClimbing(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [progress.passedGroups]);
 
   // 캠프 도착 축하 감지
   useEffect(() => {
@@ -954,16 +967,38 @@ function ProgressTab({ progress }: { progress: Progress }) {
             );
           })}
 
-          {/* 현재 위치 — 빨간 깜빡이는 점 */}
+          {/* 현재 위치 — 등산객 캐릭터 */}
           {!reachedSummit && (
-            <g filter="url(#glow)">
-              <circle cx={currentPos[0]} cy={currentPos[1]} r="8" fill="#ef4444" opacity="0.3">
-                <animate attributeName="r" values="8;14;8" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite" />
-              </circle>
-              <circle cx={currentPos[0]} cy={currentPos[1]} r="5" fill="#ef4444" stroke="#fff" strokeWidth="1.5">
-                <animate attributeName="r" values="5;6;5" dur="1.5s" repeatCount="indefinite" />
-              </circle>
+            <g>
+              {/* 발 아래 위치 표시 */}
+              <circle cx={currentPos[0]} cy={currentPos[1]} r="5" fill="#ef4444" opacity="0.15" />
+              {/* 등산객 본체 */}
+              <g transform={`translate(${currentPos[0]}, ${currentPos[1]})`}>
+                {/* 몸통 + 배낭 */}
+                <rect x="-3" y="-18" width="6" height="10" rx="2" fill="#f97316" />
+                <rect x="3" y="-17" width="4" height="8" rx="1" fill="#78350f" />
+                {/* 머리 + 모자 */}
+                <circle cx="0" cy="-22" r="4" fill="#fcd34d" />
+                <rect x="-5" y="-27" width="10" height="3" rx="1" fill="#dc2626" />
+                {/* 다리 */}
+                <line x1="-1" y1="-8" x2={isClimbing ? undefined : "-3"} y2="0" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round">
+                  {isClimbing && <animate attributeName="x2" values="-4;0;-4" dur="0.5s" repeatCount="6" />}
+                  {!isClimbing && <set attributeName="x2" to="-3" />}
+                </line>
+                <line x1="1" y1="-8" x2={isClimbing ? undefined : "3"} y2="0" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round">
+                  {isClimbing && <animate attributeName="x2" values="4;0;4" dur="0.5s" repeatCount="6" />}
+                  {!isClimbing && <set attributeName="x2" to="3" />}
+                </line>
+                {/* 등산 스틱 */}
+                <line x1="-3" y1="-15" x2={isClimbing ? undefined : "-7"} y2="-2" stroke="#a8a29e" strokeWidth="1">
+                  {isClimbing && <animate attributeName="x2" values="-8;-4;-8" dur="0.5s" repeatCount="6" />}
+                  {!isClimbing && <set attributeName="x2" to="-7" />}
+                </line>
+                <line x1="3" y1="-15" x2={isClimbing ? undefined : "7"} y2="-2" stroke="#a8a29e" strokeWidth="1">
+                  {isClimbing && <animate attributeName="x2" values="8;4;8" dur="0.5s" repeatCount="6" />}
+                  {!isClimbing && <set attributeName="x2" to="7" />}
+                </line>
+              </g>
             </g>
           )}
 
@@ -975,6 +1010,24 @@ function ProgressTab({ progress }: { progress: Progress }) {
               <text x="430" y="28" fill="#fbbf24" fontSize="11" fontWeight="bold" textAnchor="middle" fontFamily="system-ui">
                 SUMMIT!
               </text>
+            </g>
+          )}
+
+          {/* Summit — 두 팔 벌린 등산객 (깃발 옆) */}
+          {reachedSummit && (
+            <g transform="translate(445, 60)">
+              <rect x="-3" y="-18" width="6" height="10" rx="2" fill="#f97316" />
+              <rect x="3" y="-17" width="4" height="8" rx="1" fill="#78350f" />
+              <circle cx="0" cy="-22" r="4" fill="#fcd34d" />
+              <rect x="-5" y="-27" width="10" height="3" rx="1" fill="#dc2626" />
+              <line x1="-3" y1="-15" x2="-10" y2="-28" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round">
+                <animate attributeName="x2" values="-10;-12;-10" dur="0.8s" repeatCount="indefinite" />
+              </line>
+              <line x1="3" y1="-15" x2="10" y2="-28" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round">
+                <animate attributeName="x2" values="10;12;10" dur="0.8s" repeatCount="indefinite" />
+              </line>
+              <line x1="-1" y1="-8" x2="-3" y2="0" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" />
+              <line x1="1" y1="-8" x2="3" y2="0" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" />
             </g>
           )}
         </svg>
