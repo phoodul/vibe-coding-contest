@@ -418,7 +418,7 @@ function ReadingLogForm({
       const res = await fetch(`/api/books/search?${params}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setSearchResults(data.books || []);
+      setSearchResults(books);
       setShowResults(true);
     } catch {
       setSearchResults([]);
