@@ -1,6 +1,6 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
-import { searchWeb } from "@/lib/search";
+
 import { parsePdf } from "@/lib/parse-document";
 
 export const maxDuration = 60;
@@ -68,30 +68,6 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: "주제 또는 파일이 필요합니다" }), { status: 400 });
     }
 
-    // 영상 검색 (Tavily) — 주제 기반, YouTube 우선 + 일반 영상
-    const searchQuery = topic || docContent.slice(0, 200);
-    const videoSearch = await searchWeb(`${searchQuery} 교육 영상 강의 YouTube`);
-    const ytVideos = videoSearch.results
-      .filter((r) => r.url.includes("youtube.com") || r.url.includes("youtu.be"))
-      .slice(0, 3)
-      .map((r) => ({ title: r.title, url: r.url }));
-
-    // YouTube 결과 부족 시 일반 검색으로 보충
-    const videos = [...ytVideos];
-    if (videos.length < 3) {
-      const fallback = await searchWeb(`${searchQuery} 강의 영상`);
-      for (const r of fallback.results) {
-        if (videos.length >= 3) break;
-        if (!videos.find((v) => v.url === r.url)) {
-          videos.push({ title: r.title, url: r.url });
-        }
-      }
-    }
-
-    const videoSection = videos.length > 0
-      ? videos.map((v, i) => `${i + 1}. [${v.title}](${v.url})`).join("\n")
-      : "관련 영상을 찾지 못했습니다.";
-
     const userContent = docContent
       ? `수업 주제: ${topic || "(업로드 자료 기반)"}\n${grade ? `대상 학년: ${grade}\n` : ""}\n--- 업로드된 수업 자료 ---\n${docContent}`
       : `수업 주제: ${topic}${grade ? `\n대상 학년: ${grade}` : ""}`;
@@ -117,27 +93,54 @@ export async function POST(req: Request) {
 ===TEST_END===
 
 ===VIDEOS_START===
-(아래 검색 결과를 참고하되, 주제와 대상 학년에 가장 적합한 YouTube 영상 3개를 추천하세요. 검색 결과가 부적절하면 당신이 아는 좋은 교육 영상을 직접 추천하세요. 반드시 [제목](URL) 형식으로 작성하세요.)
-
-검색 참고: ${videoSection}
+(주제와 대상 학년에 가장 적합한 YouTube 교육 영상 3개를 추천하세요.)
 ===VIDEOS_END===
 
-## 슬라이드 규칙
-- 6~10장 분량
-- 각 슬라이드: # 제목 + 핵심 내용 (글머리 기호 3~5개)
-- 첫 슬라이드: 수업 제목 + 학습 목표
-- 마지막 슬라이드: 핵심 정리 + 다음 시간 예고
+## 슬라이드 규칙 (Gamma/NotebookLM 수준으로 상세하게)
+- **10~15장** 분량 (절대 6장 이하로 만들지 마세요)
 - 슬라이드 사이는 ---로 구분
 
-## 워크시트 규칙
-- A4 1장 분량
-- 학습 목표, 핵심 개념 정리 빈칸, 활동 문제 2~3개 포함
-- 학생이 수업 중 직접 작성할 수 있는 형태
+### 각 슬라이드 구조:
+# 슬라이드 제목
+> 💡 핵심 메시지 (한 문장 요약)
+
+**[설명]** 본문 내용을 2~3 문단으로 상세히 작성. 단순 나열이 아니라 이야기하듯 설명.
+
+**[핵심 포인트]**
+- ✅ 포인트 1: 구체적 설명
+- ✅ 포인트 2: 구체적 설명
+- ✅ 포인트 3: 구체적 설명
+
+**[예시/사례]** 실제 사례, 비유, 일상 예시를 반드시 포함
+**[생각해보기]** 🤔 학생에게 던질 질문 1개
+
+### 필수 슬라이드 구성:
+1. **표지**: 수업 제목 + 학습 목표 3가지 + 대상 학년
+2. **도입 (동기유발)**: 흥미로운 질문이나 실생활 사례로 시작
+3. **배경/맥락**: 이 주제가 왜 중요한지, 역사적·사회적 배경
+4~8. **핵심 내용**: 주요 개념을 하나씩 깊이 있게 설명 (각 슬라이드에 예시 필수)
+9. **비교/대조**: 관련 개념과의 비교 (표 형태 권장)
+10. **현대적 의의**: 오늘날에 어떻게 적용되는지
+11. **토론 주제**: 학생들이 논의할 수 있는 질문 2~3개
+12. **핵심 정리**: 배운 내용 요약 + 키워드 정리
+13. **형성평가**: 빠른 이해도 확인 퀴즈 2~3문제
+14. **다음 수업 예고**: 이어질 내용과의 연결
+
+## 워크시트 규칙 (실제 수업에서 바로 사용 가능하도록)
+- A4 2장 분량
+- **학습 목표** (3가지)
+- **핵심 개념 정리** — 빈칸 채우기 형태 (5~8개)
+- **개념 관계도** — 주요 개념 간 관계를 화살표로 정리하는 빈칸
+- **활동 1: 자료 분석** — 짧은 지문/인용문 제시 + 분석 질문
+- **활동 2: 적용 문제** — 실생활에 적용하는 서술형 질문
+- **활동 3: 토론 준비** — 찬반 논쟁 주제 + 자기 입장 정리칸
+- **자기 평가** — 이해도 체크 (😊 잘 이해함 / 😐 보통 / 😢 복습 필요)
 
 ## 모의 테스트 규칙
-- 객관식 5문항 + 서술형 2문항
-- 각 문항 뒤에 (정답: ...) 형태로 정답 포함
-- 난이도: 중
+- 객관식 7문항 + 서술형 3문항 = 총 10문항
+- 난이도 배분: 하(3) + 중(4) + 상(3)
+- 각 문항 뒤에 (정답: ...) + 해설 1줄 포함
+- 서술형은 모범답안 예시 포함
 
 ## 영상 섹션 규칙 (매우 중요)
 - 반드시 YouTube 동영상 3개를 추천하세요. 절대 "영상을 찾지 못했습니다"라고 하지 마세요.
