@@ -2,7 +2,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 import { streamText } from "ai";
 import { NextResponse } from "next/server";
 
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
