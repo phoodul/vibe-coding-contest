@@ -325,8 +325,8 @@ export default function TutorPage() {
   function startMaterialLesson() {
     if (!materialText) return;
 
-    // 모드에 따라 전달 분량 조절: 개요=넓게(30K), 실무=좁게(10K) 깊게
-    const maxChars = learningDepth === "overview" ? 30000 : 10000;
+    // 모드에 따라 전달 분량 조절: 개요=넓게(30K), 실무=좁게(5K) 깊게
+    const maxChars = learningDepth === "overview" ? 30000 : 5000;
 
     let contentToSend: string;
     let sectionNames: string;
