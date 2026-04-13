@@ -3,9 +3,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
+import { EditableResult } from "@/components/shared/editable-result";
 
 import Link from "next/link";
 import {
@@ -210,9 +209,7 @@ function RecommendTab() {
           )}
           {lastAssistant && (
             <GlassCard hover={false}>
-              <div className="prose prose-invert prose-sm max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{lastAssistant.content}</ReactMarkdown>
-              </div>
+              <EditableResult content={lastAssistant.content} filename="도서추천" />
             </GlassCard>
           )}
           <div className="flex justify-center mt-6">

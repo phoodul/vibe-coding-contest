@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
+import { EditableResult } from "@/components/shared/editable-result";
 
 import { PAPS_ITEMS } from "@/lib/ai/paps-prompt";
 
@@ -164,9 +163,7 @@ export default function PapsPage() {
 
               {lastAssistant && (
                 <GlassCard hover={false}>
-                  <div className="prose prose-invert prose-sm max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{lastAssistant.content}</ReactMarkdown>
-                  </div>
+                  <EditableResult content={lastAssistant.content} filename="체력분석" />
                 </GlassCard>
               )}
 

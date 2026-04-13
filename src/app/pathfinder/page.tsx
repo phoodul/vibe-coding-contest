@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useChat } from "ai/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
+import { EditableResult } from "@/components/shared/editable-result";
 
 import {
   DREAM_TAGS,
@@ -205,20 +204,7 @@ export default function PathfinderPage() {
               {/* AI 결과 */}
               {lastAssistant && (
                 <GlassCard hover={false} delay={0} className="mt-4">
-                  <div className="prose prose-invert prose-sm max-w-none">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        a: ({ href, children }) => (
-                          <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                            {children}
-                          </a>
-                        ),
-                      }}
-                    >
-                      {lastAssistant.content}
-                    </ReactMarkdown>
-                  </div>
+                  <EditableResult content={lastAssistant.content} filename="진로탐색" />
                 </GlassCard>
               )}
 
