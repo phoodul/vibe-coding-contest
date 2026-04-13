@@ -338,10 +338,11 @@ export default function TutorPage() {
     }
 
     const depthGuide = learningDepth === "overview"
-      ? `## 학습 모드: 개요 (넓고 빠르게)
-- 자료의 전체 구조를 파악하고 핵심 개념을 빠르게 훑어줍니다.
-- 각 개념당 1~2턴으로 간결하게 진행합니다.
-- "이게 뭔지, 왜 중요한지"에 집중합니다.`
+      ? `## 학습 모드: 개요 (넓고 빠르게, 섹션당 15분)
+- 자료의 전체 구조를 파악하고 핵심 개념을 훑어줍니다.
+- 각 개념당 2~3턴으로 진행합니다.
+- "이게 뭔지, 왜 중요한지, 언제 쓰는지"에 집중합니다.
+- 한 섹션에서 최소 5개 이상의 핵심 내용을 다루세요.`
       : `## 학습 모드: 실무 (깊고 실전적으로, 섹션당 20~30분)
 - 각 개념을 실무에서 바로 활용할 수 있는 수준까지 다룹니다.
 - 실제 코드, 명령어, 설정 방법, 주의사항을 반드시 포함합니다.
@@ -693,7 +694,7 @@ ${contentToSend}
                         </div>
                         {selectedSections.size > 0 && (
                           <p className="text-[10px] text-cyan-400">
-                            {selectedSections.size}개 섹션 선택 · 약 {learningDepth === "practical" ? selectedSections.size * 25 : selectedSections.size * 10}분 예상
+                            {selectedSections.size}개 섹션 선택 · 약 {learningDepth === "practical" ? selectedSections.size * 25 : selectedSections.size * 15}분 예상
                           </p>
                         )}
                       </div>

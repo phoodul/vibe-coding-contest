@@ -48,7 +48,7 @@ export async function POST(req: Request) {
             .replace(/\s+/g, " ")
             .trim();
           if (chunk.length > 50) {
-            sections.push({ title: headings[i].title, content: chunk.slice(0, 5000) });
+            sections.push({ title: headings[i].title, content: chunk.slice(0, 15000) });
           }
         }
       }
