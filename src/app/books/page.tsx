@@ -158,7 +158,7 @@ function RecommendTab() {
             <select
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-foreground focus:outline-none focus:border-primary transition-colors"
+              className="w-full px-4 py-3 rounded-lg bg-[#1a1a2e] border border-white/10 text-foreground focus:outline-none focus:border-primary transition-colors [&>option]:bg-[#1a1a2e] [&>option]:text-foreground"
             >
               <option value="">학년을 선택하세요</option>
               {GRADES.map((g) => (

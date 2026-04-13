@@ -154,7 +154,7 @@ export default function PathfinderPage() {
                   <select
                     value={region}
                     onChange={(e) => setRegion(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-foreground text-sm focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-3 py-2 rounded-lg bg-[#1a1a2e] border border-white/10 text-foreground text-sm focus:outline-none focus:border-primary transition-colors [&>option]:bg-[#1a1a2e] [&>option]:text-foreground"
                   >
                     <option value="">전국</option>
                     {REGION_OPTIONS.map((r) => (
