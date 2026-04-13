@@ -52,8 +52,10 @@ export default function EulerTutorPage() {
       const textKey = `${problem.year}_${problem.type}_${problem.number}`;
       const problemText = (problemTexts as Record<string, string>)[textKey];
 
-      // 보기 (1) 앞에 빈 줄 삽입 — 마크다운에서 문제와 보기 분리
-      const formattedText = problemText?.replace(/\n(\(1\))/, "\n\n$1");
+      // 문제와 보기 사이 빈 줄 + 보기 각 항목 줄바꿈 보장
+      const formattedText = problemText
+        ?.replace(/\n(\(1\))/, "\n\n$1")
+        .replace(/\n(\(\d\))/g, "  \n$1");
 
       // 정답은 학생에게 보여주지 않음 — API 서버측에서 problem_solutions DB를 통해 처리
       const content = formattedText
