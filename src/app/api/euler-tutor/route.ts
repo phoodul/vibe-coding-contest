@@ -7,26 +7,21 @@ import { getSolution } from "@/lib/solution-cache";
 
 export const maxDuration = 60;
 
-/** 첫 메시지에서 기출문제 정보 파싱 */
+/** 첫 메시지에서 기출문제 정보 파싱 (정답은 메시지에 포함하지 않음) */
 function parseProblemInfo(messages: { role: string; content: string }[]) {
   const first = messages.find((m) => m.role === "user");
   if (!first || typeof first.content !== "string") return null;
 
-  // [2025학년도 수능 미적분 30번 — 주관식]
   const match = first.content.match(
     /\[(\d{4})학년도\s*수능\s*(공통|미적분|확률과통계|기하|가형|나형)\s*(\d+)번/
   );
   if (!match) return null;
 
-  const year = parseInt(match[1]);
-  const type = match[2];
-  const number = parseInt(match[3]);
-
-  // (힌트: 정답은 X번입니다) or (힌트: 정답은 X입니다)
-  const ansMatch = first.content.match(/정답은\s*(\d+)/);
-  const answer = ansMatch ? ansMatch[1] : "";
-
-  return { year, type, number, answer };
+  return {
+    year: parseInt(match[1]),
+    type: match[2],
+    number: parseInt(match[3]),
+  };
 }
 
 export async function POST(req: Request) {
@@ -35,26 +30,31 @@ export async function POST(req: Request) {
 
     const tutorName = useGpt ? "가우스 튜터" : "오일러 튜터";
 
-    // 기출문제인 경우 풀이 검색
+    // 기출문제인 경우 풀이 DB에서 조회 (정답+풀이 모두 서버측에서만 처리)
     let solutionContext = "";
     const problemInfo = parseProblemInfo(messages);
-    if (problemInfo && problemInfo.answer) {
+    if (problemInfo) {
       try {
-        const solution = await getSolution(
-          problemInfo.year,
-          problemInfo.type,
-          problemInfo.number,
-          problemInfo.answer
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+        const problemKey = `${problemInfo.year}_${problemInfo.type}_${problemInfo.number}`;
+        const res = await fetch(
+          `${url}/rest/v1/problem_solutions?problem_key=eq.${encodeURIComponent(problemKey)}&select=correct_answer,solution_text`,
+          { headers: { apikey: key, Authorization: `Bearer ${key}` }, cache: "no-store" }
         );
-        if (solution) {
-          solutionContext = `\n\n## 참고 풀이 (내부 자료 — 학생에게 직접 보여주지 마세요)
-이 문제의 검증된 풀이 방향입니다. 학생을 이 방향으로 코칭하되, 풀이를 그대로 읽어주지 말고 단계적으로 사고를 유도하세요.
-정답: ${problemInfo.answer}
+        if (res.ok) {
+          const rows = await res.json();
+          if (rows.length > 0) {
+            const { correct_answer, solution_text } = rows[0];
+            solutionContext = `\n\n## 참고 풀이 (내부 자료 — 학생에게 정답이나 풀이를 직접 보여주지 마세요)
+이 문제의 정답: ${correct_answer}
+검증된 풀이 방향입니다. 학생을 이 방향으로 코칭하되, 풀이를 그대로 읽어주지 말고 단계적으로 사고를 유도하세요.
 
-${solution}`;
+${solution_text}`;
+          }
         }
       } catch {
-        // 풀이 검색 실패 시 무시
+        // 풀이 조회 실패 시 무시
       }
     }
 

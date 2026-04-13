@@ -25,7 +25,7 @@ export default function EulerTutorPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, status, append, setMessages } =
     useChat({
       api: "/api/euler-tutor",
       body: { area, useGpt },
@@ -48,9 +48,10 @@ export default function EulerTutorPage() {
       const textKey = `${problem.year}_${problem.type}_${problem.number}`;
       const problemText = (problemTexts as Record<string, string>)[textKey];
 
+      // 정답은 학생에게 보여주지 않음 — API 서버측에서 problem_solutions DB를 통해 처리
       const content = problemText
-        ? `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? "객관식" : "주관식"}]\n\n${problemText}\n\n이 문제를 같이 풀어보고 싶어요.\n\n(힌트: 정답은 ${problem.answer}${problem.isMultipleChoice ? "번" : ""}입니다. 하지만 정답을 바로 알려주지 말고, 제가 사고과정을 통해 스스로 도달할 수 있도록 코칭해주세요.)`
-        : `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? "객관식" : "주관식"}]\n\n이 문제를 함께 풀어보고 싶어요. 문제를 보여주시면 같이 풀어볼게요!\n\n(힌트: 정답은 ${problem.answer}${problem.isMultipleChoice ? "번" : ""}입니다. 하지만 정답을 바로 알려주지 말고, 제가 사고과정을 통해 스스로 도달할 수 있도록 코칭해주세요.)`;
+        ? `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? "객관식" : "주관식"}]\n\n${problemText}\n\n이 문제를 같이 풀어보고 싶어요!`
+        : `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? "객관식" : "주관식"}]\n\n이 문제를 함께 풀어보고 싶어요. 문제를 보여주시면 같이 풀어볼게요!`;
 
       append({ role: "user", content });
     }, 300);
@@ -337,7 +338,7 @@ export default function EulerTutorPage() {
       <header className="sticky top-0 z-30 glass border-b border-white/5">
         <div className="max-w-3xl mx-auto flex items-center justify-between px-4 h-14">
           <button
-            onClick={() => setPhase("select")}
+            onClick={() => { setPhase("select"); setMessages([]); }}
             className="text-sm text-muted hover:text-foreground transition-colors"
           >
             ← 영역 선택
