@@ -7,6 +7,7 @@ import { GlassCard } from "@/components/shared/glass-card";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { downloadMarkdownAsDoc, splitTestMarkdown } from "@/lib/lesson-prep/download";
 
 type Tab = "slides" | "handout" | "test" | "videos";
 type SectionStatus = "idle" | "loading" | "ready" | "error";
@@ -440,11 +441,27 @@ export default function LessonPrepPage() {
                     state={handout}
                     emptyLabel="워크시트"
                     render={() => (
-                      <div className="prose prose-invert prose-sm max-w-none min-h-[200px]">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {handout.content}
-                        </ReactMarkdown>
-                      </div>
+                      <>
+                        <div className="prose prose-invert prose-sm max-w-none min-h-[200px]">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {handout.content}
+                          </ReactMarkdown>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-white/5">
+                          <button
+                            onClick={() =>
+                              downloadMarkdownAsDoc(
+                                `${topic || "수업"}_배부용문서`,
+                                `${topic || "수업"} — 배부용 워크시트`,
+                                handout.content
+                              )
+                            }
+                            className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm hover:from-indigo-400 hover:to-purple-400 transition-all flex items-center justify-center gap-2"
+                          >
+                            📥 배부용 문서 다운로드 (.doc)
+                          </button>
+                        </div>
+                      </>
                     )}
                   />
                 )}
@@ -453,13 +470,44 @@ export default function LessonPrepPage() {
                   <SectionView
                     state={test}
                     emptyLabel="모의 테스트"
-                    render={() => (
-                      <div className="prose prose-invert prose-sm max-w-none min-h-[200px]">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {test.content}
-                        </ReactMarkdown>
-                      </div>
-                    )}
+                    render={() => {
+                      const { problems, answers } = splitTestMarkdown(test.content);
+                      return (
+                        <>
+                          <div className="prose prose-invert prose-sm max-w-none min-h-[200px]">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {test.content}
+                            </ReactMarkdown>
+                          </div>
+                          <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <button
+                              onClick={() =>
+                                downloadMarkdownAsDoc(
+                                  `${topic || "수업"}_문제지`,
+                                  `${topic || "수업"} — 모의 테스트 (문제지)`,
+                                  problems
+                                )
+                              }
+                              className="px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm hover:from-indigo-400 hover:to-purple-400 transition-all flex items-center justify-center gap-2"
+                            >
+                              📝 문제지 다운로드 (.doc)
+                            </button>
+                            <button
+                              onClick={() =>
+                                downloadMarkdownAsDoc(
+                                  `${topic || "수업"}_정답지`,
+                                  `${topic || "수업"} — 모의 테스트 (정답 및 해설)`,
+                                  answers
+                                )
+                              }
+                              className="px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium text-sm hover:from-emerald-400 hover:to-teal-400 transition-all flex items-center justify-center gap-2"
+                            >
+                              ✅ 정답지 다운로드 (.doc)
+                            </button>
+                          </div>
+                        </>
+                      );
+                    }}
                   />
                 )}
 
