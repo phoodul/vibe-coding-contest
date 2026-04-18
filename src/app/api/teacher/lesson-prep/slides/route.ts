@@ -21,39 +21,35 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "슬라이드 내용이 필요합니다." }, { status: 400 });
     }
 
-    // 1. 테마 검색 (교육용)
+    // 1. 테마 검색 (교육용 → 비즈니스 순으로 fallback)
+    // 응답 구조: { success: true, data: { themes: [...], total: N } }
     let themeId = "";
-    try {
-      const themeRes = await fetch(`${API_BASE}/api/v1/themes?query=education`, {
-        headers: { Authorization: `Bearer ${apiKey}` },
-      });
-      if (themeRes.ok) {
-        const themeData = await themeRes.json();
-        const themes = themeData.themes || themeData.data || [];
-        if (themes.length > 0) {
-          themeId = themes[0].id;
-        }
-      }
-    } catch {
-      // 테마 검색 실패 시 기본값 사용
-    }
-
-    // 테마 없으면 corporate으로 재검색
-    if (!themeId) {
+    let lastThemeError = "";
+    for (const query of ["modern", "clean", "simple", "business", "corporate"]) {
       try {
-        const themeRes = await fetch(`${API_BASE}/api/v1/themes?query=corporate`, {
+        const themeRes = await fetch(`${API_BASE}/api/v1/themes/search?query=${query}`, {
           headers: { Authorization: `Bearer ${apiKey}` },
         });
-        if (themeRes.ok) {
-          const themeData = await themeRes.json();
-          const themes = themeData.themes || themeData.data || [];
-          if (themes.length > 0) themeId = themes[0].id;
+        if (!themeRes.ok) {
+          lastThemeError = `테마 검색 실패 (${themeRes.status}): ${await themeRes.text()}`;
+          continue;
         }
-      } catch {}
+        const themeData = await themeRes.json();
+        const themes: Array<{ id: string }> = themeData.data?.themes || themeData.themes || [];
+        if (themes.length > 0) {
+          themeId = themes[0].id;
+          break;
+        }
+      } catch (e) {
+        lastThemeError = `네트워크 오류: ${e}`;
+      }
     }
 
     if (!themeId) {
-      return NextResponse.json({ error: "슬라이드 테마를 찾을 수 없습니다." }, { status: 500 });
+      return NextResponse.json(
+        { error: lastThemeError || "슬라이드 테마를 찾을 수 없습니다." },
+        { status: 500 }
+      );
     }
 
     // 2. 슬라이드 생성 (async)
