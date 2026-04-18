@@ -451,6 +451,16 @@ export default function ConversationPage() {
     return (
       <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
         <div className="max-w-3xl mx-auto">
+          <button
+            onClick={() => setPhase("conversation")}
+            aria-label="대화로 돌아가기"
+            className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            대화로 돌아가기
+          </button>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="text-2xl font-bold mb-6">회화 리포트</h1>
           </motion.div>
@@ -500,30 +510,69 @@ export default function ConversationPage() {
     return (
       <div className="min-h-screen flex flex-col">
         {/* 헤더 */}
-        <div className="glass border-b border-white/5 px-4 sm:px-6 py-3">
-          <div className="max-w-3xl mx-auto flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-semibold">🎙️ AI 영어 회화</h1>
-              <p className="text-xs text-muted">
+        <div className="glass border-b border-white/5 px-3 sm:px-6 py-3">
+          <div className="max-w-3xl mx-auto flex items-center gap-2">
+            {/* 뒤로가기 (설정 화면으로) */}
+            <button
+              onClick={() => {
+                stopAudio();
+                shouldListenRef.current = false;
+                recognitionRef.current?.stop();
+                setPhase("setup");
+                setMessages([]);
+                setAiState("idle");
+                setInterimText("");
+              }}
+              aria-label="영어 회화 설정으로 돌아가기"
+              className="shrink-0 w-9 h-9 rounded-lg glass hover:bg-white/10 flex items-center justify-center transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* 타이틀 */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-sm sm:text-lg font-semibold truncate">🎙️ AI 영어 회화</h1>
+              <p className="text-[10px] sm:text-xs text-muted truncate">
                 {selectedLevel?.label} · {VOICES.find((v) => v.id === voiceId)?.label}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* 액션 버튼들 */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 onClick={() => setSubtitles(!subtitles)}
-                className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${
+                aria-label={`자막 ${subtitles ? "끄기" : "켜기"}`}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
                   subtitles ? "bg-primary/20 text-primary" : "glass text-muted"
                 }`}
+                title={`자막 ${subtitles ? "ON" : "OFF"}`}
               >
-                자막 {subtitles ? "ON" : "OFF"}
+                <span className="text-[11px] font-bold">CC</span>
               </button>
               <button
                 onClick={generateReport}
                 disabled={messages.filter(m => m.role === "user").length < 10}
-                className={`text-sm transition-colors ${messages.filter(m => m.role === "user").length < 10 ? "text-muted/40 cursor-not-allowed" : "text-amber-400 hover:text-amber-300"}`}
-                title={messages.filter(m => m.role === "user").length < 10 ? `리포트는 10턴 이상 대화 후 가능합니다 (현재 ${messages.filter(m => m.role === "user").length}턴)` : ""}
+                aria-label="대화 종료 및 리포트 생성"
+                className={`h-9 px-2.5 sm:px-3 rounded-lg flex items-center gap-1.5 transition-all ${
+                  messages.filter(m => m.role === "user").length < 10
+                    ? "glass text-muted/50 cursor-not-allowed"
+                    : "bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/30"
+                }`}
+                title={messages.filter(m => m.role === "user").length < 10
+                  ? `리포트는 10턴 이상 대화 후 가능합니다 (현재 ${messages.filter(m => m.role === "user").length}턴)`
+                  : "대화를 종료하고 리포트를 생성합니다"}
               >
-                종료 & 리포트 {messages.filter(m => m.role === "user").length < 10 && `(${messages.filter(m => m.role === "user").length}/10)`}
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="text-xs sm:text-sm whitespace-nowrap">
+                  리포트
+                  {messages.filter(m => m.role === "user").length < 10 && (
+                    <span className="hidden sm:inline"> ({messages.filter(m => m.role === "user").length}/10)</span>
+                  )}
+                </span>
               </button>
             </div>
           </div>
