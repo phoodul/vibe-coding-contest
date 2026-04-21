@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { PageViewTracker } from "@/lib/analytics/PageViewTracker";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -40,6 +43,9 @@ export default function RootLayout({
         </div>
         <div className="noise" />
         <div className="relative z-10">{children}</div>
+        <PageViewTracker />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
