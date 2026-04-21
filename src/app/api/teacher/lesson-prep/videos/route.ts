@@ -33,53 +33,64 @@ function formatViews(count?: string): string {
   return `조회수 ${n}회`;
 }
 
+/** search.list 호출 — 필터 단계별 완화하며 재시도 */
+async function searchVideos(apiKey: string, query: string) {
+  // 1차: 한국어 + 한국 지역 + embeddable (학교에서 바로 재생 가능한 것 우선)
+  // 2차: 한국어 + embeddable (지역 필터 제거)
+  // 3차: 한국어만 (모든 필터 최소화)
+  const attempts: Array<Record<string, string>> = [
+    { regionCode: "KR", relevanceLanguage: "ko", videoEmbeddable: "true" },
+    { relevanceLanguage: "ko", videoEmbeddable: "true" },
+    { relevanceLanguage: "ko" },
+  ];
+
+  for (const extraParams of attempts) {
+    const url = new URL("https://www.googleapis.com/youtube/v3/search");
+    url.searchParams.set("key", apiKey);
+    url.searchParams.set("q", query);
+    url.searchParams.set("part", "snippet");
+    url.searchParams.set("type", "video");
+    url.searchParams.set("maxResults", "15");
+    url.searchParams.set("safeSearch", "strict");
+    for (const [k, v] of Object.entries(extraParams)) url.searchParams.set(k, v);
+
+    const res = await fetch(url.toString());
+    if (!res.ok) {
+      const errText = await res.text();
+      // 쿼터 초과·키 오류는 즉시 반환
+      if (res.status === 403) throw new Error(`YouTube API 403: ${errText.slice(0, 200)}`);
+      continue;
+    }
+    const data = await res.json();
+    const items = data.items || [];
+    if (items.length > 0) return items;
+  }
+  return [];
+}
+
 /** YouTube Data API로 교육 영상 검색 */
 export async function POST(req: Request) {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "YOUTUBE_API_KEY가 설정되지 않았습니다. .env에 추가해주세요." },
+      { error: "YOUTUBE_API_KEY가 설정되지 않았습니다. Vercel 환경변수에 추가해주세요." },
       { status: 500 }
     );
   }
 
   try {
-    const { topic, grade } = await parseLessonPrepRequest(req);
+    const { topic } = await parseLessonPrepRequest(req);
     if (!topic) {
       return NextResponse.json({ error: "주제가 필요합니다" }, { status: 400 });
     }
 
-    // 1. 검색 쿼리 — 단순화 (학년 hint는 관련성 떨어뜨림, 주제 + 한 단어)
     const query = `${topic} 설명`;
-
-    // 2. search.list — 비디오 ID 추출 (100 쿼터)
-    const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
-    searchUrl.searchParams.set("key", apiKey);
-    searchUrl.searchParams.set("q", query);
-    searchUrl.searchParams.set("part", "snippet");
-    searchUrl.searchParams.set("type", "video");
-    searchUrl.searchParams.set("maxResults", "10");
-    searchUrl.searchParams.set("regionCode", "KR");
-    searchUrl.searchParams.set("relevanceLanguage", "ko");
-    searchUrl.searchParams.set("safeSearch", "strict");
-    searchUrl.searchParams.set("videoEmbeddable", "true");
-    searchUrl.searchParams.set("videoDuration", "medium"); // 4~20분
-
-    const searchRes = await fetch(searchUrl.toString());
-    if (!searchRes.ok) {
-      const err = await searchRes.text();
-      return NextResponse.json(
-        { error: `YouTube 검색 실패 (${searchRes.status}): ${err.slice(0, 200)}` },
-        { status: 500 }
-      );
-    }
-    const searchData = await searchRes.json();
-    const items = searchData.items || [];
+    const items = await searchVideos(apiKey, query);
     if (items.length === 0) {
-      return NextResponse.json({ videos: [] });
+      return NextResponse.json({ videos: [], notice: "관련 영상을 찾지 못했습니다." });
     }
 
-    // 3. videos.list — 조회수·길이 등 상세 정보 (1 쿼터)
+    // videos.list — 조회수·길이 등 상세 정보
     const videoIds = items.map((it: any) => it.id.videoId).filter(Boolean).join(",");
     const videosUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
     videosUrl.searchParams.set("key", apiKey);
@@ -93,7 +104,7 @@ export async function POST(req: Request) {
       detailsMap.set(v.id, v);
     }
 
-    // 4. 정규화 + 조회수 높은 순 정렬 → 상위 3개
+    // 정규화 + 1분 미만 Shorts 제거 + 조회수 높은 순 → 상위 3개
     const videos: YouTubeVideo[] = items
       .map((it: any) => {
         const id = it.id.videoId;
@@ -110,19 +121,28 @@ export async function POST(req: Request) {
             "",
           duration: formatDuration(detail?.contentDetails?.duration),
           viewCount: formatViews(detail?.statistics?.viewCount),
+          _rawDuration: detail?.contentDetails?.duration || "",
+          _rawViews: parseInt(detail?.statistics?.viewCount || "0"),
         };
       })
-      .filter((v: YouTubeVideo) => v.id)
-      .sort((a: YouTubeVideo, b: YouTubeVideo) => {
-        const av = parseInt(detailsMap.get(a.id)?.statistics?.viewCount || "0");
-        const bv = parseInt(detailsMap.get(b.id)?.statistics?.viewCount || "0");
-        return bv - av;
+      .filter((v: any) => v.id)
+      // Shorts(60초 미만) 제외 — 교육 영상 품질 보장
+      .filter((v: any) => {
+        const m = v._rawDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+        if (!m) return true;
+        const totalSec = (parseInt(m[1] || "0") * 3600) + (parseInt(m[2] || "0") * 60) + parseInt(m[3] || "0");
+        return totalSec >= 60;
       })
-      .slice(0, 3);
+      .sort((a: any, b: any) => b._rawViews - a._rawViews)
+      .slice(0, 3)
+      .map(({ _rawDuration, _rawViews, ...rest }: any) => rest);
 
     return NextResponse.json({ videos });
   } catch (e) {
     console.error("videos error:", e);
-    return NextResponse.json({ error: `영상 검색 오류: ${e}` }, { status: 500 });
+    return NextResponse.json(
+      { error: `영상 검색 오류: ${(e as Error).message || e}` },
+      { status: 500 }
+    );
   }
 }

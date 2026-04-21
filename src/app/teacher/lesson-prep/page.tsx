@@ -184,7 +184,7 @@ export default function LessonPrepPage() {
   const [slides, setSlides] = useState<SectionState>(INITIAL_SECTION);
   const [handout, setHandout] = useState<SectionState>(INITIAL_SECTION);
   const [test, setTest] = useState<SectionState>(INITIAL_SECTION);
-  const [videos, setVideos] = useState<SectionState & { list?: Video[] }>(INITIAL_SECTION);
+  const [videos, setVideos] = useState<SectionState & { list?: Video[]; notice?: string }>(INITIAL_SECTION);
 
   const abortRef = useRef<AbortController | null>(null);
 
@@ -225,11 +225,28 @@ export default function LessonPrepPage() {
       }
     };
 
-    const slidesTask = streamSection(
-      "/api/teacher/lesson-prep",
-      setSlides,
-      (raw) => replaceImagePlaceholders(raw, topic)
-    );
+    // 슬라이드: 2단계 파이프라인(개요→병렬 상세화) — 스트리밍이 아닌 JSON 응답
+    const slidesTask = (async () => {
+      try {
+        const { body, isFormData } = buildBody(topic, grade, file);
+        const res = await fetch("/api/teacher/lesson-prep", {
+          method: "POST",
+          headers: isFormData ? undefined : { "Content-Type": "application/json" },
+          body,
+          signal: abortRef.current!.signal,
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          setSlides({ status: "error", content: "", error: data.error || `HTTP ${res.status}` });
+          return;
+        }
+        const processed = await replaceImagePlaceholders(data.content || "", topic);
+        setSlides({ status: "ready", content: processed });
+      } catch (e) {
+        if ((e as Error).name === "AbortError") return;
+        setSlides({ status: "error", content: "", error: (e as Error).message });
+      }
+    })();
     const handoutTask = streamSection("/api/teacher/lesson-prep/handout", setHandout);
     const testTask = streamSection("/api/teacher/lesson-prep/test", setTest);
 
@@ -247,7 +264,7 @@ export default function LessonPrepPage() {
           setVideos({ status: "error", content: "", error: data.error });
           return;
         }
-        setVideos({ status: "ready", content: "", list: data.videos || [] });
+        setVideos({ status: "ready", content: "", list: data.videos || [], notice: data.notice });
       } catch (e) {
         if ((e as Error).name === "AbortError") return;
         setVideos({ status: "error", content: "", error: (e as Error).message });
@@ -470,44 +487,13 @@ export default function LessonPrepPage() {
                   <SectionView
                     state={test}
                     emptyLabel="모의 테스트"
-                    render={() => {
-                      const { problems, answers } = splitTestMarkdown(test.content);
-                      return (
-                        <>
-                          <div className="prose prose-invert prose-sm max-w-none min-h-[200px]">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                              {test.content}
-                            </ReactMarkdown>
-                          </div>
-                          <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <button
-                              onClick={() =>
-                                downloadMarkdownAsDoc(
-                                  `${topic || "수업"}_문제지`,
-                                  `${topic || "수업"} — 모의 테스트 (문제지)`,
-                                  problems
-                                )
-                              }
-                              className="px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm hover:from-indigo-400 hover:to-purple-400 transition-all flex items-center justify-center gap-2"
-                            >
-                              📝 문제지 다운로드 (.doc)
-                            </button>
-                            <button
-                              onClick={() =>
-                                downloadMarkdownAsDoc(
-                                  `${topic || "수업"}_정답지`,
-                                  `${topic || "수업"} — 모의 테스트 (정답 및 해설)`,
-                                  answers
-                                )
-                              }
-                              className="px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium text-sm hover:from-emerald-400 hover:to-teal-400 transition-all flex items-center justify-center gap-2"
-                            >
-                              ✅ 정답지 다운로드 (.doc)
-                            </button>
-                          </div>
-                        </>
-                      );
-                    }}
+                    render={() => (
+                      <TestView
+                        content={test.content}
+                        topic={topic}
+                        streaming={test.status === "loading"}
+                      />
+                    )}
                   />
                 )}
 
@@ -526,7 +512,7 @@ export default function LessonPrepPage() {
                         const content =
                           activeTab === "slides" ? slides.content :
                           activeTab === "handout" ? handout.content :
-                          test.content;
+                          splitTestMarkdown(test.content).problems || test.content;
                         const w = window.open("", "_blank");
                         if (w) {
                           w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${TABS.find(t=>t.key===activeTab)?.label}</title><style>body{font-family:Pretendard,sans-serif;padding:40px;max-width:800px;margin:auto;line-height:1.8;color:#222}h1,h2,h3{margin-top:1.5em}img{max-width:100%;border-radius:8px;margin:1em 0}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px;text-align:left}hr{margin:2em 0;border:none;border-top:2px dashed #ccc;page-break-after:always}@media print{body{padding:20px}}</style></head><body>${content.replace(/\n/g,"<br>")}</body></html>`);
@@ -577,7 +563,89 @@ function SectionView({
   return <>{render()}</>;
 }
 
-function VideosView({ state }: { state: SectionState & { list?: Video[] } }) {
+/** 모의 테스트 뷰 — 학생 노출용 문제지 탭 / 교사용 정답지 탭 분리 */
+function TestView({
+  content,
+  topic,
+  streaming,
+}: {
+  content: string;
+  topic: string;
+  streaming: boolean;
+}) {
+  const [view, setView] = useState<"problems" | "answers">("problems");
+  const { problems, answers } = splitTestMarkdown(content);
+  const display = view === "problems" ? problems || content : answers;
+
+  return (
+    <>
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setView("problems")}
+          className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+            view === "problems"
+              ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20"
+              : "glass text-muted hover:text-foreground hover:bg-white/5"
+          }`}
+        >
+          📝 문제지 (학생용)
+        </button>
+        <button
+          onClick={() => setView("answers")}
+          disabled={streaming}
+          className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
+            view === "answers"
+              ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+              : "glass text-muted hover:text-foreground hover:bg-white/5"
+          }`}
+        >
+          ✅ 정답·해설 (교사용)
+        </button>
+      </div>
+
+      {view === "problems" && (
+        <p className="mb-3 text-xs text-indigo-300/80">
+          학생 화면에는 문제만 표시됩니다. 정답은 &quot;정답·해설&quot; 탭에서 별도 확인하세요.
+        </p>
+      )}
+
+      <div className="prose prose-invert prose-sm max-w-none min-h-[200px]">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{display}</ReactMarkdown>
+      </div>
+
+      <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <button
+          onClick={() =>
+            downloadMarkdownAsDoc(
+              `${topic || "수업"}_문제지`,
+              `${topic || "수업"} — 모의 테스트 (문제지)`,
+              problems
+            )
+          }
+          disabled={streaming || !problems}
+          className="px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-sm hover:from-indigo-400 hover:to-purple-400 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          📝 문제지 다운로드 (.doc)
+        </button>
+        <button
+          onClick={() =>
+            downloadMarkdownAsDoc(
+              `${topic || "수업"}_정답지`,
+              `${topic || "수업"} — 모의 테스트 (정답 및 해설)`,
+              answers
+            )
+          }
+          disabled={streaming || !answers}
+          className="px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium text-sm hover:from-emerald-400 hover:to-teal-400 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          ✅ 정답지 다운로드 (.doc)
+        </button>
+      </div>
+    </>
+  );
+}
+
+function VideosView({ state }: { state: SectionState & { list?: Video[]; notice?: string } }) {
   if (state.status === "error") {
     return (
       <div className="text-center py-8">
@@ -593,7 +661,11 @@ function VideosView({ state }: { state: SectionState & { list?: Video[] } }) {
   }
   const videos = state.list || [];
   if (videos.length === 0) {
-    return <p className="text-muted text-sm py-8 text-center">관련 영상을 찾지 못했습니다.</p>;
+    return (
+      <p className="text-muted text-sm py-8 text-center">
+        {state.notice || "관련 영상을 찾지 못했습니다."}
+      </p>
+    );
   }
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-h-[200px]">
