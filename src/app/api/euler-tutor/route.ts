@@ -8,6 +8,7 @@ import { runCritic } from "@/lib/euler/critic-client";
 import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-prompt";
 import { retrieveTools } from "@/lib/euler/retriever";
 import { runReasonerStep } from "@/lib/euler/reasoner";
+import { reportTools } from "@/lib/euler/tool-reporter";
 import { createClient as createSupabaseServer } from "@/lib/supabase/server";
 import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 
@@ -244,6 +245,20 @@ ${bfs.subgoals.slice(0, 5).map((s, i) => `  ${i + 1}. ${s.subgoal}${s.tool ? ` [
               console.log(
                 `[euler-tutor] reasoner: ${bfs.facts.length} facts / ${bfs.subgoals.length} subgoals / ${bfs.duration_ms}ms`
               );
+
+              // C-05: Reasoner 가 사용한 도구를 candidate_tools 에 fire-and-forget 보고
+              if (bfs.used_tools.length) {
+                const sourceKey = problemInfo
+                  ? `${problemInfo.year}_${problemInfo.type}_${problemInfo.number}`
+                  : null;
+                void reportTools(
+                  bfs.used_tools.map((tool) => ({
+                    proposed_name: tool,
+                    proposed_layer: 6,
+                    source_problem_key: sourceKey ?? undefined,
+                  }))
+                ).catch((e) => console.warn("[euler-tutor] tool report failed:", e));
+              }
             } catch (e) {
               console.warn("[euler-tutor] reasoner skipped:", e);
             }
