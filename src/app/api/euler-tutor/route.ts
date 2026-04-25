@@ -4,6 +4,28 @@ import { streamText, type LanguageModelV1 } from "ai";
 import { NextResponse } from "next/server";
 import { EULER_SYSTEM_PROMPT } from "@/lib/ai/euler-prompt";
 import { getSolution } from "@/lib/solution-cache";
+import { runCritic } from "@/lib/euler/critic-client";
+
+const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
+
+/** messages 배열에서 (문제, 직전 풀이) 추출. 검증할 데이터가 부족하면 null. */
+function extractCriticInputs(
+  messages: { role: string; content: string }[]
+): { problem: string; solution: string } | null {
+  const firstUser = messages.find((m) => m.role === "user");
+  if (!firstUser || typeof firstUser.content !== "string") return null;
+  // 마지막 assistant 메시지(이전 턴 AI 풀이)
+  let lastAssistant: string | null = null;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m.role === "assistant" && typeof m.content === "string") {
+      lastAssistant = m.content;
+      break;
+    }
+  }
+  if (!lastAssistant) return null;
+  return { problem: firstUser.content, solution: lastAssistant };
+}
 
 export const maxDuration = 60;
 
@@ -58,6 +80,22 @@ ${solution_text}`;
       }
     }
 
+    // Critic 사전 검증: 이전 턴 AI 풀이를 Haiku 4.5 로 검증 → verified 신호를 system 에 주입
+    let criticContext = "";
+    if (CRITIC_ENABLED) {
+      const inputs = extractCriticInputs(messages);
+      if (inputs) {
+        const result = await runCritic({ ...inputs, mode: "verify" });
+        if (result && result.mode === "verify") {
+          criticContext = `\n\n## Critic 사전 검증 결과 (내부 신호)
+verified=${result.verified}, confidence=${result.confidence.toFixed(2)}
+${result.verified
+  ? "이전 풀이는 Critic 검증을 통과했습니다. **재검산하자거나 의심하는 멘트를 추가하지 마세요.** 학생이 다음 단계로 자신감 있게 나아가도록 코칭하세요."
+  : `이전 풀이에서 다음 오류가 감지되었습니다: ${result.errors.join(" / ")}. ${result.suggested_backtrack ? `다음 단계로 돌아가서 함께 검산하도록 유도하세요: ${result.suggested_backtrack}` : "학생과 함께 단계별로 확인하세요."}`}`;
+        }
+      }
+    }
+
     const systemPrompt = `${EULER_SYSTEM_PROMPT}
 
 현재 학습 영역: ${area || "자유 질문"}
@@ -65,7 +103,7 @@ ${solution_text}`;
 
 첫 메시지라면 따뜻하게 인사하고, 학생에게 문제를 보여달라고 요청하세요.
 "안녕! ${tutorName}예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"
-학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${solutionContext}`;
+학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${solutionContext}${criticContext}`;
 
     const model = (useGpt
       ? openai("gpt-5.1")
