@@ -8,7 +8,10 @@ export const maxDuration = 30;
  */
 export async function POST(req: Request) {
   try {
-    const { image } = await req.json();
+    const { image, handwritten } = (await req.json()) as {
+      image?: string;
+      handwritten?: boolean;
+    };
 
     const base64Match = image?.match(/^data:(.+);base64,(.+)$/);
     if (!base64Match) {
@@ -23,6 +26,23 @@ export async function POST(req: Request) {
 
     if (MATHPIX_APP_ID && MATHPIX_APP_KEY) {
       try {
+        // 손글씨 모드: text+data 포맷, math+text OCR, 공백 보존
+        const mathpixBody: Record<string, unknown> = handwritten
+          ? {
+              src: image,
+              formats: ["text", "data"],
+              ocr: ["math", "text"],
+              math_inline_delimiters: ["$", "$"],
+              math_display_delimiters: ["$$", "$$"],
+              rm_spaces: false,
+            }
+          : {
+              src: image,
+              math_inline_delimiters: ["$", "$"],
+              math_display_delimiters: ["$$", "$$"],
+              rm_spaces: true,
+            };
+
         const resp = await fetch("https://api.mathpix.com/v3/text", {
           method: "POST",
           headers: {
@@ -30,12 +50,7 @@ export async function POST(req: Request) {
             "app_key": MATHPIX_APP_KEY,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            src: image,
-            math_inline_delimiters: ["$", "$"],
-            math_display_delimiters: ["$$", "$$"],
-            rm_spaces: true,
-          }),
+          body: JSON.stringify(mathpixBody),
         });
 
         if (resp.ok) {
