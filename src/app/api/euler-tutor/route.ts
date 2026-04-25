@@ -10,6 +10,7 @@ import { retrieveTools } from "@/lib/euler/retriever";
 import { runReasonerStep } from "@/lib/euler/reasoner";
 import { reportTools } from "@/lib/euler/tool-reporter";
 import { logSolve } from "@/lib/euler/solve-logger";
+import { checkFreeQuota } from "@/lib/euler/usage-quota";
 import { createClient as createSupabaseServer } from "@/lib/supabase/server";
 import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 
@@ -88,6 +89,23 @@ export async function POST(req: Request) {
     const tutorName = useGpt ? "가우스 튜터" : "오일러 튜터";
     const tutorPersona = useGpt ? "gauss" : "euler";
     const inputMode = input_mode ?? "text";
+
+    // C-12: Free 일일 한도 — 첫 user turn 일 때만 체크 (후속 코칭 턴은 통과)
+    const isFirstUserTurn = messages.filter((m: { role: string }) => m.role === "assistant").length === 0;
+    if (isFirstUserTurn) {
+      const quota = await checkFreeQuota();
+      if (quota && !quota.allowed) {
+        return NextResponse.json(
+          {
+            error: "free_daily_limit_reached",
+            used: quota.used,
+            limit: quota.limit,
+            message: "오늘 무료 풀이 한도에 도달했어요. 내일 다시 만나거나 정기구독으로 무제한 이용해보세요.",
+          },
+          { status: 429 }
+        );
+      }
+    }
 
     // 기출문제인 경우 풀이 DB에서 조회 (정답+풀이 모두 서버측에서만 처리)
     let solutionContext = "";
