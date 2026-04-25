@@ -10,9 +10,36 @@
   "icons": [
     {
       "src": "/logo-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-icon.png",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "오일러 튜터 — 필기",
+      "short_name": "오일러 캔버스",
+      "description": "수학 문제를 손글씨로 풀고 코칭 받기",
+      "url": "/euler/canvas",
+      "icons": [{ "src": "/logo-icon.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "오일러 튜터 — 채팅",
+      "short_name": "오일러 채팅",
+      "url": "/euler-tutor",
+      "icons": [{ "src": "/logo-icon.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

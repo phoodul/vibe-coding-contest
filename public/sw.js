@@ -1,5 +1,5 @@
-const CACHE_NAME = "easyedu-v1";
-const PRECACHE = ["/dashboard", "/crisis", "/logo-icon.png"];
+const CACHE_NAME = "easyedu-v2-euler";
+const PRECACHE = ["/dashboard", "/crisis", "/euler/canvas", "/euler-tutor", "/logo-icon.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
