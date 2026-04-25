@@ -1,0 +1,367 @@
+{
+  "version": 1,
+  "created_at": "2026-04-26",
+  "note": "Phase B 초기 시드. AI 자체 표현 (정석·교과서 원문 직접 인용 금지). 운영 중 점진 확장.",
+  "tools": [
+    {
+      "id": "MVT_basic",
+      "name": "평균값 정리 (기본)",
+      "knowledge_layer": 6,
+      "formula_latex": "f \\text{ 가 } [a,b] \\text{ 에서 연속, } (a,b) \\text{ 에서 미분가능이면 } \\exists c \\in (a,b): f'(c) = \\frac{f(b)-f(a)}{b-a}",
+      "prerequisites": ["연속함수", "미분가능성"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "닫힌구간 [a,b] 연속 + 열린구간 (a,b) 미분가능 + 두 점에서 함숫값 주어짐", "derived_fact": "도함수 값이 평균변화율과 같아지는 점 존재", "why": "두 점의 함숫값 차이를 도함수의 한 점 값으로 환원할 수 있다" },
+        { "direction": "backward", "goal_pattern": "f'(c) = (f(b)-f(a))/(b-a) 형태로 표현되는 양의 존재성", "premises": ["연속·미분가능"], "why": "도함수 단일값이 평균변화율과 일치한다는 결론을 끌어내려면 평균값 정리" }
+      ]
+    },
+    {
+      "id": "ROLLE_basic",
+      "name": "롤의 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "f \\in C[a,b], f \\text{ 미분가능}, f(a)=f(b) \\Rightarrow \\exists c \\in (a,b): f'(c)=0",
+      "prerequisites": ["평균값정리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "양 끝점 함숫값이 같은 미분가능 함수", "derived_fact": "도함수가 0 인 내부점 존재", "why": "양 끝값이 같으면 그 사이 어디선가 기울기 0 인 점이 반드시 존재" },
+        { "direction": "backward", "goal_pattern": "f'(c)=0 인 c 의 존재성", "premises": ["연속·미분가능 + 끝점 함숫값 동일"], "why": "도함수 영점 존재성을 보이려면 롤의 정리" }
+      ]
+    },
+    {
+      "id": "IVT_basic",
+      "name": "사잇값 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "f \\in C[a,b], f(a) \\ne f(b), k \\text{ between } f(a),f(b) \\Rightarrow \\exists c \\in (a,b): f(c)=k",
+      "prerequisites": ["연속함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "연속 + 부호가 바뀌거나 두 함숫값 사이 임의값을 명시", "derived_fact": "그 사이 임의값을 함숫값으로 갖는 점 존재 (특히 영점)", "why": "연속함수는 중간값을 빠짐없이 거친다" },
+        { "direction": "backward", "goal_pattern": "f(c)=k 또는 f(c)=0 인 c 의 존재성", "premises": ["연속 + 부호변화"], "why": "특정 함숫값을 갖는 점의 존재성을 증명하려면 사잇값 정리" }
+      ]
+    },
+    {
+      "id": "EVT_basic",
+      "name": "최대·최소 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "f \\in C[a,b] \\Rightarrow f \\text{ 는 } [a,b] \\text{ 에서 최댓값·최솟값을 가진다}",
+      "prerequisites": ["연속함수", "닫힌구간"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "연속 + 닫힌구간", "derived_fact": "최댓값·최솟값이 존재한다", "why": "닫힌구간 + 연속의 결합은 극값의 존재를 보장" }
+      ]
+    },
+    {
+      "id": "DERIV_RULE_chain",
+      "name": "연쇄법칙",
+      "knowledge_layer": 6,
+      "formula_latex": "(f(g(x)))' = f'(g(x)) \\cdot g'(x)",
+      "prerequisites": ["미분의 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "합성함수의 미분", "derived_fact": "외함수 미분 × 내함수 미분", "why": "미분은 변화율의 연쇄로 분해 가능" },
+        { "direction": "backward", "goal_pattern": "합성함수 도함수 표현", "premises": ["내·외 함수 미분가능"], "why": "합성함수 미분은 연쇄법칙으로 분해" }
+      ]
+    },
+    {
+      "id": "DERIV_RULE_product",
+      "name": "곱의 미분법",
+      "knowledge_layer": 6,
+      "formula_latex": "(fg)' = f'g + fg'",
+      "prerequisites": ["미분의 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 함수의 곱 미분", "derived_fact": "f'g + fg'", "why": "변화의 두 출처를 더한다" }
+      ]
+    },
+    {
+      "id": "DERIV_RULE_quotient",
+      "name": "몫의 미분법",
+      "knowledge_layer": 6,
+      "formula_latex": "(f/g)' = (f'g - fg')/g^2",
+      "prerequisites": ["곱의미분법"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "분수 형태 함수 미분", "derived_fact": "(f'g-fg')/g²", "why": "분모의 변화는 음의 영향" }
+      ]
+    },
+    {
+      "id": "EXTREMUM_first_deriv",
+      "name": "1계 도함수 부호변화로 극값 판정",
+      "knowledge_layer": 6,
+      "formula_latex": "f'(c) = 0 \\text{ 이고 } f' \\text{ 의 부호가 } c \\text{ 좌우에서 } +,- \\text{ 로 바뀌면 극대}",
+      "prerequisites": ["도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "도함수의 부호 변화 정보", "derived_fact": "극대/극소 위치", "why": "기울기의 부호 전환 = 극값" },
+        { "direction": "backward", "goal_pattern": "함수의 극값 위치", "premises": ["도함수 영점 + 부호변화"], "why": "극값 분석은 1계 도함수 부호 분석으로 환원" }
+      ]
+    },
+    {
+      "id": "EXTREMUM_second_deriv",
+      "name": "2계 도함수 판정법",
+      "knowledge_layer": 6,
+      "formula_latex": "f'(c)=0, f''(c)<0 \\Rightarrow c \\text{ 극대}; f''(c)>0 \\Rightarrow c \\text{ 극소}",
+      "prerequisites": ["1계도함수극값"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "임계점에서 2계 도함수 부호", "derived_fact": "극대/극소 판정", "why": "오목·볼록이 극값 종류를 결정" }
+      ]
+    },
+    {
+      "id": "INTEGRATION_substitution",
+      "name": "치환 적분",
+      "knowledge_layer": 6,
+      "formula_latex": "\\int f(g(x)) g'(x) dx = \\int f(u) du, u=g(x)",
+      "prerequisites": ["연쇄법칙", "부정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "f(g(x))·g'(x) 꼴 또는 일부 변수 치환이 자연스러운 경우", "derived_fact": "치환 후 단순 적분으로 환원", "why": "연쇄법칙의 역방향 — 합성을 풀어 단순화" },
+        { "direction": "backward", "goal_pattern": "복잡한 적분을 단순 적분으로 환원", "premises": ["적절한 치환 식별"], "why": "치환적분으로 변수 변환" }
+      ]
+    },
+    {
+      "id": "INTEGRATION_byparts",
+      "name": "부분 적분",
+      "knowledge_layer": 6,
+      "formula_latex": "\\int f g' dx = fg - \\int f' g dx",
+      "prerequisites": ["곱의미분법"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 함수의 곱 적분 (한쪽이 적분 쉬움, 다른쪽은 미분 단순화)", "derived_fact": "fg - ∫f'g dx 로 환원", "why": "곱의 미분법의 역방향 — 적분 부담을 떠넘김" }
+      ]
+    },
+    {
+      "id": "FTC_basic",
+      "name": "미적분의 기본 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "F'(x) = f(x), \\int_a^b f(x) dx = F(b) - F(a)",
+      "prerequisites": ["부정적분", "정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "정적분 계산이 필요", "derived_fact": "원시함수 차이로 환원", "why": "적분과 미분이 역연산" },
+        { "direction": "backward", "goal_pattern": "정적분 값", "premises": ["원시함수"], "why": "정적분 → 원시함수 차이로 변환" }
+      ]
+    },
+    {
+      "id": "AREA_integral",
+      "name": "넓이 = 정적분",
+      "knowledge_layer": 6,
+      "formula_latex": "S = \\int_a^b |f(x) - g(x)| dx",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 곡선 사이 넓이", "premises": ["곡선 식", "교점"], "why": "기하 넓이를 적분으로 환원" }
+      ]
+    },
+    {
+      "id": "VOLUME_revolution",
+      "name": "회전체 부피 (원판법)",
+      "knowledge_layer": 6,
+      "formula_latex": "V = \\pi \\int_a^b [f(x)]^2 dx",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "회전체 부피", "premises": ["회전축", "곡선식"], "why": "회전체 부피는 단면적의 적분" }
+      ]
+    },
+    {
+      "id": "LIMIT_LHopital",
+      "name": "로피탈 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "\\lim \\frac{f(x)}{g(x)} \\text{ 가 } 0/0, \\infty/\\infty \\text{ 형이면 } \\lim \\frac{f'(x)}{g'(x)}",
+      "prerequisites": ["도함수", "극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "0/0 또는 ∞/∞ 부정형", "derived_fact": "분모·분자 미분 후 극한", "why": "부정형은 도함수 비율로 환원 가능" }
+      ]
+    },
+    {
+      "id": "LIMIT_squeeze",
+      "name": "조임 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "g(x) \\le f(x) \\le h(x), \\lim g = \\lim h = L \\Rightarrow \\lim f = L",
+      "prerequisites": ["극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "직접 계산 어려운 극한 + 위·아래 함수의 극한이 같음", "derived_fact": "조여진 함수의 극한도 같음", "why": "극한은 위·아래 압박을 통과하지 못한다" }
+      ]
+    },
+    {
+      "id": "CONTINUITY_test",
+      "name": "연속성 판정",
+      "knowledge_layer": 5,
+      "formula_latex": "\\lim_{x \\to a} f(x) = f(a)",
+      "prerequisites": ["극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "함수의 한 점에서 정의·좌우극한·함숫값 비교", "derived_fact": "연속/불연속 판정", "why": "연속의 정의는 극한과 함숫값의 일치" }
+      ]
+    },
+    {
+      "id": "INCREASE_decrease",
+      "name": "함수의 증가·감소",
+      "knowledge_layer": 6,
+      "formula_latex": "f' > 0 \\Rightarrow f \\text{ 증가}; f' < 0 \\Rightarrow f \\text{ 감소}",
+      "prerequisites": ["도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "도함수 부호", "derived_fact": "단조성", "why": "도함수의 부호가 함수의 방향을 결정" }
+      ]
+    },
+    {
+      "id": "CONCAVITY",
+      "name": "함수의 오목·볼록",
+      "knowledge_layer": 6,
+      "formula_latex": "f'' > 0 \\Rightarrow \\text{아래로 볼록}; f'' < 0 \\Rightarrow \\text{위로 볼록}",
+      "prerequisites": ["2계도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "2계 도함수 부호", "derived_fact": "오목·볼록 + 변곡점", "why": "곡률의 방향성 분석" }
+      ]
+    },
+    {
+      "id": "TANGENT_line",
+      "name": "접선의 방정식",
+      "knowledge_layer": 6,
+      "formula_latex": "y - f(a) = f'(a)(x - a)",
+      "prerequisites": ["도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "한 점에서의 접선 식", "premises": ["함수식", "접점"], "why": "접선의 기울기는 그 점의 도함수 값" }
+      ]
+    },
+    {
+      "id": "NORMAL_line",
+      "name": "법선의 방정식",
+      "knowledge_layer": 6,
+      "formula_latex": "y - f(a) = -\\frac{1}{f'(a)}(x - a)",
+      "prerequisites": ["접선의방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "법선 식", "premises": ["접점", "도함수"], "why": "법선은 접선에 수직" }
+      ]
+    },
+    {
+      "id": "EXP_log_deriv",
+      "name": "지수·로그함수 미분",
+      "knowledge_layer": 6,
+      "formula_latex": "(e^x)' = e^x; (\\ln x)' = 1/x; (a^x)' = a^x \\ln a",
+      "prerequisites": ["미분의정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "지수·로그함수 미분", "derived_fact": "표준 도함수", "why": "지수·로그의 도함수는 자기참조" }
+      ]
+    },
+    {
+      "id": "TRIG_deriv",
+      "name": "삼각함수 미분",
+      "knowledge_layer": 6,
+      "formula_latex": "(\\sin x)' = \\cos x; (\\cos x)' = -\\sin x; (\\tan x)' = \\sec^2 x",
+      "prerequisites": ["미분의정의", "삼각함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "삼각함수 미분", "derived_fact": "표준 도함수", "why": "삼각함수의 도함수는 90° 회전" }
+      ]
+    },
+    {
+      "id": "INVERSE_func_deriv",
+      "name": "역함수 미분법",
+      "knowledge_layer": 6,
+      "formula_latex": "(f^{-1})'(y) = \\frac{1}{f'(x)}, y=f(x)",
+      "prerequisites": ["연쇄법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "역함수의 도함수 계산", "derived_fact": "1/f'(x)", "why": "역함수 그래프는 y=x 대칭 → 기울기 역수" }
+      ]
+    },
+    {
+      "id": "IMPLICIT_diff",
+      "name": "음함수 미분법",
+      "knowledge_latex": "F(x,y)=0 \\Rightarrow \\text{양변 } x \\text{ 미분 후 } y' \\text{ 정리}",
+      "knowledge_layer": 6,
+      "formula_latex": "F(x,y)=0 \\Rightarrow F_x + F_y \\cdot y' = 0",
+      "prerequisites": ["연쇄법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "y 를 x 로 명시 풀 수 없는 식", "derived_fact": "y' 정리식", "why": "변수를 명시하지 않고 미분 가능" }
+      ]
+    },
+    {
+      "id": "PARAMETRIC_diff",
+      "name": "매개변수 미분법",
+      "knowledge_layer": 6,
+      "formula_latex": "x=x(t), y=y(t) \\Rightarrow dy/dx = (dy/dt)/(dx/dt)",
+      "prerequisites": ["연쇄법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "매개변수로 표현된 곡선 기울기", "derived_fact": "(dy/dt)/(dx/dt)", "why": "두 변수가 독립 매개변수로 결합" }
+      ]
+    },
+    {
+      "id": "DEFINITE_int_substitution",
+      "name": "정적분 치환 (한도 변환)",
+      "knowledge_layer": 6,
+      "formula_latex": "\\int_a^b f(g(x)) g'(x) dx = \\int_{g(a)}^{g(b)} f(u) du",
+      "prerequisites": ["치환적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "치환적분 + 정적분", "derived_fact": "한도 변환 후 정적분", "why": "치환할 때 한도도 함께 변환" }
+      ]
+    },
+    {
+      "id": "RIEMANN_sum",
+      "name": "구분구적법 (리만합)",
+      "knowledge_layer": 6,
+      "formula_latex": "\\int_a^b f(x) dx = \\lim_{n \\to \\infty} \\sum_{k=1}^n f(x_k) \\Delta x",
+      "prerequisites": ["극한", "정적분정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "수열의 합의 극한 형태가 ∑f(x_k)Δx 와 동형", "derived_fact": "정적분으로 환원", "why": "리만합은 정적분의 정의" }
+      ]
+    },
+    {
+      "id": "AVG_VALUE",
+      "name": "함수의 평균값",
+      "knowledge_layer": 6,
+      "formula_latex": "\\bar{f} = \\frac{1}{b-a} \\int_a^b f(x) dx",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "구간 평균값", "premises": ["함수식", "구간"], "why": "구간 적분 / 구간 길이" }
+      ]
+    },
+    {
+      "id": "CUBIC_extremum",
+      "name": "3차함수의 극값",
+      "knowledge_layer": 6,
+      "formula_latex": "f(x)=ax^3+bx^2+cx+d \\Rightarrow f'(x)=3ax^2+2bx+c \\text{ 영점에서 극값}",
+      "prerequisites": ["1계도함수극값"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "3차함수 극값 분석", "derived_fact": "도함수 2차방정식의 두 근에서 극대/극소", "why": "3차함수는 항상 두 극값 후보를 가짐" }
+      ]
+    },
+    {
+      "id": "VELOCITY_acc",
+      "name": "위치·속도·가속도 관계",
+      "knowledge_layer": 6,
+      "formula_latex": "v(t) = x'(t), a(t) = v'(t) = x''(t)",
+      "prerequisites": ["도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "운동의 위치 함수 주어짐", "derived_fact": "속도·가속도", "why": "운동의 미분 계층" }
+      ]
+    },
+    {
+      "id": "DISTANCE_integral",
+      "name": "이동거리 = ∫|v| dt",
+      "knowledge_layer": 6,
+      "formula_latex": "\\text{이동거리} = \\int_a^b |v(t)| dt",
+      "prerequisites": ["정적분", "속도"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "이동거리", "premises": ["속도 함수", "시간 구간"], "why": "이동거리는 부호 무시 적분" }
+      ]
+    }
+  ]
+}
