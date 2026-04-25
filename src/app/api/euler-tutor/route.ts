@@ -9,6 +9,7 @@ import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-p
 import { retrieveTools } from "@/lib/euler/retriever";
 import { runReasonerStep } from "@/lib/euler/reasoner";
 import { reportTools } from "@/lib/euler/tool-reporter";
+import { logSolve } from "@/lib/euler/solve-logger";
 import { createClient as createSupabaseServer } from "@/lib/supabase/server";
 import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 
@@ -282,6 +283,20 @@ ${bfs.subgoals.slice(0, 5).map((s, i) => `  ${i + 1}. ${s.subgoal}${s.tool ? ` [
     console.log(
       `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} messages=${messages.length}`
     );
+
+    // C-06: 풀이 1건이 시작되는 시점(첫 user turn) 에 비동기 로그 적재
+    if (isFirstTurn && problemText && supabaseForTracking) {
+      const sourceKey = problemInfo
+        ? `${problemInfo.year}_${problemInfo.type}_${problemInfo.number}`
+        : null;
+      void logSolve({
+        problem_text: problemText.slice(0, 4000),
+        problem_key: sourceKey,
+        area: area ?? null,
+        input_mode: inputMode === "voice" ? "voice" : (inputMode as "text" | "photo" | "handwrite"),
+        tutor_persona: tutorPersona as "euler" | "gauss",
+      });
+    }
 
     const model = (useGpt
       ? openai("gpt-5.1")
