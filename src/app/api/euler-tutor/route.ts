@@ -1,12 +1,40 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
-import { streamText, type LanguageModelV1 } from "ai";
+import { generateText, streamText, type LanguageModelV1 } from "ai";
 import { NextResponse } from "next/server";
 import { EULER_SYSTEM_PROMPT } from "@/lib/ai/euler-prompt";
 import { getSolution } from "@/lib/solution-cache";
 import { runCritic } from "@/lib/euler/critic-client";
+import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-prompt";
+import { retrieveTools } from "@/lib/euler/retriever";
 
 const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
+const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본 on
+const HAIKU_MODEL_ID = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
+
+function tryParseJson<T>(text: string): T | null {
+  const trimmed = text.trim();
+  const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const candidate = fence ? fence[1] : trimmed;
+  try {
+    return JSON.parse(candidate) as T;
+  } catch {
+    return null;
+  }
+}
+
+/** 첫 user 메시지 텍스트 (문제 본문) */
+function firstUserText(messages: { role: string; content: unknown }[]): string | null {
+  const m = messages.find((x) => x.role === "user");
+  if (!m) return null;
+  if (typeof m.content === "string") return m.content;
+  // Vision message (array of parts) 인 경우 text 부분만
+  if (Array.isArray(m.content)) {
+    const parts = m.content as { type?: string; text?: string }[];
+    return parts.filter((p) => p.type === "text" && p.text).map((p) => p.text!).join("\n");
+  }
+  return null;
+}
 
 /** messages 배열에서 (문제, 직전 풀이) 추출. 검증할 데이터가 부족하면 null. */
 function extractCriticInputs(
@@ -105,6 +133,57 @@ ${result.verified
           ? "\n\n학생은 **사진** 으로 문제를 올렸습니다. 인쇄·스크린샷일 가능성이 높습니다."
           : "";
 
+    // Manager + Retriever (첫 user 메시지의 문제 본문에 대해서만 — 후속 코칭 턴은 스킵)
+    let managerContext = "";
+    let retrievedContext = "";
+    const isFirstTurn = messages.filter((m: { role: string }) => m.role === "assistant").length === 0;
+    const problemText = firstUserText(messages);
+    if (MANAGER_ENABLED && isFirstTurn && problemText && problemText.length >= 5) {
+      try {
+        const { system: mgrSys, user: mgrUser } = buildManagerPrompt(problemText);
+        const { text: mgrText } = await generateText({
+          model: anthropic(HAIKU_MODEL_ID),
+          system: mgrSys,
+          prompt: mgrUser,
+          temperature: 0.1,
+          maxTokens: 600,
+        });
+        const mgr = tryParseJson<ManagerResult>(mgrText);
+        if (mgr) {
+          managerContext = `\n\n## Manager 분류 결과 (내부 신호)
+영역: ${mgr.area} / 난이도: ${mgr.difficulty}/6
+변수: ${mgr.variables.join(", ")}
+조건:
+${mgr.conditions.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}
+목표: ${mgr.goal}`;
+
+          // 난이도 4+ 또는 conditions/goal 충실 시 Retriever 호출
+          if (mgr.difficulty >= 4 || mgr.conditions.length >= 2) {
+            const tools = await retrieveTools({
+              conditions: mgr.conditions,
+              goal: mgr.goal,
+              direction: "both",
+              topK: 5,
+            });
+            if (tools.length) {
+              retrievedContext = `\n\n## 도구 검색 결과 (Retriever — 학생에게 정답을 직접 가르치지 마세요)
+이 문제 해결에 도움이 되는 정리·공식 후보:
+${tools
+  .map(
+    (t, i) =>
+      `  ${i + 1}. ${t.tool_name} (L${t.tool_layer}, score=${t.score.toFixed(2)})\n     why: ${t.why_text}`
+  )
+  .join("\n")}
+
+코칭 시 위 도구들을 떠올리도록 유도하되, 도구 이름을 먼저 말하지 말고 학생이 떠올릴 기회를 먼저 주세요.`;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("[euler-tutor] manager/retriever skipped:", e);
+      }
+    }
+
     const systemPrompt = `${EULER_SYSTEM_PROMPT}
 
 현재 학습 영역: ${area || "자유 질문"}
@@ -113,9 +192,11 @@ ${result.verified
 
 첫 메시지라면 따뜻하게 인사하고, 학생에게 문제를 보여달라고 요청하세요.
 "안녕! ${tutorName}예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"
-학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${solutionContext}${criticContext}`;
+학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${solutionContext}${managerContext}${retrievedContext}${criticContext}`;
 
-    console.log(`[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} messages=${messages.length}`);
+    console.log(
+      `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} messages=${messages.length}`
+    );
 
     const model = (useGpt
       ? openai("gpt-5.1")
