@@ -28,10 +28,22 @@ function todayStartIso(): string {
 }
 
 async function isPaidUser(userId: string): Promise<boolean> {
-  // Phase D-08 의 결제 테이블이 아직 없으므로 false 반환.
-  // 향후 user_subscriptions 테이블 검증으로 교체.
-  void userId;
-  return false;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("user_subscriptions")
+      .select("status, current_period_end")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .maybeSingle();
+    if (!data) return false;
+    if (data.current_period_end && new Date(data.current_period_end as string) < new Date()) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function checkFreeQuota(): Promise<QuotaCheck | null> {
