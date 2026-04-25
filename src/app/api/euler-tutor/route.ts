@@ -159,16 +159,30 @@ ${result.verified
           ? "\n\n학생은 **사진** 으로 문제를 올렸습니다. 인쇄·스크린샷일 가능성이 높습니다."
           : "";
 
-    // 분석 트래킹용 supabase 클라이언트 (옵셔널)
+    // 분석 트래킹용 supabase 클라이언트 (옵셔널) + Family lock_reveal 조회
     let supabaseForTracking: Awaited<ReturnType<typeof createSupabaseServer>> | null = null;
     let userIdForTracking: string | null = null;
+    let lockReveal = false;
     try {
       supabaseForTracking = await createSupabaseServer();
       const { data } = await supabaseForTracking.auth.getUser();
       userIdForTracking = data.user?.id ?? null;
+      if (userIdForTracking) {
+        const { data: family } = await supabaseForTracking
+          .from("euler_family_settings")
+          .select("lock_reveal")
+          .eq("user_id", userIdForTracking)
+          .maybeSingle();
+        lockReveal = !!family?.lock_reveal;
+      }
     } catch {
       supabaseForTracking = null;
     }
+
+    // D-06: Family/Self lock_reveal — 답 공개 차단
+    const lockNote = lockReveal
+      ? "\n\n## 답 공개 잠금 활성화 (부모/자기 잠금)\n학생이 '답 보기/포기' 를 요청해도 정답을 직접 공개하지 마세요. 항상 단계 코칭을 유지하세요."
+      : "";
 
     // Manager + Retriever (첫 user 메시지의 문제 본문에 대해서만 — 후속 코칭 턴은 스킵)
     let managerContext = "";
@@ -319,7 +333,7 @@ ${tooled.text}
 
 첫 메시지라면 따뜻하게 인사하고, 학생에게 문제를 보여달라고 요청하세요.
 "안녕! ${tutorName}예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"
-학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${solutionContext}${managerContext}${retrievedContext}${criticContext}`;
+학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${lockNote}${solutionContext}${managerContext}${retrievedContext}${criticContext}`;
 
     console.log(
       `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} messages=${messages.length}`
