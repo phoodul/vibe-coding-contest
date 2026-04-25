@@ -11,15 +11,71 @@
 
 | Phase | 진행 | 완료 개수 |
 |---|---|---|
-| Phase A — MVP 차별화 | 대기 | 0/15 |
-| Phase B — 도구 라이브러리 + RAG | 대기 | 0/16 |
-| Phase C — Reasoner BFS + 학습 리포트 | 대기 | 0/13 |
-| Phase D — SymPy μSvc + Family/Academy | 대기 | 0/10 |
-| 법무·운영 | 대기 | 0/4 |
+| Phase A — MVP 차별화 | ✅ 완료 | 15/15 |
+| Phase B — 도구 라이브러리 + RAG | ✅ 완료 | 16/16 |
+| Phase C — Reasoner BFS + 학습 리포트 | ✅ 완료 | 13/13 |
+| Phase D — SymPy μSvc + Family/Academy | ✅ 완료 | 10/10 |
+| 법무·운영 | 🔄 3/4 (LEG-02 외부 변호사 자문 보류) | 3/4 |
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
-| (Phase A 시작 시 채워나감) | | | |
+| A-01 | ✅ 완료 | b867096 | env 키 2개 추가 (Haiku/Critic) — project-decisions.md는 fb39d09에서 함께 커밋됨 |
+| A-02 | ✅ 완료 | a08e159 | src/lib/euler/, src/components/euler/ stub 생성, tsc 통과 |
+| A-03 | ✅ 완료 | 68e637e | Critic 프롬프트 (verify+diagnose, StuckReason enum 8종, few-shot 7개) |
+| A-04 | ✅ 완료 | dbb64d9 | /api/euler-tutor/critic POST 라우트 (Haiku 4.5, JSON 모드, 인증) |
+| A-05 | ✅ 완료 | d66a7c5 | critic-client 헬퍼 + orchestrator EULER_CRITIC_ENABLED 통합 |
+| A-06 | ✅ 완료 | d708db2 | Coaching 프롬프트 verified + stuck_reason 6종 분기 |
+| A-07 | ✅ 완료 | fede352 | PWA — manifest shortcuts + sw v2-euler 캐시 갱신 |
+| A-08 | ✅ 완료 | 1c98d12 | HandwriteCanvas (Pointer Events + 압력 + Undo + 도와줘) |
+| A-09 | ✅ 완료 | 93859b7 | canvas-stroke-encoder 800KB 자동 다운스케일 |
+| A-10 | ✅ 완료 | ad545af | parse-image handwritten 옵션 (Mathpix formats/ocr/rm_spaces) |
+| A-11 | ✅ 완료 | 268a0ee | /euler/canvas 페이지 + sessionStorage seed |
+| A-12 | ✅ 완료 | 76a16d2 | ThoughtStream UI (5 stage + pickLatestStage 헬퍼) |
+| A-13 | ✅ 완료 | 4990bce | input_mode 통합 + 가우스 토글 호환 + 필기 진입점 추가 |
+| A-14 | ✅ 완료 | 0e916c3 | euler_beta_invites + redeem RPC + /euler/beta + canvas 가드 |
+| A-15 | ✅ 완료 | 0b1b4e3 | Phase A 체크리스트 + production build 통과 |
+| B-01 | ✅ 완료 | 6709233 | math_tools 마이그레이션 + pgvector |
+| B-02 | ✅ 완료 | fcb35b1 | math_tool_triggers + ivfflat ANN |
+| B-03 | ✅ 완료 | 0397cf3 | candidate_tools 검수 큐 |
+| B-04 | ✅ 완료 | c370439 | embed.ts (OpenAI 1536d) |
+| B-05 | ✅ 완료 | e2932a3 | 시드 자동화 + 미적분 32개 |
+| B-06 | ✅ 완료 | 71ae9a5 | difficulty-classifier (Haiku) |
+| B-07 | ✅ 완료 | 8ade071 | Manager Agent 프롬프트 + 라우트 |
+| B-08 | ✅ 완료 | af25e45 | Retriever (양방향 pgvector + RPC) |
+| B-09 | ✅ 완료 | 0849760 | Retriever 단독 라우트 |
+| B-10 | ✅ 완료 | ca89d18 | tool-reporter + 보고 라우트 |
+| B-11 | ✅ 완료 | 2efe2b0 | /admin/math-tools 검수 어드민 |
+| B-12 | ✅ 완료 | d8f0ff7 | orchestrator에 Manager + Retriever 통합 |
+| B-13 | ✅ 완료 | ce1842a | Coaching 프롬프트 retrieved why |
+| B-14 | ✅ 완료 | f0ff94c | ThoughtStream 도구 카드 strip |
+| B-15 | ✅ 완료 | 30e47f8 | usage_events Manager/Retriever/Candidate |
+| B-16 | ✅ 완료 | cedcdf2 | Phase B 체크리스트 + 빌드 |
+| C-01+02 | ✅ 완료 | d38c3fd | Reasoner Forward/Backward BFS 프롬프트 |
+| C-03 | ✅ 완료 | 27262fe | Reasoner 오케스트레이터 (병렬) |
+| C-04 | ✅ 완료 | fd0f069 | Reasoner를 orchestrator route 통합 |
+| C-05 | ✅ 완료 | 67056f8 | Reasoner used_tools → tool-reporter |
+| C-06 | ✅ 완료 | bd2923f | euler_solve_logs + solve-logger |
+| C-07 | ✅ 완료 | ed860ae | /api/euler-tutor/diagnose (Critic 진단) |
+| C-08 | ✅ 완료 | dee3c95 | user_skill_stats + user_layer_stats + updaters |
+| C-09 | ✅ 완료 | dc2f465 | weakness-aggregator 7종 진단 + Sonnet 추천 |
+| C-10 | ✅ 완료 | aeaec67 | progress 대시보드 라우트 |
+| C-11 | ✅ 완료 | 6093f04 | /euler/report WeaknessChart + LayerStuckChart |
+| C-12 | ✅ 완료 | d0e8f63 | usage-quota Free 일일 한도 |
+| C-13 | ✅ 완료 | 7f7225e | Phase C 체크리스트 + 학원 자료 |
+| D-01 | ✅ 완료 | 3140ad6 | Railway FastAPI + SymPy μSvc |
+| D-02 | ✅ 완료 | f63a1f1 | .env.example Phase B/C/D 키 등록 |
+| D-03 | ✅ 완료 | 7fa649c | SymPy 프록시 라우트 + 클라이언트 |
+| D-04 | ✅ 완료 | ac2b356 | Anthropic tool calling schema 6종 |
+| D-05 | ✅ 완료 | c1007d5 | Reasoner + Tool calling (환각 0%) |
+| D-06 | ✅ 완료 | d7b6150 | Family lock_reveal + RPC |
+| D-07 | ✅ 완료 | 4565da1 | Academy 교사 대시보드 |
+| D-08 | ✅ 완료 | 53c2197 | Toss Payments 결제 인프라 |
+| D-09 | ✅ 완료 | 3988c1c | Free 한도 강화 + UpsellModal |
+| D-10 | ✅ 완료 | 83f5e58 | Phase D 체크리스트 + 빌드 |
+| LEG-01 | ✅ 완료 | 9304eca | 이용약관 + 개인정보처리방침 초안 |
+| LEG-02 | ⏸ 외부 | — | 변호사 자문 (코드 외, 운영 시점에 진행) |
+| LEG-03 | ✅ 완료 | 894a373 | 만 14세 미만 부모 동의 |
+| LEG-04 | ✅ 완료 | ae50ec6 | 졸업 + 1년 PII 익명화 cron |
 
 ---
 

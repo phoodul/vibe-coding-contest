@@ -7,14 +7,14 @@ export default function TermsPage() {
       <p className="text-xs text-white/40 mb-8">최종 수정일: 2026-04-26 (초안 — 법무 검토 전)</p>
 
       <Section title="제1조 (목적)">
-        본 약관은 EduFlow AI(이하 "회사")가 제공하는 Euler Tutor 외 교육 서비스(이하 "서비스")의 이용 조건과 절차, 회사와 회원의 권리·의무·책임 사항을 규정함을 목적으로 합니다.
+        본 약관은 EduFlow AI(이하 &ldquo;회사&rdquo;)가 제공하는 Euler Tutor 외 교육 서비스(이하 &ldquo;서비스&rdquo;)의 이용 조건과 절차, 회사와 회원의 권리·의무·책임 사항을 규정함을 목적으로 합니다.
       </Section>
 
       <Section title="제2조 (정의)">
         <ul className="list-disc list-inside space-y-1 text-sm">
-          <li>"회원": 본 약관에 동의하고 서비스 이용 자격을 부여받은 자.</li>
-          <li>"미성년 회원": 만 14세 미만의 회원. 가입 시 법정대리인의 동의가 필요합니다.</li>
-          <li>"AI 자체 표현": 서비스가 정석·교과서 원문을 인용하지 않고 자체적으로 재작성한 표현.</li>
+          <li>&ldquo;회원&rdquo;: 본 약관에 동의하고 서비스 이용 자격을 부여받은 자.</li>
+          <li>&ldquo;미성년 회원&rdquo;: 만 14세 미만의 회원. 가입 시 법정대리인의 동의가 필요합니다.</li>
+          <li>&ldquo;AI 자체 표현&rdquo;: 서비스가 정석·교과서 원문을 인용하지 않고 자체적으로 재작성한 표현.</li>
         </ul>
       </Section>
 

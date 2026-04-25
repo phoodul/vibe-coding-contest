@@ -1,58 +1,80 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-26 (세션 종료 시점)
-- Phase: **Phase A — MVP 구현 진입 직전**
-- Step: Approval Gate 2 통과 → Phase A Task A-01 미시작 (사용자 요청으로 세션 종료)
-- Session: 1차 세션
+- Time: 2026-04-26 (Night mode 자율 작업 완료 시점)
+- Phase: **Phase A~D + 법무 모두 완료 (LEG-02 외부 자문만 보류)**
+- Step: 정식 출시 준비 완료
+- Session: 2차 세션 (Night mode)
 
 ## Completed
 - [x] Phase 1: Research — `docs/research_raw.md`
-- [x] Phase 1: 사용자 자료 통합 — `user_docs/math_solver.md`, `user_docs/LLM_math_solver.md`, `user_docs/math_layers.md`
 - [x] Phase 2: Integration — `docs/integrator_report.md` (승인 완료)
-- [x] Phase 2: Planning — `docs/architecture.md`, `docs/task.md`, `docs/implementation_plan_euler.md` (승인 완료, 정정 반영 완료)
+- [x] Phase 2: Planning — `docs/architecture.md`, `docs/task.md`, `docs/implementation_plan_euler.md` (승인 완료)
 - [x] Phase 2: 결정 사항 명문화 — `docs/project-decisions.md`
 - [x] **Approval Gate 1**: 통합 보고서 승인 완료
-- [x] **Approval Gate 2**: task.md 승인 완료 (정정 4회 반영 후)
-- [x] (별도) `perf(conversation): 회화 API 프롬프트 캐싱 + 히스토리 20턴 제한` — 커밋 `0999a54`, 푸시 완료
+- [x] **Approval Gate 2**: task.md 승인 완료
 
-## In Progress
-- [ ] **Phase 3: Implementation — Phase A 구현 (15개 Task)** ← 다음 세션 시작 지점
-  - 다음 즉시 작업: **A-01 (docs/project-decisions.md는 이미 작성됨, .env.example만 키 추가하면 됨)**
+### Phase A (15/15) ✅
+A-01 ~ A-15 모두 완료. Critic Agent + 필기 모드(PWA) + 베타 게이트.
+체크리스트: `docs/qa/phase-a-checklist.md`
 
-## Pending
-- [ ] Phase A 나머지 14개 task (A-02 ~ A-15)
-- [ ] Phase B 16개 task
-- [ ] Phase C 13개 task
-- [ ] Phase D 10개 task
-- [ ] 법무 4개 task (백그라운드)
+### Phase B (16/16) ✅
+B-01 ~ B-16 모두 완료. pgvector + math_tools 32개 시드 + Manager + Retriever + 검수 어드민.
+체크리스트: `docs/qa/phase-b-checklist.md`
 
-## Pending Decisions (다음 세션 시작 시 검토)
-- 음성 입력 도입 시점 (Phase A~D 후 결정)
-- Tier 3 외부 데이터셋 임포트 (사용자 1,000+ 후)
-- 학원 사전 인터뷰 — Phase A 진행 중 1곳 시도
-- Multi-tenant 학원 namespace (Phase D+)
+### Phase C (13/13) ✅
+C-01 ~ C-13 모두 완료. Reasoner BFS + 7종 진단 + WeaknessReport + ProgressDashboard + Free 한도.
+체크리스트: `docs/qa/phase-c-checklist.md`
+학원 자료: `docs/sales/academy-pitch.md`
 
-## Next Action (새 세션에서)
-1. `/resume-project` 실행 → 본 progress.md를 읽고 컨텍스트 복원
-2. 사용자에게 "Phase A 구현 시작 진입 직전 상태입니다. A-01부터 진행할까요?" 확인
-3. 승인 시 A-01부터 순차 구현 시작
-   - A-01: `.env.example` 키 추가 (`ANTHROPIC_HAIKU_MODEL_ID`, `EULER_CRITIC_ENABLED`)
-   - A-02: `src/lib/euler/`, `src/components/euler/` 디렉터리 + 빈 stub
-   - A-03: Critic Agent 프롬프트 (Haiku 4.5, JSON 출력, stuck 분류 골격 7종)
-   - 이후 의존성 순서대로 A-15까지
+### Phase D (10/10) ✅
+D-01 ~ D-10 모두 완료. Railway SymPy μSvc + Tool calling + Family 잠금 + Academy 대시보드 + Toss Payments + UpsellModal.
+체크리스트: `docs/qa/phase-d-checklist.md`
 
-## 핵심 참고 파일 (다음 세션 시작 시 반드시 정독)
-- `docs/project-decisions.md` — 모든 확정 결정 (이번 세션의 핵심 산출물)
-- `docs/task.md` — 58개 task 분할 (Phase A=15, B=16, C=13, D=10, 법무=4)
-- `docs/architecture.md` — DB 스키마, API 명세, 모델 분담
-- `docs/implementation_plan_euler.md` — Week별 일정 + 위험 + 테스트 전략
-- `docs/integrator_report.md` — 통합 보고서 v1
-- `user_docs/math_layers.md` — 사용자 8-Layer 통찰 (L6 dict + recall vs trigger)
-- `user_docs/math_solver.md`, `user_docs/LLM_math_solver.md` — 1차 리서치
+### 법무·운영 (3/4)
+- ✅ LEG-01: 이용약관 + 개인정보처리방침 초안
+- ⏸ LEG-02: 변호사 자문 (외부 — 운영 시점에 진행)
+- ✅ LEG-03: 만 14세 미만 부모 동의
+- ✅ LEG-04: 졸업 + 1년 PII 익명화 cron
 
-## 새 세션 시작 시 토큰 효율 가이드
-- `docs/project-decisions.md` + `docs/progress.md`만 먼저 읽기 (약 5K 토큰)
-- task.md는 A-01 ~ A-06 부분만 읽기 (전체 27KB 모두 읽지 말 것)
-- architecture.md는 Phase A 관련 §3.1~§3.3, §4, §6.2(필기 시나리오)만
-- 사용자 자료(`user_docs/math_*.md`)는 이미 결정에 흡수됨. 재확인 불필요. 단, 의문 발생 시 참조.
+## Next Action (정식 출시 절차)
+
+1. **마이그레이션 적용**: `supabase/migrations/*` 9개 모두 Supabase 대시보드 SQL editor 또는 `supabase db push`
+   - euler_beta_invites / math_tools / math_tool_triggers / candidate_tools / match RPC / candidate review RPC / euler_solve_logs / user_skill_stats / user_layer_stats / euler_family_settings / parental_consents / user_subscriptions
+2. **시드 적재**: `pnpm dlx tsx scripts/seed-math-tools.ts --dry-run` 후 실제 적재
+3. **Railway 배포**: `services/euler-sympy/` (D-01 README 절차)
+4. **env 등록 (Vercel production)**:
+   - 모든 EULER_* 키
+   - EULER_SYMPY_URL / EULER_SYMPY_INTERNAL_TOKEN
+   - SUPABASE_SERVICE_ROLE_KEY (cron 익명화용)
+   - CRON_SECRET (Vercel 자동 발급)
+   - NEXT_PUBLIC_TOSS_CLIENT_KEY / TOSS_SECRET_KEY (운영 키)
+5. **법무 자문 (LEG-02)**: 변호사 1회 검토 30~80만원
+6. **베타 50명 모집**: invite 코드 'EULER2026' 공유
+
+## 핵심 KPI 검증 (출시 전 측정)
+
+- [ ] 단순 계산 환각 0% (수능 미적분 28번 5문항)
+- [ ] Retriever hit rate 70%+ (28번 5문항)
+- [ ] 코칭 응답 "왜" 포함 90%+
+- [ ] 28~30번 정답률 70%+
+- [ ] 결제 → 가족 잠금 → 교사 대시보드 end-to-end 통과
+
+## 산출물 요약
+
+- **마이그레이션 9종** (supabase/migrations/)
+- **시드 32개 도구** (data/math-tools-seed.json)
+- **2 시드 스크립트** (scripts/)
+- **체크리스트 4종** (docs/qa/)
+- **신규 페이지 10종** (/euler/canvas, /euler/beta, /euler/report, /euler/family, /euler/billing, /admin/math-tools, /admin/academy, /signup/parental-consent, /legal/terms, /legal/privacy)
+- **API 라우트 13종** (/api/euler-tutor/* 9, /api/billing/toss/confirm, /api/admin/academy/students, /api/cron/anonymize-graduated)
+- **lib/ai 프롬프트 3종** (euler-critic / manager / reasoner)
+- **lib/euler 13 모듈** (critic-client / canvas-stroke-encoder / embed / retriever / tool-reporter / reasoner / reasoner-with-tools / sympy-client / solve-logger / skill-stats / layer-stats / weakness-aggregator / usage-quota)
+- **컴포넌트 4종** (HandwriteCanvas / ThoughtStream / UpsellModal / etc)
+- **법무 페이지 3종**
+- **Python μSvc** (services/euler-sympy/)
+
+## 토큰 효율 메모
+
+전체 58 task 중 57 task (LEG-02 제외) 1 세션 자율 진행 완료.
+build production 통과 + tsc 0 errors.
