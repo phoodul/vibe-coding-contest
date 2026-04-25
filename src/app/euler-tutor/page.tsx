@@ -16,12 +16,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 type Phase = "select" | "past-exam" | "chat";
+type InputMode = "text" | "photo" | "handwrite" | "voice";
 
 export default function EulerTutorPage() {
   const [phase, setPhase] = useState<Phase>("select");
   const [area, setArea] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [useGpt, setUseGpt] = useState(false);
+  const [inputMode, setInputMode] = useState<InputMode>("text");
 
   // 기출문제
   const [examYear, setExamYear] = useState<number>(2026);
@@ -32,8 +34,31 @@ export default function EulerTutorPage() {
   const { messages, input, handleInputChange, handleSubmit, isLoading, status, append, setMessages } =
     useChat({
       api: "/api/euler-tutor",
-      body: { area, useGpt },
+      body: { area, useGpt, input_mode: inputMode },
     });
+
+  // sessionStorage 에서 필기 캔버스 결과 픽업
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem("euler_canvas_seed");
+      if (!raw) return;
+      const seed = JSON.parse(raw) as { text: string; source?: string; ts?: number };
+      sessionStorage.removeItem("euler_canvas_seed");
+      if (!seed.text) return;
+      setArea("미적분");
+      setInputMode("handwrite");
+      setPhase("chat");
+      setTimeout(() => {
+        append({
+          role: "user",
+          content: `[필기로 입력된 문제 — OCR 결과]\n\n${seed.text}\n\n이 문제를 같이 풀어보고 싶어요!`,
+        });
+      }, 200);
+    } catch {}
+    // 한 번만 실행
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -97,6 +122,7 @@ export default function EulerTutorPage() {
   const sendImage = useCallback(async () => {
     if (!imagePreview) return;
     setParsing(true);
+    setInputMode("photo");
 
     try {
       // 1단계: Upstage Document Parse로 수식 텍스트 추출 시도
@@ -150,6 +176,8 @@ export default function EulerTutorPage() {
     if (imagePreview) {
       sendImage();
     } else {
+      // 키보드 직접 입력은 text 모드로 표시 (handwrite/photo 모드에서 후속 텍스트 입력 시에도 text 로 전환)
+      setInputMode("text");
       handleSubmit(e);
     }
   }, [imagePreview, sendImage, handleSubmit]);
@@ -225,7 +253,7 @@ export default function EulerTutorPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-8"
+            className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3"
           >
             <button
               onClick={() => setPhase("past-exam")}
@@ -237,8 +265,20 @@ export default function EulerTutorPage() {
               />
               <span className="text-2xl block mb-2">📝</span>
               <p className="font-bold text-sm mb-1">수능 기출문제 연습</p>
-              <p className="text-xs text-muted">2017~2026학년도 수능 전 문항 | {TOTAL_PROBLEMS}문제 | 사고과정 훈련</p>
+              <p className="text-xs text-muted">2017~2026 수능 전 문항 | {TOTAL_PROBLEMS}문제</p>
             </button>
+            <Link
+              href="/euler/canvas"
+              className="w-full glass-gradient p-5 text-center relative overflow-hidden group hover:border-emerald-500/30 transition-all"
+            >
+              <div
+                className="absolute top-0 left-0 right-0 h-[2px]"
+                style={{ background: "linear-gradient(90deg, transparent, #10b981, transparent)" }}
+              />
+              <span className="text-2xl block mb-2">✏️</span>
+              <p className="font-bold text-sm mb-1">필기 모드 (PWA)</p>
+              <p className="text-xs text-muted">손글씨로 풀고 OCR 로 자동 코칭 시작</p>
+            </Link>
           </motion.div>
         </main>
       </div>
@@ -361,6 +401,13 @@ export default function EulerTutorPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              href="/euler/canvas"
+              className="text-[10px] px-2 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-colors"
+              title="필기 모드"
+            >
+              ✏️ 필기
+            </Link>
             <button
               onClick={() => setUseGpt(!useGpt)}
               className={`text-[10px] px-2 py-1 rounded-full border transition-colors ${

@@ -48,9 +48,11 @@ function parseProblemInfo(messages: { role: string; content: string }[]) {
 
 export async function POST(req: Request) {
   try {
-    const { messages, area, useGpt } = await req.json();
+    const { messages, area, useGpt, input_mode } = await req.json();
 
     const tutorName = useGpt ? "가우스 튜터" : "오일러 튜터";
+    const tutorPersona = useGpt ? "gauss" : "euler";
+    const inputMode = input_mode ?? "text";
 
     // 기출문제인 경우 풀이 DB에서 조회 (정답+풀이 모두 서버측에서만 처리)
     let solutionContext = "";
@@ -96,14 +98,24 @@ ${result.verified
       }
     }
 
+    const inputModeNote =
+      inputMode === "handwrite"
+        ? "\n\n학생은 **필기(손글씨)** 로 문제를 입력했습니다. OCR 결과가 일부 부정확할 수 있으니, 모호한 기호는 학생에게 다시 확인해주세요."
+        : inputMode === "photo"
+          ? "\n\n학생은 **사진** 으로 문제를 올렸습니다. 인쇄·스크린샷일 가능성이 높습니다."
+          : "";
+
     const systemPrompt = `${EULER_SYSTEM_PROMPT}
 
 현재 학습 영역: ${area || "자유 질문"}
 당신의 이름: ${tutorName}
+입력 모드: ${inputMode}
 
 첫 메시지라면 따뜻하게 인사하고, 학생에게 문제를 보여달라고 요청하세요.
 "안녕! ${tutorName}예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"
-학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${solutionContext}${criticContext}`;
+학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${solutionContext}${criticContext}`;
+
+    console.log(`[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} messages=${messages.length}`);
 
     const model = (useGpt
       ? openai("gpt-5.1")
