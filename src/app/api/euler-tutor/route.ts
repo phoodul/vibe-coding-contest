@@ -8,6 +8,7 @@ import { runCritic } from "@/lib/euler/critic-client";
 import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-prompt";
 import { retrieveTools } from "@/lib/euler/retriever";
 import { runReasonerStep } from "@/lib/euler/reasoner";
+import { runReasonerWithTools } from "@/lib/euler/reasoner-with-tools";
 import { reportTools } from "@/lib/euler/tool-reporter";
 import { logSolve } from "@/lib/euler/solve-logger";
 import { checkFreeQuota } from "@/lib/euler/usage-quota";
@@ -264,6 +265,28 @@ ${bfs.subgoals.slice(0, 5).map((s, i) => `  ${i + 1}. ${s.subgoal}${s.tool ? ` [
               console.log(
                 `[euler-tutor] reasoner: ${bfs.facts.length} facts / ${bfs.subgoals.length} subgoals / ${bfs.duration_ms}ms`
               );
+
+              // D-05: Tool calling 으로 보강된 결과 (오일러 + SymPy URL 설정 시만)
+              if (!useGpt && process.env.EULER_SYMPY_URL) {
+                try {
+                  const tooled = await runReasonerWithTools({
+                    problem: problemText,
+                    conditions: mgr.conditions,
+                    goal: mgr.goal,
+                    maxSteps: 5,
+                  });
+                  if (tooled && tooled.text) {
+                    retrievedContext += `\n\n## Reasoner 계산 결과 (SymPy 검증)
+${tooled.text}
+사용 도구: ${tooled.used_tools.map((t) => `${t.name}(${JSON.stringify(t.input)})${t.result ? `=${t.result}` : ""}`).join(", ")}`;
+                    console.log(
+                      `[euler-tutor] reasoner-with-tools: ${tooled.steps} steps / ${tooled.used_tools.length} tools / ${tooled.duration_ms}ms`
+                    );
+                  }
+                } catch (e) {
+                  console.warn("[euler-tutor] reasoner-with-tools skipped:", e);
+                }
+              }
 
               // C-05: Reasoner 가 사용한 도구를 candidate_tools 에 fire-and-forget 보고
               if (bfs.used_tools.length) {
