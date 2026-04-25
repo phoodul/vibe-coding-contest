@@ -113,7 +113,7 @@ export default function EulerCanvasPage() {
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">필기 모드</h1>
             <p className="text-sm text-white/60 mt-1">
-              풀고 싶은 문제를 손글씨로 적어보세요. "도와줘"를 누르면 오일러 튜터가 코칭을 시작해요.
+              풀고 싶은 문제를 손글씨로 적어보세요. &ldquo;도와줘&rdquo;를 누르면 오일러 튜터가 코칭을 시작해요.
             </p>
           </div>
           <Link
