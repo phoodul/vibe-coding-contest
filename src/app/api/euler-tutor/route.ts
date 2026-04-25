@@ -7,6 +7,8 @@ import { getSolution } from "@/lib/solution-cache";
 import { runCritic } from "@/lib/euler/critic-client";
 import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-prompt";
 import { retrieveTools } from "@/lib/euler/retriever";
+import { createClient as createSupabaseServer } from "@/lib/supabase/server";
+import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 
 const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
 const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본 on
@@ -133,6 +135,17 @@ ${result.verified
           ? "\n\n학생은 **사진** 으로 문제를 올렸습니다. 인쇄·스크린샷일 가능성이 높습니다."
           : "";
 
+    // 분석 트래킹용 supabase 클라이언트 (옵셔널)
+    let supabaseForTracking: Awaited<ReturnType<typeof createSupabaseServer>> | null = null;
+    let userIdForTracking: string | null = null;
+    try {
+      supabaseForTracking = await createSupabaseServer();
+      const { data } = await supabaseForTracking.auth.getUser();
+      userIdForTracking = data.user?.id ?? null;
+    } catch {
+      supabaseForTracking = null;
+    }
+
     // Manager + Retriever (첫 user 메시지의 문제 본문에 대해서만 — 후속 코칭 턴은 스킵)
     let managerContext = "";
     let retrievedContext = "";
@@ -157,6 +170,15 @@ ${result.verified
 ${mgr.conditions.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}
 목표: ${mgr.goal}`;
 
+          if (supabaseForTracking) {
+            void trackServerEvent(supabaseForTracking, {
+              user_id: userIdForTracking,
+              feature: "euler",
+              event: EULER_EVENTS.MANAGER_CLASSIFIED,
+              metadata: { area: mgr.area, difficulty: mgr.difficulty, n_conditions: mgr.conditions.length },
+            });
+          }
+
           // 난이도 4+ 또는 conditions/goal 충실 시 Retriever 호출
           if (mgr.difficulty >= 4 || mgr.conditions.length >= 2) {
             const tools = await retrieveTools({
@@ -176,6 +198,19 @@ ${tools
   .join("\n")}
 
 코칭 시 위 도구들을 떠올리도록 유도하되, 도구 이름을 먼저 말하지 말고 학생이 떠올릴 기회를 먼저 주세요.`;
+
+              if (supabaseForTracking) {
+                void trackServerEvent(supabaseForTracking, {
+                  user_id: userIdForTracking,
+                  feature: "euler",
+                  event: EULER_EVENTS.TOOL_RETRIEVED,
+                  metadata: {
+                    n_tools: tools.length,
+                    top_tool: tools[0]?.tool_name,
+                    top_score: tools[0]?.score,
+                  },
+                });
+              }
             }
           }
         }

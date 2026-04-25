@@ -8,6 +8,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 
 const REPORT_THRESHOLD = parseInt(process.env.EULER_TOOL_REPORT_THRESHOLD ?? "3", 10);
 
@@ -107,6 +108,12 @@ export async function reportTool(input: ToolReportInput): Promise<ToolReportResu
     console.error("tool-reporter insert error:", insErr);
     return { status: "skipped_known" };
   }
+  void trackServerEvent(supabase, {
+    user_id: user.id,
+    feature: "euler",
+    event: EULER_EVENTS.CANDIDATE_REPORTED,
+    metadata: { name: input.proposed_name, source_key: input.source_problem_key ?? null },
+  });
   return {
     status: "created",
     candidate_id: created?.id as string | undefined,
