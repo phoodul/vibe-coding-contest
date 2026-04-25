@@ -7,11 +7,14 @@ import { getSolution } from "@/lib/solution-cache";
 import { runCritic } from "@/lib/euler/critic-client";
 import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-prompt";
 import { retrieveTools } from "@/lib/euler/retriever";
+import { runReasonerStep } from "@/lib/euler/reasoner";
 import { createClient as createSupabaseServer } from "@/lib/supabase/server";
 import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 
 const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
 const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본 on
+const REASONER_ENABLED = process.env.EULER_REASONER_ENABLED !== "false"; // 기본 on
+const REASONER_MIN_DIFFICULTY = parseInt(process.env.EULER_REASONER_MIN_DIFFICULTY ?? "6", 10);
 const HAIKU_MODEL_ID = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
 
 function tryParseJson<T>(text: string): T | null {
@@ -211,6 +214,38 @@ ${tools
                   },
                 });
               }
+            }
+          }
+
+          // Reasoner BFS — 난이도 6+ 만 (비용 통제)
+          if (REASONER_ENABLED && mgr.difficulty >= REASONER_MIN_DIFFICULTY) {
+            try {
+              const bfs = await runReasonerStep({
+                state: {
+                  problem: problemText,
+                  variables: mgr.variables,
+                  conditions: mgr.conditions,
+                  goal: mgr.goal,
+                  depth: 0,
+                },
+                useGpt: !!useGpt,
+              });
+              const factsSection = bfs.facts.length
+                ? `\n\n## Reasoner Forward — 도출 가능한 사실 (학생에게 직접 알려주지 마세요)
+${bfs.facts.slice(0, 6).map((f, i) => `  ${i + 1}. ${f.fact}${f.tool ? ` [${f.tool}]` : ""} — ${f.rationale}`).join("\n")}`
+                : "";
+              const subgoalsSection = bfs.subgoals.length
+                ? `\n\n## Reasoner Backward — 가능한 중간 목표
+${bfs.subgoals.slice(0, 5).map((s, i) => `  ${i + 1}. ${s.subgoal}${s.tool ? ` [${s.tool}]` : ""} — ${s.rationale}`).join("\n")}`
+                : "";
+              if (factsSection || subgoalsSection) {
+                retrievedContext += factsSection + subgoalsSection;
+              }
+              console.log(
+                `[euler-tutor] reasoner: ${bfs.facts.length} facts / ${bfs.subgoals.length} subgoals / ${bfs.duration_ms}ms`
+              );
+            } catch (e) {
+              console.warn("[euler-tutor] reasoner skipped:", e);
             }
           }
         }
