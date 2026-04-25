@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { HandwriteCanvas, type HandwriteSubmitMeta } from "@/components/euler/HandwriteCanvas";
 import { encodeCanvasToPayload } from "@/lib/euler/canvas-stroke-encoder";
+import { createClient } from "@/lib/supabase/client";
 
 type Stage = "draw" | "parsing" | "error";
 
@@ -13,6 +14,37 @@ export default function EulerCanvasPage() {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>("draw");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [betaChecked, setBetaChecked] = useState(false);
+
+  // 베타 게이트: euler_beta_invites status='active' 없으면 /euler/beta 로 이동
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace("/auth/login?next=/euler/canvas");
+        return;
+      }
+      const { data } = await supabase
+        .from("euler_beta_invites")
+        .select("status")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .maybeSingle();
+      if (cancelled) return;
+      if (!data) {
+        router.replace("/euler/beta?next=/euler/canvas");
+        return;
+      }
+      setBetaChecked(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   async function handleSubmit(dataUrl: string, _meta: HandwriteSubmitMeta) {
     setStage("parsing");
@@ -64,6 +96,14 @@ export default function EulerCanvasPage() {
       setStage("error");
       setErrorMsg("OCR 호출에 실패했어요. 잠시 후 다시 시도해주세요.");
     }
+  }
+
+  if (!betaChecked) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 text-white flex items-center justify-center">
+        <div className="text-sm text-white/60">베타 상태 확인 중...</div>
+      </div>
+    );
   }
 
   return (
