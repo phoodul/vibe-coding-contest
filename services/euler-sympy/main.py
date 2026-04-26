@@ -712,11 +712,56 @@ def plot_geometry(req: PlotGeometryReq, x_internal_token: Optional[str] = Header
 class WolframReq(BaseModel):
     query: str
     timeout_s: int = 8
+    maxchars: int = 2000  # LLM API 응답 길이 제한 (토큰 절약)
+
+
+def _extract_result_section(text: str) -> str:
+    """LLM API 마크다운 응답에서 'Result' 섹션을 추출.
+
+    응답 구조 예시:
+        Input interpretation:
+        integrate sin(x)
+
+        Result:
+        -cos(x) + constant
+
+        Plot:
+        ...
+
+    'Result' 또는 'Solution' 또는 'Decimal approximation' 우선 추출.
+    """
+    if not text:
+        return ""
+    sections = {}
+    current_key = None
+    current_lines: list[str] = []
+
+    for raw_line in text.splitlines():
+        line = raw_line.rstrip()
+        # "Result:" 같은 헤더 인식 (콜론으로 끝나고 짧은 한 줄)
+        if line.endswith(":") and len(line) < 50 and not line.startswith(" "):
+            if current_key is not None:
+                sections[current_key] = "\n".join(current_lines).strip()
+            current_key = line[:-1].strip().lower()
+            current_lines = []
+        else:
+            current_lines.append(line)
+    if current_key is not None:
+        sections[current_key] = "\n".join(current_lines).strip()
+
+    for key in ("result", "solution", "decimal approximation", "exact result", "answer"):
+        if sections.get(key):
+            return sections[key]
+    # fallback — 전체 텍스트의 첫 200자
+    return text.strip()[:200]
 
 
 @app.post("/wolfram_query")
 def wolfram_query(req: WolframReq, x_internal_token: Optional[str] = Header(default=None, alias="X-Internal-Token")):
-    """Wolfram Alpha API short answer endpoint.
+    """Wolfram Alpha LLM API — LLM 통합 전용 endpoint.
+
+    https://products.wolframalpha.com/llm-api/documentation
+    응답: plain text 마크다운 (섹션 구분).
 
     환경변수 WOLFRAM_APP_ID 미설정 시 503.
     """
@@ -725,50 +770,29 @@ def wolfram_query(req: WolframReq, x_internal_token: Optional[str] = Header(defa
         raise HTTPException(503, "WOLFRAM_APP_ID not configured")
 
     import httpx
-    url = "https://api.wolframalpha.com/v2/query"
+    url = "https://www.wolframalpha.com/api/v1/llm-api"
     params = {
         "appid": WOLFRAM_APP_ID,
         "input": req.query,
-        "format": "plaintext",
-        "output": "json",
-        "podtimeout": str(req.timeout_s),
+        "maxchars": str(req.maxchars),
     }
     try:
         with httpx.Client(timeout=req.timeout_s + 2) as client:
             resp = client.get(url, params=params)
+        if resp.status_code == 501:
+            # Wolfram 이 답할 수 없는 query
+            return {"result": "no_result", "latex": "", "source": "wolfram_llm", "raw": resp.text[:200]}
         resp.raise_for_status()
-        data = resp.json()
+        body = resp.text
     except httpx.HTTPError as e:
         raise HTTPException(502, f"wolfram error: {e}")
 
-    queryresult = data.get("queryresult", {})
-    if not queryresult.get("success"):
-        return {"result": "no_result", "latex": "", "raw": queryresult.get("error", {})}
-
-    # primary pod 우선, 없으면 첫 plaintext 답
-    primary = None
-    for pod in queryresult.get("pods", []):
-        if pod.get("primary") or pod.get("title") in ("Result", "Solution", "Decimal approximation"):
-            for sub in pod.get("subpods", []):
-                if sub.get("plaintext"):
-                    primary = sub["plaintext"]
-                    break
-            if primary:
-                break
-    if not primary:
-        for pod in queryresult.get("pods", []):
-            for sub in pod.get("subpods", []):
-                if sub.get("plaintext"):
-                    primary = sub["plaintext"]
-                    break
-            if primary:
-                break
-
+    primary = _extract_result_section(body)
     return {
         "result": primary or "no_plaintext",
         "latex": "",
-        "source": "wolfram",
-        "n_pods": len(queryresult.get("pods", [])),
+        "source": "wolfram_llm",
+        "raw_markdown": body[:1500],  # 디버깅·코칭 system 주입용 (max 1.5KB)
     }
 
 

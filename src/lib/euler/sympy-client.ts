@@ -48,9 +48,10 @@ export interface SympyResult {
   /** plot_* 가 반환 */
   png_base64?: string;
   format?: "png";
-  /** wolfram_query */
+  /** wolfram_query (LLM API) */
   source?: string;
-  n_pods?: number;
+  /** Wolfram LLM API 가 반환한 마크다운 원문 (단계 풀이 포함, 최대 1.5KB) */
+  raw_markdown?: string;
 }
 
 export interface SympyError {
