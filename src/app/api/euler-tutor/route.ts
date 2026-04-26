@@ -193,6 +193,12 @@ ${result.verified
     let managerContext = "";
     let retrievedContext = "";
     let chainContext = "";
+    // Phase G-03: solve_logs 적재용 chain 메타 (logSolve 호출 시 사용)
+    let chainLogMeta: {
+      termination: "reached_conditions" | "max_depth" | "dead_end" | "cycle";
+      depth: number;
+      used_tools: string[];
+    } | null = null;
     // Phase G-02: client 시각화용 chain payload (BackwardChain 컴포넌트가 useChat data 로 수신)
     const streamData = new StreamData();
     const isFirstTurn = messages.filter((m: { role: string }) => m.role === "assistant").length === 0;
@@ -288,6 +294,11 @@ ${tools
                 maxDepth: 5,
                 useGpt: !!useGpt,
               });
+              chainLogMeta = {
+                termination: chainRes.termination,
+                depth: chainRes.chain.length,
+                used_tools: chainRes.used_tools,
+              };
               if (chainRes.chain.length > 0) {
                 chainContext = `\n\n## Recursive Backward Chain (Phase G-02 — 학생 코칭용 사고 경로)
 ${chainToCoachingText(chainRes)}
@@ -492,6 +503,9 @@ ${cc.verified
         area: area ?? null,
         input_mode: inputMode === "voice" ? "voice" : (inputMode as "text" | "photo" | "handwrite"),
         tutor_persona: tutorPersona as "euler" | "gauss",
+        chain_termination: chainLogMeta?.termination ?? null,
+        chain_depth: chainLogMeta?.depth ?? null,
+        chain_used_tools: chainLogMeta?.used_tools ?? [],
       });
     }
 

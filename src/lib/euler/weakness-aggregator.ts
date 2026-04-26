@@ -15,6 +15,7 @@ export const DIAGNOSIS_KEYS = [
   "L7_forward",
   "L7_backward",
   "L8_parse",
+  "chain_miss",
 ] as const;
 export type DiagnosisKey = (typeof DIAGNOSIS_KEYS)[number];
 
@@ -53,6 +54,7 @@ interface SolveLogRow {
   is_correct: boolean | null;
   stuck_layer: number | null;
   stuck_reason: string | null;
+  chain_termination: string | null;
 }
 
 const LABELS: Record<DiagnosisKey, string> = {
@@ -63,6 +65,7 @@ const LABELS: Record<DiagnosisKey, string> = {
   L7_forward: "L7 Forward dead-end — 순행 BFS 폭 부족",
   L7_backward: "L7 Backward dead-end — 역추적 부족",
   L8_parse: "L8 Parse 실패 — 자연어→식 변환",
+  chain_miss: "Chain 미해결 — 분해 경로가 조건에 닿지 못함 (난이도 5+ 만)",
 };
 
 function classifyLevel(share: number, raw: number): "low" | "medium" | "high" {
@@ -94,7 +97,7 @@ export async function aggregateWeakness(opts?: {
       .eq("user_id", user.id),
     supabase
       .from("euler_solve_logs")
-      .select("area, is_correct, stuck_layer, stuck_reason")
+      .select("area, is_correct, stuck_layer, stuck_reason, chain_termination")
       .eq("user_id", user.id)
       .gte("created_at", sinceIso),
   ]);
@@ -114,6 +117,7 @@ export async function aggregateWeakness(opts?: {
     L7_forward: 0,
     L7_backward: 0,
     L8_parse: 0,
+    chain_miss: 0,
   };
 
   // layer_stats 기준
@@ -128,10 +132,17 @@ export async function aggregateWeakness(opts?: {
     if (r.layer === 8) counts.L8_parse += r.stuck_count;
   }
 
-  // solve_logs 의 stuck_reason 으로 L7 forward/backward 분리
+  // solve_logs 의 stuck_reason 으로 L7 forward/backward 분리 + chain_miss
   for (const log of logs) {
     if (log.stuck_reason === "forward_dead_end") counts.L7_forward += 1;
     else if (log.stuck_reason === "backward_dead_end") counts.L7_backward += 1;
+    // Phase G-03: chain 이 실행되었으나 conditions 에 닿지 못한 케이스
+    if (
+      log.chain_termination &&
+      log.chain_termination !== "reached_conditions"
+    ) {
+      counts.chain_miss += 1;
+    }
     // 그 외 stuck_reason 은 위 layer_stats 와 중복 카운트 회피
   }
 

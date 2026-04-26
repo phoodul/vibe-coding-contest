@@ -38,6 +38,20 @@ interface LayerSeriesPoint {
   pass_rate: number;
 }
 
+interface ChainTerminationDist {
+  reached_conditions: number;
+  max_depth: number;
+  dead_end: number;
+  cycle: number;
+}
+
+interface ChainStats {
+  executed_count: number;
+  avg_depth: number;
+  distribution: ChainTerminationDist;
+  success_rate: number;
+}
+
 interface ProgressReport {
   window_days: number;
   total_attempts: number;
@@ -49,6 +63,7 @@ interface ProgressReport {
   top_tools: { name: string; count: number }[];
   first_solve_at: string | null;
   total_solves_ever: number;
+  chain?: ChainStats;
 }
 
 const REPORT_MIN_DAYS = 7;
@@ -250,7 +265,7 @@ export default function EulerReportPage() {
           )}
         </section>
 
-        <section>
+        <section className="mb-10">
           <h2 className="text-xl font-bold mb-3">Layer 별 통과율</h2>
           {progress && progress.layer_series.length > 0 ? (
             <LayerStuckChart points={progress.layer_series} />
@@ -260,6 +275,19 @@ export default function EulerReportPage() {
             </div>
           )}
         </section>
+
+        {/* Phase G-03: Recursive Chain 종료 분포 — 난이도 5+ 문제만 누적 */}
+        {progress?.chain && progress.chain.executed_count > 0 && (
+          <section>
+            <h2 className="text-xl font-bold mb-1">사고 분해 패턴 (난이도 5+)</h2>
+            <p className="text-xs text-white/50 mb-3">
+              어려운 문제 {progress.chain.executed_count}건에 대해 AI 가 역행 분해 chain 을
+              시도했어요. 평균 {progress.chain.avg_depth.toFixed(1)} depth.
+              조건 도달률 {Math.round(progress.chain.success_rate * 100)}%.
+            </p>
+            <ChainTerminationChart chain={progress.chain} />
+          </section>
+        )}
         </>
         )}
       </div>
@@ -399,6 +427,69 @@ function DailyChart({ daily }: { daily: DailyStat[] }) {
         <span>{daily[0]?.day}</span>
         <span>{daily[daily.length - 1]?.day}</span>
       </div>
+    </div>
+  );
+}
+
+function ChainTerminationChart({ chain }: { chain: ChainStats }) {
+  const total = chain.executed_count;
+  const items: { key: keyof ChainTerminationDist; label: string; color: string; hint: string }[] = [
+    {
+      key: "reached_conditions",
+      label: "조건 도달 ✓",
+      color: "bg-emerald-500/60",
+      hint: "분해가 주어진 조건과 매칭 — 완전한 풀이 경로 확보",
+    },
+    {
+      key: "max_depth",
+      label: "최대 깊이 도달",
+      color: "bg-amber-500/60",
+      hint: "5 depth 동안 조건에 닿지 못함 — 더 잘게 분해 필요",
+    },
+    {
+      key: "dead_end",
+      label: "막다른 길",
+      color: "bg-rose-500/60",
+      hint: "다음 subgoal 을 분해하지 못함 — 새로운 도구·관점 필요",
+    },
+    {
+      key: "cycle",
+      label: "순환",
+      color: "bg-violet-500/60",
+      hint: "이전 subgoal 로 회귀 — 다른 방향의 접근 필요",
+    },
+  ];
+  return (
+    <div className="rounded-xl bg-white/5 border border-white/10 p-4 space-y-2">
+      {items.map((it, i) => {
+        const v = chain.distribution[it.key];
+        const pct = total > 0 ? (v / total) * 100 : 0;
+        return (
+          <motion.div
+            key={it.key}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="rounded-lg bg-white/5 border border-white/10 p-3"
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-sm font-medium">{it.label}</span>
+              <span className="text-xs text-white/60 tabular-nums">
+                {v}건 ({pct.toFixed(0)}%)
+              </span>
+            </div>
+            <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${pct}%` }}
+                transition={{ duration: 0.6, delay: i * 0.05 }}
+                className={`h-full ${it.color}`}
+              />
+            </div>
+            <p className="text-[10px] text-white/40 mt-1.5">{it.hint}</p>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

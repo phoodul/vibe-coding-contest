@@ -58,6 +58,10 @@ export interface SolveLogInput {
   is_correct?: boolean | null;
   reveal_used?: boolean;
   duration_ms?: number | null;
+  /** Phase G-03: Recursive Chain 결과 (실행된 경우만) */
+  chain_termination?: "reached_conditions" | "max_depth" | "dead_end" | "cycle" | null;
+  chain_depth?: number | null;
+  chain_used_tools?: string[];
 }
 
 const LAYER_NUM_MAP: Record<string, number> = {
@@ -108,6 +112,9 @@ export async function logSolve(input: SolveLogInput): Promise<{ ok: boolean; id?
         is_correct: input.is_correct ?? null,
         reveal_used: input.reveal_used ?? false,
         duration_ms: input.duration_ms ?? null,
+        chain_termination: input.chain_termination ?? null,
+        chain_depth: input.chain_depth ?? null,
+        chain_used_tools: input.chain_used_tools ?? [],
       })
       .select("id")
       .maybeSingle();

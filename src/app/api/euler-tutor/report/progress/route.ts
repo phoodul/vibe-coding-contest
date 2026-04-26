@@ -31,10 +31,10 @@ export async function GET(req: Request) {
     const days = Math.min(Math.max(parseInt(url.searchParams.get("days") ?? "30", 10), 7), 180);
     const sinceIso = new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
 
-    // 1) 일자별 풀이 수 + 정답률
+    // 1) 일자별 풀이 수 + 정답률 + Phase G-03 chain 종료 분포
     const { data: logs } = await supabase
       .from("euler_solve_logs")
-      .select("created_at, is_correct, area, tools_used")
+      .select("created_at, is_correct, area, tools_used, chain_termination, chain_depth")
       .eq("user_id", user.id)
       .gte("created_at", sinceIso)
       .order("created_at", { ascending: true });
@@ -42,12 +42,20 @@ export async function GET(req: Request) {
     const daily: Map<string, DailyStat> = new Map();
     const toolFreq: Map<string, number> = new Map();
     const areaFreq: Map<string, number> = new Map();
+    const chainDist: Record<
+      "reached_conditions" | "max_depth" | "dead_end" | "cycle",
+      number
+    > = { reached_conditions: 0, max_depth: 0, dead_end: 0, cycle: 0 };
+    let chainExecCount = 0;
+    let chainDepthSum = 0;
 
     for (const row of (logs ?? []) as {
       created_at: string;
       is_correct: boolean | null;
       area: string | null;
       tools_used: string[] | null;
+      chain_termination: keyof typeof chainDist | null;
+      chain_depth: number | null;
     }[]) {
       const day = row.created_at.slice(0, 10);
       const stat = daily.get(day) ?? { day, attempts: 0, correct: 0 };
@@ -57,6 +65,11 @@ export async function GET(req: Request) {
       if (row.area) areaFreq.set(row.area, (areaFreq.get(row.area) ?? 0) + 1);
       for (const t of row.tools_used ?? []) {
         toolFreq.set(t, (toolFreq.get(t) ?? 0) + 1);
+      }
+      if (row.chain_termination) {
+        chainDist[row.chain_termination] = (chainDist[row.chain_termination] ?? 0) + 1;
+        chainExecCount += 1;
+        if (row.chain_depth) chainDepthSum += row.chain_depth;
       }
     }
 
@@ -114,6 +127,14 @@ export async function GET(req: Request) {
       // 리포트 게이트 메타 (페이지에서 7일 + 10문제 검증)
       first_solve_at: firstSolveAt,
       total_solves_ever: totalEver,
+      // Phase G-03: Recursive Chain 통계
+      chain: {
+        executed_count: chainExecCount,
+        avg_depth: chainExecCount > 0 ? chainDepthSum / chainExecCount : 0,
+        distribution: chainDist,
+        success_rate:
+          chainExecCount > 0 ? chainDist.reached_conditions / chainExecCount : 0,
+      },
     });
   } catch (err) {
     console.error("euler-progress error:", err);
