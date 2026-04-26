@@ -87,22 +87,35 @@
 4. **KPI Full 측정** — `pnpm dlx dotenv-cli -e .env -- pnpm dlx tsx scripts/eval-kpi.ts --full`
 5. **풀이 누적 7일+10문제 후 리포트 검증** — 주 1회 자동 갱신
 
-## 다음 세션 후보
+## 다음 세션 첫 Task — Phase F: 외부 도구 통합 ⭐
 
-### A. 영역별 trigger 보강 (현재 평균 1.1 → 1.5+)
-양방향 trigger (forward + backward) 가 모두 있는 도구 비율 향상.
-Retriever 양방향 검색 정확도 직접 영향. 영역별 LLM 보강.
+사용자 결정 (4차 세션 종료): **"선생님이 진짜 답을 정확히 알아야 학생이 믿음을 가진다"**.
+시드 도구는 검색용 카드일 뿐 실제 풀이 환각을 막지 못함. 외부 계산 엔진 대거 통합.
 
-### B. 영역별 KPI 평가 셋
-8개 영역 각 5문항씩 합성 (현재 KPI 10문항 → 40문항).
-영역별 hit rate / coaching quality 측정.
+### 8 task 자율 진행 계획
 
-### C. 베타 사용자 풀이 모니터링
-Reasoner 자동 보고가 candidate_tools 를 잘 채우는지 관찰.
-풀이 데이터 누적되면 사용자 빈출 도구 식별 가능.
+| Task | 내용 | 비용 | 효과 |
+|---|---|---|---|
+| F-01 | SymPy μSvc 6→25 endpoint (summation/inequality/probability/geometry/vector/matrix/trig_simplify/log_simplify/poly_div/series_sum/limit/partial_fraction/complex_solve/numeric) | \$0 | 8영역 즉시 cover |
+| F-02 | Wolfram Alpha API 통합 (\$5/월 plan, WOLFRAM_APP_ID env) | \$5/월 | 자연어 query · 모든 영역 백업 |
+| F-03 | Z3 SMT solver — 부등식 영역 (SymPy 약점 보완) | \$0 | 공통/수학1·2 부등식 |
+| F-04 | matplotlib endpoint (서버 PNG → base64) — /plot_function, /plot_region, /plot_geometry | \$0 | 그래프·도형 시각화 |
+| F-05 | cross-check.ts — SymPy + Wolfram 결과 비교 → verified=true 배지 로직 | \$0 | 학생 신뢰 시각화 |
+| F-06 | VerifiedBadge.tsx — "✓ 두 엔진 검증" + 그래프 인라인 렌더링 | \$0 | UI 신뢰 표시 |
+| F-07 | euler-tools-schema.ts 6→25+ tool, 영역별 임계값 분리 (확통·기하 난이도 4+) | \$0 | Reasoner 자동 호출 |
+| F-08 | KPI 평가 8영역×5문항=40문항, hit rate + cross-check 일치율 측정 | \$0 | 영역별 성능 가시화 |
 
-### D. (이월) 기출문제 DB 영역 확장
-현재 calculus 위주. 다른 영역 기출 매핑 필요.
+**총 비용:** Wolfram \$5/월 + Railway 메모리 약간 ↑ ≈ \$8/월
+
+**경쟁 차별화:** ChatGPT/Khanmigo/Photomath 모두 단일 LLM/CAS — 우리만 다중 엔진 cross-check
+
+**Tier 2 (Phase G):** GeoGebra · Lean 4 · Desmos
+**Tier 3 (장기):** Manim · 자체 fine-tuned 모델
+
+### Phase F 외 후보 (병행 또는 후속)
+- 영역별 trigger 보강 (현재 평균 1.1 → 1.5+)
+- 베타 사용자 풀이 모니터링 (candidate_tools 채우기)
+- 기출문제 DB 영역 확장 (현재 calculus 위주)
 
 ## 핵심 산출물 요약
 
