@@ -1,5 +1,74 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-26 (3차 세션 — 운영 라이브 + 베타 UX 완성)
+
+### 진행 요약
+세션 시작: KPI/Refactor/배포 자동화 → 베타 가입 디버깅 → 통합 UX 개선까지.
+**production 라이브** 상태로 종료. 14 commits.
+
+### 1. KPI/Refactor (5c559bb / ad33aef)
+- 합성 10문항 + standalone eval 스크립트 (Manager+Retriever+Reasoner)
+- tryParseJson 5곳 단일화, difficulty-classifier 죽은 코드 삭제
+- layer-stats-updater last_failure_at 버그 + parse-image 인증 가드
+
+### 2. Supabase 마이그레이션 + 시드 (e545986)
+- 14 마이그레이션 적용 (euler_beta_invites ~ user_subscriptions + profiles 컬럼)
+- 시드 32 도구 / 39 trigger / 78 임베딩 적재 ($0.0005)
+- LEG-04 cron 컬럼명 정정
+
+### 3. Railway SymPy μSvc 배포
+- vibe-coding-contest-production.up.railway.app
+- INTERNAL_TOKEN 인증 + 6 endpoints (differentiate/integrate/solve/simplify/factor/series)
+- worker thread signal ValueError graceful skip (9a06d9d)
+
+### 4. Vercel env 등록
+- 19 row 등록 (8 평문 + 1 시크릿 토큰 × 2 환경 + CRON_SECRET production)
+- Production force rebuild 로 NEXT_PUBLIC_* inline 정상화
+
+### 5. 베타 가입 디버깅 — 5개 운영 버그
+사용자가 production 첫 시도 시 발견된 일련의 버그들:
+- 0d0e48f SW 외부 origin 가로채기
+- b702b29 /auth/login 404 (실제는 /login)
+- (Vercel build cache로 NEXT_PUBLIC_* inline 누락 — force rebuild)
+- 8994eb2 redeem_euler_beta SQL ambiguous status
+
+### 6. 통합 UX 개선 (사용자 피드백 기반)
+사용자: "채팅과 필기는 별도 라우트가 아니라 한 세션의 입력 방식이어야"
+
+- 7a1b822 채팅+필기 한 세션 통합 + 🆕 새 문제 + 📊 리포트 진입점
+- ae5fee6 + 2da4ebb 주 1회 리포트 + 7일/10문제 자격 게이트
+- 37c7db0 Vision LLM (Claude Sonnet 4.6) for 손글씨 한글 OCR
+  · Mathpix 는 사진(인쇄체)에서만 사용
+  · OCR 결과 미리보기 + 수정 textarea
+- 4503583 OCR 결과 KaTeX 렌더링 (raw LaTeX 편집은 details 안)
+- 7afdf15 입력창 확장 시 마지막 메시지 자동 스크롤
+
+### 핵심 산출물
+- 신규 페이지 + API + lib + 컴포넌트 풀스택 운영
+- 배포 런북 (docs/deployment-runbook.md)
+- KPI 평가 자동화 (scripts/eval-kpi.ts + data/kpi-eval-problems.json + docs/qa/kpi-evaluation.md)
+- 14 마이그레이션 + 32 도구 시드 + Railway μSvc + Vercel 19 env
+
+### 주요 정책
+- Vision LLM for 손글씨 (한글+수식+손글씨)
+- Mathpix for 사진 (인쇄체)
+- 주 1회 리포트 + 자격 게이트 (7일+10문제)
+- 베타 50명 cap (EULER2026)
+
+### 다음 세션 시작 시
+1. 베타 사용자 풀이 검증
+2. 50명 모집 진행
+3. 풀이 누적 7일+10문제 → 리포트 자동 표시 확인
+4. KPI Full 측정 (~$0.16)
+5. LEG-02 변호사 자문 (베타 검증 후)
+
+### Token 효율
+- 3차 세션 14 commits, 모두 production push 완료
+- 운영 인프라 + UX 개선 + 디버깅 모두 한 세션 내 자율 진행
+- 사용자 자율 권한 (Plan Preference) 활용으로 빠른 반복 가능
+
+---
+
 ## 2026-04-26 (3차 세션 — KPI/Refactor/배포 자동화)
 
 ### 진행 요약 (B → D → A 순)

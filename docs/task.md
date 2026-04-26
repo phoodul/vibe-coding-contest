@@ -18,12 +18,25 @@
 | 법무·운영 | 🔄 3/4 (LEG-02 외부 변호사 자문 보류) | 3/4 |
 | 운영 (3차 세션) | ✅ Supabase 마이그레이션 + KPI/Refactor/Runbook | + 4 |
 
-### 3차 세션 (2026-04-26) — KPI/Refactor/배포 자동화
+### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
 |---|---|---|
 | B (KPI 평가) | 5c559bb | 합성 10문항 + standalone eval 스크립트 + 검증 문서 |
-| D (Refactor) | ad33aef | tryParseJson 단일화 + 죽은 코드 삭제 + last_failure_at 버그 + parse-image 인증 |
-| A (배포) | (이번 커밋) | Supabase 마이그레이션 14종 적용 + 런북 + cron 정정 + .env.example |
+| D (Refactor) | ad33aef | tryParseJson 단일화 + 죽은 코드 삭제 + 버그/보안 |
+| A (배포) | e545986 | Supabase 14 마이그레이션 + 런북 + cron 정정 |
+| 운영 버그 | 0d0e48f | SW 외부 origin 가로채기 |
+| 운영 버그 | 9a06d9d | SymPy worker thread signal |
+| 운영 버그 | b702b29 | /auth/login → /login |
+| 운영 버그 | 8994eb2 | redeem_euler_beta ambiguous status |
+| UX 통합 | 7a1b822 | 채팅+필기 한 세션 + 새 문제 + 리포트 진입점 |
+| UX | ae5fee6 | 주 1회 리포트 (7일 window) |
+| UX | 2da4ebb | 리포트 자격 게이트 (7일+10문제) |
+| UX | 37c7db0 | Vision LLM 손글씨 + 인라인 패널 + 미리보기 |
+| UX | 4503583 | OCR KaTeX 렌더링 |
+| UX | 7afdf15 | 입력창 확장 자동 스크롤 |
+
+총 14 commits. Production 라이브 (https://vibe-coding-contest.vercel.app).
+Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 env 모두 활성화.
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
