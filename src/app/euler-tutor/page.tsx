@@ -15,7 +15,7 @@ import problemTexts from "@/lib/data/problem-texts.json";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { HandwriteModal } from "@/components/euler/HandwriteModal";
+import { InlineHandwritePanel } from "@/components/euler/InlineHandwritePanel";
 
 type Phase = "select" | "past-exam" | "chat";
 type InputMode = "text" | "photo" | "handwrite" | "voice";
@@ -196,7 +196,7 @@ export default function EulerTutorPage() {
     }
   }, [imagePreview, sendImage, handleSubmit]);
 
-  // 필기 모달에서 OCR 결과를 같은 채팅 세션에 추가
+  // 필기 패널에서 사용자가 검토·수정한 OCR 결과를 같은 채팅 세션에 추가
   const handleHandwriteResult = useCallback((text: string) => {
     setInputMode("handwrite");
     const isFirst = messages.length === 0;
@@ -561,6 +561,15 @@ export default function EulerTutorPage() {
       {/* 입력 */}
       <div className="sticky bottom-0 glass border-t border-white/5 px-4 py-3">
         <div className="max-w-3xl mx-auto">
+          {/* 필기 인라인 패널 (✏️ 토글 시 입력창 위에 펼쳐짐) */}
+          <InlineHandwritePanel
+            open={handwriteOpen}
+            onClose={() => setHandwriteOpen(false)}
+            onConfirm={(text) => {
+              handleHandwriteResult(text);
+              setHandwriteOpen(false);
+            }}
+          />
           {/* 이미지 미리보기 (입력창 위에 통합) */}
           <AnimatePresence>
             {imagePreview && (
@@ -597,14 +606,18 @@ export default function EulerTutorPage() {
             >
               📷
             </motion.button>
-            {/* 필기 모달 버튼 */}
+            {/* 필기 인라인 토글 */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               type="button"
-              onClick={() => setHandwriteOpen(true)}
-              className="px-3 py-3 rounded-xl glass border border-white/10 text-lg hover:border-emerald-500/30 transition-colors flex-shrink-0"
-              title="필기로 입력"
+              onClick={() => setHandwriteOpen((v) => !v)}
+              className={`px-3 py-3 rounded-xl text-lg transition-colors flex-shrink-0 border ${
+                handwriteOpen
+                  ? "bg-emerald-500/15 border-emerald-400/50 text-emerald-300"
+                  : "glass border-white/10 hover:border-emerald-500/30"
+              }`}
+              title={handwriteOpen ? "필기 닫기" : "필기로 입력"}
             >
               ✏️
             </motion.button>
@@ -640,12 +653,6 @@ export default function EulerTutorPage() {
         </div>
       </div>
 
-      {/* 필기 입력 모달 — 같은 채팅 세션에 OCR 결과 추가 */}
-      <HandwriteModal
-        open={handwriteOpen}
-        onClose={() => setHandwriteOpen(false)}
-        onResult={handleHandwriteResult}
-      />
     </div>
   );
 }
