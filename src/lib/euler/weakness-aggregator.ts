@@ -75,7 +75,8 @@ function classifyLevel(share: number, raw: number): "low" | "medium" | "high" {
 export async function aggregateWeakness(opts?: {
   windowDays?: number;
 }): Promise<WeaknessReport | null> {
-  const windowDays = opts?.windowDays ?? 30;
+  // 주 1회 리포트 — 기본 7일 분석 window
+  const windowDays = opts?.windowDays ?? 7;
   const supabase = await createClient();
   const {
     data: { user },
@@ -170,17 +171,17 @@ export async function aggregateWeakness(opts?: {
             body: JSON.stringify({
               model: "claude-sonnet-4-5-20250929",
               max_tokens: 600,
-              system: `당신은 학생에게 친절하게 약점 분석 결과를 전달하는 수학 코치입니다.
-1~2문단 (4~6문장). 따뜻한 존댓말. 비판 금지.
+              system: `당신은 학생에게 친절하게 주간 학습 리포트를 전달하는 수학 코치입니다.
+1~2문단 (4~6문장). 따뜻한 존댓말. 비판 금지. 학생의 노력 인정 + 다음 주 행동 제안.
 - 가장 두드러진 1~2개 약점에 집중
-- 무엇을 다음 1주일간 연습하면 좋을지 구체적 1~2 행동 제안
+- 다음 일주일간 연습하면 좋을 구체적 1~2 행동 제안
 - LaTeX 사용 금지 (자연어만)`,
               messages: [
                 {
                   role: "user",
-                  content: `최근 ${windowDays}일 약점 진단:\n${top
+                  content: `이번 주(최근 ${windowDays}일) 약점 진단:\n${top
                     .map((i) => `- ${i.label}: ${i.raw_count}회 (${(i.share * 100).toFixed(0)}%)`)
-                    .join("\n")}\n\n학생에게 전달할 1~2문단 추천 멘트를 한국어로 작성하세요.`,
+                    .join("\n")}\n\n학생에게 전달할 주간 리포트 멘트를 한국어로 1~2문단 작성하세요.`,
                 },
               ],
             }),

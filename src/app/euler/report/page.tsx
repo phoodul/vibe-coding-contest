@@ -87,9 +87,10 @@ export default function EulerReportPage() {
       setAuthorized(true);
 
       try {
+        // 주 1회 리포트: 최근 7일 데이터 기반
         const [w, p] = await Promise.all([
-          fetch("/api/euler-tutor/report/weakness?window=30").then((r) => r.json()),
-          fetch("/api/euler-tutor/report/progress?days=30").then((r) => r.json()),
+          fetch("/api/euler-tutor/report/weakness?window=7").then((r) => r.json()),
+          fetch("/api/euler-tutor/report/progress?days=7").then((r) => r.json()),
         ]);
         if (cancelled) return;
         setWeakness(w);
@@ -134,9 +135,9 @@ export default function EulerReportPage() {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">오일러 리포트</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">이번 주 오일러 리포트</h1>
             <p className="text-sm text-white/60 mt-1">
-              최근 30일의 풀이 데이터를 분석한 약점 진단과 진척도입니다.
+              최근 7일간의 풀이를 분석한 약점 진단입니다. 매주 갱신돼요.
             </p>
           </div>
           <Link href="/euler-tutor" className="text-sm text-white/60 hover:text-white">

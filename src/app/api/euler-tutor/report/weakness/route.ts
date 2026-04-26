@@ -14,9 +14,10 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // 주 1회 리포트 — 기본값 7일. 옵션으로 14/30 가능 (최소 7).
     const url = new URL(req.url);
     const windowDays = Math.min(
-      Math.max(parseInt(url.searchParams.get("window") ?? "30", 10), 7),
+      Math.max(parseInt(url.searchParams.get("window") ?? "7", 10), 7),
       180
     );
 
