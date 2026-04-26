@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "created_at": "2026-04-27",
+  "area": "middle3",
+  "note": "중학교 3학년 — 제곱근·실수, 다항식 곱셈·인수분해, 이차방정식·이차함수, 닮음 응용·피타고라스·삼각비, 원의 성질, 대푯값·산포도. AI 자체 표현 (교과서 원문 인용 금지). 한국 2015 개정 교육과정 기준.",
+  "tools": [
+    {
+      "id": "M_polynomial_expansion",
+      "name": "곱셈 공식 (기본)",
+      "knowledge_layer": 3,
+      "formula_latex": "(a+b)^2 = a^2+2ab+b^2,\\;\\; (a-b)(a+b)=a^2-b^2",
+      "prerequisites": ["분배법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "다항식 전개·인수분해 패턴", "derived_fact": "표준형 적용", "why": "패턴 인식이 전개·역연산을 가속" }
+      ]
+    },
+    {
+      "id": "M_factorization_basic",
+      "name": "인수분해 기본 패턴",
+      "knowledge_layer": 3,
+      "formula_latex": "a^2 - b^2 = (a-b)(a+b),\\;\\; x^2+(p+q)x+pq=(x+p)(x+q)",
+      "prerequisites": ["곱셈 공식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "다항식을 인수분해", "premises": ["계수 관찰"], "why": "두 항의 곱 형태가 곧 영인자 법칙으로 연결" }
+      ]
+    },
+    {
+      "id": "M_quadratic_factor",
+      "name": "이차방정식의 인수분해",
+      "knowledge_layer": 3,
+      "formula_latex": "x^2 + (p+q)x + pq = 0 \\Rightarrow (x+p)(x+q)=0 \\Rightarrow x=-p \\text{ 또는 } -q",
+      "prerequisites": ["다항식의 곱셈"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 정수의 합과 곱이 깨끗하게 나오는 이차식", "derived_fact": "두 일차 인수의 곱", "why": "곱이 0이면 인수 중 하나가 0이라는 영인자 법칙" }
+      ]
+    },
+    {
+      "id": "M_quadratic_formula",
+      "name": "이차방정식의 근의 공식",
+      "knowledge_layer": 4,
+      "formula_latex": "ax^2+bx+c=0 \\Rightarrow x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}",
+      "prerequisites": ["완전제곱"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "인수분해가 어려운 이차방정식", "derived_fact": "두 근 모두 닫힌 형태로 표현", "why": "완전제곱 변형으로 일반해를 항상 얻는다" }
+      ]
+    },
+    {
+      "id": "M_discriminant",
+      "name": "이차방정식의 판별식",
+      "knowledge_layer": 4,
+      "formula_latex": "D = b^2 - 4ac;\\; D>0 (\\text{서로 다른 두 실근}),\\; D=0 (\\text{중근}),\\; D<0 (\\text{허근})",
+      "prerequisites": ["근의 공식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "근의 개수·종류만 알고 싶다", "derived_fact": "D 부호로 분류", "why": "근의 공식의 제곱근 안 부호가 실해 존재를 결정" },
+        { "direction": "backward", "goal_pattern": "실근의 개수 조건", "premises": ["계수에 매개변수 포함"], "why": "D 의 부호 부등식이 매개변수 범위로 변환된다" }
+      ]
+    },
+    {
+      "id": "M_vieta",
+      "name": "근과 계수의 관계 (이차)",
+      "knowledge_layer": 4,
+      "formula_latex": "ax^2+bx+c=0 \\text{ 의 두 근 } \\alpha,\\beta \\Rightarrow \\alpha+\\beta=-b/a,\\;\\alpha\\beta=c/a",
+      "prerequisites": ["이차방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 근의 합·곱이 필요", "derived_fact": "근을 직접 구하지 않고 계수에서 얻는다", "why": "근을 구하지 않고 대칭식 값을 산출 — 계산 비용 감소" }
+      ]
+    },
+    {
+      "id": "M_quadratic_func_vertex",
+      "name": "이차함수의 표준형 (꼭짓점)",
+      "knowledge_layer": 4,
+      "formula_latex": "y = a(x-p)^2 + q;\\; \\text{꼭짓점 } (p,q),\\; \\text{축 } x=p",
+      "prerequisites": ["완전제곱"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "이차함수의 최댓값·최솟값 또는 그래프 위치", "derived_fact": "꼭짓점 좌표가 최(소)값을 결정", "why": "꼭짓점은 그래프의 대칭축이자 극값점" },
+        { "direction": "backward", "goal_pattern": "이차함수 최댓·최솟값", "premises": ["a 의 부호와 꼭짓점"], "why": "a>0 이면 꼭짓점이 최솟값, a<0 이면 최댓값" }
+      ]
+    },
+    {
+      "id": "M_quadratic_func_intercepts",
+      "name": "이차함수와 x축 교점",
+      "knowledge_layer": 4,
+      "formula_latex": "y=ax^2+bx+c \\text{ 와 } x\\text{-축 교점 } \\Leftrightarrow ax^2+bx+c=0 \\text{ 의 실근}",
+      "prerequisites": ["판별식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "그래프와 x축 교점 개수 또는 좌표", "derived_fact": "이차방정식의 근 분석", "why": "y=0 대입은 실근 분석과 동치" }
+      ]
+    },
+    {
+      "id": "M_pythagoras",
+      "name": "피타고라스 정리",
+      "knowledge_layer": 4,
+      "formula_latex": "\\text{직각삼각형 빗변 } c,\\; \\text{두 다리 } a,b \\Rightarrow a^2+b^2=c^2",
+      "prerequisites": ["직각삼각형"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "직각삼각형이고 두 변의 길이가 주어짐", "derived_fact": "나머지 한 변의 길이", "why": "직각이라는 조건이 세 변 길이를 강하게 묶는다" },
+        { "direction": "backward", "goal_pattern": "두 점 사이 거리", "premises": ["좌표평면"], "why": "좌표평면 거리 공식의 기하학적 근거" }
+      ]
+    },
+    {
+      "id": "M_distance_formula",
+      "name": "두 점 사이의 거리",
+      "knowledge_layer": 3,
+      "formula_latex": "\\text{거리} = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}",
+      "prerequisites": ["피타고라스"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "좌표평면 위 두 점 거리", "derived_fact": "닫힌 형태", "why": "수평·수직 차이가 직각삼각형 두 다리를 이룬다" }
+      ]
+    },
+    {
+      "id": "M_midpoint",
+      "name": "두 점의 중점",
+      "knowledge_layer": 3,
+      "formula_latex": "M = \\left( \\frac{x_1+x_2}{2}, \\frac{y_1+y_2}{2} \\right)",
+      "prerequisites": ["좌표평면"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "선분의 중점이 필요", "derived_fact": "각 좌표 평균", "why": "균등 분할은 산술 평균과 동치" }
+      ]
+    },
+    {
+      "id": "M_special_right_triangles",
+      "name": "특수직각삼각형 (30·60·90, 45·45·90)",
+      "knowledge_layer": 4,
+      "formula_latex": "30^\\circ:60^\\circ:90^\\circ \\Rightarrow 1:\\sqrt{3}:2,\\;\\; 45^\\circ:45^\\circ:90^\\circ \\Rightarrow 1:1:\\sqrt{2}",
+      "prerequisites": ["피타고라스"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "각이 30·45·60°를 포함", "derived_fact": "변의 비가 즉시 결정", "why": "고정된 각도는 변비를 일의적으로 결정" }
+      ]
+    },
+    {
+      "id": "M_circle_inscribed_angle",
+      "name": "원주각 정리",
+      "knowledge_layer": 5,
+      "formula_latex": "\\text{원주각} = \\tfrac{1}{2} \\cdot \\text{같은 호의 중심각}",
+      "prerequisites": ["원과 호"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "한 호에 대한 원주각·중심각", "derived_fact": "원주각은 중심각의 절반", "why": "한 호를 보는 각은 중심에서 두 배로 보인다" },
+        { "direction": "backward", "goal_pattern": "각의 크기 또는 호의 길이 비교", "premises": ["원주각 정리"], "why": "같은 호를 바라보는 모든 원주각은 같다" }
+      ]
+    },
+    {
+      "id": "M_circle_tangent_chord",
+      "name": "접선과 현이 이루는 각",
+      "knowledge_layer": 5,
+      "formula_latex": "\\text{접선·현 각} = \\text{현이 만든 호 위의 원주각}",
+      "prerequisites": ["원주각"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "한 점에서 접선과 현", "derived_fact": "접현각 = 반대편 호의 원주각", "why": "접선은 호의 극한이므로 원주각 정리의 극한판" }
+      ]
+    },
+    {
+      "id": "M_power_of_a_point",
+      "name": "방멱 (한 점의 두 할선·접선)",
+      "knowledge_layer": 5,
+      "formula_latex": "PA \\cdot PB = PC \\cdot PD = PT^2",
+      "prerequisites": ["원주각"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "원 외부·내부의 한 점에서 두 할선 또는 접선", "derived_fact": "두 곱이 같다", "why": "닮음 삼각형 비례에서 도출되는 불변량" }
+      ]
+    },
+    {
+      "id": "M_translation",
+      "name": "도형의 평행이동",
+      "knowledge_layer": 3,
+      "formula_latex": "(x,y) \\to (x+a, y+b);\\;\\; y=f(x) \\to y-b=f(x-a)",
+      "prerequisites": ["함수의 그래프"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "도형·함수를 (a,b) 만큼 평행이동", "derived_fact": "x 자리에 (x-a), y 자리에 (y-b)", "why": "이동은 좌표계의 평행이동과 동치" }
+      ]
+    },
+    {
+      "id": "M_symmetry",
+      "name": "대칭이동 (x축·y축·원점·y=x)",
+      "knowledge_layer": 3,
+      "formula_latex": "x\\text{-축}: y \\to -y,\\;\\; y\\text{-축}: x \\to -x,\\;\\; \\text{원점}: (x,y) \\to (-x,-y),\\;\\; y=x: (x,y) \\to (y,x)",
+      "prerequisites": ["좌표평면"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "기본 4가지 대칭", "derived_fact": "좌표 부호·교환", "why": "대칭축에 대한 거리 보존" }
+      ]
+    },
+    {
+      "id": "M_mean_median_mode",
+      "name": "평균·중앙값·최빈값",
+      "knowledge_layer": 2,
+      "formula_latex": "\\bar{x}=\\tfrac{1}{n}\\sum x_i,\\; \\text{중앙값=가운데값},\\; \\text{최빈값=가장 자주 나오는 값}",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "대표값이 필요", "derived_fact": "세 종류 정의 적용", "why": "분포의 중심 위치를 다른 관점에서 본다" }
+      ]
+    },
+    {
+      "id": "M_variance_stddev",
+      "name": "분산·표준편차",
+      "knowledge_layer": 3,
+      "formula_latex": "V = \\tfrac{1}{n}\\sum (x_i - \\bar{x})^2,\\;\\; \\sigma=\\sqrt{V}",
+      "prerequisites": ["평균"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "데이터의 흩어진 정도", "derived_fact": "분산·표준편차 산출", "why": "편차 제곱 평균은 흩어짐의 보편적 척도" }
+      ]
+    }
+  ]
+}

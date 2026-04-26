@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "created_at": "2026-04-27",
+  "area": "middle1",
+  "note": "중학교 1학년 — 정수·유리수, 일차방정식, 좌표평면, 정비례·반비례, 기본·평면·입체 도형. AI 자체 표현 (교과서 원문 인용 금지). 한국 2015 개정 교육과정 기준.",
+  "tools": [
+    {
+      "id": "M_abs_value",
+      "name": "절댓값의 정의",
+      "knowledge_layer": 2,
+      "formula_latex": "|x| = \\begin{cases} x & (x \\ge 0) \\\\ -x & (x < 0) \\end{cases}",
+      "prerequisites": ["수직선"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "절댓값 기호가 등장", "derived_fact": "내부 값의 부호로 분기", "why": "절댓값은 부호에 따라 식이 달라지므로 case-split 가 필요" },
+        { "direction": "backward", "goal_pattern": "|x-a| 형태의 방정식·부등식", "premises": ["부호 분기"], "why": "x-a 의 부호로 두 case 로 나누면 모두 일차식이 된다" }
+      ]
+    },
+    {
+      "id": "M_linear_eq",
+      "name": "일차방정식의 풀이",
+      "knowledge_layer": 3,
+      "formula_latex": "ax + b = 0 \\;(a \\ne 0) \\Rightarrow x = -b/a",
+      "prerequisites": ["등식의 성질"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "미지수가 1개이고 차수가 1차", "derived_fact": "유일한 해 x=-b/a", "why": "양변에 같은 수를 더하거나 같은 0이 아닌 수로 나눠도 등식은 유지" }
+      ]
+    },
+    {
+      "id": "M_proportion_inverse",
+      "name": "정비례·반비례",
+      "knowledge_layer": 2,
+      "formula_latex": "y = kx \\;(\\text{정비례}),\\;\\; y = k/x \\;(\\text{반비례})",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 양의 비례 관계", "derived_fact": "곱 또는 비가 일정", "why": "k 가 보존되는 불변량" }
+      ]
+    },
+    {
+      "id": "M_parallel_transversal",
+      "name": "평행선과 동위·엇각",
+      "knowledge_layer": 3,
+      "formula_latex": "l \\parallel m \\Rightarrow \\text{동위각·엇각이 같다}",
+      "prerequisites": ["각"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 직선이 평행임을 증명", "premises": ["동위각 또는 엇각이 같다"], "why": "평행선 정의의 동치 조건" }
+      ]
+    },
+    {
+      "id": "M_circle_area_circumf",
+      "name": "원의 둘레·넓이",
+      "knowledge_layer": 2,
+      "formula_latex": "C = 2\\pi r,\\;\\; A = \\pi r^2",
+      "prerequisites": ["반지름"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "원의 반지름이 주어짐", "derived_fact": "둘레와 넓이", "why": "닫힌 형태 — 추가 작업 없음" }
+      ]
+    },
+    {
+      "id": "M_sector_arc_area",
+      "name": "부채꼴의 호의 길이·넓이",
+      "knowledge_layer": 3,
+      "formula_latex": "l = r\\theta,\\;\\; S = \\tfrac{1}{2} r^2 \\theta \\;(\\theta \\text{ 라디안})",
+      "prerequisites": ["원의 둘레"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "중심각·반지름이 주어짐", "derived_fact": "호 길이와 부채꼴 넓이", "why": "각을 비율로 보면 전체 원에 대한 분수" }
+      ]
+    },
+    {
+      "id": "M_solid_volume_cone_pyramid",
+      "name": "뿔의 부피 (1/3 법칙)",
+      "knowledge_layer": 4,
+      "formula_latex": "V_{\\text{뿔}} = \\tfrac{1}{3} S h",
+      "prerequisites": ["기둥의 부피"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "원뿔·각뿔의 밑면 넓이와 높이", "derived_fact": "기둥 부피의 1/3", "why": "적분 또는 카발리에리 원리에서 도출" }
+      ]
+    },
+    {
+      "id": "M_sphere_volume_area",
+      "name": "구의 부피·겉넓이",
+      "knowledge_layer": 4,
+      "formula_latex": "V = \\tfrac{4}{3}\\pi r^3,\\;\\; S = 4\\pi r^2",
+      "prerequisites": ["반지름"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "구의 반지름", "derived_fact": "부피·겉넓이 닫힌 형태", "why": "보편 상수 — 회전체 적분으로 도출" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "created_at": "2026-04-27",
+  "area": "middle2",
+  "note": "중학교 2학년 — 식의 계산, 일차부등식, 연립일차방정식, 일차함수, 도형의 성질·합동, 도형의 닮음, 확률. AI 자체 표현 (교과서 원문 인용 금지). 한국 2015 개정 교육과정 기준.",
+  "tools": [
+    {
+      "id": "M_linear_ineq",
+      "name": "일차부등식의 풀이",
+      "knowledge_layer": 3,
+      "formula_latex": "ax + b > 0,\\; a > 0 \\Rightarrow x > -b/a;\\quad a < 0 \\Rightarrow x < -b/a",
+      "prerequisites": ["부등식의 성질"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "음수로 양변을 나누거나 곱한다", "derived_fact": "부등호 방향이 뒤집힌다", "why": "음수 곱셈은 대소 관계를 반전시킨다" }
+      ]
+    },
+    {
+      "id": "M_simul_linear",
+      "name": "연립일차방정식 (가감법·대입법)",
+      "knowledge_layer": 3,
+      "formula_latex": "\\begin{cases} a_1 x + b_1 y = c_1 \\\\ a_2 x + b_2 y = c_2 \\end{cases}",
+      "prerequisites": ["일차방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 일차식 동시 만족 미지수 2개", "derived_fact": "일차결합으로 한 변수 소거 후 일차방정식", "why": "선형 결합으로 차원을 줄여 단변수 문제로 환원" }
+      ]
+    },
+    {
+      "id": "M_linear_func",
+      "name": "일차함수의 그래프",
+      "knowledge_layer": 3,
+      "formula_latex": "y = ax + b\\;(\\text{기울기 } a,\\; y\\text{-절편 } b)",
+      "prerequisites": ["좌표평면"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 점 (x_1, y_1), (x_2, y_2) 가 주어진다", "derived_fact": "기울기 a=(y_2-y_1)/(x_2-x_1)", "why": "두 점을 지나는 직선은 유일하므로 기울기와 절편으로 식이 결정" },
+        { "direction": "backward", "goal_pattern": "직선의 식", "premises": ["두 점 또는 한 점+기울기"], "why": "점-기울기 형태 또는 두 점 형태로 일차식 결정" }
+      ]
+    },
+    {
+      "id": "M_slope_parallel_perp",
+      "name": "두 직선의 평행·수직 조건",
+      "knowledge_layer": 4,
+      "formula_latex": "\\text{평행: } a_1 = a_2,\\;\\; \\text{수직: } a_1 a_2 = -1",
+      "prerequisites": ["일차함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 직선의 기울기 비교", "derived_fact": "기울기 같으면 평행, 곱이 -1이면 수직", "why": "기울기는 직선의 방향벡터를 결정하므로 동일 방향 또는 직교 조건이 산술화된다" }
+      ]
+    },
+    {
+      "id": "M_triangle_congruence",
+      "name": "삼각형의 합동 조건 (SSS·SAS·ASA)",
+      "knowledge_layer": 4,
+      "formula_latex": "\\text{SSS, SAS, ASA, RHS, RHA}",
+      "prerequisites": ["기본 도형"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 삼각형이 합동임을 보여라", "premises": ["3가지 대응요소 일치"], "why": "세 변 또는 두 변+끼인각 등 충분조건이 합동을 보장" }
+      ]
+    },
+    {
+      "id": "M_triangle_similarity",
+      "name": "삼각형의 닮음 조건 (AA·SAS·SSS)",
+      "knowledge_layer": 4,
+      "formula_latex": "\\text{AA, SAS, SSS}",
+      "prerequisites": ["대응변·대응각"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 각이 각각 같은 두 삼각형", "derived_fact": "닮음 — 모든 대응변이 비례", "why": "세 각 합이 180° 이므로 두 각만 같으면 세 각 모두 같다" },
+        { "direction": "backward", "goal_pattern": "변의 길이 비례", "premises": ["AA 닮음"], "why": "닮음이 성립하면 대응변은 일정한 닮음비를 가진다" }
+      ]
+    },
+    {
+      "id": "M_basic_probability",
+      "name": "확률의 정의 (수학적 확률)",
+      "knowledge_layer": 3,
+      "formula_latex": "P(A) = \\frac{|A|}{|S|}\\;(\\text{모든 근원사건이 같은 정도로 일어남})",
+      "prerequisites": ["경우의 수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "동등하게 일어나는 사건의 비율", "derived_fact": "원하는 경우 / 전체 경우", "why": "고전적 확률은 빈도의 균등 분배" }
+      ]
+    },
+    {
+      "id": "M_combinations_basic",
+      "name": "기본 경우의 수 (합·곱의 법칙)",
+      "knowledge_layer": 3,
+      "formula_latex": "\\text{동시에 일어나지 않으면 합, 잇따라 일어나면 곱}",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "선택·배열을 카운팅", "derived_fact": "단계별 곱 또는 분리한 합", "why": "독립 단계는 곱, 배타 분류는 합" }
+      ]
+    }
+  ]
+}
