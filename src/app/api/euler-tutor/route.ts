@@ -14,23 +14,13 @@ import { logSolve } from "@/lib/euler/solve-logger";
 import { checkFreeQuota } from "@/lib/euler/usage-quota";
 import { createClient as createSupabaseServer } from "@/lib/supabase/server";
 import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
+import { tryParseJson } from "@/lib/euler/json";
 
 const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
 const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본 on
 const REASONER_ENABLED = process.env.EULER_REASONER_ENABLED !== "false"; // 기본 on
 const REASONER_MIN_DIFFICULTY = parseInt(process.env.EULER_REASONER_MIN_DIFFICULTY ?? "6", 10);
 const HAIKU_MODEL_ID = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
-
-function tryParseJson<T>(text: string): T | null {
-  const trimmed = text.trim();
-  const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const candidate = fence ? fence[1] : trimmed;
-  try {
-    return JSON.parse(candidate) as T;
-  } catch {
-    return null;
-  }
-}
 
 /** 첫 user 메시지 텍스트 (문제 본문) */
 function firstUserText(messages: { role: string; content: unknown }[]): string | null {

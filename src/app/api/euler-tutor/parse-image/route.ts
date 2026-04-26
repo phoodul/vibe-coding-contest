@@ -1,13 +1,24 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export const maxDuration = 30;
 
 /**
  * 수학 문제 이미지 → LaTeX 텍스트 변환
  * 우선순위: Mathpix (수학 전용) → Upstage (범용) → Vision fallback
+ *
+ * 비싼 외부 API 호출 — 인증 가드 필수 (봇 어뷰징 방지).
  */
 export async function POST(req: Request) {
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { image, handwritten } = (await req.json()) as {
       image?: string;
       handwritten?: boolean;

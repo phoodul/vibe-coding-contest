@@ -68,7 +68,7 @@ export async function updateLayerStats(input: LayerStatsUpdate): Promise<void> {
     for (const [layer, d] of deltas) {
       const { data: existing } = await supabase
         .from("user_layer_stats")
-        .select("attempts, successes, stuck_count, failure_count, l6_recall_miss, l6_trigger_miss, l5_domain_miss, failure_examples")
+        .select("attempts, successes, stuck_count, failure_count, l6_recall_miss, l6_trigger_miss, l5_domain_miss, last_failure_at")
         .eq("user_id", user.id)
         .eq("layer", layer)
         .eq("area", input.area)
@@ -84,7 +84,10 @@ export async function updateLayerStats(input: LayerStatsUpdate): Promise<void> {
         l5_domain_miss: (existing?.l5_domain_miss ?? 0) + d.l5_domain_miss,
       };
 
-      const lastFailure = d.failure_count + d.stuck_count > 0 ? nowIso : null;
+      const lastFailureAt =
+        d.failure_count + d.stuck_count > 0
+          ? nowIso
+          : (existing?.last_failure_at ?? null);
 
       const { error } = await supabase
         .from("user_layer_stats")
@@ -94,7 +97,7 @@ export async function updateLayerStats(input: LayerStatsUpdate): Promise<void> {
             layer,
             area: input.area,
             ...merged,
-            last_failure_at: lastFailure ?? existing?.["failure_examples"] ? undefined : null,
+            last_failure_at: lastFailureAt,
           },
           { onConflict: "user_id,layer,area" }
         );

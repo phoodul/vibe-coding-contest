@@ -20,6 +20,7 @@ import {
   type ForwardFact,
   type ReasonerState,
 } from "@/lib/ai/euler-reasoner-prompt";
+import { tryParseJson } from "./json";
 
 export interface BFSResult {
   facts: ForwardFact[];
@@ -40,17 +41,6 @@ interface ForwardJson {
 interface BackwardJson {
   subgoals?: BackwardSubgoal[];
   dead_end?: boolean;
-}
-
-function tryParseJson<T>(text: string): T | null {
-  const trimmed = text.trim();
-  const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const candidate = fence ? fence[1] : trimmed;
-  try {
-    return JSON.parse(candidate) as T;
-  } catch {
-    return null;
-  }
 }
 
 function pickModel(useGpt: boolean): LanguageModelV1 {

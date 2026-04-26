@@ -3,21 +3,11 @@ import { generateText } from "ai";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-prompt";
+import { tryParseJson } from "@/lib/euler/json";
 
 export const maxDuration = 30;
 
 const HAIKU_MODEL_ID = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
-
-function tryParseJson<T>(text: string): T | null {
-  const trimmed = text.trim();
-  const fence = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const candidate = fence ? fence[1] : trimmed;
-  try {
-    return JSON.parse(candidate) as T;
-  } catch {
-    return null;
-  }
-}
 
 export async function POST(req: Request) {
   try {

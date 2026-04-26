@@ -6,23 +6,13 @@ import {
   type CriticDiagnoseResult,
   type CriticVerifyResult,
 } from "@/lib/ai/euler-critic-prompt";
+import { tryParseJson } from "./json";
 
 const HAIKU_MODEL_ID = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
 
 export type CriticResult =
   | ({ mode: "verify" } & CriticVerifyResult)
   | ({ mode: "diagnose" } & CriticDiagnoseResult);
-
-function tryParseJson<T>(text: string): T | null {
-  const trimmed = text.trim();
-  const fenceMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
-  const candidate = fenceMatch ? fenceMatch[1] : trimmed;
-  try {
-    return JSON.parse(candidate) as T;
-  } catch {
-    return null;
-  }
-}
 
 /**
  * Critic Agent 직접 호출 (서버 내부에서 fetch 우회).
