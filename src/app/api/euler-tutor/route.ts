@@ -1,14 +1,23 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
-import { generateText, streamText, type LanguageModelV1 } from "ai";
+import { generateText, streamText, StreamData, type LanguageModelV1 } from "ai";
 import { NextResponse } from "next/server";
 import { EULER_SYSTEM_PROMPT } from "@/lib/ai/euler-prompt";
 import { getSolution } from "@/lib/solution-cache";
 import { runCritic } from "@/lib/euler/critic-client";
-import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-prompt";
+import {
+  buildManagerPrompt,
+  effectiveDifficulty,
+  shouldRunRecursiveChain,
+  type ManagerResult,
+} from "@/lib/ai/euler-manager-prompt";
 import { retrieveTools } from "@/lib/euler/retriever";
 import { runReasonerStep } from "@/lib/euler/reasoner";
 import { runReasonerWithTools } from "@/lib/euler/reasoner-with-tools";
+import {
+  recursiveBackwardChain,
+  chainToCoachingText,
+} from "@/lib/euler/recursive-reasoner";
 import { REASONER_THRESHOLD_BY_AREA, normalizeArea } from "@/lib/ai/euler-tools-schema";
 import { crossCheck } from "@/lib/euler/cross-check";
 import { buildWolframQuery } from "@/lib/euler/wolfram-query-builder";
@@ -183,6 +192,9 @@ ${result.verified
     // Manager + Retriever (첫 user 메시지의 문제 본문에 대해서만 — 후속 코칭 턴은 스킵)
     let managerContext = "";
     let retrievedContext = "";
+    let chainContext = "";
+    // Phase G-02: client 시각화용 chain payload (BackwardChain 컴포넌트가 useChat data 로 수신)
+    const streamData = new StreamData();
     const isFirstTurn = messages.filter((m: { role: string }) => m.role === "assistant").length === 0;
     const problemText = firstUserText(messages);
     if (MANAGER_ENABLED && isFirstTurn && problemText && problemText.length >= 5) {
@@ -213,8 +225,12 @@ ${mgr.conditions.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}
             });
           }
 
+          // Phase G-02: Manager 가 layer_6_difficulty 를 보낸 경우 그 값을 우선.
+          // 단순 difficulty 만 보낸 경우 fallback.
+          const eff = effectiveDifficulty(mgr);
+
           // 난이도 4+ 또는 conditions/goal 충실 시 Retriever 호출
-          if (mgr.difficulty >= 4 || mgr.conditions.length >= 2) {
+          if (eff >= 4 || mgr.conditions.length >= 2) {
             const tools = await retrieveTools({
               conditions: mgr.conditions,
               goal: mgr.goal,
@@ -252,13 +268,68 @@ ${tools
           // F-09 fix: Manager 가 한글 area 를 반환할 수 있으므로 normalize.
           const normalizedArea = normalizeArea(mgr.area);
           const areaThreshold = REASONER_THRESHOLD_BY_AREA[normalizedArea] ?? REASONER_MIN_DIFFICULTY;
+          // Phase G-02: Recursive Chain — 도구 비자명성(layer_6_difficulty) 5+ 일 때만
+          const runChain = REASONER_ENABLED && shouldRunRecursiveChain(mgr);
           console.log(
-            `[euler-tutor] manager: area="${mgr.area}" → "${normalizedArea}" difficulty=${mgr.difficulty} threshold=${areaThreshold} reasoner=${mgr.difficulty >= areaThreshold ? "Y" : "N"}`
+            `[euler-tutor] manager: area="${mgr.area}" → "${normalizedArea}" eff=${eff} (l6=${mgr.layer_6_difficulty ?? "?"}, comp=${mgr.computational_load ?? "?"}) threshold=${areaThreshold} reasoner=${eff >= areaThreshold ? "Y" : "N"} chain=${runChain ? "Y" : "N"}`
           );
           // Reasoner-with-tools 가 활성화되면 BFS 는 중복이므로 skip (속도 절약 ~8s)
           const willUseTools = !useGpt && !!process.env.EULER_SYMPY_URL;
-          const runBFS = REASONER_ENABLED && mgr.difficulty >= areaThreshold && !willUseTools;
-          const runTools = REASONER_ENABLED && mgr.difficulty >= areaThreshold && willUseTools;
+          const runBFS = REASONER_ENABLED && eff >= areaThreshold && !willUseTools;
+          const runTools = REASONER_ENABLED && eff >= areaThreshold && willUseTools;
+          // Phase G-02: Recursive Backward Chain — 도구 비자명성이 큰 문제만.
+          // BFS / with-tools 와 sequential (병렬화는 후속). chain 평균 7s.
+          if (runChain) {
+            try {
+              const chainRes = await recursiveBackwardChain({
+                problem: problemText,
+                conditions: mgr.conditions,
+                goal: mgr.goal,
+                maxDepth: 5,
+                useGpt: !!useGpt,
+              });
+              if (chainRes.chain.length > 0) {
+                chainContext = `\n\n## Recursive Backward Chain (Phase G-02 — 학생 코칭용 사고 경로)
+${chainToCoachingText(chainRes)}
+
+위 chain 을 학생에게 "선생님은 이렇게 생각했어요" 라고 자연스럽게 노출하되, 단계별로 학생이 먼저 떠올릴 기회를 주세요. 한 번에 모든 depth 를 쏟아내지 말고 학생이 막힌 지점의 다음 노드 1개만 질문 형태로 제시하세요.`;
+                // 시각화용 payload — ai SDK JSONValue 호환을 위해 plain object 로 직렬화
+                streamData.append({
+                  kind: "recursive_chain",
+                  termination: chainRes.termination,
+                  used_tools: chainRes.used_tools,
+                  duration_ms: chainRes.duration_ms,
+                  chain: chainRes.chain.map((n) => ({
+                    depth: n.depth,
+                    goal: n.goal,
+                    tool: n.tool ?? null,
+                    rationale: n.rationale,
+                    next_subgoal: n.next_subgoal ?? null,
+                    reached_conditions: n.reached_conditions,
+                  })),
+                });
+                console.log(
+                  `[euler-tutor] recursive-chain: depth=${chainRes.chain.length} termination=${chainRes.termination} ${chainRes.duration_ms}ms`
+                );
+                // chain 의 used_tools 도 candidate_tools 보고
+                if (chainRes.used_tools.length) {
+                  const sourceKey = problemInfo
+                    ? `${problemInfo.year}_${problemInfo.type}_${problemInfo.number}`
+                    : null;
+                  void reportTools(
+                    chainRes.used_tools.map((tool) => ({
+                      proposed_name: tool,
+                      proposed_layer: 6,
+                      source_problem_key: sourceKey ?? undefined,
+                    }))
+                  ).catch((e) => console.warn("[euler-tutor] chain tool report failed:", e));
+                }
+              }
+            } catch (e) {
+              console.warn("[euler-tutor] recursive-chain skipped:", e);
+            }
+          }
+
           if (runBFS || runTools) {
             try {
               let usedToolsForReport: string[] = [];
@@ -313,12 +384,12 @@ ${tooled.text}
                     // (wolfram_query / plot_* 자체 호출은 제외)
                     if (!CROSSCHECK_ENABLED) {
                       console.log(`[euler-tutor] crosscheck skipped: env disabled`);
-                    } else if (mgr.difficulty < CROSSCHECK_MIN_DIFFICULTY) {
+                    } else if (eff < CROSSCHECK_MIN_DIFFICULTY) {
                       console.log(
-                        `[euler-tutor] crosscheck skipped: difficulty=${mgr.difficulty} < min=${CROSSCHECK_MIN_DIFFICULTY}`
+                        `[euler-tutor] crosscheck skipped: eff=${eff} < min=${CROSSCHECK_MIN_DIFFICULTY}`
                       );
                     }
-                    if (CROSSCHECK_ENABLED && mgr.difficulty >= CROSSCHECK_MIN_DIFFICULTY) {
+                    if (CROSSCHECK_ENABLED && eff >= CROSSCHECK_MIN_DIFFICULTY) {
                       const checkable = [...tooled.used_tools]
                         .reverse()
                         .find(
@@ -404,10 +475,10 @@ ${cc.verified
 
 첫 메시지라면 따뜻하게 인사하고, 학생에게 문제를 보여달라고 요청하세요.
 "안녕! ${tutorName}예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"
-학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${lockNote}${solutionContext}${managerContext}${retrievedContext}${criticContext}`;
+학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${lockNote}${solutionContext}${managerContext}${retrievedContext}${chainContext}${criticContext}`;
 
     console.log(
-      `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} messages=${messages.length}`
+      `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} chain=${chainContext ? "Y" : "N"} messages=${messages.length}`
     );
 
     // C-06: 풀이 1건이 시작되는 시점(첫 user turn) 에 비동기 로그 적재
@@ -432,9 +503,13 @@ ${cc.verified
       model,
       system: systemPrompt,
       messages,
+      onFinish: () => {
+        // Phase G-02: stream 종료 시 streamData 닫기 (chain payload 포함)
+        void streamData.close();
+      },
     });
 
-    return result.toDataStreamResponse();
+    return result.toDataStreamResponse({ data: streamData });
   } catch (err) {
     console.error("euler-tutor error:", err);
     return NextResponse.json({ error: "요청 처리 중 오류가 발생했습니다." }, { status: 500 });
