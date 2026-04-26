@@ -255,42 +255,50 @@ ${tools
           console.log(
             `[euler-tutor] manager: area="${mgr.area}" → "${normalizedArea}" difficulty=${mgr.difficulty} threshold=${areaThreshold} reasoner=${mgr.difficulty >= areaThreshold ? "Y" : "N"}`
           );
-          if (REASONER_ENABLED && mgr.difficulty >= areaThreshold) {
+          // Reasoner-with-tools 가 활성화되면 BFS 는 중복이므로 skip (속도 절약 ~8s)
+          const willUseTools = !useGpt && !!process.env.EULER_SYMPY_URL;
+          const runBFS = REASONER_ENABLED && mgr.difficulty >= areaThreshold && !willUseTools;
+          const runTools = REASONER_ENABLED && mgr.difficulty >= areaThreshold && willUseTools;
+          if (runBFS || runTools) {
             try {
-              const bfs = await runReasonerStep({
-                state: {
-                  problem: problemText,
-                  variables: mgr.variables,
-                  conditions: mgr.conditions,
-                  goal: mgr.goal,
-                  depth: 0,
-                },
-                useGpt: !!useGpt,
-              });
-              const factsSection = bfs.facts.length
-                ? `\n\n## Reasoner Forward — 도출 가능한 사실 (학생에게 직접 알려주지 마세요)
+              let usedToolsForReport: string[] = [];
+              if (runBFS) {
+                const bfs = await runReasonerStep({
+                  state: {
+                    problem: problemText,
+                    variables: mgr.variables,
+                    conditions: mgr.conditions,
+                    goal: mgr.goal,
+                    depth: 0,
+                  },
+                  useGpt: !!useGpt,
+                });
+                const factsSection = bfs.facts.length
+                  ? `\n\n## Reasoner Forward — 도출 가능한 사실 (학생에게 직접 알려주지 마세요)
 ${bfs.facts.slice(0, 6).map((f, i) => `  ${i + 1}. ${f.fact}${f.tool ? ` [${f.tool}]` : ""} — ${f.rationale}`).join("\n")}`
-                : "";
-              const subgoalsSection = bfs.subgoals.length
-                ? `\n\n## Reasoner Backward — 가능한 중간 목표
+                  : "";
+                const subgoalsSection = bfs.subgoals.length
+                  ? `\n\n## Reasoner Backward — 가능한 중간 목표
 ${bfs.subgoals.slice(0, 5).map((s, i) => `  ${i + 1}. ${s.subgoal}${s.tool ? ` [${s.tool}]` : ""} — ${s.rationale}`).join("\n")}`
-                : "";
-              if (factsSection || subgoalsSection) {
-                retrievedContext += factsSection + subgoalsSection;
+                  : "";
+                if (factsSection || subgoalsSection) {
+                  retrievedContext += factsSection + subgoalsSection;
+                }
+                usedToolsForReport = bfs.used_tools;
+                console.log(
+                  `[euler-tutor] reasoner: ${bfs.facts.length} facts / ${bfs.subgoals.length} subgoals / ${bfs.duration_ms}ms`
+                );
               }
-              console.log(
-                `[euler-tutor] reasoner: ${bfs.facts.length} facts / ${bfs.subgoals.length} subgoals / ${bfs.duration_ms}ms`
-              );
 
               // D-05 + F-07: Tool calling 으로 보강된 결과 (오일러 + SymPy URL 설정 시만)
               // 영역별 tool 부분집합을 사용해 컨텍스트 절약 + LLM 의 tool 선택 정확도 ↑
-              if (!useGpt && process.env.EULER_SYMPY_URL) {
+              if (runTools) {
                 try {
                   const tooled = await runReasonerWithTools({
                     problem: problemText,
                     conditions: mgr.conditions,
                     goal: mgr.goal,
-                    maxSteps: 5,
+                    maxSteps: 3,
                     area: normalizedArea,
                   });
                   if (tooled && tooled.text) {
@@ -366,12 +374,12 @@ ${cc.verified
               }
 
               // C-05: Reasoner 가 사용한 도구를 candidate_tools 에 fire-and-forget 보고
-              if (bfs.used_tools.length) {
+              if (usedToolsForReport.length) {
                 const sourceKey = problemInfo
                   ? `${problemInfo.year}_${problemInfo.type}_${problemInfo.number}`
                   : null;
                 void reportTools(
-                  bfs.used_tools.map((tool) => ({
+                  usedToolsForReport.map((tool) => ({
                     proposed_name: tool,
                     proposed_layer: 6,
                     source_problem_key: sourceKey ?? undefined,
