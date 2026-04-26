@@ -277,18 +277,27 @@ export const EULER_TOOLS_BY_AREA: Record<string, string[]> = {
 
 /**
  * 영역별 Reasoner 호출 임계값.
- * 미적분·기하·확통은 LLM 환각 위험이 더 일찍 시작 → 난이도 4+ 부터 도구 호출.
- * 중학·공통은 5+ 부터.
+ *
+ * Phase F 학생 신뢰 우선 정책 (2026-04-26):
+ *   "선생님이 진짜 답을 정확히 알아야 학생이 믿음을 가진다."
+ *   → 단발 풀이라도 LLM 환각 위험이 있는 영역은 SymPy 호출.
+ *
+ * - math2/calculus: 정적분/극한/방정식은 Sonnet 도 환각 — 거의 항상 SymPy
+ * - middle/common/math1/probability/geometry: 표준 문제도 검증
+ * - free: BFS 부담 큼 — 4+ 만
+ *
+ * Wolfram cross-check 는 별도 임계값 (EULER_CROSSCHECK_MIN_DIFFICULTY, 기본 4)
+ * 으로 보호 — Wolfram quota 절약.
  */
 export const REASONER_THRESHOLD_BY_AREA: Record<string, number> = {
-  middle: 5,
-  common: 5,
-  math1: 4,
-  math2: 4,
-  calculus: 4,
-  probability: 4,
-  geometry: 4,
-  free: 5,
+  middle: 3,
+  common: 3,
+  math1: 3,
+  math2: 2,
+  calculus: 2,
+  probability: 3,
+  geometry: 3,
+  free: 4,
 };
 
 /**
