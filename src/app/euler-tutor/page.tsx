@@ -16,6 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { InlineHandwritePanel } from "@/components/euler/InlineHandwritePanel";
+import { BackwardChain, pickLatestChain } from "@/components/euler/BackwardChain";
 
 type Phase = "select" | "past-exam" | "chat";
 type InputMode = "text" | "photo" | "handwrite" | "voice";
@@ -35,11 +36,14 @@ export default function EulerTutorPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, status, append, setMessages, setInput } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, status, append, setMessages, setInput, data, setData } =
     useChat({
       api: "/api/euler-tutor",
       body: { area, useGpt, input_mode: inputMode },
     });
+
+  // Phase G-02: route.ts (G02-C) 가 streamData 로 흘려보낸 chain payload 추출
+  const recursiveChain = pickLatestChain(data);
 
   // URL ?openHandwrite=1 또는 sessionStorage 에 필기 결과가 있으면 자동 처리
   useEffect(() => {
@@ -238,11 +242,12 @@ export default function EulerTutorPage() {
       if (!ok) return;
     }
     setMessages([]);
+    setData(undefined); // Phase G-02: 이전 chain payload 초기화
     setImagePreview(null);
     setInput("");
     setInputMode("text");
     if (fileInputRef.current) fileInputRef.current.value = "";
-  }, [messages.length, setMessages, setInput]);
+  }, [messages.length, setMessages, setData, setInput]);
 
   // 선택 화면
   if (phase === "select") {
@@ -524,9 +529,12 @@ export default function EulerTutorPage() {
           )}
 
           <AnimatePresence initial={false}>
-            {messages.map((m) => (
+            {messages.map((m, idx) => {
+              const firstUserIdx = messages.findIndex((mm) => mm.role === "user");
+              const isFirstUser = m.role === "user" && idx === firstUserIdx;
+              return (
+              <div key={m.id}>
               <motion.div
-                key={m.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className={`flex ${m.role === "user" ? "justify-end" : "justify-start gap-2"}`}
@@ -567,7 +575,13 @@ export default function EulerTutorPage() {
                   )}
                 </div>
               </motion.div>
-            ))}
+              {/* Phase G-02: 첫 user 메시지 직후에 chain 시각화 (난이도 5+ 만 도착) */}
+              {isFirstUser && recursiveChain && (
+                <BackwardChain payload={recursiveChain} className="max-w-3xl" />
+              )}
+              </div>
+              );
+            })}
           </AnimatePresence>
 
           {(status === "streaming" || status === "submitted") && messages[messages.length - 1]?.role !== "assistant" && (
