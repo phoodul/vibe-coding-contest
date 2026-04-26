@@ -278,26 +278,30 @@ export const EULER_TOOLS_BY_AREA: Record<string, string[]> = {
 /**
  * 영역별 Reasoner 호출 임계값.
  *
- * Phase F 학생 신뢰 우선 정책 (2026-04-26):
- *   "선생님이 진짜 답을 정확히 알아야 학생이 믿음을 가진다."
- *   → 단발 풀이라도 LLM 환각 위험이 있는 영역은 SymPy 호출.
+ * Phase F 균형 정책 (2026-04-26 사용자 피드백 반영):
+ *   "단순 계산은 LLM도 잘 푼다. SymPy 는 어려운 문제만."
  *
- * - math2/calculus: 정적분/극한/방정식은 Sonnet 도 환각 — 거의 항상 SymPy
- * - middle/common/math1/probability/geometry: 표준 문제도 검증
- * - free: BFS 부담 큼 — 4+ 만
+ * 사용자 통찰: difficulty 2 (단발 풀이) 는 Sonnet 4.6 이 정확히 처리 가능.
+ *   - 단순 정적분, 이차방정식 풀이 등은 LLM 단독으로 충분
+ *   - SymPy 호출은 ~10초 추가 비용
+ *   - 학생 신뢰는 "복잡 문제 정답" 에서 갈린다 — 단순 문제는 LLM
  *
- * Wolfram cross-check 는 별도 임계값 (EULER_CROSSCHECK_MIN_DIFFICULTY, 기본 4)
- * 으로 보호 — Wolfram quota 절약.
+ * 따라서 임계값을 3+ 로 올림 (단순 문제 = LLM 단독, 빠름):
+ *   - difficulty 2: LLM 단독 (~7s 응답)
+ *   - difficulty 3+: with-tools (~17s 응답, 환각 차단)
+ *   - difficulty 6+: + Wolfram cross-check (~22s)
+ *
+ * 단, calculus (초월함수 적분) 는 difficulty 3 부터 SymPy — Sonnet 환각 위험 큼.
  */
 export const REASONER_THRESHOLD_BY_AREA: Record<string, number> = {
-  middle: 3,
-  common: 3,
-  math1: 3,
-  math2: 2,
-  calculus: 2,
-  probability: 3,
-  geometry: 3,
-  free: 4,
+  middle: 4,
+  common: 4,
+  math1: 4,
+  math2: 4,
+  calculus: 3,
+  probability: 4,
+  geometry: 4,
+  free: 5,
 };
 
 /**
