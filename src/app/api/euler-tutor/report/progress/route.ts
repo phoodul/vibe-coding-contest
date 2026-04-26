@@ -86,6 +86,22 @@ export async function GET(req: Request) {
       .slice(0, 10)
       .map(([name, count]) => ({ name, count }));
 
+    // 리포트 게이트 — 사용자 전체 누적 (window 무관) 첫 풀이 시점 + 총 풀이 수
+    const { data: firstSolve } = await supabase
+      .from("euler_solve_logs")
+      .select("created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    const { count: totalEverCount } = await supabase
+      .from("euler_solve_logs")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id);
+
+    const firstSolveAt = (firstSolve as { created_at: string } | null)?.created_at ?? null;
+    const totalEver = totalEverCount ?? 0;
+
     return NextResponse.json({
       window_days: days,
       total_attempts: (logs ?? []).length,
@@ -95,6 +111,9 @@ export async function GET(req: Request) {
       area_distribution: Array.from(areaFreq.entries()).map(([area, count]) => ({ area, count })),
       distinct_tools_used: distinctTools,
       top_tools: topTools,
+      // 리포트 게이트 메타 (페이지에서 7일 + 10문제 검증)
+      first_solve_at: firstSolveAt,
+      total_solves_ever: totalEver,
     });
   } catch (err) {
     console.error("euler-progress error:", err);

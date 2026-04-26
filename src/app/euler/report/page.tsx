@@ -47,6 +47,17 @@ interface ProgressReport {
   area_distribution: { area: string; count: number }[];
   distinct_tools_used: number;
   top_tools: { name: string; count: number }[];
+  first_solve_at: string | null;
+  total_solves_ever: number;
+}
+
+const REPORT_MIN_DAYS = 7;
+const REPORT_MIN_PROBLEMS = 10;
+
+function daysSince(iso: string | null): number {
+  if (!iso) return 0;
+  const ms = Date.now() - new Date(iso).getTime();
+  return Math.floor(ms / (24 * 3600 * 1000));
 }
 
 const LEVEL_COLOR: Record<Level, string> = {
@@ -130,6 +141,13 @@ export default function EulerReportPage() {
       ? Math.round((progress.total_correct / progress.total_attempts) * 100)
       : 0;
 
+  // 리포트 자격 검사 — 첫 풀이 후 7일 경과 + 누적 10문제 풀이
+  const daysElapsed = daysSince(progress?.first_solve_at ?? null);
+  const totalEver = progress?.total_solves_ever ?? 0;
+  const eligibleDays = daysElapsed >= REPORT_MIN_DAYS;
+  const eligibleProblems = totalEver >= REPORT_MIN_PROBLEMS;
+  const eligible = eligibleDays && eligibleProblems;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 text-white">
       <div className="max-w-5xl mx-auto px-4 py-8">
@@ -145,14 +163,59 @@ export default function EulerReportPage() {
           </Link>
         </div>
 
-        {/* 요약 카드 */}
+        {/* 자격 미달 안내 */}
+        {!eligible && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 to-violet-500/10 border border-amber-400/30"
+          >
+            <h2 className="text-lg font-bold mb-2">📚 리포트 준비 중</h2>
+            <p className="text-sm text-white/70 mb-4">
+              정확한 약점 진단을 위해 <strong>최소 {REPORT_MIN_PROBLEMS}문제 풀이</strong> + <strong>{REPORT_MIN_DAYS}일</strong> 학습 데이터가 필요해요.
+              꾸준히 풀어주시면 일주일 후부터 매주 새 리포트가 생성됩니다.
+            </p>
+            <div className="space-y-3">
+              <Progress
+                label="문제 풀이"
+                current={Math.min(totalEver, REPORT_MIN_PROBLEMS)}
+                target={REPORT_MIN_PROBLEMS}
+                done={eligibleProblems}
+                hint={`${totalEver} / ${REPORT_MIN_PROBLEMS}문제`}
+              />
+              <Progress
+                label="학습 기간"
+                current={Math.min(daysElapsed, REPORT_MIN_DAYS)}
+                target={REPORT_MIN_DAYS}
+                done={eligibleDays}
+                hint={
+                  progress?.first_solve_at
+                    ? `${daysElapsed} / ${REPORT_MIN_DAYS}일 (시작: ${progress.first_solve_at.slice(0, 10)})`
+                    : "아직 풀이 기록이 없어요"
+                }
+              />
+            </div>
+            <Link
+              href="/euler-tutor"
+              className="mt-5 inline-block px-4 py-2 rounded-lg bg-violet-500 hover:bg-violet-400 text-white text-sm font-semibold transition-colors"
+            >
+              지금 풀이 시작하기 →
+            </Link>
+          </motion.div>
+        )}
+
+        {/* 요약 카드 — 자격 충족 시만 */}
+        {eligible && (
         <div className="grid grid-cols-3 gap-3 mb-8">
           <SummaryCard label="풀이 수" value={progress?.total_attempts ?? 0} />
           <SummaryCard label="정답률" value={`${accuracy}%`} />
           <SummaryCard label="사용한 도구" value={progress?.distinct_tools_used ?? 0} />
         </div>
+        )}
 
-        {/* WeaknessReport */}
+        {/* 자격 충족 시만 표시 */}
+        {eligible && (
+        <>
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-3">막힘 패턴</h2>
           {weakness && weakness.items.some((i) => i.raw_count > 0) ? (
@@ -197,6 +260,43 @@ export default function EulerReportPage() {
             </div>
           )}
         </section>
+        </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Progress({
+  label,
+  current,
+  target,
+  done,
+  hint,
+}: {
+  label: string;
+  current: number;
+  target: number;
+  done: boolean;
+  hint: string;
+}) {
+  const pct = Math.min(100, Math.round((current / target) * 100));
+  return (
+    <div>
+      <div className="flex items-center justify-between text-xs text-white/70 mb-1.5">
+        <span className="font-medium">
+          {done ? "✓ " : ""}
+          {label}
+        </span>
+        <span className="tabular-nums">{hint}</span>
+      </div>
+      <div className="h-2 rounded-full bg-white/5 overflow-hidden">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.6 }}
+          className={`h-full ${done ? "bg-emerald-400/70" : "bg-violet-400/60"}`}
+        />
       </div>
     </div>
   );
