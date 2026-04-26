@@ -9,10 +9,27 @@
       "name": "중복순열 nΠr",
       "knowledge_layer": 4,
       "formula_latex": "{}_n \\Pi_r = n^r",
-      "prerequisites": ["곱의 법칙"],
+      "prerequisites": [
+        "곱의 법칙"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "n개에서 r개를 중복허용·순서 있게 뽑기", "derived_fact": "n^r", "why": "각 자리마다 n 가지 독립 선택" }
+        {
+          "direction": "forward",
+          "condition": "n개에서 r개를 중복허용·순서 있게 뽑기",
+          "derived_fact": "n^r",
+          "why": "각 자리마다 n 가지 독립 선택"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "전체 경우의 수가 n^r 형태로 주어졌을 때, 그것이 어떤 상황을 나타내는지 해석하기",
+          "premises": [
+            "r개의 독립적인 선택 단계가 있는가",
+            "각 단계마다 정확히 n가지 옵션이 반복 가능한가",
+            "선택 순서가 구별되는가"
+          ],
+          "why": "결과값 n^r을 역으로 보면 '몇 개 자리(r)에 몇 가지 선택지(n)씩 있는 구조'를 파악하는 과정이므로, 중복순열이 숨겨진 모델임을 찾아내는 데 유용"
+        }
       ]
     },
     {
@@ -20,10 +37,27 @@
       "name": "원순열",
       "knowledge_layer": 4,
       "formula_latex": "(n-1)!",
-      "prerequisites": ["순열"],
+      "prerequisites": [
+        "순열"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "n명을 원형 배치", "derived_fact": "(n-1)!", "why": "회전 동치류로 나누면 한 명 고정" }
+        {
+          "direction": "forward",
+          "condition": "n명을 원형 배치",
+          "derived_fact": "(n-1)!",
+          "why": "회전 동치류로 나누면 한 명 고정"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "원형 배치에서 서로 다른 배열의 개수가 (n-1)! 임을 확인하고 싶을 때",
+          "premises": [
+            "n명을 일렬로 배열하는 경우의 수 n!을 알고 있음",
+            "원형 배치에서는 회전을 같은 것으로 봐야 한다는 조건을 인식함",
+            "각 원형 배치가 정확히 n가지 일렬 배열에 대응됨을 파악함"
+          ],
+          "why": "목표 답 (n-1)!에 도달하려면 일렬 순열 n!을 회전 대칭의 개수 n으로 나누는 역산 논리가 필요하기 때문"
+        }
       ]
     },
     {
@@ -31,10 +65,27 @@
       "name": "같은 것이 있는 순열",
       "knowledge_layer": 4,
       "formula_latex": "\\frac{n!}{p! \\cdot q! \\cdot r!}",
-      "prerequisites": ["순열"],
+      "prerequisites": [
+        "순열"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "동종 항목이 반복", "derived_fact": "동치 순열로 나눔", "why": "구분 불가능한 동일 그룹의 내부 순열로 나눠 보정" }
+        {
+          "direction": "forward",
+          "condition": "동종 항목이 반복",
+          "derived_fact": "동치 순열로 나눔",
+          "why": "구분 불가능한 동일 그룹의 내부 순열로 나눠 보정"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "전체 순열 개수를 알고 있는데, 어떤 항목들이 같은 것으로 취급되었는지 역으로 파악하거나 검증",
+          "premises": [
+            "n개 항목을 배열했을 때의 총 순열 수",
+            "n! 값",
+            "구해진 순열 수가 n!보다 작다는 사실"
+          ],
+          "why": "주어진 순열 결과값으로부터 분모에 숨겨진 중복 인수분해 구조를 찾아내면, 어느 항목군이 동일 취급되었고 각각 몇 개씩 반복되었는지 역추론 가능"
+        }
       ]
     },
     {
@@ -42,10 +93,27 @@
       "name": "중복조합 nHr",
       "knowledge_layer": 5,
       "formula_latex": "{}_n H_r = {}_{n+r-1} C_r",
-      "prerequisites": ["조합"],
+      "prerequisites": [
+        "조합"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "n 종에서 r 개를 중복허용·순서 무관 선택", "derived_fact": "막대-별 모형으로 (n+r-1)Cr", "why": "동일 항목 그룹화 — 막대 n-1개와 별 r개 배치" }
+        {
+          "direction": "forward",
+          "condition": "n 종에서 r 개를 중복허용·순서 무관 선택",
+          "derived_fact": "막대-별 모형으로 (n+r-1)Cr",
+          "why": "동일 항목 그룹화 — 막대 n-1개와 별 r개 배치"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "조합 계산 결과가 n+r-1 C r 형태인데, 원래 문제 상황이 뭐였을까?",
+          "premises": [
+            "조합 nCr을 계산했더니 분자·분모가 연속된 정수들의 곱",
+            "문제에서 '종류' 개수와 '선택' 개수가 주어졌는데, 직접 조합식이 이상한 형태",
+            "같은 것을 여러 번 선택해도 되는 상황일 가능성 의심"
+          ],
+          "why": "조합 형태의 답이 나왔으면, 그것이 중복조합 공식의 변형 형태인지 역으로 확인하면 원 문제가 실은 중복조합이었음을 깨닫는 길"
+        }
       ]
     },
     {
@@ -53,10 +121,25 @@
       "name": "조합의 분할 정리",
       "knowledge_layer": 5,
       "formula_latex": "{}_n C_r = {}_{n-1} C_{r-1} + {}_{n-1} C_r",
-      "prerequisites": ["조합"],
+      "prerequisites": [
+        "조합"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "조합 항등식 증명", "premises": ["특정 원소 포함 vs 미포함 분할"], "why": "이항계수의 파스칼 항등식 — 한 원소 기준 케이스 분해" }
+        {
+          "direction": "backward",
+          "goal_pattern": "조합 항등식 증명",
+          "premises": [
+            "특정 원소 포함 vs 미포함 분할"
+          ],
+          "why": "이항계수의 파스칼 항등식 — 한 원소 기준 케이스 분해"
+        },
+        {
+          "direction": "forward",
+          "condition": "n명 중 r명을 선택하는데, 특정 1명이 반드시 포함되어야 하는 경우와 제외되는 경우를 따로 세어야 할 때",
+          "derived_fact": "전체 조합의 개수는 그 특정 인물을 포함한 경우의 수와 제외한 경우의 수의 합으로 분해된다",
+          "why": "한 원소의 포함 여부로 전체 집합을 두 개의 겹치지 않는 부분집합으로 나눌 수 있으므로, 각 부분의 경우의 수를 더하면 전체가 된다"
+        }
       ]
     },
     {
@@ -64,10 +147,27 @@
       "name": "이항계수 항등식 (대칭·합)",
       "knowledge_layer": 5,
       "formula_latex": "{}_n C_r = {}_n C_{n-r};\\;\\; \\sum_{k=0}^{n} {}_n C_k = 2^n",
-      "prerequisites": ["조합"],
+      "prerequisites": [
+        "조합"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "조합 합·대칭 활용", "derived_fact": "패턴 인식으로 즉시 산출", "why": "(1+1)^n 의 이항전개 + 부분집합 카운팅" }
+        {
+          "direction": "forward",
+          "condition": "조합 합·대칭 활용",
+          "derived_fact": "패턴 인식으로 즉시 산출",
+          "why": "(1+1)^n 의 이항전개 + 부분집합 카운팅"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "n개 원소 집합의 부분집합 개수를 구해야 할 때",
+          "premises": [
+            "집합의 크기가 n으로 정해져 있음",
+            "크기별 부분집합의 개수를 합쳐야 한다는 것을 인식",
+            "크기 k인 부분집합의 개수가 nCk임을 알고 있음"
+          ],
+          "why": "부분집합 총 개수라는 목표에서 거꾸로 생각하면, 각 크기별 조합의 합이 정확히 2^n이 된다는 항등식이 핵심 도구가 된다."
+        }
       ]
     },
     {
@@ -75,10 +175,28 @@
       "name": "확률의 덧셈정리",
       "knowledge_layer": 4,
       "formula_latex": "P(A \\cup B) = P(A) + P(B) - P(A \\cap B)",
-      "prerequisites": ["확률 정의"],
+      "prerequisites": [
+        "확률 정의"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 사건 중 적어도 하나", "derived_fact": "교집합 보정", "why": "이중 카운트 방지" }
+        {
+          "direction": "forward",
+          "condition": "두 사건 중 적어도 하나",
+          "derived_fact": "교집합 보정",
+          "why": "이중 카운트 방지"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "두 사건의 교집합 확률을 알아야 하는데 합집합과 개별 확률만 주어졌을 때",
+          "premises": [
+            "합집합의 확률 P(A ∪ B)을 알고 있거나 구할 수 있음",
+            "각 사건의 개별 확률 P(A)와 P(B)를 알고 있음"
+          ],
+          "why": "덧셈정리를 P(A ∩ B) = P(A) + P(B) - P(A ∪ B)로 재정렬하면, 교집합 확률을 역으로 계산할 수 있기 때문"
+        }
       ]
     },
     {
@@ -86,10 +204,28 @@
       "name": "조건부확률",
       "knowledge_layer": 5,
       "formula_latex": "P(A|B) = \\frac{P(A \\cap B)}{P(B)}",
-      "prerequisites": ["확률"],
+      "prerequisites": [
+        "확률"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "사건 B가 일어났을 때 A 의 확률", "derived_fact": "A∩B 를 B 로 정규화", "why": "표본공간을 B 로 좁힘" }
+        {
+          "direction": "forward",
+          "condition": "사건 B가 일어났을 때 A 의 확률",
+          "derived_fact": "A∩B 를 B 로 정규화",
+          "why": "표본공간을 B 로 좁힘"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "두 사건의 교집합 확률을 직접 구하기 어려울 때",
+          "premises": [
+            "조건부확률 P(A|B)의 값을 알고 있거나 구할 수 있는 상태",
+            "사건 B가 일어날 확률 P(B)를 알고 있는 상태"
+          ],
+          "why": "P(A∩B) = P(A|B) × P(B) 형태로 변형하면, 조건부확률과 단순확률의 곱으로 교집합을 간접적으로 계산할 수 있기 때문"
+        }
       ]
     },
     {
@@ -97,10 +233,27 @@
       "name": "확률의 곱셈정리",
       "knowledge_layer": 5,
       "formula_latex": "P(A \\cap B) = P(A) P(B|A) = P(B) P(A|B)",
-      "prerequisites": ["조건부확률"],
+      "prerequisites": [
+        "조건부확률"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 사건이 잇따라 일어남", "derived_fact": "조건부 확률을 통한 분해", "why": "조건부확률 정의의 양변 정리" }
+        {
+          "direction": "forward",
+          "condition": "두 사건이 잇따라 일어남",
+          "derived_fact": "조건부 확률을 통한 분해",
+          "why": "조건부확률 정의의 양변 정리"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 사건의 교집합 확률을 직접 계산할 수 없을 때, 조건부확률로 우회해서 구하기",
+          "premises": [
+            "사건 A가 일어날 확률을 알고 있음",
+            "A가 일어났을 때 B가 일어날 조건부확률을 알고 있음",
+            "A와 B의 교집합 확률이 필요함"
+          ],
+          "why": "교집합을 직접 세기 어려울 때, 이미 알고 있는 한 사건의 확률과 그 이후 조건부확률을 곱하면 교집합 확률에 도달할 수 있기 때문"
+        }
       ]
     },
     {
@@ -108,10 +261,26 @@
       "name": "사건의 독립",
       "knowledge_layer": 4,
       "formula_latex": "A,B \\text{ 독립} \\Leftrightarrow P(A \\cap B) = P(A) P(B)",
-      "prerequisites": ["확률"],
+      "prerequisites": [
+        "확률"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "사건이 서로 영향이 없음", "derived_fact": "확률의 단순 곱", "why": "B 발생이 A 확률을 바꾸지 않을 때" }
+        {
+          "direction": "forward",
+          "condition": "사건이 서로 영향이 없음",
+          "derived_fact": "확률의 단순 곱",
+          "why": "B 발생이 A 확률을 바꾸지 않을 때"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 사건의 교집합 확률을 곱셈으로 계산하고 싶음",
+          "premises": [
+            "P(A)와 P(B)를 각각 알고 있음",
+            "A와 B가 서로 독립임을 확인 또는 가정할 수 있음"
+          ],
+          "why": "교집합 확률을 직접 구하기 어려울 때, 독립성이 있으면 각 확률의 곱으로 바로 구할 수 있기 때문"
+        }
       ]
     },
     {
@@ -119,10 +288,25 @@
       "name": "전확률 정리",
       "knowledge_layer": 5,
       "formula_latex": "P(A) = \\sum_i P(B_i) P(A|B_i)\\;(B_i \\text{ 분할})",
-      "prerequisites": ["조건부확률"],
+      "prerequisites": [
+        "조건부확률"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "복합 사건의 전체 확률", "premises": ["배반 분할"], "why": "표본공간 분할 후 각 부분의 확률 가중합" }
+        {
+          "direction": "backward",
+          "goal_pattern": "복합 사건의 전체 확률",
+          "premises": [
+            "배반 분할"
+          ],
+          "why": "표본공간 분할 후 각 부분의 확률 가중합"
+        },
+        {
+          "direction": "forward",
+          "condition": "여러 원인(B₁, B₂, ...)으로부터 같은 결과(A)가 발생할 때, 각 원인별 조건부확률을 알고 있으면",
+          "derived_fact": "전체 결과 A가 일어날 확률은 각 원인의 확률과 그 원인 하에서의 결과 확률의 곱들을 모두 더한 값",
+          "why": "표본공간을 상호배타적인 원인들로 분할했을 때, 최종 사건은 각 경로를 통해서만 도달 가능하므로 경로별 확률의 합으로 표현"
+        }
       ]
     },
     {
@@ -130,10 +314,27 @@
       "name": "베이즈 정리",
       "knowledge_layer": 6,
       "formula_latex": "P(B_i|A) = \\frac{P(B_i) P(A|B_i)}{\\sum_j P(B_j) P(A|B_j)}",
-      "prerequisites": ["전확률"],
+      "prerequisites": [
+        "전확률"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "관찰된 사건 A 가 어느 가설 B_i 에서 비롯되었을 확률", "premises": ["사전확률 + 가능도"], "why": "조건의 방향을 뒤집기 — 사후확률 계산" }
+        {
+          "direction": "backward",
+          "goal_pattern": "관찰된 사건 A 가 어느 가설 B_i 에서 비롯되었을 확률",
+          "premises": [
+            "사전확률 + 가능도"
+          ],
+          "why": "조건의 방향을 뒤집기 — 사후확률 계산"
+        },
+        {
+          "direction": "forward",
+          "condition": "여러 원인(가설) 각각에서 특정 결과가 나올 확률과 각 원인의 사전확률을 모두 알 때, 그 결과가 실제로 관찰되었을 가능성",
+          "derived_fact": "모든 가능한 경로를 가중합산한 전체 결과 발생확률(분모: 전확률 공식)과 특정 가설 하에서의 결과 확률의 상대적 기여도",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "각 가설이 얼마나 자주 일어나고, 그 가설 속에서 결과가 얼마나 쉽게 일어나는지를 곱해서 모두 더하면, 어느 가설이 관찰된 결과를 얼마나 설명하는지 정량화된다"
+        }
       ]
     },
     {
@@ -141,10 +342,27 @@
       "name": "확률변수와 확률분포",
       "knowledge_layer": 4,
       "formula_latex": "X: S \\to \\mathbb R,\\;\\; \\sum_x P(X=x) = 1",
-      "prerequisites": ["확률"],
+      "prerequisites": [
+        "확률"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "결과를 수치화", "derived_fact": "확률질량/밀도함수", "why": "사건을 수치 함수로 추상화" }
+        {
+          "direction": "forward",
+          "condition": "결과를 수치화",
+          "derived_fact": "확률질량/밀도함수",
+          "why": "사건을 수치 함수로 추상화"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "확률분포표나 기댓값·분산을 구해야 하는데 X의 치역과 각 값의 확률을 모름",
+          "premises": [
+            "표본공간 S의 원소들이 어떤 기준으로 분류되는지 파악",
+            "같은 수치값으로 대응되는 사건들을 묶을 수 있는지 확인",
+            "각 묶음(X=x)의 확률을 원래 확률로부터 계산 가능한지 검토"
+          ],
+          "why": "확률분포를 세우려면 역으로 표본공간을 확률변수의 치역에 맞게 분할하고, 각 부분사건의 확률을 더해야 하기 때문"
+        }
       ]
     },
     {
@@ -152,10 +370,26 @@
       "name": "기댓값",
       "knowledge_layer": 4,
       "formula_latex": "E(X) = \\sum_x x \\cdot P(X=x)",
-      "prerequisites": ["확률변수"],
+      "prerequisites": [
+        "확률변수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "장기 평균 결과", "derived_fact": "값×확률 합", "why": "가능한 모든 결과의 가중평균" }
+        {
+          "direction": "forward",
+          "condition": "장기 평균 결과",
+          "derived_fact": "값×확률 합",
+          "why": "가능한 모든 결과의 가중평균"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "여러 확률변수들의 합이나 차의 평균값을 구해야 할 때",
+          "premises": [
+            "각 확률변수의 기댓값을 이미 알고 있거나 구할 수 있는 상태",
+            "확률변수들 사이의 독립성 또는 선형성 관계 파악"
+          ],
+          "why": "기댓값의 선형성(E(aX+bY) = aE(X)+bE(Y))을 이용하면 복잡한 결합분포를 직접 계산하지 않고도 목표 기댓값에 도달할 수 있기 때문"
+        }
       ]
     },
     {
@@ -163,10 +397,27 @@
       "name": "기댓값의 선형성",
       "knowledge_layer": 5,
       "formula_latex": "E(aX+b) = aE(X) + b;\\;\\; E(X+Y)=E(X)+E(Y)",
-      "prerequisites": ["기댓값"],
+      "prerequisites": [
+        "기댓값"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "기댓값의 합·상수배", "derived_fact": "선형성으로 분해", "why": "독립 여부와 관계없이 항상 성립" }
+        {
+          "direction": "forward",
+          "condition": "기댓값의 합·상수배",
+          "derived_fact": "선형성으로 분해",
+          "why": "독립 여부와 관계없이 항상 성립"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "여러 확률변수의 기댓값 합을 직접 계산하기 어려울 때, 각 변수의 기댓값만으로 전체 기댓값을 구하고 싶은 상황",
+          "premises": [
+            "구하려는 기댓값이 여러 확률변수의 합 또는 선형결합 형태",
+            "개별 확률변수들의 기댓값은 알거나 쉽게 구할 수 있음",
+            "결합분포를 구하거나 전체 확률변수의 분포를 직접 다루기는 복잡함"
+          ],
+          "why": "결합분포 없이도 선형성만으로 복잡한 합의 기댓값을 단순화할 수 있으므로, 역으로 '기댓값 계산이 막혔다면 합/선형결합 형태로 분해해서 선형성을 적용'하는 전략이 작동"
+        }
       ]
     },
     {
@@ -174,10 +425,27 @@
       "name": "확률변수의 분산·표준편차",
       "knowledge_layer": 5,
       "formula_latex": "V(X) = E(X^2) - (E(X))^2;\\;\\; \\sigma(X) = \\sqrt{V(X)}",
-      "prerequisites": ["기댓값"],
+      "prerequisites": [
+        "기댓값"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "흩어짐 정도", "derived_fact": "E(X²) - E(X)²", "why": "편차 제곱의 기댓값 — 계산 친화적 형태" }
+        {
+          "direction": "forward",
+          "condition": "흩어짐 정도",
+          "derived_fact": "E(X²) - E(X)²",
+          "why": "편차 제곱의 기댓값 — 계산 친화적 형태"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 확률변수 중 어느 것이 더 안정적(변동성 작음)인지 비교해야 할 때",
+          "premises": [
+            "두 확률변수의 기댓값(평균)을 알고 있거나 구할 수 있어야 함",
+            "각 확률변수의 제곱의 기댓값 E(X²), E(Y²)을 계산할 수 있어야 함",
+            "분산 공식 V(X) = E(X²) - (E(X))²을 이용해 각각의 분산을 구해야 함"
+          ],
+          "why": "변동성 비교는 분산의 크기를 직접 비교해야 하는데, 공식 형태로 변환하면 기댓값 두 개만으로 계산 가능하므로 역으로 필요한 정보를 명확히 알 수 있음"
+        }
       ]
     },
     {
@@ -185,10 +453,27 @@
       "name": "분산의 선형 변환",
       "knowledge_layer": 5,
       "formula_latex": "V(aX+b) = a^2 V(X)",
-      "prerequisites": ["분산"],
+      "prerequisites": [
+        "분산"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "X 의 일차변환", "derived_fact": "상수항 무관, 곱은 제곱", "why": "분산은 위치 불변, 척도 제곱 변환" }
+        {
+          "direction": "forward",
+          "condition": "X 의 일차변환",
+          "derived_fact": "상수항 무관, 곱은 제곱",
+          "why": "분산은 위치 불변, 척도 제곱 변환"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 확률변수의 분산 비율이 주어졌을 때, 그들 사이의 선형 계수 관계 찾기",
+          "premises": [
+            "Y = aX + b 형태의 선형관계가 있다는 힌트",
+            "V(Y)와 V(X)의 값 또는 비율을 알고 있음",
+            "a의 절댓값을 구해야 함"
+          ],
+          "why": "분산 변환 공식을 역으로 적용하면 V(Y) = a²V(X)에서 a = ±√(V(Y)/V(X))로 미지의 계수를 역산할 수 있음"
+        }
       ]
     },
     {
@@ -196,10 +481,28 @@
       "name": "이항분포 B(n,p)",
       "knowledge_layer": 5,
       "formula_latex": "P(X=k) = {}_n C_k p^k (1-p)^{n-k};\\;\\; E=np,\\; V=npq",
-      "prerequisites": ["조합", "독립시행"],
+      "prerequisites": [
+        "조합",
+        "독립시행"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "n번 독립시행, 성공확률 p, 성공 횟수 X", "derived_fact": "이항계수 × 확률", "why": "각 케이스 확률은 같고 경우의 수는 nCk" }
+        {
+          "direction": "forward",
+          "condition": "n번 독립시행, 성공확률 p, 성공 횟수 X",
+          "derived_fact": "이항계수 × 확률",
+          "why": "각 케이스 확률은 같고 경우의 수는 nCk"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "표본평균이나 표본비율의 오차한계·신뢰도를 만족하는 표본 크기 n을 구해야 할 때",
+          "premises": [
+            "목표 오차한계(e) 또는 신뢰도 수준이 주어져 있음",
+            "모집단 성공확률 p(또는 추정값)을 알고 있거나 가정할 수 있음",
+            "이항분포의 분산 V=npq을 정규분포로 근사하려고 함"
+          ],
+          "why": "표본 크기 결정 문제에서는 이항분포의 분산 공식을 역으로 이용해 필요한 n을 계산하게 되므로, 분포의 퍼짐 정도(분산)를 통제하는 발상이 필수적"
+        }
       ]
     },
     {
@@ -207,10 +510,29 @@
       "name": "정규분포 N(μ, σ²)",
       "knowledge_layer": 5,
       "formula_latex": "f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-(x-\\mu)^2/(2\\sigma^2)}",
-      "prerequisites": ["확률변수"],
+      "prerequisites": [
+        "확률변수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "평균 μ, 표준편차 σ 의 종 모양 분포", "derived_fact": "구간 확률은 적분 또는 표준화 후 표 사용", "why": "중심극한정리에 의해 자연 현상에 보편적" }
+        {
+          "direction": "forward",
+          "condition": "평균 μ, 표준편차 σ 의 종 모양 분포",
+          "derived_fact": "구간 확률은 적분 또는 표준화 후 표 사용",
+          "why": "중심극한정리에 의해 자연 현상에 보편적"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "어떤 확률변수의 구간 확률 P(a ≤ X ≤ b)을 구해야 하는데, 표본이 충분히 크거나 모집단이 종 모양이라는 정보만 있을 때",
+          "premises": [
+            "표본의 크기가 충분히 크거나 모집단 분포가 대칭적임",
+            "평균 μ와 표준편차 σ의 값 (또는 표본에서 추정 가능)",
+            "구하려는 구간 [a, b]의 범위"
+          ],
+          "why": "정규분포로 근사하면 표준정규분포표(Z-table)를 이용해 복잡한 확률 계산을 표준화 변수 Z = (X - μ)/σ 로 간단히 처리할 수 있기 때문"
+        }
       ]
     },
     {
@@ -218,10 +540,29 @@
       "name": "표준화 Z = (X-μ)/σ",
       "knowledge_layer": 5,
       "formula_latex": "X \\sim N(\\mu, \\sigma^2) \\Rightarrow Z = \\frac{X-\\mu}{\\sigma} \\sim N(0,1)",
-      "prerequisites": ["정규분포"],
+      "prerequisites": [
+        "정규분포"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "정규분포 확률을 표준정규분포표로 변환", "derived_fact": "선형 표준화", "why": "평행이동 + 척도 변환으로 표준화" }
+        {
+          "direction": "forward",
+          "condition": "정규분포 확률을 표준정규분포표로 변환",
+          "derived_fact": "선형 표준화",
+          "why": "평행이동 + 척도 변환으로 표준화"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "표준정규분포표에서 찾은 확률값을 원래 정규분포 위의 특정 구간으로 해석해야 할 때",
+          "premises": [
+            "표준정규분포 N(0,1)에서의 누적확률 P(Z ≤ z₀) 값",
+            "원래 분포의 평균 μ와 표준편차 σ",
+            "표준점수 z₀와 원점수 X의 역관계식 X = μ + σZ"
+          ],
+          "why": "표준정규분포표의 확률은 표준화된 척도 위의 결과일 뿐, 실제 문맥의 확률을 구하려면 역표준화로 원래 분포의 경계값을 복원해야 하기 때문"
+        }
       ]
     },
     {
@@ -229,10 +570,27 @@
       "name": "이항분포의 정규근사",
       "knowledge_layer": 6,
       "formula_latex": "X \\sim B(n,p),\\; np \\ge 5,\\; nq \\ge 5 \\Rightarrow X \\approx N(np, npq)",
-      "prerequisites": ["이항", "정규"],
+      "prerequisites": [
+        "이항",
+        "정규"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "n 이 충분히 크고 p 가 극단적이지 않다", "derived_fact": "정규분포로 근사", "why": "중심극한정리의 특수 경우" }
+        {
+          "direction": "forward",
+          "condition": "n 이 충분히 크고 p 가 극단적이지 않다",
+          "derived_fact": "정규분포로 근사",
+          "why": "중심극한정리의 특수 경우"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "정규분포를 이용해 이항확률을 구간 추정하고 싶은데, 언제까지 근사할 수 있나?",
+          "premises": [
+            "구하려는 확률이 이항분포 X ~ B(n,p)를 따르는 상황",
+            "np ≥ 5 와 nq ≥ 5 를 동시에 만족하는 n, p 범위"
+          ],
+          "why": "정규근사의 유효성 조건을 역으로 확인하면, 주어진 n과 p에서 근사 오차가 허용 가능한지 판단할 수 있기 때문"
+        }
       ]
     },
     {
@@ -240,10 +598,29 @@
       "name": "표본평균의 분포",
       "knowledge_layer": 6,
       "formula_latex": "X_i \\sim N(\\mu, \\sigma^2) \\text{ iid} \\Rightarrow \\bar{X} \\sim N(\\mu, \\sigma^2/n)",
-      "prerequisites": ["정규분포"],
+      "prerequisites": [
+        "정규분포"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "n개 표본의 평균 분포", "derived_fact": "분산이 1/n 로 감소", "why": "독립 합의 분산 가법성" }
+        {
+          "direction": "forward",
+          "condition": "n개 표본의 평균 분포",
+          "derived_fact": "분산이 1/n 로 감소",
+          "why": "독립 합의 분산 가법성"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "표본평균의 표준오차(SE)를 줄이려면 표본크기를 어떻게 해야 하는가?",
+          "premises": [
+            "표본평균의 분산이 σ²/n 형태임을 알고 있음",
+            "표준오차 = √(분산) = σ/√n 관계를 인식함",
+            "주어진 모분산 σ는 고정값임"
+          ],
+          "why": "분모의 √n이 커질수록 표준오차가 작아지는 역함수 관계이므로, 신뢰도 높은 추정을 위해 역으로 필요한 표본크기를 계산하게 된다"
+        }
       ]
     },
     {
@@ -251,10 +628,25 @@
       "name": "모평균의 신뢰구간",
       "knowledge_layer": 6,
       "formula_latex": "\\bar{X} - z_{\\alpha/2} \\frac{\\sigma}{\\sqrt n} \\le \\mu \\le \\bar{X} + z_{\\alpha/2} \\frac{\\sigma}{\\sqrt n}",
-      "prerequisites": ["표본평균 분포"],
+      "prerequisites": [
+        "표본평균 분포"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "모평균의 신뢰구간", "premises": ["표본평균 + σ/√n + z_{α/2}"], "why": "표본평균이 모평균 주변에 정규분포 — 양쪽 z 만큼" }
+        {
+          "direction": "backward",
+          "goal_pattern": "모평균의 신뢰구간",
+          "premises": [
+            "표본평균 + σ/√n + z_{α/2}"
+          ],
+          "why": "표본평균이 모평균 주변에 정규분포 — 양쪽 z 만큼"
+        },
+        {
+          "direction": "forward",
+          "condition": "표본평균, 모표준편차, 표본크기, 신뢰도(z값)가 주어졌을 때 모평균이 어느 범위에 있을지 구체적으로 계산해야 할 상황",
+          "derived_fact": "모평균은 [표본평균 - 오차한계] 이상 [표본평균 + 오차한계] 이하의 구간에 신뢰도% 확률로 포함된다",
+          "why": "표본에서 얻은 점추정값(표본평균)을 중심으로 표준오차와 신뢰도에 따른 오차범위를 대칭으로 늘이면, 모평균이 실제로 들어갈 확률적 구간이 결정되기 때문"
+        }
       ]
     },
     {
@@ -262,10 +654,27 @@
       "name": "연속균등분포",
       "knowledge_layer": 4,
       "formula_latex": "f(x) = \\frac{1}{b-a}\\;(a \\le x \\le b)",
-      "prerequisites": ["연속확률변수"],
+      "prerequisites": [
+        "연속확률변수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "구간에서 모든 값이 같은 확률밀도", "derived_fact": "확률 = 길이 비율", "why": "균등 밀도 → 부분 길이가 곧 확률" }
+        {
+          "direction": "forward",
+          "condition": "구간에서 모든 값이 같은 확률밀도",
+          "derived_fact": "확률 = 길이 비율",
+          "why": "균등 밀도 → 부분 길이가 곧 확률"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "구간 [a,b]에서 임의의 부분구간 확률이 그 길이에 정확히 비례한다는 것을 보이고 싶을 때",
+          "premises": [
+            "확률밀도함수 f(x)가 [a,b]에서 상수함수임을 알고 있음",
+            "확률밀도함수의 적분이 1이라는 정규화 조건을 활용할 수 있음",
+            "임의의 부분구간 [c,d] ⊂ [a,b]에 대해 P(c ≤ X ≤ d)를 구해야 함"
+          ],
+          "why": "상수 밀도에서 구간 확률은 '밀도 × 길이'로 계산되므로, 역으로 길이 비례 성질을 확인하려면 밀도의 상수값(1/(b-a))을 구체적으로 도출해야 함"
+        }
       ]
     },
     {
@@ -273,10 +682,28 @@
       "name": "확률밀도함수와 확률",
       "knowledge_layer": 5,
       "formula_latex": "P(a \\le X \\le b) = \\int_a^b f(x) dx",
-      "prerequisites": ["연속확률변수"],
+      "prerequisites": [
+        "연속확률변수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "연속 확률변수의 구간 확률", "derived_fact": "밀도함수 적분", "why": "밀도의 면적이 확률" }
+        {
+          "direction": "forward",
+          "condition": "연속 확률변수의 구간 확률",
+          "derived_fact": "밀도함수 적분",
+          "why": "밀도의 면적이 확률"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "확률밀도함수의 전체 넓이가 1임을 확인하거나 미지 계수를 구해야 할 때",
+          "premises": [
+            "f(x)가 확률밀도함수임을 알고 있음",
+            "함수의 정의역 전체에 대한 적분값이 1이어야 함을 알고 있음"
+          ],
+          "why": "확률의 합이 1이라는 기본 성질을 역으로 활용하여, 적분식 ∫ f(x)dx = 1 방정식을 세우고 미지수나 함수 형태를 결정할 수 있기 때문"
+        }
       ]
     },
     {
@@ -284,10 +711,27 @@
       "name": "여사건의 확률",
       "knowledge_layer": 3,
       "formula_latex": "P(A^c) = 1 - P(A)",
-      "prerequisites": ["확률"],
+      "prerequisites": [
+        "확률"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "P(A) 를 직접 구하기 어렵다", "premises": ["여사건이 단순"], "why": "전체확률 1 에서 빼기 — 직접보다 쉬울 때 강력" }
+        {
+          "direction": "backward",
+          "goal_pattern": "P(A) 를 직접 구하기 어렵다",
+          "premises": [
+            "여사건이 단순"
+          ],
+          "why": "전체확률 1 에서 빼기 — 직접보다 쉬울 때 강력"
+        },
+        {
+          "direction": "forward",
+          "condition": "어떤 사건 A가 일어날 확률을 알고 있는데, '~A는 일어나지 않을 확률'을 물어본다",
+          "derived_fact": "여사건 A^c의 확률을 1에서 P(A)를 빼는 방식으로 즉시 계산할 수 있다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "사건과 그 여사건은 전체 표본공간을 완전히 분할하므로, 한쪽 확률을 알면 다른 쪽은 덧셈 역원 관계로 자동 결정된다"
+        }
       ]
     },
     {
@@ -295,10 +739,27 @@
       "name": "기하학적 확률",
       "knowledge_layer": 5,
       "formula_latex": "P = \\frac{\\text{사건 영역의 길이/넓이/부피}}{\\text{전체 영역}}",
-      "prerequisites": ["연속균등"],
+      "prerequisites": [
+        "연속균등"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "연속 공간 위 균등 표본", "derived_fact": "측도의 비", "why": "균등성 가정에서 측도가 곧 확률" }
+        {
+          "direction": "forward",
+          "condition": "연속 공간 위 균등 표본",
+          "derived_fact": "측도의 비",
+          "why": "균등성 가정에서 측도가 곧 확률"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "기하학적 도형 위의 두 점 사이 거리가 특정 값 이하일 확률을 구해야 한다",
+          "premises": [
+            "전체 도형의 넓이(또는 길이/부피)를 계산할 수 있는가",
+            "조건을 만족하는 영역(거리 ≤ d인 부분)을 기하학적으로 표현하고 측정할 수 있는가",
+            "두 점이 도형 위에 균등 분포한다고 가정할 수 있는가"
+          ],
+          "why": "확률값이 주어졌거나 구해야 할 때, 역으로 어느 영역의 크기를 비교해야 하는지 인식하게 되며, 기하학적 제약 조건을 먼저 파악한 뒤 측도 계산으로 연결하는 문제해결 경로를 밟게 됨"
+        }
       ]
     },
     {
@@ -306,10 +767,28 @@
       "name": "독립시행의 확률",
       "knowledge_layer": 4,
       "formula_latex": "n \\text{ 번 시행 중 } k \\text{ 번 성공: } {}_n C_k p^k q^{n-k}",
-      "prerequisites": ["독립", "조합"],
+      "prerequisites": [
+        "독립",
+        "조합"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "동일·독립 시행 반복", "derived_fact": "이항분포", "why": "각 시행이 동일·독립이면 이항 모형" }
+        {
+          "direction": "forward",
+          "condition": "동일·독립 시행 반복",
+          "derived_fact": "이항분포",
+          "why": "각 시행이 동일·독립이면 이항 모형"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "n번 시행에서 정확히 k번 이상 성공할 확률을 구해야 함",
+          "premises": [
+            "각 시행의 성공 확률 p와 실패 확률 q = 1-p를 알고 있음",
+            "시행들이 서로 독립임을 확인함",
+            "k번 이상의 사건을 여러 배타적 경우(정확히 k, k+1, ... 번)로 분해할 수 있음"
+          ],
+          "why": "누적 확률을 구하려면 각 경우의 이항 확률을 먼저 계산해 더해야 하므로, 개별 경우의 이항식이 필수 선행 계산 단위가 됨"
+        }
       ]
     },
     {
@@ -317,10 +796,27 @@
       "name": "확률변수 함수의 기댓값",
       "knowledge_layer": 5,
       "formula_latex": "E(g(X)) = \\sum_x g(x) P(X=x)",
-      "prerequisites": ["기댓값"],
+      "prerequisites": [
+        "기댓값"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "X 의 함수의 기댓값", "derived_fact": "g(x) 가중합", "why": "치환된 값의 가중평균" }
+        {
+          "direction": "forward",
+          "condition": "X 의 함수의 기댓값",
+          "derived_fact": "g(x) 가중합",
+          "why": "치환된 값의 가중평균"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "확률변수 함수의 기댓값을 직접 계산하지 않고 원래 확률변수의 기댓값으로 표현하고 싶을 때",
+          "premises": [
+            "g(X)가 선형함수 형태인지 확인",
+            "E(X)와 관련 상수들이 주어져 있거나 구할 수 있는지 확인",
+            "선형성 E(aX+b) = aE(X)+b 적용 가능한지 판단"
+          ],
+          "why": "함수의 기댓값 공식을 일일이 전개하는 대신, 선형성을 역으로 이용하면 더 간단한 원래 확률변수의 기댓값 조합으로 축약할 수 있기 때문"
+        }
       ]
     },
     {
@@ -328,10 +824,27 @@
       "name": "표준정규분포표 활용",
       "knowledge_layer": 5,
       "formula_latex": "P(0 \\le Z \\le z) \\text{ 표 검색 → 대칭·여사건으로 확장}",
-      "prerequisites": ["표준화"],
+      "prerequisites": [
+        "표준화"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "특정 구간의 표준정규 확률", "derived_fact": "표 + 대칭성으로 산출", "why": "표는 양수 영역만 — 대칭성으로 음수 영역 환원" }
+        {
+          "direction": "forward",
+          "condition": "특정 구간의 표준정규 확률",
+          "derived_fact": "표 + 대칭성으로 산출",
+          "why": "표는 양수 영역만 — 대칭성으로 음수 영역 환원"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "전체 데이터 중 상위 몇 %에 해당하는 Z값(또는 원래 변수값)을 구해야 할 때",
+          "premises": [
+            "누적확률(예: 상위 5% = 0.95 누적확률)이 주어져 있거나 문제에서 요구됨",
+            "표준정규분포표에서 역으로 확률에 대응하는 Z값을 찾을 수 있어야 함",
+            "필요하면 표준화 공식으로 원래 변수값으로 복원 가능해야 함"
+          ],
+          "why": "확률이 먼저 정해진 상황에서는 표를 '확률 → Z값' 방향으로 역으로 읽어야 하며, 이는 기존의 'Z값 → 확률' 전진 방향과 정반대의 사고 경로이기 때문"
+        }
       ]
     }
   ]

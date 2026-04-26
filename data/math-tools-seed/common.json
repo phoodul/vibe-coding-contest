@@ -9,11 +9,25 @@
       "name": "인수정리",
       "knowledge_layer": 4,
       "formula_latex": "P(\\alpha)=0 \\Leftrightarrow (x-\\alpha) \\mid P(x)",
-      "prerequisites": ["다항식 나눗셈"],
+      "prerequisites": [
+        "다항식 나눗셈"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "P(α)=0 인 α를 찾음", "derived_fact": "(x-α) 를 인수로 분리", "why": "한 근을 알면 차수를 1 낮출 수 있다" },
-        { "direction": "backward", "goal_pattern": "고차 다항식의 인수분해", "premises": ["유리근 후보 시도"], "why": "유리근 정리로 후보 좁히고 인수정리로 차수 감소" }
+        {
+          "direction": "forward",
+          "condition": "P(α)=0 인 α를 찾음",
+          "derived_fact": "(x-α) 를 인수로 분리",
+          "why": "한 근을 알면 차수를 1 낮출 수 있다"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "고차 다항식의 인수분해",
+          "premises": [
+            "유리근 후보 시도"
+          ],
+          "why": "유리근 정리로 후보 좁히고 인수정리로 차수 감소"
+        }
       ]
     },
     {
@@ -21,10 +35,26 @@
       "name": "나머지정리",
       "knowledge_layer": 4,
       "formula_latex": "P(x) \\div (x-\\alpha) \\text{ 의 나머지} = P(\\alpha)",
-      "prerequisites": ["다항식 나눗셈"],
+      "prerequisites": [
+        "다항식 나눗셈"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "특정 x 값에서의 나머지", "derived_fact": "한 점 대입으로 즉시 산출", "why": "긴 나눗셈 없이 한 번의 함숫값 계산으로 충분" }
+        {
+          "direction": "forward",
+          "condition": "특정 x 값에서의 나머지",
+          "derived_fact": "한 점 대입으로 즉시 산출",
+          "why": "긴 나눗셈 없이 한 번의 함숫값 계산으로 충분"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "다항식 P(x)가 (x-α)로 나누어떨어지는지 판정하고 싶을 때",
+          "premises": [
+            "P(α) = 0 인지 확인",
+            "P(α) ≠ 0 이면 나머지가 0이 아니므로 나누어떨어지지 않음"
+          ],
+          "why": "나머지가 정확히 P(α)이므로, 나누어떨어짐 조건은 P(α) = 0 이 되는 것과 동치이고, 이를 역으로 검증하면 인수분해 가능성을 빠르게 판단할 수 있음"
+        }
       ]
     },
     {
@@ -32,10 +62,27 @@
       "name": "유리근 정리",
       "knowledge_layer": 5,
       "formula_latex": "\\sum a_i x^i (a_n,a_0 \\in \\mathbb Z) \\text{ 의 유리근 } p/q \\Rightarrow p \\mid a_0,\\; q \\mid a_n",
-      "prerequisites": ["다항식"],
+      "prerequisites": [
+        "다항식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "정수계수 고차방정식의 근", "premises": ["가능한 유리근 후보 유한"], "why": "후보 집합을 좁혀 인수정리와 결합" }
+        {
+          "direction": "backward",
+          "goal_pattern": "정수계수 고차방정식의 근",
+          "premises": [
+            "가능한 유리근 후보 유한"
+          ],
+          "why": "후보 집합을 좁혀 인수정리와 결합"
+        },
+        {
+          "direction": "forward",
+          "condition": "정수계수 다항식을 인수분해하려는데 1차 인수가 있는지 빠르게 판단하고 싶을 때",
+          "derived_fact": "시도해볼 만한 1차 인수 (x - p/q)의 후보들은 상수항의 약수를 최고차 계수의 약수로 나눈 형태로 제한된다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "모든 유리근은 반드시 이 형태를 만족하므로, 다른 형태의 수들은 애초에 시도할 필요가 없어 계산량을 크게 줄일 수 있다"
+        }
       ]
     },
     {
@@ -43,10 +90,29 @@
       "name": "조립제법·다항식 나눗셈",
       "knowledge_layer": 3,
       "formula_latex": "P(x) = (x-\\alpha) Q(x) + R",
-      "prerequisites": ["다항식"],
+      "prerequisites": [
+        "다항식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "한 인수를 찾았다", "derived_fact": "몫·나머지 분리", "why": "차수를 한 단계 낮춰 분해 진행" }
+        {
+          "direction": "forward",
+          "condition": "한 인수를 찾았다",
+          "derived_fact": "몫·나머지 분리",
+          "why": "차수를 한 단계 낮춰 분해 진행"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "3차 이상 다항식의 모든 근을 구해야 한다",
+          "premises": [
+            "유리근 정리나 그래프·값 대입으로 하나의 근 α를 찾았는가",
+            "P(α) = 0임을 확인했는가",
+            "조립제법으로 P(x)를 (x-α)로 나눌 준비가 되었는가"
+          ],
+          "why": "높은 차수의 근을 직접 인수분해하기 어려우면, 한 근을 먼저 제거하여 낮은 차수로 축소한 뒤 반복 적용하는 역행 전략이 필요하기 때문"
+        }
       ]
     },
     {
@@ -57,7 +123,22 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "허수단위가 등장", "derived_fact": "실수부·허수부 분리 + 켤레", "why": "i^2=-1 외에는 모두 분배법칙" }
+        {
+          "direction": "forward",
+          "condition": "허수단위가 등장",
+          "derived_fact": "실수부·허수부 분리 + 켤레",
+          "why": "i^2=-1 외에는 모두 분배법칙"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "복소수 두 개의 곱셈 결과에서 실수부와 허수부를 각각 구해야 할 때",
+          "premises": [
+            "두 복소수를 a+bi, c+di 형태로 표현할 수 있는가",
+            "곱셈 후 나타나는 i^2항을 -1로 치환할 수 있는가",
+            "전개된 네 항을 실수항끼리, 허수항끼리 모을 수 있는가"
+          ],
+          "why": "목표(곱의 실부·허부 분리)를 달성하려면 역으로 분배법칙 전개 → i^2 치환 → 항 정리라는 세 단계가 필수이므로, 학생은 이 도구의 곱셈 공식 구조를 의식적으로 재구성해야 한다."
+        }
       ]
     },
     {
@@ -65,10 +146,26 @@
       "name": "복소수의 절댓값과 켤레",
       "knowledge_layer": 4,
       "formula_latex": "|z|^2 = z\\bar z;\\;\\; |zw|=|z||w|",
-      "prerequisites": ["복소수"],
+      "prerequisites": [
+        "복소수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "|z| 또는 z\\bar z 가 식에 등장", "derived_fact": "(실수)^2 + (허수)^2 형태", "why": "절댓값 제곱은 켤레와의 곱으로 실수화" }
+        {
+          "direction": "forward",
+          "condition": "|z| 또는 z\\bar z 가 식에 등장",
+          "derived_fact": "(실수)^2 + (허수)^2 형태",
+          "why": "절댓값 제곱은 켤레와의 곱으로 실수화"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "복소수들의 곱 zw의 절댓값을 구하거나 비교해야 하는 상황",
+          "premises": [
+            "각 복소수 z, w의 절댓값을 개별적으로 알거나 구할 수 있는가",
+            "절댓값의 곱셈 성질이 더 간단한 경로인가"
+          ],
+          "why": "복소수 곱의 절댓값은 절댓값들의 곱으로 분해되므로, 직접 zw를 계산하기보다 |z||w|로 나누어 접근하면 계산이 단순해진다"
+        }
       ]
     },
     {
@@ -76,10 +173,26 @@
       "name": "이차방정식 근의 분포",
       "knowledge_layer": 5,
       "formula_latex": "f(\\alpha) f(\\beta) < 0 \\Rightarrow (\\alpha,\\beta) \\text{ 사이에 근 1개}",
-      "prerequisites": ["사잇값정리", "판별식"],
+      "prerequisites": [
+        "사잇값정리",
+        "판별식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "두 실근이 특정 구간에 위치", "premises": ["판별식·축·경계 함숫값 부호"], "why": "그래프의 개형(꼭짓점·축·경계값)이 근의 위치를 결정" }
+        {
+          "direction": "backward",
+          "goal_pattern": "두 실근이 특정 구간에 위치",
+          "premises": [
+            "판별식·축·경계 함숫값 부호"
+          ],
+          "why": "그래프의 개형(꼭짓점·축·경계값)이 근의 위치를 결정"
+        },
+        {
+          "direction": "forward",
+          "condition": "이차함수 f(x)의 두 개의 서로 다른 x값 α, β에서 함숫값의 부호가 반대일 때",
+          "derived_fact": "구간 (α, β) 안에 f(x) = 0의 근이 정확히 1개 존재한다",
+          "why": "연속함수가 한 점에서 양수, 다른 점에서 음수면 그 사이에서 반드시 0을 지나야 하므로, 이차함수는 그 사이에 근을 정확히 1개 가지게 된다"
+        }
       ]
     },
     {
@@ -87,10 +200,27 @@
       "name": "이차부등식의 풀이",
       "knowledge_layer": 4,
       "formula_latex": "(x-\\alpha)(x-\\beta)>0 \\Leftrightarrow x<\\alpha \\text{ 또는 } x>\\beta\\;(\\alpha<\\beta)",
-      "prerequisites": ["이차방정식"],
+      "prerequisites": [
+        "이차방정식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "이차식의 부호", "derived_fact": "근 사이는 a 와 반대 부호, 근 밖은 a 와 같은 부호", "why": "이차함수 그래프 개형이 부호를 결정" }
+        {
+          "direction": "forward",
+          "condition": "이차식의 부호",
+          "derived_fact": "근 사이는 a 와 반대 부호, 근 밖은 a 와 같은 부호",
+          "why": "이차함수 그래프 개형이 부호를 결정"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "특정 범위의 x값들이 모두 이차부등식을 만족하도록 하는 매개변수 조건 찾기",
+          "premises": [
+            "부등식이 성립해야 하는 x의 범위가 주어짐",
+            "이차부등식의 해집합 구조(x < α 또는 x > β 형태)를 역으로 분석",
+            "근 α, β와 주어진 범위의 대소관계 결정"
+          ],
+          "why": "목표 범위가 주어졌을 때, 그 범위 전체가 부등식 해집합에 포함되려면 근의 위치가 어디여야 하는지 거꾸로 추론해야 하기 때문"
+        }
       ]
     },
     {
@@ -98,10 +228,27 @@
       "name": "연립이차방정식 (대입·소거)",
       "knowledge_layer": 4,
       "formula_latex": "\\text{한 식이 일차이면 대입; 두 식이 모두 이차이면 한 변수 소거}",
-      "prerequisites": ["연립방정식"],
+      "prerequisites": [
+        "연립방정식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 변수 두 이차식", "derived_fact": "한 변수 소거 후 단변수 고차식", "why": "차원 감축이 핵심 — 단변수 다항식으로 환원" }
+        {
+          "direction": "forward",
+          "condition": "두 변수 두 이차식",
+          "derived_fact": "한 변수 소거 후 단변수 고차식",
+          "why": "차원 감축이 핵심 — 단변수 다항식으로 환원"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 곡선(포물선·원·쌍곡선)의 교점 개수를 판정해야 할 때",
+          "premises": [
+            "두 이차방정식을 연립했을 때 판별식을 구할 수 있는가",
+            "한 변수로 완전히 소거된 단일 이차식을 얻을 수 있는가",
+            "그 판별식의 부호로 실근 개수를 결정할 수 있는가"
+          ],
+          "why": "교점 존재성과 개수는 소거 후 얻은 단변수 이차식의 판별식으로 결정되므로, 역으로 '교점 몇 개?'라는 목표에서 소거 과정이 필수 선행 도구"
+        }
       ]
     },
     {
@@ -112,7 +259,20 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "a+b 의 최솟값 또는 ab 의 최댓값", "premises": ["a,b>0 + 곱 또는 합 고정"], "why": "한 쪽이 고정되면 다른 쪽의 극값을 산술-기하 평균이 산출" }
+        {
+          "direction": "backward",
+          "goal_pattern": "a+b 의 최솟값 또는 ab 의 최댓값",
+          "premises": [
+            "a,b>0 + 곱 또는 합 고정"
+          ],
+          "why": "한 쪽이 고정되면 다른 쪽의 극값을 산술-기하 평균이 산출"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 양수의 합과 곱을 모두 알고 있을 때, 두 수의 크기 관계나 대소를 판단해야 하는 상황",
+          "derived_fact": "산술평균이 기하평균보다 크거나 같다는 부등식 관계로부터, 주어진 합과 곱이 실제로 존재 가능한 양수 쌍인지 검증할 수 있고, 등호 조건(두 수가 같음)을 찾을 수 있다",
+          "why": "합 S와 곱 P가 주어졌을 때 S/2 ≥ √P 를 확인하면 그 부등식의 타이트함 정도로 두 수의 차이를 정량화할 수 있기 때문"
+        }
       ]
     },
     {
@@ -120,10 +280,25 @@
       "name": "코시-슈바르츠 부등식 (2변수)",
       "knowledge_layer": 5,
       "formula_latex": "(a^2+b^2)(x^2+y^2) \\ge (ax+by)^2",
-      "prerequisites": ["이차식"],
+      "prerequisites": [
+        "이차식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "선형식의 최대/최소, 두 벡터 내적의 한계", "premises": ["제약이 두 제곱합"], "why": "내적 ≤ 노름 곱 — 직각 조건이 등호" }
+        {
+          "direction": "backward",
+          "goal_pattern": "선형식의 최대/최소, 두 벡터 내적의 한계",
+          "premises": [
+            "제약이 두 제곱합"
+          ],
+          "why": "내적 ≤ 노름 곱 — 직각 조건이 등호"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 쌍의 제곱합(a²+b²)과 (x²+y²)이 주어졌을 때, 이들의 곱을 어떤 일차식의 제곱과 비교하고 싶은 상황",
+          "derived_fact": "두 제곱합의 곱은 항상 교차항 ax+by를 제곱한 것 이상이므로, 특정 일차식이 취할 수 있는 범위를 상한으로 제한할 수 있다",
+          "why": "부등식 좌변이 우변보다 크거나 같다는 구조 자체가 곱셈 형태의 상한을 제시해주기 때문에, 복합식의 크기 제한에 직접 활용할 수 있다"
+        }
       ]
     },
     {
@@ -131,10 +306,25 @@
       "name": "직선의 방정식 (점-기울기·절편·일반형)",
       "knowledge_layer": 3,
       "formula_latex": "y - y_1 = m(x - x_1);\\;\\; \\frac{x}{a}+\\frac{y}{b}=1;\\;\\; ax+by+c=0",
-      "prerequisites": ["좌표평면"],
+      "prerequisites": [
+        "좌표평면"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "직선의 식", "premises": ["충분한 정보 (점·기울기 등)"], "why": "조건에 가장 가까운 표준형이 산식 부담을 최소화" }
+        {
+          "direction": "backward",
+          "goal_pattern": "직선의 식",
+          "premises": [
+            "충분한 정보 (점·기울기 등)"
+          ],
+          "why": "조건에 가장 가까운 표준형이 산식 부담을 최소화"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 직선이 만나는 교점의 좌표를 구해야 할 때",
+          "derived_fact": "두 직선의 방정식을 연립하면 교점의 x, y 좌표를 동시에 만족하는 값을 얻을 수 있다",
+          "why": "직선의 방정식은 그 위의 모든 점이 만족하는 조건식이므로, 두 식을 동시에 만족하는 점이 교점이 되기 때문"
+        }
       ]
     },
     {
@@ -142,10 +332,27 @@
       "name": "점과 직선 사이의 거리",
       "knowledge_layer": 4,
       "formula_latex": "d = \\frac{|ax_0+by_0+c|}{\\sqrt{a^2+b^2}}",
-      "prerequisites": ["벡터의 정사영"],
+      "prerequisites": [
+        "벡터의 정사영"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "한 점에서 직선까지 수직 거리", "derived_fact": "닫힌 형태 산출", "why": "수선의 발이 만드는 직각삼각형" }
+        {
+          "direction": "forward",
+          "condition": "한 점에서 직선까지 수직 거리",
+          "derived_fact": "닫힌 형태 산출",
+          "why": "수선의 발이 만드는 직각삼각형"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 평행선 사이의 거리를 구해야 할 때",
+          "premises": [
+            "두 직선이 평행함을 확인했거나 주어짐",
+            "한 직선 위의 임의의 점을 선택할 수 있음",
+            "다른 직선의 일반형 방정식을 알고 있음"
+          ],
+          "why": "평행선 사이 거리는 한 직선 위 임의의 점에서 다른 직선까지의 거리와 같으므로, 점과 직선 거리 공식을 역으로 적용하면 평행선 거리를 구할 수 있다."
+        }
       ]
     },
     {
@@ -153,11 +360,25 @@
       "name": "원의 방정식",
       "knowledge_layer": 3,
       "formula_latex": "(x-a)^2+(y-b)^2=r^2",
-      "prerequisites": ["거리"],
+      "prerequisites": [
+        "거리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "중심·반지름이 명시", "derived_fact": "원의 식", "why": "원은 중심에서 등거리인 점의 자취" },
-        { "direction": "backward", "goal_pattern": "주어진 점들을 지나는 원", "premises": ["3점 또는 중심+1점"], "why": "원은 3개 매개변수 (a,b,r)" }
+        {
+          "direction": "forward",
+          "condition": "중심·반지름이 명시",
+          "derived_fact": "원의 식",
+          "why": "원은 중심에서 등거리인 점의 자취"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "주어진 점들을 지나는 원",
+          "premises": [
+            "3점 또는 중심+1점"
+          ],
+          "why": "원은 3개 매개변수 (a,b,r)"
+        }
       ]
     },
     {
@@ -165,10 +386,29 @@
       "name": "원과 직선의 위치관계",
       "knowledge_layer": 4,
       "formula_latex": "d \\;\\text{vs}\\; r:\\; d<r (\\text{두 점}),\\; d=r (\\text{접}),\\; d>r (\\text{만나지 않음})",
-      "prerequisites": ["점-직선 거리"],
+      "prerequisites": [
+        "점-직선 거리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "원과 직선의 만남 여부", "derived_fact": "중심-직선 거리와 반지름 비교", "why": "기하학적 거리가 교점 개수와 일대일 대응" }
+        {
+          "direction": "forward",
+          "condition": "원과 직선의 만남 여부",
+          "derived_fact": "중심-직선 거리와 반지름 비교",
+          "why": "기하학적 거리가 교점 개수와 일대일 대응"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "원 위의 한 점에서 그은 직선이 그 점에서만 원과 만나야 한다",
+          "premises": [
+            "그 직선이 원의 중심까지의 거리를 구할 수 있어야 함",
+            "원의 반지름을 알고 있어야 함",
+            "구한 거리가 반지름과 정확히 같아야 함"
+          ],
+          "why": "원 위의 한 점에서의 접선을 구성하려면, 중심과의 거리가 정확히 반지름과 일치하는 직선을 찾아야 하므로 역으로 거리 조건을 확인해야 함"
+        }
       ]
     },
     {
@@ -176,10 +416,27 @@
       "name": "원 위 점에서의 접선",
       "knowledge_layer": 4,
       "formula_latex": "x^2+y^2=r^2 \\text{ 위 } (x_1,y_1) \\text{ 에서 접선: } x_1 x + y_1 y = r^2",
-      "prerequisites": ["원의 방정식"],
+      "prerequisites": [
+        "원의 방정식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "접점이 원 위에 명시", "derived_fact": "치환식으로 즉시 산출", "why": "내적 형태 — 반지름벡터와 접선벡터의 직교 조건" }
+        {
+          "direction": "forward",
+          "condition": "접점이 원 위에 명시",
+          "derived_fact": "치환식으로 즉시 산출",
+          "why": "내적 형태 — 반지름벡터와 접선벡터의 직교 조건"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "접선의 방정식이 주어졌을 때, 그 접선이 접하는 원 위의 점을 찾아야 함",
+          "premises": [
+            "원의 중심과 반지름이 알려져 있음",
+            "접선의 일반형 또는 기울기 형태가 주어짐",
+            "접점이 원 위에 있다는 조건"
+          ],
+          "why": "접선 방정식을 역으로 읽으면 계수들이 접점의 좌표를 인코딩하고 있으므로, 주어진 접선식으로부터 접점을 복원할 수 있음"
+        }
       ]
     },
     {
@@ -187,10 +444,27 @@
       "name": "함수의 평행이동·대칭이동",
       "knowledge_layer": 3,
       "formula_latex": "y=f(x-a)+b \\text{ : } x\\text{축 } a,\\; y\\text{축 } b \\text{ 평행이동}",
-      "prerequisites": ["함수의 그래프"],
+      "prerequisites": [
+        "함수의 그래프"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "그래프 위치 변환", "derived_fact": "내부 부호·외부 더하기", "why": "좌표계 이동의 역변환이 식에 반영" }
+        {
+          "direction": "forward",
+          "condition": "그래프 위치 변환",
+          "derived_fact": "내부 부호·외부 더하기",
+          "why": "좌표계 이동의 역변환이 식에 반영"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "주어진 함수식에서 원래 함수의 그래프 위치를 파악하고 싶을 때",
+          "premises": [
+            "변환된 함수식 y=f(x-a)+b 의 형태를 인식",
+            "a와 b의 부호와 크기를 정확히 읽어내기",
+            "원점 기준 원래 함수가 어디로 움직였는지 역추적하기"
+          ],
+          "why": "역으로 식을 보고 '어떤 방향으로 몇만큼 밀렸는가'를 해석하려면 계수의 부호 규칙(음수면 양의 방향 이동)을 거꾸로 적용해야 함"
+        }
       ]
     },
     {
@@ -201,7 +475,21 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "여집합과 합·교의 결합", "derived_fact": "드모르간으로 변환", "why": "여집합이 교집합·합집합을 서로 바꾼다" }
+        {
+          "direction": "forward",
+          "condition": "여집합과 합·교의 결합",
+          "derived_fact": "드모르간으로 변환",
+          "why": "여집합이 교집합·합집합을 서로 바꾼다"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "여집합으로 표현된 복잡한 집합식을 단순화하거나 교집합/합집합만으로 다시 쓰고 싶을 때",
+          "premises": [
+            "여집합이 포함된 식의 여집합을 취해야 하는 상황",
+            "교집합과 합집합의 조합으로 원래 형태를 복원하려는 목표"
+          ],
+          "why": "드모르간 법칙을 역방향으로 적용하면 (A^c ∩ B^c)^c = A ∪ B처럼 여집합 기호를 제거하고 기본 연산만으로 표현할 수 있다"
+        }
       ]
     },
     {
@@ -209,10 +497,28 @@
       "name": "포함-배제 원리 (2집합)",
       "knowledge_layer": 4,
       "formula_latex": "|A \\cup B| = |A| + |B| - |A \\cap B|",
-      "prerequisites": ["집합"],
+      "prerequisites": [
+        "집합"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 집합의 합집합 크기", "derived_fact": "교집합으로 보정", "why": "이중 카운트를 한 번 빼서 보정" }
+        {
+          "direction": "forward",
+          "condition": "두 집합의 합집합 크기",
+          "derived_fact": "교집합으로 보정",
+          "why": "이중 카운트를 한 번 빼서 보정"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "두 집합의 교집합 크기를 구해야 하는데 합집합과 각 집합의 크기만 알고 있을 때",
+          "premises": [
+            "|A ∪ B|의 값을 알고 있어야 함",
+            "|A|와 |B|의 값을 각각 알고 있어야 함"
+          ],
+          "why": "포함-배제 원리를 교집합에 대해 정리하면 |A ∩ B| = |A| + |B| - |A ∪ B|이 되므로, 세 가지 크기 정보가 있으면 미지의 교집합 크기를 역으로 계산할 수 있다"
+        }
       ]
     },
     {
@@ -223,7 +529,20 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "p ⇒ q 증명이 어렵다", "premises": ["대우는 동치"], "why": "대우는 원명제와 진릿값이 같다 — 더 다루기 쉬운 쪽 선택" }
+        {
+          "direction": "backward",
+          "goal_pattern": "p ⇒ q 증명이 어렵다",
+          "premises": [
+            "대우는 동치"
+          ],
+          "why": "대우는 원명제와 진릿값이 같다 — 더 다루기 쉬운 쪽 선택"
+        },
+        {
+          "direction": "forward",
+          "condition": "어떤 명제가 참이고, 그 명제의 부정·역·대우 중 어느 것이 참인지 판별해야 할 때",
+          "derived_fact": "대우도 반드시 참이다. (원명제가 참이면 대우도 참, 원명제가 거짓이면 대우도 거짓)",
+          "why": "명제와 대우는 논리적으로 동치이므로, 하나의 진릿값이 결정되면 다른 하나도 자동으로 결정된다"
+        }
       ]
     },
     {
@@ -231,10 +550,25 @@
       "name": "귀류법",
       "knowledge_layer": 4,
       "formula_latex": "\\lnot q \\text{ 가정 } \\to \\text{ 모순 } \\Rightarrow q",
-      "prerequisites": ["명제의 부정"],
+      "prerequisites": [
+        "명제의 부정"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "직접 증명이 어려운 명제", "premises": ["부정 가정"], "why": "부정에서 모순 도출은 원명제 성립과 동치" }
+        {
+          "direction": "backward",
+          "goal_pattern": "직접 증명이 어려운 명제",
+          "premises": [
+            "부정 가정"
+          ],
+          "why": "부정에서 모순 도출은 원명제 성립과 동치"
+        },
+        {
+          "direction": "forward",
+          "condition": "어떤 가정으로부터 논리적 모순(예: p ∧ ¬p)이 유도되었을 때",
+          "derived_fact": "그 가정은 거짓이며, 따라서 그 가정의 부정이 참이다",
+          "why": "모순은 거짓 명제만이 도출할 수 있으므로, 모순을 낳는 가정의 부정이 반드시 성립한다"
+        }
       ]
     },
     {
@@ -242,10 +576,27 @@
       "name": "역함수",
       "knowledge_layer": 4,
       "formula_latex": "f(g(x))=g(f(x))=x;\\;\\; y=f(x) \\Leftrightarrow x=f^{-1}(y)",
-      "prerequisites": ["일대일대응"],
+      "prerequisites": [
+        "일대일대응"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "일대일대응 함수의 역", "derived_fact": "x,y 자리 교환 후 y에 대해 풀이", "why": "역함수는 입출력 관계의 뒤집기" }
+        {
+          "direction": "forward",
+          "condition": "일대일대응 함수의 역",
+          "derived_fact": "x,y 자리 교환 후 y에 대해 풀이",
+          "why": "역함수는 입출력 관계의 뒤집기"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "주어진 x값에 대해 f(f^{-1}(x))나 f^{-1}(f(x))의 값을 구해야 할 때",
+          "premises": [
+            "f와 f^{-1}이 역함수 관계임을 확인",
+            "합성함수의 정의역이 원함수의 치역과 일치하는지 확인",
+            "합성 순서(f 먼저 vs f^{-1} 먼저)가 정의역에서 유효한지 검토"
+          ],
+          "why": "역함수의 합성은 항등함수가 되므로, 복잡한 계산 없이 x 자체가 답이 되는 성질을 즉시 적용할 수 있다"
+        }
       ]
     },
     {
@@ -253,10 +604,26 @@
       "name": "합성함수",
       "knowledge_layer": 3,
       "formula_latex": "(g \\circ f)(x) = g(f(x))",
-      "prerequisites": ["함수"],
+      "prerequisites": [
+        "함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 함수의 결합", "derived_fact": "안쪽 → 바깥쪽 순으로 평가", "why": "함수 적용은 결합법칙은 성립하지만 교환법칙은 안 성립" }
+        {
+          "direction": "forward",
+          "condition": "두 함수의 결합",
+          "derived_fact": "안쪽 → 바깥쪽 순으로 평가",
+          "why": "함수 적용은 결합법칙은 성립하지만 교환법칙은 안 성립"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "어떤 함수의 치역이 다른 함수의 정의역에 포함되는지 확인하고 싶을 때",
+          "premises": [
+            "합성함수 (g ∘ f)(x)가 정의되려면 f의 치역이 g의 정의역에 포함되어야 함",
+            "f(x)의 모든 출력값이 g의 입력으로 받아들여질 수 있는지 검토 필요"
+          ],
+          "why": "합성가능성은 정의역-치역 연결성을 확인하는 작업이므로, 주어진 합성함수가 존재한다는 목표에서 거슬러올라가면 함수들 사이의 '호환성 조건'을 찾게 됨"
+        }
       ]
     },
     {
@@ -264,10 +631,28 @@
       "name": "유리함수 y=k/(x-p)+q",
       "knowledge_layer": 4,
       "formula_latex": "y = \\frac{k}{x-p} + q\\; (\\text{점근선 } x=p,\\; y=q)",
-      "prerequisites": ["반비례", "평행이동"],
+      "prerequisites": [
+        "반비례",
+        "평행이동"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "분모가 일차인 유리식", "derived_fact": "두 점근선과 대칭점", "why": "기본 1/x 의 평행이동" }
+        {
+          "direction": "forward",
+          "condition": "분모가 일차인 유리식",
+          "derived_fact": "두 점근선과 대칭점",
+          "why": "기본 1/x 의 평행이동"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "수직·수평 점근선이 x=p, y=q인 곡선을 식으로 표현해야 할 때",
+          "premises": [
+            "점근선의 교점 좌표 (p, q)를 파악",
+            "원점을 지나거나 특정 점을 지나는 조건에서 k값 결정",
+            "분자의 차수가 0 (상수)이고 분모의 차수가 1"
+          ],
+          "why": "점근선 위치와 한 점의 좌표만 주어져도 역으로 k, p, q를 모두 복원할 수 있으므로, 곡선의 기하학적 특성에서 식을 구성하는 데 효과적"
+        }
       ]
     },
     {
@@ -275,10 +660,29 @@
       "name": "무리함수 y=√(ax+b)+c",
       "knowledge_layer": 4,
       "formula_latex": "y = \\sqrt{a(x-p)} + q",
-      "prerequisites": ["함수의 평행이동"],
+      "prerequisites": [
+        "함수의 평행이동"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "근호가 포함된 함수", "derived_fact": "정의역은 ax+b≥0", "why": "실수 근호의 정의역 제약" }
+        {
+          "direction": "forward",
+          "condition": "근호가 포함된 함수",
+          "derived_fact": "정의역은 ax+b≥0",
+          "why": "실수 근호의 정의역 제약"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "함수의 치역이 [q, ∞) 형태로 주어졌을 때 무리함수 형태인지 판단해야 함",
+          "premises": [
+            "함수값의 최솟값이 특정 상수 q로 고정되어 있는가",
+            "최솟값에 도달하는 x값이 정의역 경계(x=p)에서인가",
+            "함수가 단조증가 또는 단조감소하는가"
+          ],
+          "why": "무리함수 y=√(a(x-p))+q는 최솟값/최댓값이 q에서 시작하고 한쪽 방향으로만 증가하는 특성이 있으므로, 치역 조건을 거꾸로 분석하면 무리함수 구조를 역추론할 수 있음"
+        }
       ]
     },
     {
@@ -286,10 +690,27 @@
       "name": "정의역·치역",
       "knowledge_layer": 2,
       "formula_latex": "\\text{정의역: 입력 가능 집합, 치역: 실제 출력 집합}",
-      "prerequisites": ["함수"],
+      "prerequisites": [
+        "함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "함수가 주어짐", "derived_fact": "각 식 종류별 제약 (분모≠0, 근호≥0 등)", "why": "정의 가능 영역이 후속 분석의 출발점" }
+        {
+          "direction": "forward",
+          "condition": "함수가 주어짐",
+          "derived_fact": "각 식 종류별 제약 (분모≠0, 근호≥0 등)",
+          "why": "정의 가능 영역이 후속 분석의 출발점"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "함수의 치역이 특정 범위로 제한되어야 함",
+          "premises": [
+            "함수의 명시적 또는 암묵적 정의역 확인",
+            "함수식의 최댓값·최솟값 또는 증감 구간 분석",
+            "치역 제약 조건(예: 양수, 특정 구간)을 만족하는 입력값 범위 역산"
+          ],
+          "why": "역으로 원하는 출력 범위가 주어졌을 때, 그것을 만족시키려면 정의역을 어떻게 설정하거나 제한해야 하는지 거꾸로 추론하는 과정"
+        }
       ]
     },
     {
@@ -297,10 +718,29 @@
       "name": "순열·조합 기본",
       "knowledge_layer": 3,
       "formula_latex": "{}_n P_r = \\frac{n!}{(n-r)!},\\;\\; {}_n C_r = \\frac{n!}{r!(n-r)!}",
-      "prerequisites": ["곱의 법칙"],
+      "prerequisites": [
+        "곱의 법칙"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "순서가 의미가 있으면 P, 없으면 C", "derived_fact": "팩토리얼 비", "why": "동치 그룹의 크기로 순열을 나눈 것이 조합" }
+        {
+          "direction": "forward",
+          "condition": "순서가 의미가 있으면 P, 없으면 C",
+          "derived_fact": "팩토리얼 비",
+          "why": "동치 그룹의 크기로 순열을 나눈 것이 조합"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "전체 경우의 수에서 같은 것으로 취급되는 중복을 제거해야 한다",
+          "premises": [
+            "n개 중에서 r개를 선택하는 상황",
+            "선택된 것들 간의 순서나 배열이 구별되지 않음",
+            "각 선택 방식이 정확히 r!번씩 중복 계산됨"
+          ],
+          "why": "순열로 센 전체 경우를 같은 조합으로 여러 번 센 횟수(r!)로 나누면 조합 값을 얻기 때문"
+        }
       ]
     },
     {
@@ -308,10 +748,27 @@
       "name": "중복순열·중복조합·같은 것 포함",
       "knowledge_layer": 4,
       "formula_latex": "\\Pi_r = n^r,\\;\\; H_r = {}_{n+r-1}C_r,\\;\\; \\frac{n!}{p!q!\\cdots}",
-      "prerequisites": ["순열·조합"],
+      "prerequisites": [
+        "순열·조합"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "중복 허용 또는 같은 항목 반복", "derived_fact": "각 케이스별 식 적용", "why": "동일성·반복이 카운팅 공식 분기" }
+        {
+          "direction": "forward",
+          "condition": "중복 허용 또는 같은 항목 반복",
+          "derived_fact": "각 케이스별 식 적용",
+          "why": "동일성·반복이 카운팅 공식 분기"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "서로 다른 n개 항목을 r번 선택해서 배열했는데, 결과물이 구별 불가능한 경우의 수를 구해야 함",
+          "premises": [
+            "선택 후 순서가 무의미 (조합 상황)",
+            "같은 항목을 여러 번 뽑을 수 있음 (중복 허용)",
+            "전체 경우를 하나의 식으로 계산하려 함"
+          ],
+          "why": "중복조합은 '어떤 것을 몇 개씩' 고르는 본질이므로, 최종 답이 구별 불가능한 배치라면 곱셈·거듭제곱이 아닌 조합식 H_r = C(n+r-1, r)로 역산해야 함"
+        }
       ]
     },
     {
@@ -319,11 +776,25 @@
       "name": "이항정리",
       "knowledge_layer": 5,
       "formula_latex": "(a+b)^n = \\sum_{k=0}^{n} {}_n C_k a^{n-k} b^k",
-      "prerequisites": ["조합"],
+      "prerequisites": [
+        "조합"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "이항식의 거듭제곱 전개", "derived_fact": "k번째 항 = nCk · a^(n-k) · b^k", "why": "n번 곱셈에서 b를 k번 선택하는 경우의 수" },
-        { "direction": "backward", "goal_pattern": "특정 항의 계수", "premises": ["이항계수 한 항 산출"], "why": "전개 전체를 계산하지 않고 한 항만 추출" }
+        {
+          "direction": "forward",
+          "condition": "이항식의 거듭제곱 전개",
+          "derived_fact": "k번째 항 = nCk · a^(n-k) · b^k",
+          "why": "n번 곱셈에서 b를 k번 선택하는 경우의 수"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "특정 항의 계수",
+          "premises": [
+            "이항계수 한 항 산출"
+          ],
+          "why": "전개 전체를 계산하지 않고 한 항만 추출"
+        }
       ]
     },
     {
@@ -334,7 +805,22 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "유한합 표준 패턴", "derived_fact": "닫힌 형태 산출", "why": "표준 합 공식은 외워두면 즉시 적용" }
+        {
+          "direction": "forward",
+          "condition": "유한합 표준 패턴",
+          "derived_fact": "닫힌 형태 산출",
+          "why": "표준 합 공식은 외워두면 즉시 적용"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "1부터 n까지의 합이 특정 값이 되는 n 구하기",
+          "premises": [
+            "목표 값이 주어져 있음",
+            "n(n+1)/2 = 목표값 형태로 식을 세울 수 있음",
+            "이차방정식을 풀어 n의 양수해를 구할 수 있음"
+          ],
+          "why": "합의 공식을 역으로 사용하면, 특정 합에 도달하려면 어느 항까지 더해야 하는지 미지수 n으로 역산할 수 있기 때문"
+        }
       ]
     },
     {
@@ -342,10 +828,27 @@
       "name": "Σk²·Σk³ 공식",
       "knowledge_layer": 4,
       "formula_latex": "\\sum k^2 = \\frac{n(n+1)(2n+1)}{6},\\;\\; \\sum k^3 = \\left(\\frac{n(n+1)}{2}\\right)^2",
-      "prerequisites": ["Σ 기본"],
+      "prerequisites": [
+        "Σ 기본"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "합이 다항식 형태", "derived_fact": "차수별 표준 공식 합성", "why": "유한합의 다항식은 표준 합 4종으로 분해" }
+        {
+          "direction": "forward",
+          "condition": "합이 다항식 형태",
+          "derived_fact": "차수별 표준 공식 합성",
+          "why": "유한합의 다항식은 표준 합 4종으로 분해"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "제곱수들의 합이 특정 값이 되는 n을 찾아야 할 때",
+          "premises": [
+            "∑k² 의 닫힌 형태 공식을 n에 대한 식으로 표현",
+            "주어진 합의 값을 우변 공식과 같다고 놓기",
+            "n에 대한 3차 방정식을 풀이 가능한 형태로 정리"
+          ],
+          "why": "합의 값이 목표로 주어지면, 표준 공식의 역함수 관점으로 생각해야 하므로 먼저 공식을 n의 방정식으로 변형하는 역방향 전략이 필요"
+        }
       ]
     },
     {
@@ -356,7 +859,22 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "공차가 일정한 수열", "derived_fact": "선형 일반항 + 사다리꼴 합", "why": "등차는 일차함수에 대응 — 합은 사다리꼴 면적" }
+        {
+          "direction": "forward",
+          "condition": "공차가 일정한 수열",
+          "derived_fact": "선형 일반항 + 사다리꼴 합",
+          "why": "등차는 일차함수에 대응 — 합은 사다리꼴 면적"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "수열의 처음 n항 합이 n에 대한 이차식으로 주어졌을 때, 공차 구하기",
+          "premises": [
+            "S_n이 n²의 계수를 포함한 이차식 형태",
+            "S_n - S_(n-1) = a_n 관계식을 적용 가능",
+            "a_n이 일차식이면 그 기울기가 공차"
+          ],
+          "why": "S_n이 이차식이면 일반항 a_n은 일차식이고, 일차식의 기울기 곧 공차를 역으로 추출할 수 있다"
+        }
       ]
     },
     {
@@ -367,7 +885,21 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "공비가 일정한 수열", "derived_fact": "지수 일반항 + 등비합 공식", "why": "곱셈 점화식의 닫힌 해" }
+        {
+          "direction": "forward",
+          "condition": "공비가 일정한 수열",
+          "derived_fact": "지수 일반항 + 등비합 공식",
+          "why": "곱셈 점화식의 닫힌 해"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "수열의 첫 n항 합이 n의 지수함수 형태일 때",
+          "premises": [
+            "합 공식 S_n = A·r^n + B 꼴로 표현 가능한가",
+            "이 합에서 공비 r과 첫째항 a를 역으로 추출할 수 있는가"
+          ],
+          "why": "등비수열의 합은 r≠1일 때 지수 n에 대한 1차 일차식이므로, 주어진 S_n 형태로부터 공비와 첫째항을 역산할 수 있고 일반항을 복원할 수 있다."
+        }
       ]
     },
     {
@@ -375,10 +907,25 @@
       "name": "Sn 과 an 의 관계",
       "knowledge_layer": 4,
       "formula_latex": "a_n = S_n - S_{n-1}\\;(n \\ge 2),\\;\\; a_1 = S_1",
-      "prerequisites": ["수열의 합"],
+      "prerequisites": [
+        "수열의 합"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "Sn 만 주어지고 일반항을 구하라", "premises": ["계차 분리 + n=1 별도 확인"], "why": "차분으로 일반항 복원 — n=1 의 경계 처리 필수" }
+        {
+          "direction": "backward",
+          "goal_pattern": "Sn 만 주어지고 일반항을 구하라",
+          "premises": [
+            "계차 분리 + n=1 별도 확인"
+          ],
+          "why": "차분으로 일반항 복원 — n=1 의 경계 처리 필수"
+        },
+        {
+          "direction": "forward",
+          "condition": "일반항 an 의 명시적 공식이 주어졌을 때, 부분합 Sn 을 구해야 하는 상황",
+          "derived_fact": "an 을 n=1 부터 n 까지 모두 더하면 Sn 을 얻을 수 있으며, 특히 an 이 등차·등비·다항식 형태면 합 공식으로 빠르게 계산 가능",
+          "why": "개별 항의 합이 누적합의 정의이고, 도구의 역방향(S → a)을 먼저 이해한 학생이 순방향(a → S)을 자연스럽게 적용할 때 필요"
+        }
       ]
     }
   ]

@@ -9,11 +9,25 @@
       "name": "절댓값의 정의",
       "knowledge_layer": 2,
       "formula_latex": "|x| = \\begin{cases} x & (x \\ge 0) \\\\ -x & (x < 0) \\end{cases}",
-      "prerequisites": ["수직선"],
+      "prerequisites": [
+        "수직선"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "절댓값 기호가 등장", "derived_fact": "내부 값의 부호로 분기", "why": "절댓값은 부호에 따라 식이 달라지므로 case-split 가 필요" },
-        { "direction": "backward", "goal_pattern": "|x-a| 형태의 방정식·부등식", "premises": ["부호 분기"], "why": "x-a 의 부호로 두 case 로 나누면 모두 일차식이 된다" }
+        {
+          "direction": "forward",
+          "condition": "절댓값 기호가 등장",
+          "derived_fact": "내부 값의 부호로 분기",
+          "why": "절댓값은 부호에 따라 식이 달라지므로 case-split 가 필요"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "|x-a| 형태의 방정식·부등식",
+          "premises": [
+            "부호 분기"
+          ],
+          "why": "x-a 의 부호로 두 case 로 나누면 모두 일차식이 된다"
+        }
       ]
     },
     {
@@ -21,10 +35,27 @@
       "name": "일차방정식의 풀이",
       "knowledge_layer": 3,
       "formula_latex": "ax + b = 0 \\;(a \\ne 0) \\Rightarrow x = -b/a",
-      "prerequisites": ["등식의 성질"],
+      "prerequisites": [
+        "등식의 성질"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "미지수가 1개이고 차수가 1차", "derived_fact": "유일한 해 x=-b/a", "why": "양변에 같은 수를 더하거나 같은 0이 아닌 수로 나눠도 등식은 유지" }
+        {
+          "direction": "forward",
+          "condition": "미지수가 1개이고 차수가 1차",
+          "derived_fact": "유일한 해 x=-b/a",
+          "why": "양변에 같은 수를 더하거나 같은 0이 아닌 수로 나눠도 등식은 유지"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "특정 수 x가 방정식의 해인지 검증하고 싶을 때",
+          "premises": [
+            "주어진 x 값을 원래 방정식의 양변에 대입",
+            "좌변과 우변을 각각 계산",
+            "두 값이 같은지 비교"
+          ],
+          "why": "역으로 해를 공식으로 구한 뒤 그것이 정말 원 방정식을 만족하는지 확인하는 검증 단계이며, 계산 실수나 부호 오류를 걸러낼 수 있기 때문"
+        }
       ]
     },
     {
@@ -35,7 +66,21 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 양의 비례 관계", "derived_fact": "곱 또는 비가 일정", "why": "k 가 보존되는 불변량" }
+        {
+          "direction": "forward",
+          "condition": "두 양의 비례 관계",
+          "derived_fact": "곱 또는 비가 일정",
+          "why": "k 가 보존되는 불변량"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 변수 사이의 관계식을 모를 때, 주어진 한 쌍의 값으로부터 나머지 상황을 예측해야 함",
+          "premises": [
+            "x와 y가 정비례 또는 반비례 관계라는 정보",
+            "적어도 한 쌍의 (x, y) 구체적 값"
+          ],
+          "why": "비례상수 k를 구체적 데이터로부터 역산하면, 관계식을 복원하여 미지의 경우까지 확장 계산 가능"
+        }
       ]
     },
     {
@@ -43,10 +88,25 @@
       "name": "평행선과 동위·엇각",
       "knowledge_layer": 3,
       "formula_latex": "l \\parallel m \\Rightarrow \\text{동위각·엇각이 같다}",
-      "prerequisites": ["각"],
+      "prerequisites": [
+        "각"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "두 직선이 평행임을 증명", "premises": ["동위각 또는 엇각이 같다"], "why": "평행선 정의의 동치 조건" }
+        {
+          "direction": "backward",
+          "goal_pattern": "두 직선이 평행임을 증명",
+          "premises": [
+            "동위각 또는 엇각이 같다"
+          ],
+          "why": "평행선 정의의 동치 조건"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 평행선을 횡단선이 자를 때, 한 교점에서의 각도를 알고 있다면",
+          "derived_fact": "다른 교점에서 동위각 또는 엇각에 해당하는 각의 크기를 즉시 알 수 있다",
+          "why": "평행선의 성질에 의해 동위각과 엇각이 같으므로, 주어진 각도로부터 나머지 각도들을 직접 계산할 수 있기 때문"
+        }
       ]
     },
     {
@@ -54,10 +114,29 @@
       "name": "원의 둘레·넓이",
       "knowledge_layer": 2,
       "formula_latex": "C = 2\\pi r,\\;\\; A = \\pi r^2",
-      "prerequisites": ["반지름"],
+      "prerequisites": [
+        "반지름"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "원의 반지름이 주어짐", "derived_fact": "둘레와 넓이", "why": "닫힌 형태 — 추가 작업 없음" }
+        {
+          "direction": "forward",
+          "condition": "원의 반지름이 주어짐",
+          "derived_fact": "둘레와 넓이",
+          "why": "닫힌 형태 — 추가 작업 없음"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "원의 둘레나 넓이 값이 주어졌을 때 반지름을 구해야 함",
+          "premises": [
+            "둘레 C 또는 넓이 A 중 하나의 수치 값이 알려져 있음",
+            "C = 2πr 또는 A = πr² 공식을 r에 대해 역으로 정리할 수 있음",
+            "원하는 답이 반지름 r의 구체적인 값임"
+          ],
+          "why": "둘레나 넓이라는 최종 결과값에서 출발하여 역으로 어떤 반지름이 그 값을 만드는지 추적하려면, 주어진 공식을 반지름에 대한 식으로 변형해야 하기 때문"
+        }
       ]
     },
     {
@@ -65,10 +144,29 @@
       "name": "부채꼴의 호의 길이·넓이",
       "knowledge_layer": 3,
       "formula_latex": "l = r\\theta,\\;\\; S = \\tfrac{1}{2} r^2 \\theta \\;(\\theta \\text{ 라디안})",
-      "prerequisites": ["원의 둘레"],
+      "prerequisites": [
+        "원의 둘레"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "중심각·반지름이 주어짐", "derived_fact": "호 길이와 부채꼴 넓이", "why": "각을 비율로 보면 전체 원에 대한 분수" }
+        {
+          "direction": "forward",
+          "condition": "중심각·반지름이 주어짐",
+          "derived_fact": "호 길이와 부채꼴 넓이",
+          "why": "각을 비율로 보면 전체 원에 대한 분수"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "부채꼴의 호의 길이나 넓이가 주어졌을 때, 중심각이나 반지름을 구해야 함",
+          "premises": [
+            "호의 길이 또는 넓이의 수치값",
+            "반지름 또는 중심각 중 하나는 알려져 있음",
+            "라디안 단위로의 변환 가능성"
+          ],
+          "why": "부채꼴 공식을 역으로 풀어서 미지의 각도나 반지름을 역산하는 상황에서, 주어진 길이나 넓이로부터 필요한 요소를 먼저 분리해 내야 함"
+        }
       ]
     },
     {
@@ -76,10 +174,28 @@
       "name": "뿔의 부피 (1/3 법칙)",
       "knowledge_layer": 4,
       "formula_latex": "V_{\\text{뿔}} = \\tfrac{1}{3} S h",
-      "prerequisites": ["기둥의 부피"],
+      "prerequisites": [
+        "기둥의 부피"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "원뿔·각뿔의 밑면 넓이와 높이", "derived_fact": "기둥 부피의 1/3", "why": "적분 또는 카발리에리 원리에서 도출" }
+        {
+          "direction": "forward",
+          "condition": "원뿔·각뿔의 밑면 넓이와 높이",
+          "derived_fact": "기둥 부피의 1/3",
+          "why": "적분 또는 카발리에리 원리에서 도출"
+        },
+        {
+          "direction": "backward",
+          "condition": "뿔 부피를 알고 다른 요소(높이 또는 밑넓이)를 역산해야 할 때",
+          "goal_pattern": "뿔 모양 용기의 부피가 주어졌을 때, 높이나 밑면 넓이 중 하나를 구해야 하는 상황",
+          "premises": [
+            "뿔의 전체 부피 값을 알고 있음",
+            "밑면의 모양(원 또는 다각형)과 한 변/반지름을 알고 있음",
+            "높이를 구하거나, 역으로 밑면 크기를 구해야 함"
+          ],
+          "why": "부피 공식을 역으로 정렬하면 V = (1/3)Sh 에서 h = 3V/S 또는 S = 3V/h 로 미지수를 분리할 수 있으므로, 부피 조건이 주어지면 즉시 이 도구의 역방향 변형을 써야 한다는 신호가 됨"
+        }
       ]
     },
     {
@@ -87,10 +203,26 @@
       "name": "구의 부피·겉넓이",
       "knowledge_layer": 4,
       "formula_latex": "V = \\tfrac{4}{3}\\pi r^3,\\;\\; S = 4\\pi r^2",
-      "prerequisites": ["반지름"],
+      "prerequisites": [
+        "반지름"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "구의 반지름", "derived_fact": "부피·겉넓이 닫힌 형태", "why": "보편 상수 — 회전체 적분으로 도출" }
+        {
+          "direction": "forward",
+          "condition": "구의 반지름",
+          "derived_fact": "부피·겉넓이 닫힌 형태",
+          "why": "보편 상수 — 회전체 적분으로 도출"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 구의 부피 비율이 주어졌을 때 반지름 비 구하기",
+          "premises": [
+            "두 구의 부피 값 또는 부피 비율",
+            "부피 공식 V = (4/3)πr³에서 r³에 정비례함을 인식"
+          ],
+          "why": "부피 비 = r₁³/r₂³ 이므로, 목표(반지름 비)에 도달하려면 주어진 부피 비의 세제곱근을 취해야 하기 때문"
+        }
       ]
     }
   ]

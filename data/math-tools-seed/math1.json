@@ -12,7 +12,22 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "지수가 변수·식인 표현", "derived_fact": "지수의 사칙연산으로 단순화", "why": "지수는 곱셈 횟수의 산술화" }
+        {
+          "direction": "forward",
+          "condition": "지수가 변수·식인 표현",
+          "derived_fact": "지수의 사칙연산으로 단순화",
+          "why": "지수는 곱셈 횟수의 산술화"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "분수 지수나 음수 지수를 포함한 식을 정수 지수만으로 정리하기",
+          "premises": [
+            "현재 식에 1/a^n 형태나 a^{-n} 형태가 있는가",
+            "분자·분모를 단일 거듭제곱으로 통일할 필요가 있는가",
+            "지수의 덧셈·곱셈 구조로 재배열 가능한가"
+          ],
+          "why": "음수·분수 지수는 본질적으로 정수 지수의 역수·합성이므로, 역으로 그것을 기본 지수법칙으로 분해해야 식을 단순화할 수 있다"
+        }
       ]
     },
     {
@@ -20,10 +35,27 @@
       "name": "지수함수의 성질",
       "knowledge_layer": 4,
       "formula_latex": "y = a^x \\;(a>0,\\; a \\ne 1);\\; \\text{치역 } (0,\\infty)",
-      "prerequisites": ["지수법칙"],
+      "prerequisites": [
+        "지수법칙"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "지수함수의 단조·점근선", "derived_fact": "a>1 증가, 0<a<1 감소; 점근선 y=0", "why": "밑의 크기가 증가/감소를 결정" }
+        {
+          "direction": "forward",
+          "condition": "지수함수의 단조·점근선",
+          "derived_fact": "a>1 증가, 0<a<1 감소; 점근선 y=0",
+          "why": "밑의 크기가 증가/감소를 결정"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "지수방정식이나 부등식을 풀 때 양변을 같은 밑으로 통일하고 싶은 상황",
+          "premises": [
+            "방정식/부등식의 양변이 모두 양수",
+            "한쪽 또는 양쪽을 a^(어떤식) 형태로 표현 가능",
+            "밑 a의 범위(0<a<1 또는 a>1)를 파악"
+          ],
+          "why": "지수함수가 일대일 대응(0,∞)이고 단조성이 밑에 따라 결정되므로, 같은 밑으로 만들면 지수끼리 비교·정리 가능"
+        }
       ]
     },
     {
@@ -31,10 +63,26 @@
       "name": "로그의 정의와 기본 성질",
       "knowledge_layer": 4,
       "formula_latex": "\\log_a b = c \\Leftrightarrow a^c = b\\;(a>0, a \\ne 1, b>0)",
-      "prerequisites": ["지수"],
+      "prerequisites": [
+        "지수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "지수방정식이 어렵다", "derived_fact": "양변에 로그 — 지수가 곱으로 내려옴", "why": "로그는 지수의 역연산" }
+        {
+          "direction": "forward",
+          "condition": "지수방정식이 어렵다",
+          "derived_fact": "양변에 로그 — 지수가 곱으로 내려옴",
+          "why": "로그는 지수의 역연산"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "어떤 수를 몇 제곱하면 특정 값이 되는지 그 지수를 구해야 한다",
+          "premises": [
+            "밑(a)과 결과값(b)을 알고 있는 상태",
+            "지수(c)가 정수가 아니거나 계산이 복잡한 경우"
+          ],
+          "why": "로그는 지수를 미지수로 하는 방정식을 직접 계산 없이 정의로 바꿔서 풀 수 있게 해주는 도구"
+        }
       ]
     },
     {
@@ -42,10 +90,27 @@
       "name": "로그의 연산법칙",
       "knowledge_layer": 4,
       "formula_latex": "\\log_a(MN)=\\log_a M+\\log_a N,\\;\\; \\log_a M^k = k\\log_a M,\\;\\; \\log_a M = \\frac{\\log_b M}{\\log_b a}",
-      "prerequisites": ["로그 정의"],
+      "prerequisites": [
+        "로그 정의"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "곱·몫·거듭제곱이 로그 안에 있다", "derived_fact": "합·차·계수배로 분해", "why": "로그는 곱셈을 덧셈으로 변환" }
+        {
+          "direction": "forward",
+          "condition": "곱·몫·거듭제곱이 로그 안에 있다",
+          "derived_fact": "합·차·계수배로 분해",
+          "why": "로그는 곱셈을 덧셈으로 변환"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "서로 다른 밑을 가진 여러 로그식을 하나의 밑으로 통일해서 계산하거나 비교해야 한다",
+          "premises": [
+            "밑 변환 공식을 적용할 기준 밑(보통 10 또는 e)을 정해야 함",
+            "주어진 로그들의 밑이 모두 같은 형태로 표현되어야 함",
+            "필요시 로그의 덧셈·뺄셈이 가능한 상태로 준비되어야 함"
+          ],
+          "why": "여러 밑의 로그가 섞여 있을 때 같은 밑으로 환산하지 않으면 직접 연산할 수 없으므로, 역으로 목표 상태(통일된 밑)에서 필요한 변환을 역추적하게 된다"
+        }
       ]
     },
     {
@@ -53,10 +118,27 @@
       "name": "밑변환 공식",
       "knowledge_layer": 5,
       "formula_latex": "\\log_a b = \\frac{1}{\\log_b a};\\;\\; \\log_a b \\cdot \\log_b c = \\log_a c",
-      "prerequisites": ["로그법칙"],
+      "prerequisites": [
+        "로그법칙"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "다른 밑의 로그를 비교", "derived_fact": "공통 밑으로 통일", "why": "밑이 다르면 직접 비교 불가 — 통일이 핵심" }
+        {
+          "direction": "forward",
+          "condition": "다른 밑의 로그를 비교",
+          "derived_fact": "공통 밑으로 통일",
+          "why": "밑이 다르면 직접 비교 불가 — 통일이 핵심"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "어떤 로그식을 더 간단한 형태로 정리하거나 곱셈 구조를 없애고 싶을 때",
+          "premises": [
+            "연쇄적인 로그의 곱 형태가 있는가 (예: log_a b · log_b c)",
+            "중간 밑이 서로 대응되는 구조가 보이는가",
+            "최종 목표가 밑의 개수를 줄이는 것인가"
+          ],
+          "why": "여러 로그의 곱은 밑변환의 연쇄 법칙으로 한 번에 축약되므로, 복잡한 곱 구조를 마주하면 역으로 이 공식을 적용할 수 있다는 것을 알아채는 지점"
+        }
       ]
     },
     {
@@ -64,10 +146,27 @@
       "name": "로그함수의 성질",
       "knowledge_layer": 4,
       "formula_latex": "y = \\log_a x;\\; \\text{정의역 } (0,\\infty);\\; y=a^x \\text{의 역함수}",
-      "prerequisites": ["로그"],
+      "prerequisites": [
+        "로그"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "로그함수의 단조·점근선", "derived_fact": "a>1 증가, 0<a<1 감소; 점근선 x=0", "why": "지수함수와 y=x 대칭 — 모든 성질이 대응" }
+        {
+          "direction": "forward",
+          "condition": "로그함수의 단조·점근선",
+          "derived_fact": "a>1 증가, 0<a<1 감소; 점근선 x=0",
+          "why": "지수함수와 y=x 대칭 — 모든 성질이 대응"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "로그방정식 log_a x = b 를 풀거나, x의 범위를 정의역 제약으로 결정해야 할 때",
+          "premises": [
+            "로그함수는 y = a^x 의 역함수이므로 log_a x = b ⟺ x = a^b",
+            "로그함수의 정의역이 (0, ∞) 이므로 진수는 항상 양수여야 함",
+            "밑 a는 1이 아닌 양수여야 함"
+          ],
+          "why": "로그방정식을 풀거나 해의 유효성을 판단하려면, 역함수 관계를 이용한 지수형 변환과 정의역 제약을 동시에 적용해야 하기 때문"
+        }
       ]
     },
     {
@@ -75,10 +174,25 @@
       "name": "지수·로그방정식과 부등식",
       "knowledge_layer": 5,
       "formula_latex": "a^{f(x)}=a^{g(x)} \\Leftrightarrow f(x)=g(x);\\;\\; \\log_a f(x)=\\log_a g(x) \\Leftrightarrow f(x)=g(x)>0",
-      "prerequisites": ["지수·로그함수"],
+      "prerequisites": [
+        "지수·로그함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "지수·로그를 포함한 방정식·부등식", "premises": ["밑 통일 + 정의역 확인"], "why": "단조함수의 일대일성으로 지수·로그 벗기기. 부등식은 밑이 0<a<1 이면 부등호 뒤집기" }
+        {
+          "direction": "backward",
+          "goal_pattern": "지수·로그를 포함한 방정식·부등식",
+          "premises": [
+            "밑 통일 + 정의역 확인"
+          ],
+          "why": "단조함수의 일대일성으로 지수·로그 벗기기. 부등식은 밑이 0<a<1 이면 부등호 뒤집기"
+        },
+        {
+          "direction": "forward",
+          "condition": "지수방정식을 풀 때 양변을 같은 밑으로 표현할 수 있거나, 로그방정식에서 진수들이 모두 양수임을 확인했을 때",
+          "derived_fact": "양변의 지수 부분(또는 로그 안의 식)만 같다고 놓아서 더 간단한 방정식으로 축약할 수 있다",
+          "why": "밑이 1이 아닌 양수일 때 지수함수와 로그함수가 일대일대응이므로, 함숫값이 같으면 입력값도 반드시 같아야 한다"
+        }
       ]
     },
     {
@@ -86,10 +200,27 @@
       "name": "호도법 (라디안)",
       "knowledge_layer": 3,
       "formula_latex": "180^\\circ = \\pi \\text{ rad};\\;\\; l = r\\theta,\\; S=\\tfrac{1}{2}r^2\\theta",
-      "prerequisites": ["원"],
+      "prerequisites": [
+        "원"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "삼각함수 미분·적분 또는 부채꼴 공식", "derived_fact": "라디안 환산 후 계산", "why": "호의 길이가 각의 척도 — 미적분이 단순해진다" }
+        {
+          "direction": "forward",
+          "condition": "삼각함수 미분·적분 또는 부채꼴 공식",
+          "derived_fact": "라디안 환산 후 계산",
+          "why": "호의 길이가 각의 척도 — 미적분이 단순해진다"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "부채꼴의 호의 길이나 넓이를 구해야 하는데, 중심각이 도(degree)로 주어졌다",
+          "premises": [
+            "부채꼴의 반지름 r을 알고 있다",
+            "중심각을 라디안으로 변환할 수 있다 (180° = π rad 비례식)",
+            "l = rθ 또는 S = ½r²θ 공식을 적용할 수 있다"
+          ],
+          "why": "도 단위의 각을 라디안으로 먼저 바꿔야만 호의 길이·넓이 공식이 성립하기 때문에, 역으로 '답을 구하려면 단위 변환이 필수 선행 단계'로 인식하게 된다"
+        }
       ]
     },
     {
@@ -97,10 +228,29 @@
       "name": "삼각함수의 정의 (단위원)",
       "knowledge_layer": 4,
       "formula_latex": "\\sin\\theta = y,\\; \\cos\\theta = x,\\; \\tan\\theta = y/x \\;(P(x,y) \\text{ 단위원 위})",
-      "prerequisites": ["좌표평면", "원"],
+      "prerequisites": [
+        "좌표평면",
+        "원"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "각이 임의 실수", "derived_fact": "단위원 좌표로 정의 확장", "why": "직각삼각형 정의의 일반화 — 음수·둔각 모두 통일" }
+        {
+          "direction": "forward",
+          "condition": "각이 임의 실수",
+          "derived_fact": "단위원 좌표로 정의 확장",
+          "why": "직각삼각형 정의의 일반화 — 음수·둔각 모두 통일"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "goal_pattern": "삼각함수값 sin θ, cos θ, tan θ 중 2개 이상이 주어졌을 때 나머지를 구하거나 θ의 범위를 판정해야 함",
+          "premises": [
+            "단위원 위의 점 P(x, y)에서 x² + y² = 1 이라는 기본 관계식",
+            "sin θ = y, cos θ = x 의 정의를 역으로 적용하여 좌표 복원",
+            "tan θ = y/x 를 이용한 기울기·부호 정보 추출"
+          ],
+          "why": "삼각함수값들 사이의 항등식(sin²θ + cos²θ = 1, tanθ = sinθ/cosθ)이 단위원의 기하학적 성질에서 비롯되므로, 불완전한 정보(예: sinθ와 tanθ만 알 때)는 정의로 돌아가 단위원의 좌표로 재구성해야 결정 가능"
+        }
       ]
     },
     {
@@ -108,10 +258,28 @@
       "name": "삼각함수 기본항등식",
       "knowledge_layer": 4,
       "formula_latex": "\\sin^2\\theta + \\cos^2\\theta = 1;\\;\\; 1+\\tan^2\\theta = \\sec^2\\theta",
-      "prerequisites": ["삼각함수 정의"],
+      "prerequisites": [
+        "삼각함수 정의"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "sin·cos·tan 가 함께 등장", "derived_fact": "한 함수만 남기고 소거", "why": "단위원 위 좌표는 x²+y²=1" }
+        {
+          "direction": "forward",
+          "condition": "sin·cos·tan 가 함께 등장",
+          "derived_fact": "한 함수만 남기고 소거",
+          "why": "단위원 위 좌표는 x²+y²=1"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "tan θ 또는 sec θ 만으로 sin θ 나 cos θ 를 표현해야 함",
+          "premises": [
+            "tan θ 의 값이 주어졌거나 범위가 제시됨",
+            "sin θ 나 cos θ 의 절댓값을 구해야 하는 상황"
+          ],
+          "why": "1+tan²θ = sec²θ 관계식을 역으로 활용하면 한 개의 삼각함수 값으로부터 다른 함수를 유일하게 복원할 수 있기 때문"
+        }
       ]
     },
     {
@@ -119,10 +287,27 @@
       "name": "삼각함수 덧셈정리",
       "knowledge_layer": 5,
       "formula_latex": "\\sin(\\alpha\\pm\\beta) = \\sin\\alpha\\cos\\beta \\pm \\cos\\alpha\\sin\\beta;\\;\\; \\cos(\\alpha\\pm\\beta) = \\cos\\alpha\\cos\\beta \\mp \\sin\\alpha\\sin\\beta",
-      "prerequisites": ["삼각함수 정의"],
+      "prerequisites": [
+        "삼각함수 정의"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "각의 합·차의 sin·cos", "derived_fact": "각 단독 함수의 곱·합", "why": "회전의 합성 — 회전행렬 곱에서 자연스레 도출" }
+        {
+          "direction": "forward",
+          "condition": "각의 합·차의 sin·cos",
+          "derived_fact": "각 단독 함수의 곱·합",
+          "why": "회전의 합성 — 회전행렬 곱에서 자연스레 도출"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "주어진 삼각함수식을 더 간단한 형태로 축약하고 싶을 때",
+          "premises": [
+            "sin과 cos이 섞여 있는 일차결합 형태인가 (예: 3sin θ + 4cos θ)",
+            "한 각도에 대한 단일 삼각함수로 표현할 수 있는가",
+            "덧셈정리를 역으로 읽어 sin(θ + φ) 또는 cos(θ + φ) 형태로 복원 가능한가"
+          ],
+          "why": "일차결합된 sin, cos은 덧셈정리를 역으로 해석하면 하나의 각 이동으로 통합되므로, 최댓값·최솟값 구하기나 방정식 풀이가 훨씬 쉬워진다"
+        }
       ]
     },
     {
@@ -130,10 +315,26 @@
       "name": "배각 공식",
       "knowledge_layer": 5,
       "formula_latex": "\\sin 2\\theta = 2\\sin\\theta\\cos\\theta,\\;\\; \\cos 2\\theta = \\cos^2\\theta - \\sin^2\\theta = 1-2\\sin^2\\theta",
-      "prerequisites": ["덧셈정리"],
+      "prerequisites": [
+        "덧셈정리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "2θ 가 단독 등장", "derived_fact": "θ 의 sin·cos 로 분해", "why": "α=β=θ 인 덧셈정리의 특수화" }
+        {
+          "direction": "forward",
+          "condition": "2θ 가 단독 등장",
+          "derived_fact": "θ 의 sin·cos 로 분해",
+          "why": "α=β=θ 인 덧셈정리의 특수화"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "sin θ 와 cos θ 의 곱을 하나의 삼각함수로 표현해야 할 때",
+          "premises": [
+            "sin θ cos θ 형태의 식이 주어져 있거나 만들어져야 함",
+            "배각 공식의 sin 2θ = 2sin θ cos θ 를 역으로 이용할 수 있음을 인식"
+          ],
+          "why": "곱셈 형태의 삼각함수는 합·차 또는 배각 공식으로 단순화할 수 있으며, 특히 sin θ cos θ = (1/2)sin 2θ 로 변환하면 적분·최댓값 구하기 등에서 계산이 훨씬 간단해지기 때문"
+        }
       ]
     },
     {
@@ -141,10 +342,25 @@
       "name": "반각·차수 낮추기 공식",
       "knowledge_layer": 5,
       "formula_latex": "\\sin^2\\theta = \\frac{1-\\cos 2\\theta}{2},\\;\\; \\cos^2\\theta = \\frac{1+\\cos 2\\theta}{2}",
-      "prerequisites": ["배각공식"],
+      "prerequisites": [
+        "배각공식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "sin² 또는 cos² 를 적분 또는 단순화", "premises": ["배각공식 역방향"], "why": "차수를 낮춰 적분 가능 형태로 환원" }
+        {
+          "direction": "backward",
+          "goal_pattern": "sin² 또는 cos² 를 적분 또는 단순화",
+          "premises": [
+            "배각공식 역방향"
+          ],
+          "why": "차수를 낮춰 적분 가능 형태로 환원"
+        },
+        {
+          "direction": "forward",
+          "condition": "cos 2θ 를 포함한 식이 주어졌는데, sin²θ 나 cos²θ 로 표현하고 싶을 때",
+          "derived_fact": "cos 2θ = 1 - 2sin²θ 또는 cos 2θ = 2cos²θ - 1 로부터 sin²θ 와 cos²θ 를 배각식 없이 직접 추출 가능",
+          "why": "배각공식의 결과물인 cos 2θ 를 역으로 풀면 단일 각도의 제곱 형태를 얻을 수 있어, 복합 각도 조건을 단순 각도로 환원할 수 있기 때문"
+        }
       ]
     },
     {
@@ -152,10 +368,25 @@
       "name": "삼각함수의 합성 (a sin + b cos)",
       "knowledge_layer": 5,
       "formula_latex": "a\\sin\\theta + b\\cos\\theta = \\sqrt{a^2+b^2} \\sin(\\theta+\\varphi)",
-      "prerequisites": ["덧셈정리"],
+      "prerequisites": [
+        "덧셈정리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "asinθ + bcosθ 의 최댓·최솟값", "premises": ["a²+b² 의 제곱근"], "why": "합성하면 단일 sin 파의 진폭이 곧 최댓값" }
+        {
+          "direction": "backward",
+          "goal_pattern": "asinθ + bcosθ 의 최댓·최솟값",
+          "premises": [
+            "a²+b² 의 제곱근"
+          ],
+          "why": "합성하면 단일 sin 파의 진폭이 곧 최댓값"
+        },
+        {
+          "direction": "forward",
+          "condition": "sin(θ+φ) 형태의 삼각함수를 a·sinθ + b·cosθ 꼴로 풀어서 쓰고 싶을 때",
+          "derived_fact": "sin(θ+φ) = sinθ·cosφ + cosθ·sinφ 이므로 a = cosφ, b = sinφ 로 대응되어, 주어진 식의 계수들로부터 φ 를 역으로 구할 수 있다",
+          "why": "합성의 역과정으로, 진폭과 위상각이 주어진 단일 파를 다시 직각 성분(sin, cos)의 선형결합으로 분해하여 구체적인 계수를 얻는 과정"
+        }
       ]
     },
     {
@@ -163,10 +394,27 @@
       "name": "사인법칙",
       "knowledge_layer": 5,
       "formula_latex": "\\frac{a}{\\sin A} = \\frac{b}{\\sin B} = \\frac{c}{\\sin C} = 2R",
-      "prerequisites": ["삼각함수"],
+      "prerequisites": [
+        "삼각함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "삼각형의 변·각·외접원 반지름", "premises": ["한 변과 대각 또는 외접원"], "why": "외접원이 삼각형 변과 각을 묶는 보편 비례식" }
+        {
+          "direction": "backward",
+          "goal_pattern": "삼각형의 변·각·외접원 반지름",
+          "premises": [
+            "한 변과 대각 또는 외접원"
+          ],
+          "why": "외접원이 삼각형 변과 각을 묶는 보편 비례식"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 변의 길이와 그 사이각이 아닌 한 각을 알 때 나머지 변을 구해야 하는 상황",
+          "derived_fact": "사인법칙으로 미지의 변에 대응하는 각을 먼저 구한 뒤, 그 변의 길이를 계산할 수 있다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "한 변과 그 대각을 알면 외접원 반지름이 결정되고, 다른 각의 사인값으로 대응 변을 복원할 수 있기 때문"
+        }
       ]
     },
     {
@@ -174,10 +422,25 @@
       "name": "코사인법칙",
       "knowledge_layer": 5,
       "formula_latex": "c^2 = a^2 + b^2 - 2ab\\cos C",
-      "prerequisites": ["삼각함수"],
+      "prerequisites": [
+        "삼각함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "삼각형의 한 변·세 변·끼인각", "premises": ["두 변 + 끼인각 또는 세 변"], "why": "피타고라스의 일반화 — 끼인각 보정항 -2ab cos C" }
+        {
+          "direction": "backward",
+          "goal_pattern": "삼각형의 한 변·세 변·끼인각",
+          "premises": [
+            "두 변 + 끼인각 또는 세 변"
+          ],
+          "why": "피타고라스의 일반화 — 끼인각 보정항 -2ab cos C"
+        },
+        {
+          "direction": "forward",
+          "condition": "삼각형의 두 변의 길이와 그 사이각을 알고 있을 때, 마주보는 각의 크기를 구해야 하는 상황",
+          "derived_fact": "코사인법칙으로 먼저 마주보는 변을 구한 뒤, 다시 코사인법칙을 역으로 적용하면 다른 각들의 코사인값을 계산할 수 있고, 이를 통해 삼각형의 모든 각을 결정할 수 있다",
+          "why": "두 변과 끼인각이 주어졌을 때 먼저 대변을 결정하고, 그 결정된 변을 이용해 나머지 각들을 역으로 추출하는 순차적 도구 적용 과정이기 때문"
+        }
       ]
     },
     {
@@ -185,10 +448,29 @@
       "name": "삼각형 넓이 (sin 활용)",
       "knowledge_layer": 4,
       "formula_latex": "S = \\tfrac{1}{2} ab \\sin C",
-      "prerequisites": ["삼각함수"],
+      "prerequisites": [
+        "삼각함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 변과 끼인각", "derived_fact": "닫힌 형태 넓이", "why": "밑변·높이의 일반화 — sin C 가 높이비" }
+        {
+          "direction": "forward",
+          "condition": "두 변과 끼인각",
+          "derived_fact": "닫힌 형태 넓이",
+          "why": "밑변·높이의 일반화 — sin C 가 높이비"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "삼각형의 넓이는 알지만 두 변의 길이만 주어졌을 때, 그 사이각을 구해야 하는 상황",
+          "premises": [
+            "삼각형의 넓이 S 값이 주어짐",
+            "두 변의 길이 a, b 가 알려짐",
+            "그 두 변 사이의 각 C 를 구하려는 의도"
+          ],
+          "why": "넓이 공식을 C 에 대해 역산하면 sin C = 2S/(ab) 가 되어, 주어진 넓이와 변으로부터 끼인각을 복원할 수 있다"
+        }
       ]
     },
     {
@@ -199,7 +481,22 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "공차 d 가 일정", "derived_fact": "선형 일반항 + 이차 합", "why": "S_n 은 n 의 이차식 — d 가 0 이면 일차" }
+        {
+          "direction": "forward",
+          "condition": "공차 d 가 일정",
+          "derived_fact": "선형 일반항 + 이차 합",
+          "why": "S_n 은 n 의 이차식 — d 가 0 이면 일차"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "S_n 이 n 에 대한 이차식으로 주어졌을 때, 수열의 첫째항과 공차를 역으로 구하기",
+          "premises": [
+            "S_n 의 n² 계수로부터 공차 d 를 2배로 복원",
+            "S_n 의 n 계수와 d 를 이용해 첫째항 a 역산",
+            "상수항이 0 이어야 함을 확인 (S_0 = 0)"
+          ],
+          "why": "등차수열의 합은 항상 n² 과 n 의 계수 구조가 고정되어 있으므로, 주어진 이차식을 그 형태와 대응시키면 원래 수열의 정보를 전부 복원할 수 있습니다."
+        }
       ]
     },
     {
@@ -207,10 +504,27 @@
       "name": "무한등비급수의 합",
       "knowledge_layer": 5,
       "formula_latex": "|r|<1 \\Rightarrow \\sum_{n=0}^{\\infty} ar^n = \\frac{a}{1-r}",
-      "prerequisites": ["등비수열"],
+      "prerequisites": [
+        "등비수열"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "공비 절댓값이 1보다 작은 무한급수", "derived_fact": "닫힌 형태로 수렴", "why": "유한합의 r^n 항이 0으로 수렴" }
+        {
+          "direction": "forward",
+          "condition": "공비 절댓값이 1보다 작은 무한급수",
+          "derived_fact": "닫힌 형태로 수렴",
+          "why": "유한합의 r^n 항이 0으로 수렴"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "무한급수의 합이 특정 유리수 값으로 주어졌을 때, 첫째항과 공비 구하기",
+          "premises": [
+            "급수의 합 S = a/(1-r) 형태로 표현 가능한지 확인",
+            "주어진 S 값을 두 개의 미지수 a, r로 역산하기 위해 추가 조건(예: 첫 항의 값이나 공비의 범위) 필요",
+            "|r| < 1 제약 조건이 구한 r 값과 일치하는지 검증"
+          ],
+          "why": "수렴하는 무한급수의 합 공식을 역으로 풀어서 모르던 계수들을 찾아내는 과정은 공식의 구조를 깊이 있게 이해하게 하고, 실제 문제에서 급수를 설계하거나 재구성하는 능력을 기른다"
+        }
       ]
     },
     {
@@ -218,10 +532,27 @@
       "name": "점화식 — 등차·등비형",
       "knowledge_layer": 4,
       "formula_latex": "a_{n+1} = a_n + d\\;(\\text{등차});\\;\\; a_{n+1} = r a_n\\;(\\text{등비})",
-      "prerequisites": ["수열"],
+      "prerequisites": [
+        "수열"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "점화식이 표준 형태", "derived_fact": "패턴 인식 후 일반항", "why": "표준형은 닫힌 해를 직접 안다" }
+        {
+          "direction": "forward",
+          "condition": "점화식이 표준 형태",
+          "derived_fact": "패턴 인식 후 일반항",
+          "why": "표준형은 닫힌 해를 직접 안다"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "수열의 첫 몇 항이 주어졌을 때 일반항 공식을 구해야 하는 상황",
+          "premises": [
+            "연속한 두 항의 차이가 상수인지 확인",
+            "연속한 두 항의 비가 상수인지 확인",
+            "어느 조건이 맞으면 등차 또는 등비 점화식으로 모델링 가능"
+          ],
+          "why": "주어진 수열 데이터를 역으로 분석하면 등차·등비 구조를 인식하고, 그에 맞는 점화식을 세워 일반항을 유도할 수 있기 때문"
+        }
       ]
     },
     {
@@ -229,10 +560,25 @@
       "name": "점화식 a_{n+1} = p·a_n + q (일차분수형)",
       "knowledge_layer": 5,
       "formula_latex": "a_{n+1} = p a_n + q \\Rightarrow a_n - \\frac{q}{1-p} = p^{n-1}\\left(a_1 - \\frac{q}{1-p}\\right)\\;(p \\ne 1)",
-      "prerequisites": ["등비수열"],
+      "prerequisites": [
+        "등비수열"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "선형 점화식의 일반항", "premises": ["고정점 q/(1-p) 분리"], "why": "고정점을 빼면 등비수열로 환원" }
+        {
+          "direction": "backward",
+          "goal_pattern": "선형 점화식의 일반항",
+          "premises": [
+            "고정점 q/(1-p) 분리"
+          ],
+          "why": "고정점을 빼면 등비수열로 환원"
+        },
+        {
+          "direction": "forward",
+          "condition": "수열의 첫 항과 점화식 a_{n+1} = p·a_n + q 가 주어졌을 때, 특정 항의 값을 빠르게 계산하려면",
+          "derived_fact": "고정점 α = q/(1-p) 를 기준으로 a_n = α + p^{n-1}(a_1 - α) 형태로 변환하면 큰 n에 대해서도 직접 대입으로 a_n을 구할 수 있다",
+          "why": "점화식을 반복 계산하는 대신 닫힌 형태의 공식으로 바꾸면, 초기값과 공비만으로 임의의 항을 한 번에 구할 수 있기 때문"
+        }
       ]
     },
     {
@@ -243,7 +589,22 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "모든 자연수 n 에 대한 명제", "premises": ["기저 + 귀납단계"], "why": "도미노 원리 — 무한 명제를 두 단계로 환원" }
+        {
+          "direction": "backward",
+          "goal_pattern": "모든 자연수 n 에 대한 명제",
+          "premises": [
+            "기저 + 귀납단계"
+          ],
+          "why": "도미노 원리 — 무한 명제를 두 단계로 환원"
+        },
+        {
+          "direction": "forward",
+          "condition": "n=1일 때 식이 성립함을 확인했고, n=k일 때 식이 참이면 n=k+1일 때도 참임을 보였을 때",
+          "derived_fact": "그 식은 모든 자연수에서 참이므로, 구체적인 큰 수(예: n=100)를 대입해도 반드시 성립한다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "귀납법 구조 완성 후 학생이 얻은 두 조건만으로 무한 집합 전체의 참을 단번에 결론 내릴 수 있기 때문"
+        }
       ]
     },
     {
@@ -254,7 +615,22 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "복합 식의 합", "derived_fact": "단순 항으로 분리", "why": "합은 선형 — 분해 후 각각 닫힌 공식 적용" }
+        {
+          "direction": "forward",
+          "condition": "복합 식의 합",
+          "derived_fact": "단순 항으로 분리",
+          "why": "합은 선형 — 분해 후 각각 닫힌 공식 적용"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "여러 개의 닫힌 공식(예: n(n+1)/2, n² 등)을 더한 결과식을 하나의 Σ로 표현하고 싶을 때",
+          "premises": [
+            "각 닫힌 공식이 같은 범위의 합으로 유도된 것인지 확인",
+            "상수배가 적용된 항들을 원래 Σ 형태로 복원 가능한지 검토",
+            "분리된 합들이 모두 같은 인덱스 범위를 갖는지 확인"
+          ],
+          "why": "역으로 여러 합의 결과를 하나의 Σ로 묶으려면 선형성을 거꾸로 적용해서 항들을 한 번에 넣을 수 있는지 판단해야 하기 때문"
+        }
       ]
     },
     {
@@ -262,10 +638,27 @@
       "name": "부분분수 전개와 중간소거 (telescoping)",
       "knowledge_layer": 5,
       "formula_latex": "\\frac{1}{k(k+1)} = \\frac{1}{k} - \\frac{1}{k+1};\\;\\; \\sum (b_k - b_{k+1}) = b_1 - b_{n+1}",
-      "prerequisites": ["부분분수"],
+      "prerequisites": [
+        "부분분수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "1/(k(k+1)) 형 합", "premises": ["부분분수 분리"], "why": "이웃 항이 소거되어 양 끝만 남음" }
+        {
+          "direction": "backward",
+          "goal_pattern": "1/(k(k+1)) 형 합",
+          "premises": [
+            "부분분수 분리"
+          ],
+          "why": "이웃 항이 소거되어 양 끝만 남음"
+        },
+        {
+          "direction": "forward",
+          "condition": "연속된 두 자연수의 곱으로 된 분모를 가진 여러 분수를 더할 때",
+          "derived_fact": "부분분수로 각 항을 1/k - 1/(k+1) 꼴로 바꾸면 대부분의 항이 소거되어 첫 번째와 마지막 항만 남는다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "각 항의 뒷부분이 다음 항의 앞부분과 정반대 부호이므로 연쇄적으로 상쇄되고, 결국 1/1과 1/(n+1)만 생존하게 된다"
+        }
       ]
     },
     {
@@ -273,10 +666,26 @@
       "name": "삼각함수 주기·대칭",
       "knowledge_layer": 4,
       "formula_latex": "\\sin(\\theta+2\\pi)=\\sin\\theta,\\;\\; \\sin(-\\theta)=-\\sin\\theta,\\;\\; \\cos(-\\theta)=\\cos\\theta",
-      "prerequisites": ["삼각함수 정의"],
+      "prerequisites": [
+        "삼각함수 정의"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "각이 큰 값 또는 음수", "derived_fact": "주기·대칭으로 [0,2π) 로 환산", "why": "단위원 회전의 주기성·대칭성" }
+        {
+          "direction": "forward",
+          "condition": "각이 큰 값 또는 음수",
+          "derived_fact": "주기·대칭으로 [0,2π) 로 환산",
+          "why": "단위원 회전의 주기성·대칭성"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 삼각함수값의 크기·부호를 비교하거나 같음을 보여야 할 때",
+          "premises": [
+            "비교 대상인 두 각도 사이의 관계 (차이, 음수 관계 등)를 파악했는가",
+            "주기성이나 대칭성으로 한 쪽을 다른 쪽 형태로 변환할 수 있는가"
+          ],
+          "why": "삼각함수의 주기와 대칭성은 서로 다른 각의 함수값을 같은 함수값으로 재표현하는 역방향 도구로, 복잡한 비교·증명을 단순한 형태로 귀결시킬 수 있기 때문"
+        }
       ]
     },
     {
@@ -284,10 +693,25 @@
       "name": "삼각방정식의 풀이",
       "knowledge_layer": 5,
       "formula_latex": "\\sin x = k \\Rightarrow x = \\arcsin k + 2n\\pi \\text{ 또는 } \\pi - \\arcsin k + 2n\\pi",
-      "prerequisites": ["삼각함수 주기"],
+      "prerequisites": [
+        "삼각함수 주기"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "삼각방정식의 해", "premises": ["기본해 + 주기 + 대칭해"], "why": "단위원에서 한 값을 갖는 점은 두 곳, 주기마다 반복" }
+        {
+          "direction": "backward",
+          "goal_pattern": "삼각방정식의 해",
+          "premises": [
+            "기본해 + 주기 + 대칭해"
+          ],
+          "why": "단위원에서 한 값을 갖는 점은 두 곳, 주기마다 반복"
+        },
+        {
+          "direction": "forward",
+          "condition": "sin x = 0.5 같은 구체적인 삼각방정식을 풀어야 하는데, 계산기 없이 손으로 해야 할 때",
+          "derived_fact": "특수각(30°, 45°, 60° 등)이면 arcsin 값을 정확히 구한 후, 보각 공식 π - θ로 제2사분면 해를 찾고, 주기 2πn을 더해 일반해 집합을 완성할 수 있다",
+          "why": "삼각방정식의 해는 참값 하나(arcsin)와 보각 관계(π - arcsin)의 두 계열로 나뉘는데, 이를 체계적으로 나열하려면 각 계열에 주기를 더하는 과정이 필수이기 때문"
+        }
       ]
     },
     {
@@ -295,10 +719,27 @@
       "name": "삼각부등식",
       "knowledge_layer": 5,
       "formula_latex": "\\sin x > k \\text{ 의 해} \\to \\text{단위원 위 호 구간으로 변환}",
-      "prerequisites": ["삼각방정식"],
+      "prerequisites": [
+        "삼각방정식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "삼각함수가 부등식에 포함", "derived_fact": "단위원 호 구간으로 시각화", "why": "주기와 대칭이 부등식 해를 호 구간으로 정렬" }
+        {
+          "direction": "forward",
+          "condition": "삼각함수가 부등식에 포함",
+          "derived_fact": "단위원 호 구간으로 시각화",
+          "why": "주기와 대칭이 부등식 해를 호 구간으로 정렬"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "주어진 각도 범위(예: π/6 < x < 5π/6)가 어떤 삼각부등식의 해 집합인지 찾아야 할 때",
+          "premises": [
+            "단위원 위에서 목표 호 구간에 대응하는 삼각함수값의 범위 파악",
+            "그 함수값이 어떤 상수 k와의 대소관계로 표현되는지 역추적",
+            "부등호 방향과 주기성을 고려하여 원래 부등식 형태 복원"
+          ],
+          "why": "호 구간이 주어졌을 때, 단위원의 기하학적 구조를 역으로 읽으면 어떤 삼각부등식이 그것을 해로 가지는지 유일하게 결정되기 때문"
+        }
       ]
     },
     {
@@ -306,10 +747,26 @@
       "name": "상용로그의 정수부와 소수부",
       "knowledge_layer": 5,
       "formula_latex": "\\log N = n + \\alpha\\;(n=\\text{정수부},\\; 0 \\le \\alpha < 1)",
-      "prerequisites": ["로그"],
+      "prerequisites": [
+        "로그"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "큰 수의 자릿수·맨앞 숫자", "derived_fact": "정수부+1 = 자릿수, 소수부 = 첫 숫자 결정", "why": "10^(정수부) ≤ N < 10^(정수부+1)" }
+        {
+          "direction": "forward",
+          "condition": "큰 수의 자릿수·맨앞 숫자",
+          "derived_fact": "정수부+1 = 자릿수, 소수부 = 첫 숫자 결정",
+          "why": "10^(정수부) ≤ N < 10^(정수부+1)"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "어떤 수 N의 상용로그 값이 주어졌을 때, 그 수가 몇 자리 수인지 또는 어느 범위에 있는지 역으로 판단",
+          "premises": [
+            "상용로그값 log N = n + α 형태로 분해 가능",
+            "정수부 n을 추출할 수 있으면 10^n ≤ N < 10^(n+1) 범위 확정"
+          ],
+          "why": "로그값의 정수부만으로도 원래 수의 크기 범위와 자릿수를 역산할 수 있으므로, 로그 계산 결과에서 자릿수나 범위를 묻는 문제에 즉시 적용"
+        }
       ]
     },
     {
@@ -317,10 +774,27 @@
       "name": "등차중항·등비중항",
       "knowledge_layer": 4,
       "formula_latex": "\\text{등차: } 2b = a+c;\\;\\; \\text{등비: } b^2 = ac",
-      "prerequisites": ["등차·등비수열"],
+      "prerequisites": [
+        "등차·등비수열"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "세 항이 등차·등비를 이룸", "derived_fact": "중항 조건식", "why": "이웃 두 항의 평균이 중항" }
+        {
+          "direction": "forward",
+          "condition": "세 항이 등차·등비를 이룸",
+          "derived_fact": "중항 조건식",
+          "why": "이웃 두 항의 평균이 중항"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "세 수의 합이나 곱이 주어졌을 때, 중항을 이용해 미지수를 줄이고 싶다",
+          "premises": [
+            "세 수가 등차 또는 등비를 이룬다는 조건",
+            "세 수의 합 또는 곱에 대한 정보",
+            "중항 관계식(2b=a+c 또는 b²=ac)으로 한 미지수를 다른 것으로 표현 가능"
+          ],
+          "why": "중항을 기준으로 대칭성을 활용하면 세 개 미지수를 하나의 변수로 표현할 수 있어, 주어진 합/곱 조건을 간단한 방정식으로 변환할 수 있다"
+        }
       ]
     }
   ]

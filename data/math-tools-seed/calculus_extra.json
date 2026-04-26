@@ -9,10 +9,27 @@
       "name": "자연상수 e의 정의",
       "knowledge_layer": 5,
       "formula_latex": "e = \\lim_{n \\to \\infty} (1+1/n)^n = \\lim_{x \\to 0} (1+x)^{1/x}",
-      "prerequisites": ["극한"],
+      "prerequisites": [
+        "극한"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "(1+무한소) 의 발산형 극한", "derived_fact": "e 의 정의식 활용", "why": "e 는 미분이 자기자신인 유일한 밑" }
+        {
+          "direction": "forward",
+          "condition": "(1+무한소) 의 발산형 극한",
+          "derived_fact": "e 의 정의식 활용",
+          "why": "e 는 미분이 자기자신인 유일한 밑"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "지수함수의 미분값이 원래 함수와 같아지는 밑을 찾아야 할 때",
+          "premises": [
+            "f(x) = a^x 형태의 함수",
+            "f'(x) = f(x) 가 되어야 한다는 조건",
+            "미분의 정의에서 lim_{h→0} (a^h - 1)/h 형태의 극한이 1이어야 함"
+          ],
+          "why": "e의 정의에서 나오는 극한식 lim_{x→0} (e^x - 1)/x = 1 이 지수함수 미분에서 핵심이므로, 역으로 '미분 = 자기자신' 조건에서 e를 특정할 수 있음"
+        }
       ]
     },
     {
@@ -20,10 +37,26 @@
       "name": "ln(1+x)/x 의 극한",
       "knowledge_layer": 5,
       "formula_latex": "\\lim_{x \\to 0} \\frac{\\ln(1+x)}{x} = 1",
-      "prerequisites": ["e의 정의"],
+      "prerequisites": [
+        "e의 정의"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "x→0 의 ln 부정형", "derived_fact": "1로 환원", "why": "ln 의 미분이 1/x 이므로 x=0 근처 선형 근사" }
+        {
+          "direction": "forward",
+          "condition": "x→0 의 ln 부정형",
+          "derived_fact": "1로 환원",
+          "why": "ln 의 미분이 1/x 이므로 x=0 근처 선형 근사"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "ln(1+x)와 x의 비율 관계를 알아야 하는 상황",
+          "premises": [
+            "x가 0에 가까워질 때 ln(1+x)의 1차 근사식이 필요",
+            "ln(1+x) ≈ x (x→0일 때)임을 정당화해야 함"
+          ],
+          "why": "극한값이 1이라는 것은 x→0 근처에서 ln(1+x)과 x가 같은 속도로 수렴함을 의미하므로, 근사식이나 동치성 증명이 필요할 때 역으로 이 극한을 불러와 정당성을 확보"
+        }
       ]
     },
     {
@@ -31,10 +64,26 @@
       "name": "(eˣ-1)/x 의 극한",
       "knowledge_layer": 5,
       "formula_latex": "\\lim_{x \\to 0} \\frac{e^x - 1}{x} = 1",
-      "prerequisites": ["e의 정의"],
+      "prerequisites": [
+        "e의 정의"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "x→0 의 지수 부정형", "derived_fact": "1로 환원", "why": "e^x 의 미분이 e^x, 0에서 값 1" }
+        {
+          "direction": "forward",
+          "condition": "x→0 의 지수 부정형",
+          "derived_fact": "1로 환원",
+          "why": "e^x 의 미분이 e^x, 0에서 값 1"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "지수함수 e^x 와 1차 근사식의 오차를 분석해야 할 때",
+          "premises": [
+            "e^x ≈ 1 + x (x가 0 근처일 때)가 얼마나 정확한지 확인",
+            "(e^x - 1 - x)/x² 같은 고차 오차항의 극한값을 구해야 함"
+          ],
+          "why": "lim(e^x-1)/x = 1 을 알면, e^x - 1 ~ x (x→0)임을 확인할 수 있고, 여기서 더 세밀한 근사(테일러 전개의 2차항)가 필요할 때 이 극한을 기반으로 역으로 역할을 분리해서 사용"
+        }
       ]
     },
     {
@@ -42,10 +91,26 @@
       "name": "sin x / x 의 극한",
       "knowledge_layer": 5,
       "formula_latex": "\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1",
-      "prerequisites": ["삼각함수"],
+      "prerequisites": [
+        "삼각함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "x→0 의 sin 부정형", "derived_fact": "1", "why": "샌드위치 정리로 cos x ≤ sin x/x ≤ 1" }
+        {
+          "direction": "forward",
+          "condition": "x→0 의 sin 부정형",
+          "derived_fact": "1",
+          "why": "샌드위치 정리로 cos x ≤ sin x/x ≤ 1"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "sin x와 x가 같은 속도로 0에 수렴할 때, 그 비의 극한값을 구해야 함",
+          "premises": [
+            "x → 0 근처에서 sin x의 1차 근사(테일러 전개 또는 기하학적 직관)를 알고 있음",
+            "부정형 0/0 꼴의 극한 문제를 직접 계산할 수 없는 상황"
+          ],
+          "why": "작은 각도에서 sin x ≈ x라는 기본 성질이 이 극한의 핵심이며, 역으로 '비율이 1로 수렴한다'는 사실로부터 sin x와 x의 1차 동치성을 확인할 수 있음"
+        }
       ]
     },
     {
@@ -53,10 +118,27 @@
       "name": "(1-cos x)/x² 극한",
       "knowledge_layer": 5,
       "formula_latex": "\\lim_{x \\to 0} \\frac{1 - \\cos x}{x^2} = \\frac{1}{2}",
-      "prerequisites": ["sinx/x"],
+      "prerequisites": [
+        "sinx/x"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "x→0 의 코사인 차분형", "derived_fact": "1/2", "why": "1-cos x = 2 sin²(x/2) 변형 후 sin/x" }
+        {
+          "direction": "forward",
+          "condition": "x→0 의 코사인 차분형",
+          "derived_fact": "1/2",
+          "why": "1-cos x = 2 sin²(x/2) 변형 후 sin/x"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "x→0에서 분모가 x²인 극한값이 정확히 1/2이어야 할 때",
+          "premises": [
+            "분자가 1-cos x 형태이거나 그와 동치인 식일 것",
+            "분모의 차수가 정확히 2차일 것",
+            "x→0 근처에서 코사인의 거동을 직접 다루는 다른 도구(테일러, 로피탈 등)를 피하고 싶을 것"
+          ],
+          "why": "코사인 차분식이 1/2로 수렴하는 성질을 역으로 활용하면, 복잡한 삼각함수 극한을 빠르게 판단·정리할 수 있기 때문"
+        }
       ]
     },
     {
@@ -64,10 +146,27 @@
       "name": "지수함수의 미분",
       "knowledge_layer": 5,
       "formula_latex": "(e^x)' = e^x;\\;\\; (a^x)' = a^x \\ln a",
-      "prerequisites": ["지수함수"],
+      "prerequisites": [
+        "지수함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "지수함수 미분", "derived_fact": "자기자신 또는 ln a 배", "why": "e 의 정의에서 자기보존 — 일반 a 는 ln a 인자" }
+        {
+          "direction": "forward",
+          "condition": "지수함수 미분",
+          "derived_fact": "자기자신 또는 ln a 배",
+          "why": "e 의 정의에서 자기보존 — 일반 a 는 ln a 인자"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "도함수가 원래 함수에 상수배인 지수함수를 찾아야 할 때",
+          "premises": [
+            "도함수 f'(x)가 f(x)와 같거나 상수배 관계",
+            "f(x)가 지수 형태여야 한다는 힌트",
+            "밑수 a에 대해 a^x ln a = k·a^x 를 만족하는 a 구하기"
+          ],
+          "why": "지수함수의 미분식 구조를 역으로 읽으면, 도함수와 원함수의 비율(ln a)에서 밑수를 역산할 수 있고, 이는 미분방정식이나 지수적 증감 문제에서 특정 성장률을 갖는 함수를 재구성할 때 필요"
+        }
       ]
     },
     {
@@ -75,10 +174,27 @@
       "name": "로그함수의 미분",
       "knowledge_layer": 5,
       "formula_latex": "(\\ln x)' = 1/x;\\;\\; (\\log_a x)' = \\frac{1}{x \\ln a}",
-      "prerequisites": ["로그함수"],
+      "prerequisites": [
+        "로그함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "로그함수 미분", "derived_fact": "1/(x ln a)", "why": "지수함수 미분의 역함수 미분" }
+        {
+          "direction": "forward",
+          "condition": "로그함수 미분",
+          "derived_fact": "1/(x ln a)",
+          "why": "지수함수 미분의 역함수 미분"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "적분 결과가 ln|x| 또는 log_a x 형태인데, 그 원시함수가 맞는지 확인하고 싶을 때",
+          "premises": [
+            "1/x 꼴의 피적분함수가 주어짐",
+            "적분상수를 포함한 답안이 로그함수 형태임",
+            "미분으로 검증하려는 상황"
+          ],
+          "why": "로그함수 미분 공식을 역으로 적용하면, 1/x를 적분한 결과가 ln|x|+C 임을 확인할 수 있고, 이는 부정적분 검산의 핵심 도구가 된다"
+        }
       ]
     },
     {
@@ -86,10 +202,28 @@
       "name": "삼각함수의 미분",
       "knowledge_layer": 5,
       "formula_latex": "(\\sin x)' = \\cos x,\\;\\; (\\cos x)' = -\\sin x,\\;\\; (\\tan x)' = \\sec^2 x",
-      "prerequisites": ["삼각함수", "sinx/x"],
+      "prerequisites": [
+        "삼각함수",
+        "sinx/x"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "삼각함수 미분", "derived_fact": "표준 공식 적용", "why": "정의에서 도출 — sin'=cos 가 기본" }
+        {
+          "direction": "forward",
+          "condition": "삼각함수 미분",
+          "derived_fact": "표준 공식 적용",
+          "why": "정의에서 도출 — sin'=cos 가 기본"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "삼각함수를 포함한 함수의 극값이나 변곡점을 찾아야 할 때",
+          "premises": [
+            "도함수가 0이 되는 점을 구할 수 있는가",
+            "cos x = 0 또는 sin x = 0을 만족하는 x 값을 찾을 수 있는가",
+            "이계 도함수로 극대·극소를 판정할 수 있는가"
+          ],
+          "why": "삼각함수 극값 문제는 역으로 추적하면 '1차 도함수를 0으로 놓고 풀기' → '삼각함수 미분 공식 적용'이 필수 단계이기 때문"
+        }
       ]
     },
     {
@@ -97,10 +231,28 @@
       "name": "역함수의 미분",
       "knowledge_layer": 6,
       "formula_latex": "(f^{-1})'(y) = \\frac{1}{f'(x)}\\;(y = f(x))",
-      "prerequisites": ["역함수", "미분"],
+      "prerequisites": [
+        "역함수",
+        "미분"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "역함수의 도함수", "derived_fact": "원함수 도함수의 역수", "why": "y=f(x) 와 x=f⁻¹(y) 는 그래프 대칭 — 기울기 역수" }
+        {
+          "direction": "forward",
+          "condition": "역함수의 도함수",
+          "derived_fact": "원함수 도함수의 역수",
+          "why": "y=f(x) 와 x=f⁻¹(y) 는 그래프 대칭 — 기울기 역수"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "역함수 위의 특정 점에서 접선의 기울기를 구해야 할 때",
+          "premises": [
+            "원함수 f(x)의 도함수 f'(x)를 알고 있거나 구할 수 있는가",
+            "그 점이 원함수의 어느 x값에서 나온 상(image)인지 파악했는가",
+            "원함수의 해당 x값에서 f'(x) ≠ 0인가"
+          ],
+          "why": "역함수 위의 접선 기울기는 원함수에서의 기울기로만 결정되므로, 역함수 미분 공식을 역으로 이용해 원함수의 미분값을 찾아 역수를 취하는 과정이 필요"
+        }
       ]
     },
     {
@@ -108,10 +260,27 @@
       "name": "음함수 미분",
       "knowledge_layer": 6,
       "formula_latex": "F(x,y) = 0 \\Rightarrow \\frac{\\partial F}{\\partial x} + \\frac{\\partial F}{\\partial y} \\cdot y' = 0",
-      "prerequisites": ["연쇄법칙"],
+      "prerequisites": [
+        "연쇄법칙"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "y 가 명시되지 않은 곡선의 기울기", "premises": ["x 에 대해 양변 미분"], "why": "y 도 x 의 함수라 보고 연쇄법칙 적용" }
+        {
+          "direction": "backward",
+          "goal_pattern": "y 가 명시되지 않은 곡선의 기울기",
+          "premises": [
+            "x 에 대해 양변 미분"
+          ],
+          "why": "y 도 x 의 함수라 보고 연쇄법칙 적용"
+        },
+        {
+          "direction": "forward",
+          "condition": "원, 타원, 쌍곡선 같은 방정식에서 특정 점에서의 접선의 기울기나 법선을 구해야 할 때",
+          "derived_fact": "음함수 미분으로 y'을 x, y로 표현한 후, 주어진 점의 좌표를 대입하면 그 점에서의 접선 기울기를 바로 계산할 수 있다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "y = f(x) 형태로 명시적 변환 없이도 곡선 위 임의의 점에서 순간 변화율을 직접 구할 수 있으므로, 접선·법선 문제를 효율적으로 해결"
+        }
       ]
     },
     {
@@ -119,10 +288,26 @@
       "name": "매개변수 미분",
       "knowledge_layer": 6,
       "formula_latex": "x=f(t),\\; y=g(t) \\Rightarrow \\frac{dy}{dx} = \\frac{g'(t)}{f'(t)}",
-      "prerequisites": ["연쇄법칙"],
+      "prerequisites": [
+        "연쇄법칙"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "x, y 가 모두 t 의 함수", "derived_fact": "g'(t)/f'(t)", "why": "dy/dx = (dy/dt)/(dx/dt) — 연쇄법칙의 직접 적용" }
+        {
+          "direction": "forward",
+          "condition": "x, y 가 모두 t 의 함수",
+          "derived_fact": "g'(t)/f'(t)",
+          "why": "dy/dx = (dy/dt)/(dx/dt) — 연쇄법칙의 직접 적용"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "곡선 위의 한 점에서 접선의 기울기를 구해야 하는데 x, y를 직접 미분할 수 없는 상황",
+          "premises": [
+            "x와 y가 각각 제3의 매개변수 t로 표현되어 있음",
+            "dx/dt ≠ 0 임을 확인할 수 있음"
+          ],
+          "why": "직접 미분 불가능한 매개변수 곡선에서는 각 성분을 매개변수로 미분한 후 나눗셈으로 기울기를 복원하는 방식이 유일한 경로"
+        }
       ]
     },
     {
@@ -130,10 +315,26 @@
       "name": "로그미분법",
       "knowledge_layer": 6,
       "formula_latex": "y = f(x)^{g(x)} \\Rightarrow \\ln y = g(x) \\ln f(x) \\to \\text{양변 미분}",
-      "prerequisites": ["로그함수", "음함수 미분"],
+      "prerequisites": [
+        "로그함수",
+        "음함수 미분"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "지수에 변수가 들어간 함수의 미분", "premises": ["양변에 ln 후 음함수 미분"], "why": "지수의 변수를 곱셈 형태로 끌어내림" }
+        {
+          "direction": "backward",
+          "goal_pattern": "지수에 변수가 들어간 함수의 미분",
+          "premises": [
+            "양변에 ln 후 음함수 미분"
+          ],
+          "why": "지수의 변수를 곱셈 형태로 끌어내림"
+        },
+        {
+          "direction": "forward",
+          "condition": "밑과 지수가 모두 x의 함수일 때, 양변에 자연로그를 취한 후 미분 가능한 형태로 만들고 싶다",
+          "derived_fact": "원래 함수 y에 대한 도함수를 y' = y · [g'(x)ln f(x) + g(x)·f'(x)/f(x)] 꼴로 표현할 수 있다",
+          "why": "로그를 취하면 곱셈 구조(지수×밑의 로그)로 변환되어 곱의 미분법과 연쇄법칙을 동시에 적용 가능해진다"
+        }
       ]
     },
     {
@@ -141,10 +342,26 @@
       "name": "치환적분",
       "knowledge_layer": 6,
       "formula_latex": "\\int f(g(x)) g'(x) dx = \\int f(u) du\\;(u = g(x))",
-      "prerequisites": ["부정적분", "연쇄법칙"],
+      "prerequisites": [
+        "부정적분",
+        "연쇄법칙"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "복잡한 적분에 내부함수와 그 도함수가 동시 등장", "premises": ["u = g(x), du = g'(x) dx"], "why": "연쇄법칙의 역연산" }
+        {
+          "direction": "backward",
+          "goal_pattern": "복잡한 적분에 내부함수와 그 도함수가 동시 등장",
+          "premises": [
+            "u = g(x), du = g'(x) dx"
+          ],
+          "why": "연쇄법칙의 역연산"
+        },
+        {
+          "direction": "forward",
+          "condition": "합성함수의 도함수 형태를 적분식에서 발견했을 때, 치환으로 단순화할 수 있는지 판단하려면",
+          "derived_fact": "g'(x)를 포함한 적분은 u = g(x)로 놓으면 f(u)의 기본 부정적분 형태로 변환되어 계산이 훨씬 단순해진다",
+          "why": "연쇄법칙에 의해 [F(g(x))]' = F'(g(x))·g'(x) 이므로, 이 형태의 적분은 F(g(x)) + C 형태의 해로 직진할 수 있기 때문"
+        }
       ]
     },
     {
@@ -152,10 +369,27 @@
       "name": "부분적분",
       "knowledge_layer": 6,
       "formula_latex": "\\int u\\, dv = uv - \\int v\\, du",
-      "prerequisites": ["곱의 미분"],
+      "prerequisites": [
+        "곱의 미분"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "두 종류 함수의 곱 적분 (다항×지수, 다항×삼각, log 등)", "premises": ["u·dv 분리, ILATE 우선순위"], "why": "곱의 미분의 역변환 — 하나 미분, 하나 적분" }
+        {
+          "direction": "backward",
+          "goal_pattern": "두 종류 함수의 곱 적분 (다항×지수, 다항×삼각, log 등)",
+          "premises": [
+            "u·dv 분리, ILATE 우선순위"
+          ],
+          "why": "곱의 미분의 역변환 — 하나 미분, 하나 적분"
+        },
+        {
+          "direction": "forward",
+          "condition": "적분 계산 중에 피적분함수를 u·dv 형태로 선택했을 때, u를 미분하면 더 간단해지고 dv를 적분할 수 있는 상황",
+          "derived_fact": "원래 적분을 uv - ∫v du 형태로 변환하여, 새로운 적분 ∫v du가 더 계산하기 쉬워진다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "u 선택을 먼저 하면 미분해서 차수나 복잡도가 낮아지므로, 남은 적분은 직접 계산하거나 다시 부분적분할 수 있는 형태로 변환되기 때문"
+        }
       ]
     },
     {
@@ -163,10 +397,25 @@
       "name": "부분분수 분해 (적분용)",
       "knowledge_layer": 6,
       "formula_latex": "\\frac{P(x)}{(x-a)(x-b)} = \\frac{A}{x-a} + \\frac{B}{x-b}",
-      "prerequisites": ["분수식"],
+      "prerequisites": [
+        "분수식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "유리식 적분", "premises": ["분모 인수분해 후 부분분수"], "why": "단순 분수의 합으로 분리하면 ln 적분으로 환원" }
+        {
+          "direction": "backward",
+          "goal_pattern": "유리식 적분",
+          "premises": [
+            "분모 인수분해 후 부분분수"
+          ],
+          "why": "단순 분수의 합으로 분리하면 ln 적분으로 환원"
+        },
+        {
+          "direction": "forward",
+          "condition": "분모가 서로 다른 일차인수의 곱으로 인수분해된 유리식을 보고 있다",
+          "derived_fact": "분자의 차수가 분모보다 낮으면, 각 인수에 대응하는 상수 분자를 가진 단순분수들의 합으로 표현할 수 있다",
+          "why": "다항식의 유일인수분해와 선형결합의 표현정리에 의해, 분모의 각 근에 대응하는 부분분수 항들을 동시에 성립시키는 상수가 유일하게 존재하기 때문"
+        }
       ]
     },
     {
@@ -174,10 +423,29 @@
       "name": "지수·로그 적분",
       "knowledge_layer": 5,
       "formula_latex": "\\int e^x dx = e^x + C,\\;\\; \\int \\frac{1}{x} dx = \\ln|x| + C",
-      "prerequisites": ["미분의 역"],
+      "prerequisites": [
+        "미분의 역"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "기본 지수·로그 적분", "derived_fact": "직접 적분", "why": "미분의 역연산" }
+        {
+          "direction": "forward",
+          "condition": "기본 지수·로그 적분",
+          "derived_fact": "직접 적분",
+          "why": "미분의 역연산"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "부정적분 결과가 지수함수나 로그함수 형태인데, 그 원시함수를 찾아야 할 때",
+          "premises": [
+            "피적분함수가 e^x 또는 e^(ax) 형태인가",
+            "피적분함수가 1/x 또는 1/(ax) 형태인가",
+            "치환적분이 필요한가 (예: e^(2x), 1/(3x))"
+          ],
+          "why": "지수·로그 함수의 적분은 미분 규칙의 역이므로, 결과가 이 형태라면 역으로 어떤 기본 적분 공식을 적용했는지 추적할 수 있다"
+        }
       ]
     },
     {
@@ -185,10 +453,26 @@
       "name": "삼각함수 적분 (기본)",
       "knowledge_layer": 5,
       "formula_latex": "\\int \\sin x dx = -\\cos x + C,\\;\\; \\int \\cos x dx = \\sin x + C,\\;\\; \\int \\sec^2 x dx = \\tan x + C",
-      "prerequisites": ["삼각함수 미분"],
+      "prerequisites": [
+        "삼각함수 미분"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "기본 삼각함수 적분", "derived_fact": "표준 공식", "why": "도함수의 역" }
+        {
+          "direction": "forward",
+          "condition": "기본 삼각함수 적분",
+          "derived_fact": "표준 공식",
+          "why": "도함수의 역"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "삼각함수를 포함한 부정적분 식을 간단히 정리하거나 검증해야 할 때",
+          "premises": [
+            "적분 결과가 삼각함수 형태(예: -cos x, sin x, tan x)로 나타나 있는 상태",
+            "그 결과를 미분했을 때 원래 피적분함수가 나오는지 확인이 필요한 상황"
+          ],
+          "why": "삼각함수 적분의 역과정(미분)을 통해 자신의 답이 맞는지 거꾸로 검증할 수 있으며, 이는 적분 실수를 조기에 발견하는 강력한 도구가 된다"
+        }
       ]
     },
     {
@@ -196,10 +480,25 @@
       "name": "sin² · cos² 적분 — 차수 낮추기",
       "knowledge_layer": 6,
       "formula_latex": "\\int \\sin^2 x dx = \\int \\frac{1 - \\cos 2x}{2} dx",
-      "prerequisites": ["반각공식"],
+      "prerequisites": [
+        "반각공식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "삼각함수 짝수 거듭제곱 적분", "premises": ["반각공식으로 차수 1로"], "why": "고차는 직접 적분 불가 — 반각으로 환원" }
+        {
+          "direction": "backward",
+          "goal_pattern": "삼각함수 짝수 거듭제곱 적분",
+          "premises": [
+            "반각공식으로 차수 1로"
+          ],
+          "why": "고차는 직접 적분 불가 — 반각으로 환원"
+        },
+        {
+          "direction": "forward",
+          "condition": "반각공식 sin²x = (1 - cos 2x)/2 를 이용해서 적분식을 정리했을 때",
+          "derived_fact": "∫sin²x dx = x/2 - sin 2x/4 + C 형태로 명시적 부정적분을 얻을 수 있다",
+          "why": "반각공식으로 변환하면 1차 코사인 항만 남아 기본 적분공식을 직접 적용할 수 있고, 최종 형태가 x와 삼각함수의 선형결합으로 단순화되기 때문"
+        }
       ]
     },
     {
@@ -207,10 +506,27 @@
       "name": "곡선의 길이 (현장적분)",
       "knowledge_layer": 6,
       "formula_latex": "L = \\int_a^b \\sqrt{1 + (f'(x))^2} dx",
-      "prerequisites": ["정적분"],
+      "prerequisites": [
+        "정적분"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "곡선 y=f(x) 의 길이", "premises": ["미세한 호 ds = √(1 + y'²) dx"], "why": "미세 직각삼각형 dx, dy 의 빗변 적분" }
+        {
+          "direction": "backward",
+          "goal_pattern": "곡선 y=f(x) 의 길이",
+          "premises": [
+            "미세한 호 ds = √(1 + y'²) dx"
+          ],
+          "why": "미세 직각삼각형 dx, dy 의 빗변 적분"
+        },
+        {
+          "direction": "forward",
+          "condition": "매개변수 방정식 x=g(t), y=h(t) 에서 t가 α에서 β로 변할 때 궤적의 길이를 구해야 한다",
+          "derived_fact": "곡선의 길이는 L = ∫_α^β √((dx/dt)² + (dy/dt)²) dt 로 계산된다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "매개변수 형태에서 미소 호장은 √((dx/dt)² + (dy/dt)²) dt 이므로, 이를 구간에서 적분하면 전체 길이가 나온다"
+        }
       ]
     },
     {
@@ -218,10 +534,25 @@
       "name": "회전체 부피 (껍질법)",
       "knowledge_layer": 6,
       "formula_latex": "V = 2\\pi \\int_a^b x \\cdot f(x) dx\\;(\\text{y축 회전})",
-      "prerequisites": ["적분"],
+      "prerequisites": [
+        "적분"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "y축 회전 부피 (디스크 적용 어려운 경우)", "premises": ["원통 껍질 둘레 × 높이 × 두께"], "why": "y축 회전은 띠를 원통 껍질로 보면 단순" }
+        {
+          "direction": "backward",
+          "goal_pattern": "y축 회전 부피 (디스크 적용 어려운 경우)",
+          "premises": [
+            "원통 껍질 둘레 × 높이 × 두께"
+          ],
+          "why": "y축 회전은 띠를 원통 껍질로 보면 단순"
+        },
+        {
+          "direction": "forward",
+          "condition": "y축 중심 회전에서 피적분함수가 x에 대한 간단한 식인데, y에 대해 역함수를 구하기 복잡할 때",
+          "derived_fact": "x·f(x)를 직접 x로 적분하면 원통 껍질의 높이와 반지름을 곱한 형태로 부피를 바로 계산할 수 있다",
+          "why": "껍질법은 회전축에서의 거리(x)와 높이(f(x))의 곱을 2π배 적분하므로, 역함수 변환 없이 원래 함수로 진행 가능"
+        }
       ]
     },
     {
@@ -229,10 +560,25 @@
       "name": "테일러 전개 (기초 — 다항 근사)",
       "knowledge_layer": 6,
       "formula_latex": "f(x) \\approx f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\dots",
-      "prerequisites": ["고계도함수"],
+      "prerequisites": [
+        "고계도함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "함수의 다항 근사", "premises": ["a 근방 도함수들"], "why": "도함수가 함수의 국소 모양을 결정 — 테일러 다항식이 최선의 근사" }
+        {
+          "direction": "backward",
+          "goal_pattern": "함수의 다항 근사",
+          "premises": [
+            "a 근방 도함수들"
+          ],
+          "why": "도함수가 함수의 국소 모양을 결정 — 테일러 다항식이 최선의 근사"
+        },
+        {
+          "direction": "forward",
+          "condition": "함수의 도함수들을 a 근처에서 모두 알고 있을 때, a에서 멀지 않은 점에서의 함수값을 빠르게 추정하고 싶다",
+          "derived_fact": "a로부터의 거리와 도함수 정보로부터 함수값의 근사치를 계산할 수 있으며, 항을 많이 포함할수록 오차가 줄어든다",
+          "why": "고계 도함수들이 함수의 곡률·변곡점 등 미세한 모양까지 담고 있으므로, 이들을 조합하면 원점에서 먼 점의 값도 정확히 복원할 수 있다"
+        }
       ]
     },
     {
@@ -240,10 +586,28 @@
       "name": "로피탈의 정리",
       "knowledge_layer": 6,
       "formula_latex": "\\lim \\frac{f}{g} = \\lim \\frac{f'}{g'}\\;(0/0 \\text{ 또는 } \\infty/\\infty)",
-      "prerequisites": ["미분", "극한"],
+      "prerequisites": [
+        "미분",
+        "극한"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "0/0 또는 ∞/∞ 극한", "derived_fact": "도함수 비로 환원", "why": "지역적으로 함수가 도함수 × 변위로 근사" }
+        {
+          "direction": "forward",
+          "condition": "0/0 또는 ∞/∞ 극한",
+          "derived_fact": "도함수 비로 환원",
+          "why": "지역적으로 함수가 도함수 × 변위로 근사"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "분자와 분모가 모두 0으로 수렴하는 분수 극한값을 구체적으로 구하기",
+          "premises": [
+            "분자 f(x)와 분모 g(x)가 극한점에서 동시에 0 또는 ∞로 수렴하는지 확인",
+            "f'(x)와 g'(x)가 존재하고 g'(x) ≠ 0인 구간 설정",
+            "원래 극한이 막힐 때 도함수의 비 극한이 존재하거나 더 간단한 형태인지 판단"
+          ],
+          "why": "분석적으로 계산 불가능한 분수 극한을 도함수 비로 치환하면, 대수적 약분이나 더 단순한 형태로 전환되어 극한값을 명확히 구할 수 있기 때문"
+        }
       ]
     },
     {
@@ -251,10 +615,27 @@
       "name": "곡선의 점근선 (수직·수평·사선)",
       "knowledge_layer": 5,
       "formula_latex": "\\text{사선: } y = mx + b,\\; m = \\lim_{x\\to\\infty} f(x)/x,\\; b = \\lim (f(x) - mx)",
-      "prerequisites": ["극한"],
+      "prerequisites": [
+        "극한"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "곡선 개형의 점근거동", "derived_fact": "세 종류 점근선 식", "why": "큰 x 에서의 동치 직선/상수" }
+        {
+          "direction": "forward",
+          "condition": "곡선 개형의 점근거동",
+          "derived_fact": "세 종류 점근선 식",
+          "why": "큰 x 에서의 동치 직선/상수"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "주어진 사선 점근선 y = mx + b를 갖는 함수를 구성하거나 검증하고 싶을 때",
+          "premises": [
+            "함수의 최고차 항의 계수와 차수 관계를 통해 m 결정",
+            "f(x) - mx의 극한이 b가 되도록 저차 항 조정",
+            "필요시 분자·분모 전개 또는 다항식 나눗셈으로 mx + b 형태 분리"
+          ],
+          "why": "목표 점근선이 정해지면 그것을 만족하는 함수의 구조를 역으로 설계할 수 있으며, 이는 함수의 궁극적 행동을 제어하는 핵심 조건이 되기 때문"
+        }
       ]
     },
     {
@@ -262,10 +643,26 @@
       "name": "곡선 개형 (대칭·점근·증감·오목)",
       "knowledge_layer": 6,
       "formula_latex": "\\text{정의역 → 대칭 → 점근 → 도함수 부호표 → 변곡 → 그리기}",
-      "prerequisites": ["미분", "이계도함수"],
+      "prerequisites": [
+        "미분",
+        "이계도함수"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "곡선의 개형 그리기", "premises": ["체크리스트"], "why": "단계별 체크가 누락 없는 개형을 보장" }
+        {
+          "direction": "backward",
+          "goal_pattern": "곡선의 개형 그리기",
+          "premises": [
+            "체크리스트"
+          ],
+          "why": "단계별 체크가 누락 없는 개형을 보장"
+        },
+        {
+          "direction": "forward",
+          "condition": "함수의 도함수와 이계도함수 식을 구했는데, 실제로 그래프가 어떤 모양일지 예측하고 싶을 때",
+          "derived_fact": "도함수의 부호 변화와 이계도함수의 부호로부터 극값 위치, 극값의 종류(극대/극소), 변곡점, 오목볼록 구간을 동시에 파악할 수 있고, 이를 통해 그래프의 전체 흐름을 정확히 재현할 수 있다",
+          "why": "미분 정보는 순간변화율이므로 그 부호와 크기 변화를 추적하면 곡선이 어느 구간에서 올라가고 내려가고 굽어지는지가 결정되기 때문"
+        }
       ]
     },
     {
@@ -273,10 +670,25 @@
       "name": "관련변화율 (시간 미분)",
       "knowledge_layer": 6,
       "formula_latex": "F(x(t), y(t)) = 0 \\Rightarrow F_x x' + F_y y' = 0",
-      "prerequisites": ["연쇄법칙"],
+      "prerequisites": [
+        "연쇄법칙"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "한 변수의 변화율로 다른 변수의 변화율", "premises": ["관계식 양변 t 미분"], "why": "음함수 미분의 시간버전" }
+        {
+          "direction": "backward",
+          "goal_pattern": "한 변수의 변화율로 다른 변수의 변화율",
+          "premises": [
+            "관계식 양변 t 미분"
+          ],
+          "why": "음함수 미분의 시간버전"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 물리량이 시간에 따라 변하는 상황에서 그들 사이의 기하학적 관계식(예: 거리, 넓이, 부피 공식)이 주어졌을 때",
+          "derived_fact": "각 물리량의 순간변화율들을 연결하는 미분방정식을 세울 수 있고, 이를 통해 한 물리량의 변화속도가 다른 물리량에 미치는 영향을 정량화할 수 있다",
+          "why": "고정된 기하 관계를 시간에 대해 미분하면 변화율들 사이의 선형 관계가 드러나므로, 주어진 변화율로부터 미지의 변화율을 계산할 수 있기 때문"
+        }
       ]
     },
     {
@@ -284,10 +696,25 @@
       "name": "최적화 (자유 극값)",
       "knowledge_layer": 5,
       "formula_latex": "f'(x) = 0 \\to f''(x) \\text{ 부호로 극값 종류 판정}",
-      "prerequisites": ["극값"],
+      "prerequisites": [
+        "극값"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "최댓·최솟값 (제약 없음)", "premises": ["임계점 + 이계 검정 또는 부호표"], "why": "최값은 임계점에서만 발생 가능" }
+        {
+          "direction": "backward",
+          "goal_pattern": "최댓·최솟값 (제약 없음)",
+          "premises": [
+            "임계점 + 이계 검정 또는 부호표"
+          ],
+          "why": "최값은 임계점에서만 발생 가능"
+        },
+        {
+          "direction": "forward",
+          "condition": "도함수가 0이 되는 점을 찾았는데, 그 점이 극값인지 변곡점인지 구분해야 할 때",
+          "derived_fact": "이계 도함수의 부호를 확인하면 극대·극소·변곡점을 판정할 수 있다",
+          "why": "이계 도함수는 1계 도함수의 기울기를 나타내므로, f''(x) > 0이면 f'이 증가(극소), f''(x) < 0이면 f'이 감소(극대)하고, f''(x) = 0이면 추가 검토 필요"
+        }
       ]
     },
     {
@@ -295,10 +722,25 @@
       "name": "최적화 — 제약을 대입으로 제거",
       "knowledge_layer": 6,
       "formula_latex": "\\text{제약 } g(x,y)=0 \\to y = h(x) \\to f(x, h(x)) \\text{ 의 단변수 극값}",
-      "prerequisites": ["극값"],
+      "prerequisites": [
+        "극값"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "제약이 있는 최적화", "premises": ["제약을 한 변수로 풀어 대입"], "why": "단변수 문제로 환원" }
+        {
+          "direction": "backward",
+          "goal_pattern": "제약이 있는 최적화",
+          "premises": [
+            "제약을 한 변수로 풀어 대입"
+          ],
+          "why": "단변수 문제로 환원"
+        },
+        {
+          "direction": "forward",
+          "condition": "제약 곡선(또는 직선) 위의 점에서 어떤 양(거리, 넓이, 비용 등)의 최솟값을 구하는 상황",
+          "derived_fact": "제약식을 한 변수로 정리한 후 목적함수에 대입하면, 단일 변수의 함수가 되어 미분으로 극값을 찾을 수 있다",
+          "why": "제약이 변수 간 관계를 고정시키므로, 이를 이용해 자유도를 1개로 줄여서 표준적인 극값 판정법(도함수=0)을 직접 적용할 수 있기 때문"
+        }
       ]
     },
     {
@@ -306,10 +748,27 @@
       "name": "함수의 평균값 (적분)",
       "knowledge_layer": 5,
       "formula_latex": "\\bar f = \\frac{1}{b-a} \\int_a^b f(x) dx",
-      "prerequisites": ["정적분"],
+      "prerequisites": [
+        "정적분"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "구간 평균값", "derived_fact": "적분/길이", "why": "이산 평균의 연속 일반화" }
+        {
+          "direction": "forward",
+          "condition": "구간 평균값",
+          "derived_fact": "적분/길이",
+          "why": "이산 평균의 연속 일반화"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "특정 상수값과 같은 넓이를 갖는 직사각형의 높이를 구해야 할 때",
+          "premises": [
+            "곡선 y=f(x)과 x축 사이의 넓이(정적분값)를 알고 있거나 계산할 수 있어야 함",
+            "적분 구간 [a, b]의 길이 (b-a)를 파악해야 함",
+            "원래 곡선과 동등한 넓이를 가진 직사각형 모양으로 변환하려는 의도"
+          ],
+          "why": "곡선의 변동을 무시하고 일정한 높이로 대체할 때, 넓이 보존 조건에서 그 높이를 역산하려면 평균값 공식을 넓이에서 역으로 풀어야 함"
+        }
       ]
     },
     {
@@ -317,10 +776,25 @@
       "name": "리만합과 정적분의 변환",
       "knowledge_layer": 6,
       "formula_latex": "\\lim_{n \\to \\infty} \\frac{1}{n} \\sum_{k=1}^{n} f(a + (b-a)k/n) = \\frac{1}{b-a}\\int_a^b f(x) dx",
-      "prerequisites": ["정적분"],
+      "prerequisites": [
+        "정적분"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "Σ 형태의 극한 → 적분으로 변환", "premises": ["1/n 가중치 인식"], "why": "리만합의 정의 그대로" }
+        {
+          "direction": "backward",
+          "goal_pattern": "Σ 형태의 극한 → 적분으로 변환",
+          "premises": [
+            "1/n 가중치 인식"
+          ],
+          "why": "리만합의 정의 그대로"
+        },
+        {
+          "direction": "forward",
+          "condition": "구간 [a,b]를 n등분한 소구간에서 함수값을 샘플링하여 합을 만들되, n→∞일 때 극한을 구해야 할 때",
+          "derived_fact": "리만합 $\\frac{1}{n}\\sum_{k=1}^{n}f(a+(b-a)k/n)$의 극한값은 $\\frac{1}{b-a}\\int_a^b f(x)dx$로 수렴한다",
+          "why": "균등분할에서 각 직사각형 너비는 (b-a)/n으로 줄어들고, 샘플점이 구간을 빽빽이 채우면서 리만합이 정적분에 수렴하는 기하학적 원리"
+        }
       ]
     }
   ]

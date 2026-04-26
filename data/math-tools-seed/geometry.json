@@ -9,10 +9,28 @@
       "name": "포물선의 정의와 표준형",
       "knowledge_layer": 4,
       "formula_latex": "y^2 = 4px;\\;\\; \\text{초점 } (p,0),\\; \\text{준선 } x=-p",
-      "prerequisites": ["거리"],
+      "prerequisites": [
+        "거리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "초점·준선이 주어진 자취", "derived_fact": "거리 동등 방정식 → 표준형", "why": "포물선은 초점에서의 거리 = 준선까지의 거리인 점들의 자취" }
+        {
+          "direction": "forward",
+          "condition": "초점·준선이 주어진 자취",
+          "derived_fact": "거리 동등 방정식 → 표준형",
+          "why": "포물선은 초점에서의 거리 = 준선까지의 거리인 점들의 자취"
+        },
+        {
+          "direction": "backward",
+          "derived_fact": "계수 4p 로부터 초점의 좌표 (p, 0) 과 준선의 방정식 x = -p 를 역으로 도출",
+          "goal_pattern": "포물선 방정식 y² = 4px 를 보고 초점과 준선의 위치를 찾아야 할 때",
+          "premises": [
+            "주어진 포물선이 표준형 y² = 4px 또는 x² = 4py 형태임을 확인",
+            "식에서 4p의 값을 구하여 p 의 크기와 부호를 결정",
+            "포물선의 대칭축 방향(x축 또는 y축)을 판단"
+          ],
+          "why": "포물선의 방정식 계수만으로 초점과 준선이 유일하게 결정되므로, 역으로 식의 형태를 분석하면 기하학적 위치를 복원할 수 있다"
+        }
       ]
     },
     {
@@ -20,10 +38,27 @@
       "name": "타원의 정의와 표준형",
       "knowledge_layer": 4,
       "formula_latex": "\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1;\\;\\; \\text{두 초점 거리합} = 2a",
-      "prerequisites": ["거리"],
+      "prerequisites": [
+        "거리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 초점에서의 거리합 일정", "derived_fact": "표준형 식", "why": "두 점에서 거리합이 일정한 자취" }
+        {
+          "direction": "forward",
+          "condition": "두 초점에서의 거리합 일정",
+          "derived_fact": "표준형 식",
+          "why": "두 점에서 거리합이 일정한 자취"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "타원 위의 점에서 두 초점까지 거리를 각각 구해야 할 때",
+          "premises": [
+            "타원의 표준형 방정식이 주어졌거나 a값을 알고 있음",
+            "타원 위의 특정 점의 좌표가 주어짐",
+            "두 초점의 위치를 파악할 수 있음 (c = √(a²-b²))"
+          ],
+          "why": "타원의 정의(거리합 = 2a)를 역으로 활용하면, 한 초점까지의 거리를 구한 뒤 다른 거리는 2a에서 빼는 방식으로 계산할 수 있어 개별 거리 계산을 단순화할 수 있기 때문"
+        }
       ]
     },
     {
@@ -31,10 +66,29 @@
       "name": "쌍곡선의 정의와 표준형",
       "knowledge_layer": 4,
       "formula_latex": "\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1;\\;\\; |\\text{거리차}| = 2a",
-      "prerequisites": ["거리"],
+      "prerequisites": [
+        "거리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 초점에서 거리차의 절댓값 일정", "derived_fact": "표준형 식 + 점근선 y=±(b/a)x", "why": "거리차 일정한 자취" }
+        {
+          "direction": "forward",
+          "condition": "두 초점에서 거리차의 절댓값 일정",
+          "derived_fact": "표준형 식 + 점근선 y=±(b/a)x",
+          "why": "거리차 일정한 자취"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "주어진 표준형 쌍곡선 방정식에서 두 초점의 좌표를 구해야 한다",
+          "premises": [
+            "쌍곡선의 표준형 방정식 $\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1$ 에서 $a$, $b$ 값을 읽을 수 있어야 함",
+            "초점이 $x$축 위에 있음을 인식해야 함",
+            "관계식 $c^2 = a^2 + b^2$를 적용하여 $c$를 계산할 수 있어야 함"
+          ],
+          "why": "표준형 방정식의 계수로부터 역으로 초점까지의 거리 $c$를 구한 뒤, 초점의 위치 $(\\pm c, 0)$을 결정하는 과정"
+        }
       ]
     },
     {
@@ -42,10 +96,26 @@
       "name": "이심률",
       "knowledge_layer": 5,
       "formula_latex": "e = c/a;\\; \\text{타원 } 0<e<1,\\; \\text{포물선 } e=1,\\; \\text{쌍곡선 } e>1",
-      "prerequisites": ["이차곡선"],
+      "prerequisites": [
+        "이차곡선"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "이차곡선의 모양 분류", "derived_fact": "e 값으로 종류 결정", "why": "준선·초점 거리비가 곡선 종류를 결정" }
+        {
+          "direction": "forward",
+          "condition": "이차곡선의 모양 분류",
+          "derived_fact": "e 값으로 종류 결정",
+          "why": "준선·초점 거리비가 곡선 종류를 결정"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "주어진 이차곡선이 타원인지 쌍곡선인지 판별하려면",
+          "premises": [
+            "곡선의 표준형 방정식에서 a(장축 또는 실축 반길이)와 c(초점까지의 거리)를 파악",
+            "이심률 e = c/a 를 계산하거나 역으로 e의 범위로 곡선 종류 추론"
+          ],
+          "why": "이심률의 범위(0<e<1 vs e>1)가 곡선을 구분하는 가장 직관적인 판정 기준이므로, 곡선 종류가 미지수일 때 역으로 이심률 개념을 끌어와야 함"
+        }
       ]
     },
     {
@@ -53,10 +123,28 @@
       "name": "이차곡선 위 한 점에서의 접선",
       "knowledge_layer": 5,
       "formula_latex": "\\text{타원 } \\frac{x_1 x}{a^2} + \\frac{y_1 y}{b^2} = 1 \\text{ (치환식)}",
-      "prerequisites": ["이차곡선"],
+      "prerequisites": [
+        "이차곡선"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "이차곡선 위 점이 명시", "derived_fact": "치환식으로 즉시 산출", "why": "이차형식의 표준 접선 공식" }
+        {
+          "direction": "forward",
+          "condition": "이차곡선 위 점이 명시",
+          "derived_fact": "치환식으로 즉시 산출",
+          "why": "이차형식의 표준 접선 공식"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "goal_pattern": "이차곡선 밖의 한 점을 지나는 접선의 방정식을 구해야 할 때",
+          "premises": [
+            "이차곡선(타원/쌍곡선/포물선) 위의 접점 좌표를 미지수로 설정",
+            "접점에서의 치환 접선 공식으로 접선의 방정식 세우기",
+            "그 접선이 주어진 외부 점을 지나도록 하는 조건식 수립"
+          ],
+          "why": "외부 점을 지나는 접선을 찾으려면 역으로 '곡선 위의 어떤 점에서 그어진 접선인가'를 역추적해야 하므로, 접점을 먼저 구성하고 치환식으로 제약을 건다."
+        }
       ]
     },
     {
@@ -67,7 +155,21 @@
       "prerequisites": [],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "위치·이동을 벡터로 표현", "derived_fact": "성분별 연산", "why": "벡터는 좌표의 차이로 정의" }
+        {
+          "direction": "forward",
+          "condition": "위치·이동을 벡터로 표현",
+          "derived_fact": "성분별 연산",
+          "why": "벡터는 좌표의 차이로 정의"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 점 사이의 거리나 방향을 구해야 할 때",
+          "premises": [
+            "두 점의 좌표가 주어져 있거나 파악 가능한 상태",
+            "벡터의 뺄셈으로 방향 벡터를 만들 수 있다는 것을 알고 있음"
+          ],
+          "why": "거리나 방향을 직접 계산하기 전에, 먼저 두 점의 좌표 차이(벡터)를 구하는 것이 기본 단계이기 때문"
+        }
       ]
     },
     {
@@ -75,11 +177,25 @@
       "name": "벡터의 내적",
       "knowledge_layer": 4,
       "formula_latex": "\\vec a \\cdot \\vec b = |\\vec a||\\vec b|\\cos\\theta = a_1 b_1 + a_2 b_2",
-      "prerequisites": ["벡터"],
+      "prerequisites": [
+        "벡터"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 벡터의 사잇각·정사영", "derived_fact": "내적 = 노름곱·cos", "why": "내적은 정사영의 길이를 다른 벡터 노름으로 곱한 값" },
-        { "direction": "backward", "goal_pattern": "두 벡터가 수직임을 보여라", "premises": ["내적 = 0"], "why": "cos 90° = 0" }
+        {
+          "direction": "forward",
+          "condition": "두 벡터의 사잇각·정사영",
+          "derived_fact": "내적 = 노름곱·cos",
+          "why": "내적은 정사영의 길이를 다른 벡터 노름으로 곱한 값"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 벡터가 수직임을 보여라",
+          "premises": [
+            "내적 = 0"
+          ],
+          "why": "cos 90° = 0"
+        }
       ]
     },
     {
@@ -87,10 +203,29 @@
       "name": "벡터의 크기",
       "knowledge_layer": 3,
       "formula_latex": "|\\vec a| = \\sqrt{a_1^2 + a_2^2 + a_3^2}",
-      "prerequisites": ["피타고라스"],
+      "prerequisites": [
+        "피타고라스"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "벡터 길이가 필요", "derived_fact": "성분 제곱합의 제곱근", "why": "피타고라스의 다차원 일반화" }
+        {
+          "direction": "forward",
+          "condition": "벡터 길이가 필요",
+          "derived_fact": "성분 제곱합의 제곱근",
+          "why": "피타고라스의 다차원 일반화"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "두 벡터 사이의 거리나 내적 값이 주어졌을 때, 특정 벡터의 성분을 역으로 구해야 하는 상황",
+          "premises": [
+            "벡터의 크기 공식을 역으로 적용하여 미지 성분에 대한 방정식 세우기",
+            "내적 공식 \\vec{a} \\cdot \\vec{b} = |\\vec{a}||\\vec{b}|\\cos\\theta 에서 크기를 분리하기",
+            "제약 조건(예: 단위벡터)이 있으면 |\\vec{a}| = 1로 고정하여 방정식 단순화"
+          ],
+          "why": "크기의 정의를 역함수처럼 풀어서, 결과값으로부터 미지의 성분을 복원하는 대수적 분해 과정"
+        }
       ]
     },
     {
@@ -98,10 +233,26 @@
       "name": "두 벡터의 사잇각",
       "knowledge_layer": 4,
       "formula_latex": "\\cos\\theta = \\frac{\\vec a \\cdot \\vec b}{|\\vec a||\\vec b|}",
-      "prerequisites": ["내적", "노름"],
+      "prerequisites": [
+        "내적",
+        "노름"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "두 벡터의 각", "premises": ["내적/노름곱"], "why": "내적 정의의 역" }
+        {
+          "direction": "backward",
+          "goal_pattern": "두 벡터의 각",
+          "premises": [
+            "내적/노름곱"
+          ],
+          "why": "내적 정의의 역"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 벡터의 좌표와 크기를 알고 있을 때, 그 사이의 기하학적 위치 관계를 파악하고 싶을 때",
+          "derived_fact": "내적값과 두 벡터의 크기로부터 사잇각의 코사인값을 구할 수 있으며, 이를 통해 두 벡터가 예각/직각/둔각을 이루는지 판단할 수 있다",
+          "why": "내적의 부호와 크기가 각도를 결정하므로, 직접 계산으로 수치적 관계를 각도라는 기하학적 개념으로 변환할 수 있다"
+        }
       ]
     },
     {
@@ -109,10 +260,25 @@
       "name": "벡터의 정사영",
       "knowledge_layer": 5,
       "formula_latex": "\\text{proj}_{\\vec b} \\vec a = \\frac{\\vec a \\cdot \\vec b}{|\\vec b|^2} \\vec b",
-      "prerequisites": ["내적"],
+      "prerequisites": [
+        "내적"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "한 벡터의 다른 벡터 위 그림자", "premises": ["내적/노름² × 단위벡터"], "why": "한 방향 성분만 추출" }
+        {
+          "direction": "backward",
+          "goal_pattern": "한 벡터의 다른 벡터 위 그림자",
+          "premises": [
+            "내적/노름² × 단위벡터"
+          ],
+          "why": "한 방향 성분만 추출"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 벡터의 내적값과 한 벡터의 크기를 알 때, 다른 벡터이 특정 방향으로 기여하는 정도를 수치화하고 싶다",
+          "derived_fact": "내적을 분모 벡터의 크기 제곱으로 나누면 스칼라 배수가 나오고, 이것에 분모 벡터를 곱하면 그 방향 성분을 벡터 형태로 얻을 수 있다",
+          "why": "내적의 기하학적 의미(크기×코사인)를 벡터 성분으로 변환하는 과정이므로, 주어진 내적 정보만으로도 방향 성분을 구체적으로 구성할 수 있다"
+        }
       ]
     },
     {
@@ -120,10 +286,29 @@
       "name": "내분점·외분점",
       "knowledge_layer": 4,
       "formula_latex": "P = \\frac{m\\vec b + n\\vec a}{m+n}\\;(\\text{내분 } m:n)",
-      "prerequisites": ["벡터"],
+      "prerequisites": [
+        "벡터"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 점을 m:n 으로 분할", "derived_fact": "가중평균 위치벡터", "why": "선형보간의 일반화" }
+        {
+          "direction": "forward",
+          "condition": "두 점을 m:n 으로 분할",
+          "derived_fact": "가중평균 위치벡터",
+          "why": "선형보간의 일반화"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "벡터로 표현된 한 점이 두 끝점 사이의 특정 위치에 있다는 걸 증명하거나, 그 위치의 비율을 구해야 할 때",
+          "premises": [
+            "주어진 점의 위치벡터가 두 기준점의 벡터 일차결합으로 표현되어 있는가",
+            "계수들의 합이 1이 되는가",
+            "계수의 부호와 크기로부터 분점의 위치 (내분/외분)와 비율을 역으로 읽을 수 있는가"
+          ],
+          "why": "위치벡터의 일차결합 형태를 보면 계수 구조 자체가 분점 공식의 역상(逆像)이 되므로, 점의 위치와 분할 비를 동시에 파악할 수 있다"
+        }
       ]
     },
     {
@@ -131,10 +316,27 @@
       "name": "직선의 벡터방정식",
       "knowledge_layer": 4,
       "formula_latex": "\\vec r = \\vec{r_0} + t \\vec d",
-      "prerequisites": ["벡터"],
+      "prerequisites": [
+        "벡터"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "한 점과 방향벡터", "derived_fact": "매개변수형 직선", "why": "방향벡터의 t 배만큼 이동한 점들" }
+        {
+          "direction": "forward",
+          "condition": "한 점과 방향벡터",
+          "derived_fact": "매개변수형 직선",
+          "why": "방향벡터의 t 배만큼 이동한 점들"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 점을 지나는 직선의 방정식을 벡터 형태로 표현해야 할 때",
+          "premises": [
+            "두 점의 좌표가 주어져 있음",
+            "두 점의 차를 방향벡터로 해석할 수 있음",
+            "한 점을 시작점으로 선택할 수 있음"
+          ],
+          "why": "두 점 사이의 벡터를 방향벡터로 삼으면 직선의 벡터방정식 형태로 역산할 수 있기 때문"
+        }
       ]
     },
     {
@@ -142,10 +344,25 @@
       "name": "평면의 방정식 (법선벡터형)",
       "knowledge_layer": 5,
       "formula_latex": "\\vec n \\cdot (\\vec r - \\vec{r_0}) = 0;\\;\\; ax + by + cz + d = 0",
-      "prerequisites": ["내적"],
+      "prerequisites": [
+        "내적"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "평면의 식", "premises": ["한 점 + 법선벡터"], "why": "평면 위 모든 변위는 법선과 수직" }
+        {
+          "direction": "backward",
+          "goal_pattern": "평면의 식",
+          "premises": [
+            "한 점 + 법선벡터"
+          ],
+          "why": "평면 위 모든 변위는 법선과 수직"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 평면이 주어졌을 때 그들의 교선이 두 평면의 법선벡터에 모두 수직인지 확인해야 할 때",
+          "derived_fact": "교선의 방향벡터는 두 평면의 법선벡터의 외적으로 구할 수 있다",
+          "why": "평면의 법선벡터는 그 평면 위의 모든 벡터와 수직이므로, 두 평면의 교선은 두 법선에 모두 수직이어야 하고, 이를 만족하는 유일한 방향이 법선벡터들의 외적이기 때문"
+        }
       ]
     },
     {
@@ -153,10 +370,27 @@
       "name": "점과 평면 사이의 거리",
       "knowledge_layer": 5,
       "formula_latex": "d = \\frac{|ax_0 + by_0 + cz_0 + d|}{\\sqrt{a^2+b^2+c^2}}",
-      "prerequisites": ["평면 방정식"],
+      "prerequisites": [
+        "평면 방정식"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "한 점에서 평면까지 수직거리", "derived_fact": "평면 점-직선 거리의 3D 일반화", "why": "법선 방향 정사영의 절댓값" }
+        {
+          "direction": "forward",
+          "condition": "한 점에서 평면까지 수직거리",
+          "derived_fact": "평면 점-직선 거리의 3D 일반화",
+          "why": "법선 방향 정사영의 절댓값"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "평면으로부터 일정 거리에 있는 점의 자취(집합)를 구하기",
+          "premises": [
+            "점의 좌표를 변수로 설정했을 때",
+            "주어진 평면의 방정식을 알고 있을 때",
+            "원하는 거리 값이 구체적으로 주어졌을 때"
+          ],
+          "why": "거리 공식을 등식으로 세우면 거리 조건을 만족하는 모든 점들이 두 개의 평행 평면을 이루므로, 역으로 자취 문제를 두 평면의 방정식으로 변환할 수 있기 때문"
+        }
       ]
     },
     {
@@ -164,10 +398,28 @@
       "name": "직선과 평면의 위치관계",
       "knowledge_layer": 5,
       "formula_latex": "\\vec d \\cdot \\vec n = 0 \\Rightarrow \\text{평행 또는 포함};\\; \\ne 0 \\Rightarrow \\text{한 점에서 만남}",
-      "prerequisites": ["내적", "평면"],
+      "prerequisites": [
+        "내적",
+        "평면"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "직선 방향과 평면 법선의 내적", "derived_fact": "위치관계 분류", "why": "방향과 법선의 직교성이 만남 여부 결정" }
+        {
+          "direction": "forward",
+          "condition": "직선 방향과 평면 법선의 내적",
+          "derived_fact": "위치관계 분류",
+          "why": "방향과 법선의 직교성이 만남 여부 결정"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "직선이 평면과 정확히 한 점에서만 만나는지 확인하고 싶다",
+          "premises": [
+            "직선의 방향벡터를 알고 있다",
+            "평면의 법선벡터를 알고 있다",
+            "방향벡터와 법선벡터의 내적을 계산할 수 있다"
+          ],
+          "why": "만남 여부는 기하학적으로 방향과 법선의 직교 관계에서 결정되므로, 역으로 한 점 만남을 보이려면 내적이 0이 아님을 보여야 한다"
+        }
       ]
     },
     {
@@ -175,10 +427,27 @@
       "name": "두 평면이 이루는 각",
       "knowledge_layer": 5,
       "formula_latex": "\\cos\\theta = \\frac{|\\vec{n_1} \\cdot \\vec{n_2}|}{|\\vec{n_1}||\\vec{n_2}|}",
-      "prerequisites": ["내적"],
+      "prerequisites": [
+        "내적"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "두 평면이 만나서 이루는 각", "derived_fact": "법선벡터 사잇각", "why": "평면 각은 법선 각과 같다 (또는 보각)" }
+        {
+          "direction": "forward",
+          "condition": "두 평면이 만나서 이루는 각",
+          "derived_fact": "법선벡터 사잇각",
+          "why": "평면 각은 법선 각과 같다 (또는 보각)"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 평면의 법선벡터를 구했는데, 그 사이 각도 관계를 알아야 할 때",
+          "premises": [
+            "두 평면을 나타내는 일반형 방정식 (또는 법선벡터)이 주어져 있음",
+            "두 평면이 이루는 각의 크기(또는 코사인값)를 구해야 하는 상황",
+            "벡터의 내적과 크기를 계산할 수 있음"
+          ],
+          "why": "평면의 법선벡터들이 이루는 각의 내적 공식을 역으로 적용하면, 실제 두 평면 사이의 예각을 절댓값으로 보정해 구할 수 있기 때문"
+        }
       ]
     },
     {
@@ -186,10 +455,29 @@
       "name": "공간에서 두 점 사이 거리",
       "knowledge_layer": 3,
       "formula_latex": "d = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2 + (z_2-z_1)^2}",
-      "prerequisites": ["피타고라스"],
+      "prerequisites": [
+        "피타고라스"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "공간 두 점 거리", "derived_fact": "성분 차의 제곱합 제곱근", "why": "3차원 피타고라스" }
+        {
+          "direction": "forward",
+          "condition": "공간 두 점 거리",
+          "derived_fact": "성분 차의 제곱합 제곱근",
+          "why": "3차원 피타고라스"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "두 점 사이 거리가 특정 값으로 고정되어 있을 때, 한 점의 좌표를 다른 점과 거리 조건으로 표현해야 하는 상황",
+          "premises": [
+            "한 점의 좌표는 알려짐 (예: A(x₁, y₁, z₁))",
+            "두 점 사이 거리값이 상수로 주어짐 (예: |AB| = r)",
+            "다른 점의 좌표를 미지수로 놓은 식을 세워야 함"
+          ],
+          "why": "거리 공식을 등식으로 역으로 활용하면, 주어진 거리를 만족하는 점들의 자취(구의 방정식)를 도출할 수 있으므로 좌표 제약 조건을 세울 수 있습니다."
+        }
       ]
     },
     {
@@ -197,10 +485,27 @@
       "name": "구의 방정식",
       "knowledge_layer": 4,
       "formula_latex": "(x-a)^2 + (y-b)^2 + (z-c)^2 = r^2",
-      "prerequisites": ["거리"],
+      "prerequisites": [
+        "거리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "공간에서 한 점에서 등거리 자취", "derived_fact": "구의 식", "why": "구는 중심에서 등거리인 점들" }
+        {
+          "direction": "forward",
+          "condition": "공간에서 한 점에서 등거리 자취",
+          "derived_fact": "구의 식",
+          "why": "구는 중심에서 등거리인 점들"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "구의 중심 좌표와 반지름을 주어진 일반형 방정식에서 찾아야 할 때",
+          "premises": [
+            "x² + y² + z² + Dx + Ey + Fz + G = 0 형태의 3변수 2차 방정식이 주어짐",
+            "이 식이 실제로 구를 나타내는지 판별 필요 (D² + E² + F² - 4G ≥ 0)",
+            "완전제곱식으로 변형하여 표준형으로 변환 가능함을 알아야 함"
+          ],
+          "why": "일반형 방정식을 표준형 (x-a)² + (y-b)² + (z-c)² = r²로 완성하면, 중심과 반지름을 직접 읽을 수 있기 때문"
+        }
       ]
     },
     {
@@ -208,10 +513,26 @@
       "name": "직육면체·정육면체의 대각선",
       "knowledge_layer": 4,
       "formula_latex": "\\sqrt{a^2+b^2+c^2}",
-      "prerequisites": ["3D 거리"],
+      "prerequisites": [
+        "3D 거리"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "직육면체 대각선 길이", "derived_fact": "세 변 제곱합 제곱근", "why": "공간 거리 공식의 직접 적용" }
+        {
+          "direction": "forward",
+          "condition": "직육면체 대각선 길이",
+          "derived_fact": "세 변 제곱합 제곱근",
+          "why": "공간 거리 공식의 직접 적용"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "직육면체의 한 모서리 길이를 구해야 하는데 대각선 길이와 다른 두 모서리만 주어진 상황",
+          "premises": [
+            "직육면체의 공간 대각선 길이가 주어짐",
+            "세 모서리 중 두 개의 길이를 알고 있음"
+          ],
+          "why": "대각선 공식을 역으로 정리하면 미지의 모서리를 루트 안의 이차식으로 분리할 수 있으므로, 주어진 대각선 값에서 역산하여 구하려는 모서리를 도출할 수 있습니다."
+        }
       ]
     },
     {
@@ -219,10 +540,25 @@
       "name": "이면각",
       "knowledge_layer": 6,
       "formula_latex": "\\text{공통변에 수직인 두 반직선의 사잇각}",
-      "prerequisites": ["평면 각"],
+      "prerequisites": [
+        "평면 각"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "두 면이 이루는 각", "premises": ["공통변 수직 단면 + 사잇각"], "why": "두 평면 각은 그 공통선에 수직인 단면에서 측정" }
+        {
+          "direction": "backward",
+          "goal_pattern": "두 면이 이루는 각",
+          "premises": [
+            "공통변 수직 단면 + 사잇각"
+          ],
+          "why": "두 평면 각은 그 공통선에 수직인 단면에서 측정"
+        },
+        {
+          "direction": "forward",
+          "condition": "정면과 측면이 만나는 모서리에서 각 면 위의 수직선을 그었을 때",
+          "derived_fact": "두 수직선이 이루는 각이 바로 그 두 면 사이의 이면각",
+          "why": "공통변에 수직인 방향들의 사잇각은 두 평면의 벌어진 정도를 직접 나타내므로, 측정 가능한 구체적 각도로 전환됨"
+        }
       ]
     },
     {
@@ -230,10 +566,25 @@
       "name": "삼수선의 정리",
       "knowledge_layer": 6,
       "formula_latex": "\\text{평면 위 한 점에서 평면 밖 한 점까지의 수선·정사영 관계}",
-      "prerequisites": ["수직"],
+      "prerequisites": [
+        "수직"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "공간에서의 수선·정사영", "premises": ["밑면 정사영 + 수선"], "why": "정사영 + 두 수선의 직각 관계" }
+        {
+          "direction": "backward",
+          "goal_pattern": "공간에서의 수선·정사영",
+          "premises": [
+            "밑면 정사영 + 수선"
+          ],
+          "why": "정사영 + 두 수선의 직각 관계"
+        },
+        {
+          "direction": "forward",
+          "condition": "평면 위의 직선이 어떤 점에서의 정사영과 수직일 때",
+          "derived_fact": "그 직선은 그 점에서 평면까지 그은 원래 직선과도 수직이다",
+          "why": "정사영의 수직 관계는 평면 밖 원점으로까지 확장되므로, 정사영에 수직인 평면 위의 직선은 공간에서의 빗선에도 수직이 된다"
+        }
       ]
     },
     {
@@ -241,10 +592,27 @@
       "name": "정사영의 넓이",
       "knowledge_layer": 5,
       "formula_latex": "S' = S \\cos\\theta",
-      "prerequisites": ["이면각"],
+      "prerequisites": [
+        "이면각"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "도형을 다른 평면에 정사영", "derived_fact": "원래 넓이 × cos(이면각)", "why": "정사영은 한 방향만 cos θ 비율로 줄인 변환" }
+        {
+          "direction": "forward",
+          "condition": "도형을 다른 평면에 정사영",
+          "derived_fact": "원래 넓이 × cos(이면각)",
+          "why": "정사영은 한 방향만 cos θ 비율로 줄인 변환"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "두 평면 사이의 이면각을 구해야 할 때, 원래 도형의 넓이와 정사영 넓이를 알고 있는 상황",
+          "premises": [
+            "원래 도형의 넓이 S를 측정하거나 계산할 수 있어야 함",
+            "투영된 도형의 넓이 S'를 측정하거나 계산할 수 있어야 함",
+            "두 넓이의 비율 S'/S = cos θ 관계식을 역으로 풀 수 있어야 함"
+          ],
+          "why": "이면각을 직접 재기 어려울 때, 넓이의 비를 역코사인으로 변환하면 각도를 역산할 수 있기 때문"
+        }
       ]
     },
     {
@@ -252,10 +620,27 @@
       "name": "벡터 수직 조건",
       "knowledge_layer": 4,
       "formula_latex": "\\vec a \\perp \\vec b \\Leftrightarrow \\vec a \\cdot \\vec b = 0",
-      "prerequisites": ["내적"],
+      "prerequisites": [
+        "내적"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "backward", "goal_pattern": "두 벡터의 수직", "premises": ["내적 = 0"], "why": "cos 90° = 0" }
+        {
+          "direction": "backward",
+          "goal_pattern": "두 벡터의 수직",
+          "premises": [
+            "내적 = 0"
+          ],
+          "why": "cos 90° = 0"
+        },
+        {
+          "direction": "forward",
+          "condition": "두 벡터의 내적을 계산했더니 0이 나왔다",
+          "derived_fact": "두 벡터는 서로 수직이다",
+          "goal_pattern": null,
+          "premises": null,
+          "why": "내적이 0이라는 것은 cos θ = 0을 의미하므로 기하학적으로 90도 관계를 나타낸다"
+        }
       ]
     },
     {
@@ -263,10 +648,28 @@
       "name": "단위벡터",
       "knowledge_layer": 3,
       "formula_latex": "\\hat a = \\vec a / |\\vec a|",
-      "prerequisites": ["벡터"],
+      "prerequisites": [
+        "벡터"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "방향만 필요", "derived_fact": "벡터 ÷ 노름", "why": "노름을 1로 정규화" }
+        {
+          "direction": "forward",
+          "condition": "방향만 필요",
+          "derived_fact": "벡터 ÷ 노름",
+          "why": "노름을 1로 정규화"
+        },
+        {
+          "direction": "backward",
+          "condition": "",
+          "derived_fact": "",
+          "goal_pattern": "두 벡터가 같은 방향인지 판정하고 싶을 때",
+          "premises": [
+            "두 벡터의 단위벡터를 각각 구한다",
+            "두 단위벡터가 정확히 같은지 비교한다"
+          ],
+          "why": "방향 정보는 크기를 제거한 단위벡터에만 남으므로, 단위벡터가 같으면 원래 벡터들도 같은 방향"
+        }
       ]
     },
     {
@@ -274,10 +677,27 @@
       "name": "선분의 매개변수화",
       "knowledge_layer": 4,
       "formula_latex": "P(t) = (1-t) A + t B,\\; t \\in [0,1]",
-      "prerequisites": ["벡터"],
+      "prerequisites": [
+        "벡터"
+      ],
       "source": "parametric",
       "triggers": [
-        { "direction": "forward", "condition": "선분 위 점", "derived_fact": "두 점의 볼록결합", "why": "t=0 → A, t=1 → B" }
+        {
+          "direction": "forward",
+          "condition": "선분 위 점",
+          "derived_fact": "두 점의 볼록결합",
+          "why": "t=0 → A, t=1 → B"
+        },
+        {
+          "direction": "backward",
+          "goal_pattern": "선분 AB 위의 두 점이 특정 비율로 내분하는 지점을 찾아야 할 때",
+          "premises": [
+            "선분의 양 끝점 A, B의 좌표",
+            "내분점이 만족해야 할 비율 m:n",
+            "매개변수 t와 비율의 관계: t = m/(m+n)"
+          ],
+          "why": "목표 지점이 선분 위의 특정 내분점이면, 역으로 그 비율을 매개변수 t로 변환한 뒤 P(t) 공식에 대입하면 좌표를 즉시 구할 수 있기 때문"
+        }
       ]
     }
   ]
