@@ -715,31 +715,95 @@ class WolframReq(BaseModel):
     maxchars: int = 2000  # LLM API 응답 길이 제한 (토큰 절약)
 
 
+import re
+
+# Wolfram LLM API 가 사용하는 핵심 결과 섹션명 — 우선순위 순.
+# query 종류 (적분/방정식/극한/합/미분/단순화 등) 마다 헤더가 다르므로 모두 대응.
+_PRIMARY_SECTIONS = (
+    "exact result",
+    "result",
+    "definite integral",
+    "indefinite integral",
+    "real solution",
+    "real solutions",
+    "complex solution",
+    "complex solutions",
+    "solution",
+    "roots",
+    "real roots",
+    "sum",
+    "limit",
+    "derivative",
+    "simplification",
+    "expanded form",
+    "factored form",
+    "answer",
+)
+_SECONDARY_SECTIONS = (
+    "decimal approximation",
+    "approximate form",
+    "value",
+)
+# 무시할 섹션 (보조 정보 — cross-check 비교에 부적합)
+_IGNORE_SECTIONS = (
+    "query",
+    "input",
+    "input interpretation",
+    "plot",
+    "visual representation of the integral",
+    "visual representation",
+    "wolfram language code",
+    "riemann sums",
+    "wolfram|alpha website result",
+    "wolframalpha website result",
+)
+
+
+def _last_equation_rhs(body: str) -> str | None:
+    """섹션 본문에서 마지막 'lhs = rhs' 패턴의 rhs 만 추출.
+
+    예: 'integral_0^π sin(x) dx = 2' → '2'
+    여러 줄에 걸쳐 등호가 여러 번 있으면 마지막을 우선 — 가장 단순화된 답.
+    """
+    # 코드/링크 라인 제거 후 등호 패턴 검색
+    cleaned = []
+    for line in body.splitlines():
+        if line.strip().startswith(("image:", "http", "Wolfram Language", "Plot[")):
+            continue
+        cleaned.append(line)
+    text = "\n".join(cleaned).strip()
+    if not text:
+        return None
+    # 등호 패턴: 양변에 공백 또는 좌변에 식이 있는 경우
+    matches = re.findall(r"=\s*([^=\n]+?)\s*(?:$|\n)", text)
+    if matches:
+        last = matches[-1].strip()
+        # 트레일링 콤마/마침표 제거
+        last = last.rstrip(",.;")
+        if last:
+            return last
+    return None
+
+
 def _extract_result_section(text: str) -> str:
-    """LLM API 마크다운 응답에서 'Result' 섹션을 추출.
+    """Wolfram LLM API 마크다운 응답에서 핵심 결과만 추출.
 
-    응답 구조 예시:
-        Input interpretation:
-        integrate sin(x)
-
-        Result:
-        -cos(x) + constant
-
-        Plot:
-        ...
-
-    'Result' 또는 'Solution' 또는 'Decimal approximation' 우선 추출.
+    동작:
+      1) 섹션 분리 (헤더: 'Result:', 'Definite integral:' 등)
+      2) primary 섹션 우선 → 그 안에서 마지막 '= rhs' 의 rhs 만 (없으면 섹션 본문)
+      3) primary 없으면 secondary
+      4) 그래도 없으면 전체 텍스트의 첫 200자 (fallback)
     """
     if not text:
         return ""
-    sections = {}
-    current_key = None
+    sections: dict[str, str] = {}
+    current_key: str | None = None
     current_lines: list[str] = []
 
     for raw_line in text.splitlines():
         line = raw_line.rstrip()
-        # "Result:" 같은 헤더 인식 (콜론으로 끝나고 짧은 한 줄)
-        if line.endswith(":") and len(line) < 50 and not line.startswith(" "):
+        # 헤더 인식: 'X:' 형식 + 콜론 앞이 짧고(< 50) + 들여쓰기 없음
+        if line.endswith(":") and len(line) < 50 and not line.startswith((" ", "\t")):
             if current_key is not None:
                 sections[current_key] = "\n".join(current_lines).strip()
             current_key = line[:-1].strip().lower()
@@ -749,10 +813,36 @@ def _extract_result_section(text: str) -> str:
     if current_key is not None:
         sections[current_key] = "\n".join(current_lines).strip()
 
-    for key in ("result", "solution", "decimal approximation", "exact result", "answer"):
-        if sections.get(key):
-            return sections[key]
-    # fallback — 전체 텍스트의 첫 200자
+    # 1) primary section 우선
+    for key in _PRIMARY_SECTIONS:
+        body = sections.get(key)
+        if not body:
+            continue
+        rhs = _last_equation_rhs(body)
+        if rhs:
+            return rhs
+        # 등호가 없으면 본문 그대로 (예: roots = '{x = 1, x = 2, ...}' 텍스트)
+        return body[:300]
+
+    # 2) secondary section
+    for key in _SECONDARY_SECTIONS:
+        body = sections.get(key)
+        if not body:
+            continue
+        rhs = _last_equation_rhs(body)
+        return (rhs or body[:300]).strip()
+
+    # 3) 어떤 known 섹션도 없을 때 — 무시 섹션을 빼고 첫 의미 있는 줄 시도
+    for key, body in sections.items():
+        if key in _IGNORE_SECTIONS:
+            continue
+        if body:
+            rhs = _last_equation_rhs(body)
+            if rhs:
+                return rhs
+            return body[:300]
+
+    # 4) 최후 fallback
     return text.strip()[:200]
 
 
