@@ -9,7 +9,7 @@
  *   - 결과는 Reasoner BFS 의 facts 와 통합 가능
  */
 
-import { EULER_TOOLS, executeEulerTool } from "@/lib/ai/euler-tools-schema";
+import { EULER_TOOLS, EULER_TOOLS_BY_AREA, executeEulerTool } from "@/lib/ai/euler-tools-schema";
 
 const ANTHROPIC_API = "https://api.anthropic.com/v1/messages";
 const SONNET_MODEL = "claude-sonnet-4-5-20250929";
@@ -57,6 +57,18 @@ interface RunArgs {
   conditions: string[];
   goal: string;
   maxSteps?: number;
+  /** Manager 가 분류한 영역 — 영역별 tool subset 선택용. 미지정 시 전체 tool. */
+  area?: string;
+}
+
+/**
+ * 영역별 tool 부분집합 — 컨텍스트 절약 + LLM 의 tool 선택 부담 감소.
+ */
+function pickToolsByArea(area?: string) {
+  if (!area) return EULER_TOOLS;
+  const allowed = EULER_TOOLS_BY_AREA[area];
+  if (!allowed || allowed.length === 0) return EULER_TOOLS;
+  return EULER_TOOLS.filter((t) => allowed.includes(t.name));
 }
 
 export async function runReasonerWithTools(args: RunArgs): Promise<ReasonerWithToolsResult | null> {
@@ -94,7 +106,7 @@ ${args.goal}
         model: SONNET_MODEL,
         max_tokens: 1500,
         system: SYSTEM_TOOL,
-        tools: EULER_TOOLS,
+        tools: pickToolsByArea(args.area),
         messages,
       }),
     });

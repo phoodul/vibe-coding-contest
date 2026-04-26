@@ -1,1 +1,1 @@
-export {};
+export { VerifiedBadge, PlotImage } from "./VerifiedBadge";

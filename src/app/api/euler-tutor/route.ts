@@ -9,6 +9,7 @@ import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-p
 import { retrieveTools } from "@/lib/euler/retriever";
 import { runReasonerStep } from "@/lib/euler/reasoner";
 import { runReasonerWithTools } from "@/lib/euler/reasoner-with-tools";
+import { REASONER_THRESHOLD_BY_AREA } from "@/lib/ai/euler-tools-schema";
 import { reportTools } from "@/lib/euler/tool-reporter";
 import { logSolve } from "@/lib/euler/solve-logger";
 import { checkFreeQuota } from "@/lib/euler/usage-quota";
@@ -242,8 +243,9 @@ ${tools
             }
           }
 
-          // Reasoner BFS — 난이도 6+ 만 (비용 통제)
-          if (REASONER_ENABLED && mgr.difficulty >= REASONER_MIN_DIFFICULTY) {
+          // Reasoner BFS — 영역별 임계값 (확통·기하·미적분은 4+, 중학·공통은 5+)
+          const areaThreshold = REASONER_THRESHOLD_BY_AREA[mgr.area] ?? REASONER_MIN_DIFFICULTY;
+          if (REASONER_ENABLED && mgr.difficulty >= areaThreshold) {
             try {
               const bfs = await runReasonerStep({
                 state: {
@@ -270,7 +272,8 @@ ${bfs.subgoals.slice(0, 5).map((s, i) => `  ${i + 1}. ${s.subgoal}${s.tool ? ` [
                 `[euler-tutor] reasoner: ${bfs.facts.length} facts / ${bfs.subgoals.length} subgoals / ${bfs.duration_ms}ms`
               );
 
-              // D-05: Tool calling 으로 보강된 결과 (오일러 + SymPy URL 설정 시만)
+              // D-05 + F-07: Tool calling 으로 보강된 결과 (오일러 + SymPy URL 설정 시만)
+              // 영역별 tool 부분집합을 사용해 컨텍스트 절약 + LLM 의 tool 선택 정확도 ↑
               if (!useGpt && process.env.EULER_SYMPY_URL) {
                 try {
                   const tooled = await runReasonerWithTools({
@@ -278,6 +281,7 @@ ${bfs.subgoals.slice(0, 5).map((s, i) => `  ${i + 1}. ${s.subgoal}${s.tool ? ` [
                     conditions: mgr.conditions,
                     goal: mgr.goal,
                     maxSteps: 5,
+                    area: mgr.area,
                   });
                   if (tooled && tooled.text) {
                     retrievedContext += `\n\n## Reasoner 계산 결과 (SymPy 검증)

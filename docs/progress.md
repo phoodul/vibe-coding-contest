@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-26 (4차 세션 종료)
-- Phase: **정식 출시 단계 — 시드 8영역 244 도구 / 운영 도구 추가 UI 완성**
-- Step: 베타 사용자 풀이 검증 + 영역별 trigger 보강 + LEG-02 자문
-- Session: 4차 (시드 영역 확장 직후)
+- Time: 2026-04-26 (5차 세션 종료)
+- Phase: **Phase F 완료 — 외부 도구 통합 (SymPy 25 + Wolfram + Z3 + matplotlib + cross-check)**
+- Step: Wolfram APP_ID 발급 → Reasoner 통합 → VerifiedBadge UI 주입
+- Session: 5차 (학생 신뢰 차별화 인프라 완성)
 
 ## 운영 상태 — Production 라이브
 
@@ -14,6 +14,9 @@
 | DB (Supabase) | ✅ 14 마이그레이션 적용 | wrcpehyvxvgvkdzeiehf |
 | 시드 (math_tools) | ✅ **244 도구 / 262 trigger / 524 임베딩** (8영역) | data/math-tools-seed/ + math-tools-seed.json |
 | 운영 도구 추가 | ✅ 웹 UI + API | /admin/math-tools |
+| 외부 도구 (Phase F) | ✅ SymPy 25 + Z3 + matplotlib | services/euler-sympy/ |
+| Wolfram Alpha | ⏸ 코드 완료 / WOLFRAM_APP_ID 발급 대기 | $5/월 plan |
+| KPI 평가셋 | ✅ 45문항 8영역 + cross_check_query | data/kpi-eval-problems.json |
 | μSvc (Railway) | ✅ Live | https://vibe-coding-contest-production.up.railway.app |
 | Vercel env | ✅ 19 row 등록 (Production + Preview) | EULER_*, ANTHROPIC_HAIKU, CRON_SECRET 포함 |
 | 베타 게이트 | ✅ 동작 검증 | 코드 `EULER2026`, 50명 cap |
@@ -87,32 +90,29 @@
 4. **KPI Full 측정** — `pnpm dlx dotenv-cli -e .env -- pnpm dlx tsx scripts/eval-kpi.ts --full`
 5. **풀이 누적 7일+10문제 후 리포트 검증** — 주 1회 자동 갱신
 
-## 다음 세션 첫 Task — Phase F: 외부 도구 통합 ⭐
+## Phase F 완료 (5차 세션, 2026-04-26)
 
-사용자 결정 (4차 세션 종료): **"선생님이 진짜 답을 정확히 알아야 학생이 믿음을 가진다"**.
-시드 도구는 검색용 카드일 뿐 실제 풀이 환각을 막지 못함. 외부 계산 엔진 대거 통합.
+8 task 모두 코드 완성. 사용자 작업만 남음:
 
-### 8 task 자율 진행 계획
+### 사용자 작업 — 외부 키 발급 + 배포
+1. **Wolfram Alpha App ID 발급** — https://developer.wolframalpha.com (무료 \$5/월 plan)
+2. **Railway 환경변수 등록** — `WOLFRAM_APP_ID=...`
+3. **Railway 재배포** — requirements.txt 변경 (scipy/z3-solver/matplotlib/httpx)
+4. **검증** — `curl -X POST $RAILWAY/wolfram_query -H 'X-Internal-Token: ...' -d '{"query":"integrate sin(x)"}'`
 
-| Task | 내용 | 비용 | 효과 |
-|---|---|---|---|
-| F-01 | SymPy μSvc 6→25 endpoint (summation/inequality/probability/geometry/vector/matrix/trig_simplify/log_simplify/poly_div/series_sum/limit/partial_fraction/complex_solve/numeric) | \$0 | 8영역 즉시 cover |
-| F-02 | Wolfram Alpha API 통합 (\$5/월 plan, WOLFRAM_APP_ID env) | \$5/월 | 자연어 query · 모든 영역 백업 |
-| F-03 | Z3 SMT solver — 부등식 영역 (SymPy 약점 보완) | \$0 | 공통/수학1·2 부등식 |
-| F-04 | matplotlib endpoint (서버 PNG → base64) — /plot_function, /plot_region, /plot_geometry | \$0 | 그래프·도형 시각화 |
-| F-05 | cross-check.ts — SymPy + Wolfram 결과 비교 → verified=true 배지 로직 | \$0 | 학생 신뢰 시각화 |
-| F-06 | VerifiedBadge.tsx — "✓ 두 엔진 검증" + 그래프 인라인 렌더링 | \$0 | UI 신뢰 표시 |
-| F-07 | euler-tools-schema.ts 6→25+ tool, 영역별 임계값 분리 (확통·기하 난이도 4+) | \$0 | Reasoner 자동 호출 |
-| F-08 | KPI 평가 8영역×5문항=40문항, hit rate + cross-check 일치율 측정 | \$0 | 영역별 성능 가시화 |
+### 다음 세션 첫 Task — Phase F 통합 + Phase G
 
-**총 비용:** Wolfram \$5/월 + Railway 메모리 약간 ↑ ≈ \$8/월
+**Phase F 후속 (반자동)**:
+- F-09: Reasoner 가 cross-check 결과를 Coaching system 에 주입
+- F-10: VerifiedBadge 를 채팅 메시지에 inject (Vercel AI SDK Data 메시지)
+- F-11: 영역별 KPI 평가 실행 (45문항 자동 평가 스크립트)
 
-**경쟁 차별화:** ChatGPT/Khanmigo/Photomath 모두 단일 LLM/CAS — 우리만 다중 엔진 cross-check
+**Phase G — Tier 2 차별화**:
+- GeoGebra API — 기하 영역 인터랙티브 (학생이 직접 도형 회전)
+- Lean 4 정리 검증 — "수학자가 검증한 풀이" 배지 (상위권 학생 타겟)
+- Desmos 임베드 — 함수 그래프를 학생이 만져볼 수 있음
 
-**Tier 2 (Phase G):** GeoGebra · Lean 4 · Desmos
-**Tier 3 (장기):** Manim · 자체 fine-tuned 모델
-
-### Phase F 외 후보 (병행 또는 후속)
+**기타 후보**:
 - 영역별 trigger 보강 (현재 평균 1.1 → 1.5+)
 - 베타 사용자 풀이 모니터링 (candidate_tools 채우기)
 - 기출문제 DB 영역 확장 (현재 calculus 위주)

@@ -10,16 +10,47 @@ const SYMPY_URL = process.env.EULER_SYMPY_URL;
 const INTERNAL_TOKEN = process.env.EULER_SYMPY_INTERNAL_TOKEN ?? "";
 
 export type SympyOp =
+  // Phase D 기존
   | "differentiate"
   | "integrate"
   | "solve_equation"
   | "simplify"
   | "factor"
-  | "series_expand";
+  | "series_expand"
+  // Phase F 신규 — 계산
+  | "summation"
+  | "limit"
+  | "partial_fraction"
+  | "complex_solve"
+  | "numeric"
+  | "poly_div"
+  | "trig_simplify"
+  | "log_simplify"
+  | "probability"
+  | "geometry"
+  | "vector"
+  | "matrix"
+  // Phase F — SMT 부등식
+  | "solve_inequality"
+  // Phase F — 시각화
+  | "plot_function"
+  | "plot_region"
+  | "plot_geometry"
+  // Phase F — 외부
+  | "wolfram_query";
 
 export interface SympyResult {
   latex: string;
   result: string;
+  /** poly_div 등이 추가 필드 반환 */
+  quotient?: string;
+  remainder?: string;
+  /** plot_* 가 반환 */
+  png_base64?: string;
+  format?: "png";
+  /** wolfram_query */
+  source?: string;
+  n_pods?: number;
 }
 
 export interface SympyError {

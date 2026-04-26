@@ -1,5 +1,49 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-26 (5차 세션 — Phase F: 외부 도구 통합)
+
+### 진행 요약
+4차 세션 종료 직후 사용자 결정: "선생님이 진짜 답을 정확히 알아야 학생이 믿음을 가진다."
+시드 도구는 검색용 카드일 뿐, 실제 풀이 환각을 막지 못함. 외부 계산 엔진 대거 통합.
+
+### Phase F — 8 task 완료
+- F-01: SymPy μSvc 6→25 endpoint (summation/limit/probability/geometry/vector/matrix/trig_simplify/log_simplify/poly_div/partial_fraction/complex_solve/numeric/inequality)
+- F-02: Wolfram Alpha API (`/wolfram_query` endpoint, WOLFRAM_APP_ID env)
+- F-03: Z3 SMT solver — z3-solver 4.13.4 + reduce_inequalities
+- F-04: matplotlib 시각화 — `/plot_function`, `/plot_region`, `/plot_geometry` (PNG base64)
+- F-05: `cross-check.ts` — SymPy + Wolfram 결과 비교 (loose match → 기호 동치 → 불일치 분기)
+- F-06: `VerifiedBadge.tsx` + `PlotImage.tsx` — 컴팩트/풀 모드 + 그래프 인라인
+- F-07: euler-tools-schema 6→17 tool, `EULER_TOOLS_BY_AREA` 영역별 부분집합, `REASONER_THRESHOLD_BY_AREA` (확통·기하·미적분 4+, 중학·공통 5+)
+- F-08: KPI 평가 35문항 추가 (총 10→45) — 영역별 5문항 + cross_check_query
+
+### 핵심 산출물
+- `services/euler-sympy/main.py` 25 endpoint (이전 6 + 19 신규)
+- `services/euler-sympy/requirements.txt` scipy/z3-solver/matplotlib/httpx 추가
+- `src/lib/euler/sympy-client.ts` SympyOp union 24개로 확장
+- `src/lib/euler/cross-check.ts` (신규)
+- `src/lib/ai/euler-tools-schema.ts` 17 tool + 영역별 매핑
+- `src/components/euler/VerifiedBadge.tsx` (신규) — 학생 신뢰 시각화
+- `src/app/api/euler-tutor/route.ts` 영역별 임계값 + area 전달
+- `data/kpi-eval-problems.json` 45문항
+
+### 학생 신뢰 차별화
+- ChatGPT/Khanmigo/Photomath 모두 단일 LLM 또는 단일 CAS
+- 우리: SymPy + Wolfram + Z3 + matplotlib + cross-check 배지
+- "✓ SymPy + Wolfram 검증 · 신뢰도 99%" UI 표시
+
+### 비용
+- Wolfram Alpha \$5/월 (2K queries) — 핵심 계산만 cross-check
+- Railway 메모리 약간 ↑ (z3-solver + matplotlib + scipy)
+- 총 ≈ \$8/월
+
+### 다음 세션 후보
+- Wolfram WOLFRAM_APP_ID 발급 + Vercel/Railway env 등록
+- Reasoner 가 cross-check 결과를 system 에 주입하도록 통합 (현재 cross-check.ts 만 있음)
+- VerifiedBadge 를 채팅 메시지에 inject (Vercel AI SDK Data 메시지로)
+- Phase G — GeoGebra · Lean 4 · Desmos
+
+---
+
 ## 2026-04-26 (4차 세션 — 시드 영역 확장 + 직접 입력 UI)
 
 ### 진행 요약

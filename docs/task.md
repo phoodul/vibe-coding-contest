@@ -18,6 +18,7 @@
 | 법무·운영 | 🔄 3/4 (LEG-02 외부 변호사 자문 보류) | 3/4 |
 | 운영 (3차 세션) | ✅ Supabase 마이그레이션 + KPI/Refactor/Runbook | + 4 |
 | 운영 (4차 세션) | ✅ 시드 8영역 244 도구 + 직접 입력 UI | + 2 |
+| Phase F (5차 세션) | ✅ 외부 도구 통합 (SymPy 25 + Wolfram + Z3 + matplotlib + 배지 + KPI 45) | 8/8 |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -46,6 +47,24 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 | 운영 UI | 859cdca | /admin/math-tools 직접 입력 폼 + API + 임베딩 자동 |
 
 총 2 commits. 시드 32 → 244 (7.6×). 3중 확장 채널 완성.
+
+### 5차 세션 (2026-04-26) — Phase F 외부 도구 통합
+
+**모든 task 단일 세션 자율 진행, 단일 커밋으로 통합.**
+
+| Task | 내용 |
+|---|---|
+| F-01 | services/euler-sympy/main.py — 19 신규 endpoint (총 25) |
+| F-02 | /wolfram_query endpoint + WOLFRAM_APP_ID env |
+| F-03 | z3-solver 4.13.4 + reduce_inequalities (solve_inequality) |
+| F-04 | matplotlib /plot_function · /plot_region · /plot_geometry (PNG base64) |
+| F-05 | src/lib/euler/cross-check.ts — loose match → 기호 동치 → 불일치 분기 |
+| F-06 | VerifiedBadge.tsx + PlotImage.tsx (compact/full 모드) |
+| F-07 | euler-tools-schema 6→17 tool, EULER_TOOLS_BY_AREA, REASONER_THRESHOLD_BY_AREA |
+| F-08 | data/kpi-eval-problems.json 10→45 (영역별 5문항 + cross_check_query) |
+
+**경쟁 차별화**: ChatGPT/Khanmigo/Photomath 단일 엔진 — 우리만 다중 cross-check.
+**비용**: Wolfram \$5/월 + Railway 메모리 ↑ ≈ \$8/월
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
