@@ -59,7 +59,11 @@ def assert_token(token: str | None) -> None:
 
 @contextmanager
 def time_limit(seconds: int):
-    """SIGALRM 기반 타임아웃 — Linux 전용. Railway 컨테이너에서 동작."""
+    """SIGALRM 기반 타임아웃 — Linux 메인 스레드 전용.
+
+    FastAPI sync endpoint 는 anyio worker thread 에서 실행되므로 signal 호출 시
+    ValueError 발생 — 이 경우 timeout 없이 진행 (Railway request timeout 이 fallback).
+    """
     if sys.platform == "win32":
         # 윈도우 로컬 개발 시 우회
         yield
@@ -68,7 +72,13 @@ def time_limit(seconds: int):
     def _handler(signum, frame):
         raise TimeoutError(f"computation exceeded {seconds}s")
 
-    old = signal.signal(signal.SIGALRM, _handler)
+    try:
+        old = signal.signal(signal.SIGALRM, _handler)
+    except ValueError:
+        # 메인 스레드 아님 — signal 미사용
+        yield
+        return
+
     signal.alarm(seconds)
     try:
         yield
