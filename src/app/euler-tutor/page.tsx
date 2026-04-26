@@ -219,6 +219,18 @@ export default function EulerTutorPage() {
     });
   }, [append, messages.length]);
 
+  // 💡 "문제 해결 전략" 버튼 — Phase G-01
+  // 학생이 푼 (또는 풀이 중인) 문제에 대해 "사용된 도구들 + 왜 필요한가" 정리 요청.
+  // 사용자 검증 완료: 미적분 29번 풀이 후 같은 query 가 LLM 답 품질 우수.
+  const handleStrategyRequest = useCallback(() => {
+    if (messages.length === 0 || isLoading) return;
+    append({
+      role: "user",
+      content:
+        "[💡 문제 해결 전략 요청]\n\n이 문제를 풀이하기 위해 사용되었던 도구들(정리·공식·접근법)과, 각 단계에서 왜 그 도구들이 필요했는지를 정리해서 알려주세요.\n\n앞으로 비슷한 문제를 만났을 때 학생이 같은 도구를 떠올릴 수 있도록, '왜 이 도구가 떠올라야 하는가'의 trigger 까지 명확히 설명해주세요.",
+    });
+  }, [messages.length, isLoading, append]);
+
   // 새 문제 시작 — 같은 영역 유지, 메시지만 reset
   const handleNewProblem = useCallback(() => {
     if (messages.length > 0) {
@@ -451,6 +463,14 @@ export default function EulerTutorPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleStrategyRequest}
+              disabled={messages.length === 0 || isLoading}
+              className="text-[10px] px-2 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              title="이 문제 풀이에 사용된 도구들과 왜 필요한지 정리"
+            >
+              💡 문제 해결 전략
+            </button>
             <button
               onClick={handleNewProblem}
               className="text-[10px] px-2 py-1 rounded-full border border-violet-500/40 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors"
