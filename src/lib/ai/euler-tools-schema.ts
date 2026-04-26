@@ -254,6 +254,11 @@ export const EULER_TOOLS: AnthropicToolDef[] = [
  * 'free' 또는 매핑 없는 영역은 EULER_TOOLS 전체.
  */
 export const EULER_TOOLS_BY_AREA: Record<string, string[]> = {
+  // 중학교 학년별 분리 (MID-A) — 학년별로 다른 tool 부분집합
+  middle1: ["solve_equation", "simplify", "geometry", "plot_function"],
+  middle2: ["solve_equation", "solve_inequality", "factor", "simplify", "geometry", "plot_function"],
+  middle3: ["solve_equation", "factor", "simplify", "geometry", "plot_function", "trig_simplify"],
+  // 후방 호환: 분리 전 호출자 보호
   middle: ["solve_equation", "factor", "simplify", "geometry", "plot_function"],
   common: [
     "solve_equation", "factor", "simplify", "solve_inequality",
@@ -294,7 +299,10 @@ export const EULER_TOOLS_BY_AREA: Record<string, string[]> = {
  * 단, calculus (초월함수 적분) 는 difficulty 3 부터 SymPy — Sonnet 환각 위험 큼.
  */
 export const REASONER_THRESHOLD_BY_AREA: Record<string, number> = {
-  middle: 4,
+  middle1: 4,
+  middle2: 4,
+  middle3: 4,
+  middle: 4, // 후방 호환
   common: 4,
   math1: 4,
   math2: 4,
@@ -311,8 +319,22 @@ export const REASONER_THRESHOLD_BY_AREA: Record<string, number> = {
  * 미지정 영역은 그대로 반환 (영문 enum 정상 응답인 경우).
  */
 const KOREAN_AREA_MAP: Record<string, string> = {
-  중학수학: "middle",
-  중학: "middle",
+  // 중학교 학년별 (MID-A)
+  중1: "middle1",
+  중1수학: "middle1",
+  중학교1학년: "middle1",
+  중학1학년: "middle1",
+  중2: "middle2",
+  중2수학: "middle2",
+  중학교2학년: "middle2",
+  중학2학년: "middle2",
+  중3: "middle3",
+  중3수학: "middle3",
+  중학교3학년: "middle3",
+  중학3학년: "middle3",
+  // 후방 호환 — 학년 미지정 중학수학은 중3 (가장 광범위) 으로 매핑
+  중학수학: "middle3",
+  중학: "middle3",
   공통수학: "common",
   공통: "common",
   수학1: "math1",
