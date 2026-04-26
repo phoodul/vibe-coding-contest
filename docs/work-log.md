@@ -1,5 +1,68 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-27 Night (6차 세션 — G-02 + 중학교 분리, Night mode 자율)
+
+### 진행 요약
+사용자 수면 시간 동안 Phase G-02 전 4 task + 중학교 학년별 분리 2 task 를 자율 진행. 6 commits, tsc + dry-run 모두 통과. chain 시각화 라이브.
+
+### 1. Phase G-02: Recursive Backward Reasoner (a6e3d2d → d008659)
+
+**G02-A — Manager 8-Layer 출력 확장 (a6e3d2d)**
+- `ManagerResult` 에 5종 optional 필드: `needs_layer_8`, `area_layer_5`, `layer_6_difficulty`, `layer_7_direction`, `computational_load`
+- `effectiveDifficulty(mgr)` — layer_6 우선, fallback to legacy difficulty
+- `shouldRunRecursiveChain(mgr)` — layer_6 ≥ 5 또는 difficulty ≥ 6
+- area enum 에 middle1/middle2/middle3 추가 (MID-A 와 동기)
+
+**G02-B — Recursive Backward Reasoner 모듈 (b0d682b)**
+- `src/lib/euler/recursive-reasoner.ts` 신규
+- `recursiveBackwardChain({problem, conditions, goal, maxDepth=5})` — 각 depth: backward Retriever → Sonnet 분해 → next_subgoal
+- 종료 사유 4종: reached_conditions / dead_end / cycle / max_depth
+- `chainToCoachingText(result)` — systemPrompt inject 용 직렬화
+- `buildSubgoalDecomposePrompt({currentGoal, candidateTools, previousChain})` — 단일 분해 경로만 강제
+- 학술 근거: Self-Ask (Press 2023, +12.4%p), ToT (Yao 2023, 4%→74%), CoVe (Dhuliawala 2023)
+
+**G02-C — orchestrator route.ts 통합 (8bc6bf7)**
+- `effectiveDifficulty` 로 분기 임계값 일원화 (cross-check 도)
+- `runChain` 게이트 — `shouldRunRecursiveChain` 분기
+- 결과 이중 출력:
+  · `chainContext` → systemPrompt 에 코칭 가이드 inject
+  · `streamData.append({kind: "recursive_chain", ...})` → 클라이언트 시각화
+- chain 의 used_tools 도 candidate_tools 보고 채널에 추가
+- `streamText` `onFinish` 에서 `streamData.close()`
+
+**G02-D — BackwardChain 시각화 (d008659)**
+- `src/components/euler/BackwardChain.tsx` 신규 — depth 카드 + 도구 칩 + rationale + 종료 사유
+- `pickLatestChain(data)` — useChat data 배열에서 payload 추출
+- page.tsx 에서 useChat 의 `data + setData` 분해 + 첫 user 메시지 직후에 카드 노출
+- 새 문제 시작 시 `setData(undefined)` 로 초기화
+
+### 2. 중학교 학년별 시드 분리 (09782c6, 2e79ae4)
+
+**MID-A — middle.json (35) → middle1/2/3 분리 (09782c6)**
+- 한국 2015 개정 교육과정 기준
+- middle1.json (8): 정수·일차방정식·평면/입체도형·정비례
+- middle2.json (8): 일차함수·연립방정식·합동·닮음·확률
+- middle3.json (19): 이차방정식·이차함수·삼각비·원의 성질·대푯값
+- tool_id 그대로 유지 (DB 호환성)
+- dry-run 검증: 244 tools 전체 합계 동일 통과
+
+**MID-B — enum + UI 갱신 (2e79ae4)**
+- `EULER_TOOLS_BY_AREA` middle1/2/3 별 부분집합
+- `REASONER_THRESHOLD_BY_AREA` middle1/2/3 모두 4
+- `KOREAN_AREA_MAP` "중1/중2/중3/중학교N학년" 매핑 + 후방 호환 ("중학수학" → middle3)
+- `MATH_AREAS` UI 8개 → 10개 카드 (1️⃣ 중1 / 2️⃣ 중2 / 3️⃣ 중3)
+
+### 핵심 가치
+- **방법 찾기 코칭의 본질화**: 난이도 5+ 문제는 chain 카드로 "AI 사고 과정" 가시화 — Khanmigo/ChatGPT Study Mode 가 못하는 영역
+- **8-Layer 분리**: insight gap (layer_6) vs computational load 분리 → 정확한 분기. 단순 계산은 LLM, 발견적 비약은 Recursive Chain
+- **중학교 학년별 진입점**: 학습자가 자기 학년 도구 셋만 보도록 격리. Retriever 결과는 동일하나 Manager area 분류로 더 정확한 진단 가능
+
+### 사용자 액션 (Phase G-02 + MID 라이브 후 검증 필요)
+1. 어려운 문제 (수능 30번류 또는 layer_6=5+) 1건 풀이 → BackwardChain 카드 노출 확인
+2. 단순 문제 (layer_6 < 5) → 카드 미표시 확인 (억지 X)
+3. 중1/중2/중3 카드 진입 후 Manager area 응답 검증
+4. (선택) 시드 재적재 — DB 변화 없으므로 불요. 다만 middle.json 삭제됨에 따라 dry-run 만 수행함
+
 ## 2026-04-27 (5차 세션 후속 — Phase F 운영 + G-01 + Phase G 비전 정립)
 
 ### 진행 요약

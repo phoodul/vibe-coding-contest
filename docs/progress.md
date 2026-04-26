@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-27 (5차 세션 종료)
-- Phase: **Phase F 완료 + G-01 (전략 버튼) — Phase G 비전 정립**
-- Step: 다음 세션 G-02 (Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화)
-- Session: 5차 (외부 도구 통합 + 학생 코칭 본질 회복)
+- Time: 2026-04-27 Night (6차 세션 자율 진행)
+- Phase: **Phase G-02 완료 + 중학교 시드 학년별 분리**
+- Step: 다음 세션 — 베타 사용자 피드백 + chain UX 검증 + Phase G-03 후보 (LayerStuckChart 에 chain miss 패턴 표시)
+- Session: 6차 (G-02 Recursive Chain + Middle 분리, Night mode 자율)
 
 ## 운영 상태 — Production 라이브
 
@@ -89,6 +89,34 @@
 3. **법무 자문 (LEG-02)** — 변호사 1회 30~80만원 (베타 검증 후)
 4. **KPI Full 측정** — `pnpm dlx dotenv-cli -e .env -- pnpm dlx tsx scripts/eval-kpi.ts --full`
 5. **풀이 누적 7일+10문제 후 리포트 검증** — 주 1회 자동 갱신
+
+## 6차 세션 완료 (2026-04-27 Night, 자율)
+
+### Phase G-02 — Recursive Backward Reasoner + 8-Layer + chain 시각화
+
+| 커밋 | 내용 |
+|---|---|
+| a6e3d2d | G02-A: Manager 8-Layer 출력 (needs_layer_8/area_layer_5/layer_6_difficulty/layer_7_direction/computational_load) + effectiveDifficulty/shouldRunRecursiveChain |
+| b0d682b | G02-B: recursive-reasoner.ts 모듈 + buildSubgoalDecomposePrompt + chainToCoachingText (Self-Ask/ToT/CoVe 학술 근거) |
+| 8bc6bf7 | G02-C: orchestrator route.ts 통합 — chainContext systemPrompt inject + StreamData payload (시각화용) |
+| d008659 | G02-D: BackwardChain 컴포넌트 + page.tsx 첫 user 메시지 직후 노출 ("선생님은 이렇게 생각했어요") |
+
+### 중학교 시드 학년별 분리
+
+| 커밋 | 내용 |
+|---|---|
+| 09782c6 | MID-A: middle.json (35) → middle1.json (8) + middle2.json (8) + middle3.json (19) — 한국 2015 개정 교육과정 |
+| 2e79ae4 | MID-B: Manager area enum + EULER_TOOLS_BY_AREA + REASONER_THRESHOLD_BY_AREA + KOREAN_AREA_MAP + MATH_AREAS UI 8→10 카드 |
+
+### 핵심 가치
+- **방법 찾기 코칭의 본질화**: 난이도 5+ 문제는 chain 카드로 "왜 이렇게 생각했는지" 가시화
+- **8-Layer 분리**: insight gap (layer_6) vs computational load 분리 → 정확한 분기
+- **중학교 학년별 진입점**: 학습자가 자기 학년 도구 셋만 보도록 격리 (Retriever 결과는 동일하나 UX 분리)
+
+### 사용자 검증 대기
+- 어려운 문제 (수능 30번류) 1건 → chain 5 depth 도출 + 시각화 카드 노출 확인
+- chain 데이터가 streamData 로 도착하는지 useChat 클라이언트 검증
+- middle1/2/3 카드 진입 후 Manager 가 정확히 학년 area 반환하는지
 
 ## 5차 세션 완료 (2026-04-26 ~ 27)
 

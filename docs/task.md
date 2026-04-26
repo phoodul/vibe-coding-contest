@@ -21,7 +21,8 @@
 | Phase F (5차 세션) | ✅ 외부 도구 통합 (SymPy 25 + Wolfram + Z3 + matplotlib + 배지 + KPI 45) | 8/8 |
 | Phase F 운영 (5차 후속) | ✅ Wolfram LLM API 활성화 + cross-check 통합 + Manager normalize + 임계값 균형 + 429 fix | + 7 |
 | Phase G-01 (5차 종료) | ✅ 💡 문제 해결 전략 버튼 + Coaching 4단계 가이드 | 1/1 |
-| Phase G-02 (다음 세션) | ⏸ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 0/1 |
+| Phase G-02 (6차 세션) | ✅ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 4/4 |
+| 중학교 시드 분할 (6차 세션) | ✅ middle → middle1/middle2/middle3 (8/8/19 도구) | 2/2 |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -70,16 +71,20 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 **경쟁 차별화**: ChatGPT/Khanmigo/Photomath 단일 엔진 — 우리만 다중 cross-check + 도구 trigger 학습.
 **비용**: Wolfram \$5/월 + Railway 메모리 ↑ ≈ \$8/월
 
-### 6차 세션 첫 task — Phase G-02
+### 6차 세션 (2026-04-27 Night) — Phase G-02 + 중학교 시드 분할
 
-사용자 통찰 5종 정립 (project_phase_g.md):
-1. "Euler Tutor 매력 = 방법 찾기, 계산 X"
-2. "난이도 = 도구 선택 비자명성"
-3. "킬러 문제는 multi-turn 분해 질문이 필요"
-4. "chain 시각화는 난이도 5+ 만"
-5. "8-Layer 인프라가 schema 에만 존재 — 풀이 흐름에서 명시 사용 X"
+| 단계 | 커밋 | 내용 |
+|---|---|---|
+| G02-A | a6e3d2d | Manager 8-Layer 출력 5종 optional 필드 + effectiveDifficulty/shouldRunRecursiveChain 헬퍼 |
+| G02-B | b0d682b | Recursive Backward Reasoner 모듈 + buildSubgoalDecomposePrompt + chainToCoachingText |
+| G02-C | 8bc6bf7 | orchestrator route.ts 통합 — chainContext + StreamData payload 이중 출력 |
+| G02-D | d008659 | BackwardChain 시각화 카드 + page.tsx 첫 user 메시지 직후 노출 |
+| MID-A | 09782c6 | middle.json → middle1/2/3 분리 (8/8/19 도구) |
+| MID-B | 2e79ae4 | enum + UI MATH_AREAS 8→10 카드 + KOREAN_AREA_MAP 갱신 |
 
-→ G-02: Recursive Backward Reasoner + Manager 8-Layer 출력 + chain 시각화.
+총 6 commits. Phase G-02 + 중학교 학년 분리.
+
+**경쟁 차별화 강화**: chain 시각화로 "AI 가 왜 이렇게 생각했는지" 가시화 — ChatGPT Study Mode 가 못하는 영역.
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
