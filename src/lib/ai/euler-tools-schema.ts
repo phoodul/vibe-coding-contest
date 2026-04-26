@@ -291,6 +291,58 @@ export const REASONER_THRESHOLD_BY_AREA: Record<string, number> = {
   free: 5,
 };
 
+/**
+ * Manager Haiku 가 영문 enum 대신 한글 영역명을 반환하는 경우를 대비한 매핑.
+ * 또한 EduFlow 기존 UI 의 한글 카테고리명과의 일관성 보장.
+ *
+ * 미지정 영역은 그대로 반환 (영문 enum 정상 응답인 경우).
+ */
+const KOREAN_AREA_MAP: Record<string, string> = {
+  중학수학: "middle",
+  중학: "middle",
+  공통수학: "common",
+  공통: "common",
+  수학1: "math1",
+  수학Ⅰ: "math1",
+  수학i: "math1",
+  수학2: "math2",
+  수학Ⅱ: "math2",
+  수학ii: "math2",
+  미적분: "calculus",
+  미분법: "calculus",
+  적분법: "calculus",
+  미분: "calculus",
+  적분: "calculus",
+  확률과통계: "probability",
+  확률통계: "probability",
+  확률: "probability",
+  통계: "probability",
+  기하: "geometry",
+  기하벡터: "geometry",
+  자유: "free",
+  자유질문: "free",
+};
+
+/**
+ * Manager 가 반환한 area 문자열을 표준 영문 enum 으로 정규화.
+ * 이미 영문 enum 이면 그대로, 한글 영역명이면 매핑, 모호하면 'free'.
+ */
+export function normalizeArea(area: string | undefined | null): string {
+  if (!area) return "free";
+  const trimmed = area.trim().toLowerCase();
+  if (REASONER_THRESHOLD_BY_AREA[trimmed] !== undefined) return trimmed;
+  // 한글 매핑 (대소문자 무시 + 공백 제거)
+  const cleaned = area.trim().replace(/\s+/g, "").toLowerCase();
+  for (const [k, v] of Object.entries(KOREAN_AREA_MAP)) {
+    if (cleaned === k.toLowerCase()) return v;
+  }
+  // 부분 일치 (예: "미적분 영역", "수학Ⅰ 지수로그")
+  for (const [k, v] of Object.entries(KOREAN_AREA_MAP)) {
+    if (cleaned.includes(k.toLowerCase())) return v;
+  }
+  return "free";
+}
+
 const TOOL_TO_OP: Record<string, SympyOp> = {
   differentiate: "differentiate",
   integrate: "integrate",

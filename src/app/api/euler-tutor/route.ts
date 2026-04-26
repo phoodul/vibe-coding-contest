@@ -9,7 +9,7 @@ import { buildManagerPrompt, type ManagerResult } from "@/lib/ai/euler-manager-p
 import { retrieveTools } from "@/lib/euler/retriever";
 import { runReasonerStep } from "@/lib/euler/reasoner";
 import { runReasonerWithTools } from "@/lib/euler/reasoner-with-tools";
-import { REASONER_THRESHOLD_BY_AREA } from "@/lib/ai/euler-tools-schema";
+import { REASONER_THRESHOLD_BY_AREA, normalizeArea } from "@/lib/ai/euler-tools-schema";
 import { crossCheck } from "@/lib/euler/cross-check";
 import { buildWolframQuery } from "@/lib/euler/wolfram-query-builder";
 import { reportTools } from "@/lib/euler/tool-reporter";
@@ -249,7 +249,12 @@ ${tools
           }
 
           // Reasoner BFS — 영역별 임계값 (확통·기하·미적분은 4+, 중학·공통은 5+)
-          const areaThreshold = REASONER_THRESHOLD_BY_AREA[mgr.area] ?? REASONER_MIN_DIFFICULTY;
+          // F-09 fix: Manager 가 한글 area 를 반환할 수 있으므로 normalize.
+          const normalizedArea = normalizeArea(mgr.area);
+          const areaThreshold = REASONER_THRESHOLD_BY_AREA[normalizedArea] ?? REASONER_MIN_DIFFICULTY;
+          console.log(
+            `[euler-tutor] manager: area="${mgr.area}" → "${normalizedArea}" difficulty=${mgr.difficulty} threshold=${areaThreshold} reasoner=${mgr.difficulty >= areaThreshold ? "Y" : "N"}`
+          );
           if (REASONER_ENABLED && mgr.difficulty >= areaThreshold) {
             try {
               const bfs = await runReasonerStep({
@@ -286,7 +291,7 @@ ${bfs.subgoals.slice(0, 5).map((s, i) => `  ${i + 1}. ${s.subgoal}${s.tool ? ` [
                     conditions: mgr.conditions,
                     goal: mgr.goal,
                     maxSteps: 5,
-                    area: mgr.area,
+                    area: normalizedArea,
                   });
                   if (tooled && tooled.text) {
                     retrievedContext += `\n\n## Reasoner 계산 결과 (SymPy 검증)
@@ -298,6 +303,13 @@ ${tooled.text}
 
                     // F-09: cross-check — 마지막 의미 있는 tool 의 결과를 Wolfram 으로 교차검증
                     // (wolfram_query / plot_* 자체 호출은 제외)
+                    if (!CROSSCHECK_ENABLED) {
+                      console.log(`[euler-tutor] crosscheck skipped: env disabled`);
+                    } else if (mgr.difficulty < CROSSCHECK_MIN_DIFFICULTY) {
+                      console.log(
+                        `[euler-tutor] crosscheck skipped: difficulty=${mgr.difficulty} < min=${CROSSCHECK_MIN_DIFFICULTY}`
+                      );
+                    }
                     if (CROSSCHECK_ENABLED && mgr.difficulty >= CROSSCHECK_MIN_DIFFICULTY) {
                       const checkable = [...tooled.used_tools]
                         .reverse()
