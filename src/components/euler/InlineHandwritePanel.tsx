@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import { HandwriteCanvas, type HandwriteSubmitMeta } from "./HandwriteCanvas";
 import { encodeCanvasToPayload } from "@/lib/euler/canvas-stroke-encoder";
 
@@ -135,22 +139,47 @@ export function InlineHandwritePanel({ open, onClose, onConfirm }: InlineHandwri
               </div>
             )}
 
-            {/* Stage: 결과 검토 + 수정 */}
+            {/* Stage: 결과 검토 + 수정 — 렌더링 미리보기 + raw 편집 */}
             {stage === "review" && (
               <div>
                 <p className="text-[11px] text-white/60 mb-2">
-                  인식 결과를 확인/수정한 후 전송하세요. 잘못된 부분은 직접 고칠 수 있어요.
+                  이렇게 인식되었어요. 잘못된 부분이 있으면 아래 텍스트를 직접 수정해주세요.
                   {parser && (
                     <span className="ml-2 text-[10px] text-emerald-400/80">[{parser}]</span>
                   )}
                 </p>
-                <textarea
-                  value={ocrText}
-                  onChange={(e) => setOcrText(e.target.value)}
-                  rows={4}
-                  className="w-full px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-emerald-400/50 transition-colors font-mono"
-                />
-                <div className="mt-2 flex items-center gap-2 justify-end">
+
+                {/* 렌더링 미리보기 — KaTeX + Markdown */}
+                <div className="px-4 py-3 rounded-lg bg-black/40 border border-emerald-500/20 mb-2 min-h-[80px]">
+                  {ocrText.trim() ? (
+                    <div className="prose prose-invert prose-sm max-w-none text-foreground leading-relaxed">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm, remarkMath]}
+                        rehypePlugins={[rehypeKatex]}
+                      >
+                        {ocrText}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-white/40 italic">텍스트가 비어있어요</p>
+                  )}
+                </div>
+
+                {/* raw 편집 영역 — 접을 수 있게 */}
+                <details className="rounded-lg bg-white/5 border border-white/10">
+                  <summary className="px-3 py-2 text-[11px] text-white/60 cursor-pointer select-none hover:text-white/80">
+                    수식 텍스트 직접 수정 (LaTeX)
+                  </summary>
+                  <textarea
+                    value={ocrText}
+                    onChange={(e) => setOcrText(e.target.value)}
+                    rows={4}
+                    className="w-full px-3 py-2 rounded-b-lg bg-black/30 border-t border-white/10 text-xs text-white/80 placeholder:text-white/30 focus:outline-none focus:border-emerald-400/50 transition-colors font-mono"
+                    placeholder="LaTeX: $x^2 + 1$, 한글은 그대로 작성"
+                  />
+                </details>
+
+                <div className="mt-3 flex items-center gap-2 justify-end">
                   <button
                     onClick={() => setStage("draw")}
                     className="px-3 py-1.5 rounded-lg text-xs text-white/70 hover:text-white border border-white/10"
