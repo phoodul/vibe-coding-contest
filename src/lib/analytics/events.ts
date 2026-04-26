@@ -14,6 +14,7 @@ export const EULER_EVENTS = {
   CRITIC_VERIFIED: "critic_verified",
   CRITIC_REJECTED: "critic_rejected",
   HANDWRITE_SUBMITTED: "handwrite_submitted",
+  CROSSCHECK: "euler_crosscheck", // Phase F-09
 } as const;
 
 export type EulerEvent = (typeof EULER_EVENTS)[keyof typeof EULER_EVENTS];

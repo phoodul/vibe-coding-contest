@@ -10,6 +10,8 @@ import { retrieveTools } from "@/lib/euler/retriever";
 import { runReasonerStep } from "@/lib/euler/reasoner";
 import { runReasonerWithTools } from "@/lib/euler/reasoner-with-tools";
 import { REASONER_THRESHOLD_BY_AREA } from "@/lib/ai/euler-tools-schema";
+import { crossCheck } from "@/lib/euler/cross-check";
+import { buildWolframQuery } from "@/lib/euler/wolfram-query-builder";
 import { reportTools } from "@/lib/euler/tool-reporter";
 import { logSolve } from "@/lib/euler/solve-logger";
 import { checkFreeQuota } from "@/lib/euler/usage-quota";
@@ -22,6 +24,9 @@ const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본
 const REASONER_ENABLED = process.env.EULER_REASONER_ENABLED !== "false"; // 기본 on
 const REASONER_MIN_DIFFICULTY = parseInt(process.env.EULER_REASONER_MIN_DIFFICULTY ?? "6", 10);
 const HAIKU_MODEL_ID = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
+// Phase F-09: Wolfram cross-check — 비용 통제를 위해 기본 off + 난이도 5+ 만
+const CROSSCHECK_ENABLED = process.env.EULER_CROSSCHECK_ENABLED === "true";
+const CROSSCHECK_MIN_DIFFICULTY = parseInt(process.env.EULER_CROSSCHECK_MIN_DIFFICULTY ?? "5", 10);
 
 /** 첫 user 메시지 텍스트 (문제 본문) */
 function firstUserText(messages: { role: string; content: unknown }[]): string | null {
@@ -290,6 +295,58 @@ ${tooled.text}
                     console.log(
                       `[euler-tutor] reasoner-with-tools: ${tooled.steps} steps / ${tooled.used_tools.length} tools / ${tooled.duration_ms}ms`
                     );
+
+                    // F-09: cross-check — 마지막 의미 있는 tool 의 결과를 Wolfram 으로 교차검증
+                    // (wolfram_query / plot_* 자체 호출은 제외)
+                    if (CROSSCHECK_ENABLED && mgr.difficulty >= CROSSCHECK_MIN_DIFFICULTY) {
+                      const checkable = [...tooled.used_tools]
+                        .reverse()
+                        .find(
+                          (t) =>
+                            t.name !== "wolfram_query" &&
+                            !t.name.startsWith("plot_") &&
+                            t.result &&
+                            t.result.length > 0 &&
+                            t.result.length < 200
+                        );
+                      const wolframQ = checkable ? buildWolframQuery(checkable) : null;
+                      if (checkable && wolframQ) {
+                        try {
+                          const cc = await crossCheck({
+                            sympyResult: checkable.result!,
+                            wolframQuery: wolframQ,
+                          });
+                          retrievedContext += `\n\n## 교차검증 (Phase F-05)
+${cc.message} (신뢰도 ${(cc.confidence * 100).toFixed(0)}%)
+SymPy: ${cc.sympy_result ?? "—"}${cc.wolfram_result ? `\nWolfram: ${cc.wolfram_result}` : ""}
+
+${cc.verified
+                            ? "두 엔진이 동일한 답을 도출했습니다. 학생에게 자신감 있게 코칭하되, 정답을 직접 알려주지는 마세요."
+                            : cc.confidence >= 0.6
+                              ? "한 엔진만 답을 도출했습니다. 단계별로 신중히 코칭하세요."
+                              : "두 엔진의 결과가 다릅니다. 학생과 함께 단계별로 검산하세요. 정답 단정 금지."}`;
+                          console.log(
+                            `[euler-tutor] cross-check: verified=${cc.verified} confidence=${cc.confidence.toFixed(2)} via=${cc.sources.join("+")}`
+                          );
+
+                          if (supabaseForTracking) {
+                            void trackServerEvent(supabaseForTracking, {
+                              user_id: userIdForTracking,
+                              feature: "euler",
+                              event: EULER_EVENTS.CROSSCHECK,
+                              metadata: {
+                                verified: cc.verified,
+                                confidence: cc.confidence,
+                                sources: cc.sources,
+                                tool_name: checkable.name,
+                              },
+                            });
+                          }
+                        } catch (e) {
+                          console.warn("[euler-tutor] crosscheck skipped:", e);
+                        }
+                      }
+                    }
                   }
                 } catch (e) {
                   console.warn("[euler-tutor] reasoner-with-tools skipped:", e);
