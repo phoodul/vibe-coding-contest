@@ -1,5 +1,52 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-26 (3차 세션 — KPI/Refactor/배포 자동화)
+
+### 진행 요약 (B → D → A 순)
+사용자 지시: "B(KPI 검증) → D(리팩터링) → A(배포 자동화)" 순서로 자율 진행.
+
+**B 단계 (KPI 평가 자동화)**:
+- 합성 10문항 + standalone 평가 스크립트 + 검증 문서 — 1 commit (`5c559bb`)
+- Mock 모드 검증: expected_tools 10문항 ↔ 시드 32 tools 정확 매칭
+- Full 모드는 인프라 동작 시점에 ~$0.16/회 측정 가능
+
+**D 단계 (코드 리뷰)**:
+- `tryParseJson` 5개 파일 중복 → `src/lib/euler/json.ts` 단일화
+- `difficulty-classifier.ts` 삭제 (Manager 가 difficulty 분류 흡수, 호출처 없음)
+- `layer-stats-updater.ts` ternary 우선순위 버그 수정 (`last_failure_at` 항상 null 이던 문제)
+- `parse-image/route.ts` 인증 가드 추가 (Mathpix/Upstage 봇 어뷰징 방지) — 1 commit (`ad33aef`)
+- tsc 0 errors + production build 통과
+
+**A 단계 (배포 자동화)**:
+- Supabase MCP 로 마이그레이션 13종 적용 (euler_beta_invites ~ user_subscriptions)
+- profiles 에 graduated_at + anonymized_at 추가 마이그레이션 신규 작성 + 적용
+- LEG-04 cron 코드의 컬럼명 정정 (`user_id` → `id`)
+- Security advisor 권고 반영: `set_updated_at` search_path 명시
+- `.env.example` 보강 (`SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`)
+- `docs/deployment-runbook.md` 신규 — 시드/Railway/Vercel/베타/법무/KPI/모니터링 가이드
+
+### 핵심 산출물 (3차 세션)
+- `data/kpi-eval-problems.json`: 합성 10문항
+- `scripts/eval-kpi.ts`: Manager+Retriever+Reasoner standalone 호출 + 4 KPI 측정
+- `docs/qa/kpi-evaluation.md`: 검증 절차 + PASS 기준 + 미달 대응
+- `docs/qa/kpi-evaluation-result.json`: mock 결과
+- `src/lib/euler/json.ts`: tryParseJson 단일화
+- `supabase/migrations/20260506_profiles_graduation_columns.sql`: LEG-04 전제
+- `docs/deployment-runbook.md`: 운영 단계 런북
+
+### Supabase 적용된 마이그레이션 (총 14)
+20260426001412 ~ 20260426001610 — 13종 + set_updated_at 보안 패치
+
+### 다음 세션 시작 시 (사용자 수동 단계)
+1. 시드 적재 (env 필요): `pnpm dlx tsx scripts/seed-math-tools.ts`
+2. Railway 배포 (`services/euler-sympy/`)
+3. Vercel env 등록 (런북 §4)
+4. KPI Full 측정: `pnpm dlx tsx scripts/eval-kpi.ts --full`
+5. 베타 50명 모집 (`EULER2026`)
+6. 법무 자문 (LEG-02, 30~80만원)
+
+---
+
 ## 2026-04-26 (Night mode — 자율 작업)
 
 ### 진행 요약

@@ -25,7 +25,7 @@ const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 const CRON_SECRET = process.env.CRON_SECRET ?? "";
 
 interface GraduateRow {
-  user_id: string;
+  id: string;
   graduated_at: string;
 }
 
@@ -55,14 +55,14 @@ export async function GET(req: Request) {
     auth: { persistSession: false },
   });
 
-  // 졸업 + 1년 경과 사용자 조회 (profiles 테이블에 graduated_at 컬럼이 있다고 가정)
-  // 컬럼이 없으면 0건 반환 — 운영 시 profiles 스키마에 graduated_at 추가 필요
+  // 졸업 + 1년 경과 사용자 조회 (profiles.graduated_at 은 20260506 마이그레이션에서 추가)
   const oneYearAgoIso = new Date(Date.now() - 365 * 24 * 3600 * 1000).toISOString();
   const { data: rows, error } = await supabase
     .from("profiles")
-    .select("user_id, graduated_at")
+    .select("id, graduated_at")
     .lt("graduated_at", oneYearAgoIso)
-    .not("graduated_at", "is", null);
+    .not("graduated_at", "is", null)
+    .is("anonymized_at", null);
 
   if (error) {
     console.error("[anonymize] query error:", error);
@@ -72,22 +72,22 @@ export async function GET(req: Request) {
   let anonymized = 0;
   for (const r of (rows ?? []) as GraduateRow[]) {
     try {
-      const hash = (await sha256Hex(r.user_id)).slice(0, 6);
+      const hash = (await sha256Hex(r.id)).slice(0, 6);
       // profiles 익명화
       await supabase
         .from("profiles")
         .update({ display_name: `anon-${hash}`, anonymized_at: new Date().toISOString() })
-        .eq("user_id", r.user_id);
+        .eq("id", r.id);
 
       // auth.users.email 익명화 (admin API 필요)
-      await supabase.auth.admin.updateUserById(r.user_id, {
+      await supabase.auth.admin.updateUserById(r.id, {
         email: `anon-${hash}@example.invalid`,
         user_metadata: { anonymized: true },
       });
 
       anonymized++;
     } catch (e) {
-      console.error(`[anonymize] failed for ${r.user_id}:`, e);
+      console.error(`[anonymize] failed for ${r.id}:`, e);
     }
   }
 

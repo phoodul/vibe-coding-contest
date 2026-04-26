@@ -39,9 +39,11 @@ create policy "math_tools_admin_write"
   with check (auth.jwt() ->> 'role' = 'admin');
 
 -- 자동 updated_at 트리거 (idempotent)
+-- search_path 명시: Supabase security advisor 권고
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = public
 as $$
 begin
   new.updated_at := now();

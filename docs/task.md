@@ -16,6 +16,14 @@
 | Phase C — Reasoner BFS + 학습 리포트 | ✅ 완료 | 13/13 |
 | Phase D — SymPy μSvc + Family/Academy | ✅ 완료 | 10/10 |
 | 법무·운영 | 🔄 3/4 (LEG-02 외부 변호사 자문 보류) | 3/4 |
+| 운영 (3차 세션) | ✅ Supabase 마이그레이션 + KPI/Refactor/Runbook | + 4 |
+
+### 3차 세션 (2026-04-26) — KPI/Refactor/배포 자동화
+| 단계 | 커밋 | 내용 |
+|---|---|---|
+| B (KPI 평가) | 5c559bb | 합성 10문항 + standalone eval 스크립트 + 검증 문서 |
+| D (Refactor) | ad33aef | tryParseJson 단일화 + 죽은 코드 삭제 + last_failure_at 버그 + parse-image 인증 |
+| A (배포) | (이번 커밋) | Supabase 마이그레이션 14종 적용 + 런북 + cron 정정 + .env.example |
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
