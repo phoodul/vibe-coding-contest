@@ -1,5 +1,87 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-27 (5차 세션 후속 — Phase F 운영 + G-01 + Phase G 비전 정립)
+
+### 진행 요약
+Phase F 코드만 만들어둔 상태에서 사용자가 직접 Wolfram App ID 발급, Vercel/Railway env 등록, 재배포까지 진행. 동시에 운영 중 발견된 문제들을 즉시 패치. 마지막에 사용자와의 깊은 대화로 **Phase G 비전 정립** + **G-01 구현** 으로 마감.
+
+### 1. Wolfram LLM API 통합 (실제 활성화)
+- 사용자: Wolfram App ID 발급 + Railway env `WOLFRAM_APP_ID` 등록 + 재배포 성공
+- `services/euler-sympy/main.py` Full Results API → **LLM API** 전환 (커밋 72297b1)
+- LLM API 응답 구조 (Definite integral, Sum, Roots 등) 17 헤더 인식 + 등호 우변 추출 (커밋 15cc36d)
+- 검증 완료: `result: "2"` 깔끔 추출
+
+### 2. F-09 cross-check 실제 통합 (커밋 bc86d51)
+- `cross-check.ts` 가 만들어져 있었지만 호출 안 되던 상태 → orchestrator 통합
+- `wolfram-query-builder.ts` 신규 — 13 tool 종 → 자연어 query 변환
+- difficulty >= EULER_CROSSCHECK_MIN_DIFFICULTY 시 마지막 의미 있는 SymPy tool 결과를 Wolfram 으로 비교
+- `EULER_EVENTS.CROSSCHECK` analytics 이벤트 추가
+
+### 3. 운영 디버깅 — Manager area 한글 응답 (커밋 a60453d)
+- 발견: mgr=Y 까지만 찍히고 reasoner-with-tools 호출 안 됨
+- 원인: Manager Haiku 가 영문 enum 대신 한글 ('미적분', '미분법') 응답 → REASONER_THRESHOLD_BY_AREA 미스매치 → 기본값 6 폴백
+- 수정: `normalizeArea()` 헬퍼 + KOREAN_AREA_MAP 22종 + 진단 로그 강화
+
+### 4. 임계값 조정 — 학생 신뢰 vs 응답 속도 균형
+- 옵션 A 적용 (math2/calculus=2): 단순 적분도 SymPy 호출 → 32초 (커밋 8e2436d)
+- 사용자 피드백: "단순 계산은 LLM 도 잘 푼다. 굳이 SymPy 안 거쳐도 됨"
+- 균형 재조정 (커밋 877a735): math2/common/middle/math1=4, calculus=3, free=5
+  · diff 2: ~7s (LLM 단독)
+  · diff 3+ (calculus): ~17s (SymPy)
+  · diff 4+: ~17s
+  · diff 6+: ~22s (+ Wolfram cross-check)
+
+### 5. 429 + 속도 패치 (커밋 4deb4c5)
+- 429 원인: phoodul@gmail.com 도 Free 일일 10회 제한 적용 → admin bypass 추가
+- 속도: BFS 와 reasoner-with-tools 가 sequential 중복 → with-tools 활성 시 BFS skip (~8s 절약)
+- maxSteps 5 → 3 (~5s 절약)
+
+### 6. G-01 — 💡 문제 해결 전략 버튼 (커밋 4f790d0)
+사용자 통찰: 미적분 29번 풀이 후 직접 "사용된 도구·왜 필요한가" 질문 → LLM 답 품질 우수. 학생이 그 질문을 떠올리지 못함 → **버튼 1개로 자동화**.
+- 헤더 우측 💡 버튼: `messages.length === 0 || isLoading` 시 disabled
+- `EULER_SYSTEM_PROMPT` 에 4단계 답 가이드 추가:
+  · 1️⃣ 사용된 도구 목록 (굵게)
+  · 2️⃣ 각 도구의 trigger (왜 떠올라야 했는가 + 함정)
+  · 3️⃣ 풀이 chain (조건 → 도구 → 사실 → 답)
+  · 4️⃣ 비슷한 문제 유형
+
+### 7. Phase G 비전 정립 (사용자와의 깊은 대화)
+
+핵심 통찰:
+1. **"Euler Tutor 의 매력 = 방법 찾기 코칭, 계산 X"**
+   - SymPy/Wolfram 은 안전망일 뿐, 본질이 아님
+   - 진짜 자산 = math_tools 244 도구의 `why_text` (Layer 6 dictionary) + Reasoner BFS forward/backward (Layer 7)
+
+2. **"난이도란 계산이 아니야"**
+   - 현재 Manager 의 difficulty 정의는 계산 복잡도 기반 (잘못됨)
+   - 진짜 난이도 = 도구 선택의 비자명성 (insight gap)
+   - "곡선·직선 사이 넓이" → 도구 자명 → 쉬움 (계산 복잡해도)
+   - 수능 30번 → 보조함수 정의 비자명 → 어려움 (계산 단순해도)
+
+3. **"킬러 문제는 LLM 도 못 푼다"**
+   - single-turn 한 번에 답을 묻지 말고 multi-turn 분해 질문
+   - "이걸 알려면 무엇? → 또 이걸 알려면? → ..." backward chain
+   - 학술 근거: ToT (Yao 2023) / Self-Ask (Press 2023) / CoVe (Dhuliawala 2023)
+
+4. **"chain 시각화는 난이도 5+ 만"**
+   - 단순 계산 문제에 chain 은 억지
+   - 어려운 문제에서만 "선생님은 이렇게 생각했어요" 노출
+
+5. **8-Layer 인프라가 schema 에만 존재**
+   - math_tools.knowledge_layer ✓ / Critic stuck_layer ✓
+   - 그러나 Manager 의 분류·Reasoner BFS·Coaching prompt 어디에도 layer 명시 사용 안 됨
+   - **Layer 8 (서술형 → 수학화) 분류 자체가 없음** → 모든 문제 동일 처리
+
+→ Phase G 의 의미가 명확해짐: **방법 찾기의 인프라화**. SymPy 확장 (Tier 2) 보다 우선.
+
+### 다음 세션 (6차) 첫 task
+
+**G-02 — Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+)**
+
+이 task 가 완성되면 사용자가 정의한 Euler Tutor 의 본질이 코드로 실체화됨.
+
+---
+
 ## 2026-04-26 (5차 세션 — Phase F: 외부 도구 통합)
 
 ### 진행 요약

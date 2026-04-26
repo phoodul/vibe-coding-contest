@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-26 (5차 세션 종료)
-- Phase: **Phase F 완료 — 외부 도구 통합 (SymPy 25 + Wolfram + Z3 + matplotlib + cross-check)**
-- Step: Wolfram APP_ID 발급 → Reasoner 통합 → VerifiedBadge UI 주입
-- Session: 5차 (학생 신뢰 차별화 인프라 완성)
+- Time: 2026-04-27 (5차 세션 종료)
+- Phase: **Phase F 완료 + G-01 (전략 버튼) — Phase G 비전 정립**
+- Step: 다음 세션 G-02 (Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화)
+- Session: 5차 (외부 도구 통합 + 학생 코칭 본질 회복)
 
 ## 운영 상태 — Production 라이브
 
@@ -90,32 +90,68 @@
 4. **KPI Full 측정** — `pnpm dlx dotenv-cli -e .env -- pnpm dlx tsx scripts/eval-kpi.ts --full`
 5. **풀이 누적 7일+10문제 후 리포트 검증** — 주 1회 자동 갱신
 
-## Phase F 완료 (5차 세션, 2026-04-26)
+## 5차 세션 완료 (2026-04-26 ~ 27)
 
-8 task 모두 코드 완성. 사용자 작업만 남음:
+### Phase F (외부 도구 통합) — 단일 커밋 + 후속 패치
+| 커밋 | 내용 |
+|---|---|
+| 8787d0b | Phase F 8 task: SymPy 25 + Wolfram + Z3 + matplotlib + cross-check + KPI 45 |
+| 72297b1 | Wolfram endpoint Full Results → LLM API 전환 |
+| 15cc36d | LLM API 결과 섹션 추출 강화 (17 헤더 인식) |
+| bc86d51 | F-09 cross-check 를 orchestrator 통합 + wolfram-query-builder |
+| a60453d | Manager area 한글 응답 정규화 + 진단 로그 |
+| 8e2436d | Reasoner 임계값 공격적 하향 (학생 신뢰 우선) |
+| 4deb4c5 | 429 admin bypass + BFS skip when tools + maxSteps 5→3 |
+| 877a735 | 임계값 균형 재조정 (단순 = LLM 단독, calculus 만 3+) |
 
-### 사용자 작업 — 외부 키 발급 + 배포
-1. **Wolfram Alpha App ID 발급** — https://developer.wolframalpha.com (무료 \$5/월 plan)
-2. **Railway 환경변수 등록** — `WOLFRAM_APP_ID=...`
-3. **Railway 재배포** — requirements.txt 변경 (scipy/z3-solver/matplotlib/httpx)
-4. **검증** — `curl -X POST $RAILWAY/wolfram_query -H 'X-Internal-Token: ...' -d '{"query":"integrate sin(x)"}'`
+### Phase G-01 (방법 찾기 코칭 본질 회복)
+| 커밋 | 내용 |
+|---|---|
+| 4f790d0 | 💡 문제 해결 전략 버튼 + EULER_SYSTEM_PROMPT 4단계 가이드 |
 
-### 다음 세션 첫 Task — Phase F 통합 + Phase G
+### 사용자 작업 (배포·키)
+- ✅ Wolfram App ID 발급 + Railway env 등록 + 재배포 검증
+- ✅ Vercel env `EULER_CROSSCHECK_ENABLED=true` 등록
+- ✅ Manager 정상 동작 확인 (area="math2", reasoner=Y, with-tools 호출)
 
-**Phase F 후속 (반자동)**:
-- F-09: Reasoner 가 cross-check 결과를 Coaching system 에 주입
-- F-10: VerifiedBadge 를 채팅 메시지에 inject (Vercel AI SDK Data 메시지)
-- F-11: 영역별 KPI 평가 실행 (45문항 자동 평가 스크립트)
+### 운영 검증
+- 단순 정적분 (difficulty 2): LLM 단독 — 빠름
+- 어려운 문제 (difficulty 5+): SymPy 검증 + Wolfram cross-check (호출 임계값 5+)
+- 모든 영역 area enum 정규화 동작
 
-**Phase G — Tier 2 차별화**:
-- GeoGebra API — 기하 영역 인터랙티브 (학생이 직접 도형 회전)
-- Lean 4 정리 검증 — "수학자가 검증한 풀이" 배지 (상위권 학생 타겟)
-- Desmos 임베드 — 함수 그래프를 학생이 만져볼 수 있음
+## 다음 세션 (6차) 첫 Task — Phase G-02 ⭐
 
-**기타 후보**:
+**핵심 통찰 (사용자 정립)**:
+- "Euler Tutor 의 진짜 매력 = 방법 찾기 코칭, 계산 X"
+- "난이도 = 도구 선택의 비자명성 (Layer 6 + Layer 7), 계산 복잡도 X"
+- "킬러 문제는 LLM 도 못 푼다 — multi-turn 분해 질문이 정답률 ↑"
+- "chain 시각화는 난이도 5+ 만 (단순엔 억지)"
+
+### G-02 구현 (예상 단일 세션)
+
+1. **Recursive Backward Reasoner**
+   - `recursiveBackwardChain({problem, conditions, goal, maxDepth=5})`
+   - 각 depth: Layer 6 retrieve → Sonnet 분해 질문 → 다음 subgoal
+   - 종료: subgoal 이 conditions 와 매칭
+
+2. **Manager 8-Layer 명시화**
+   - 출력: `needs_layer_8` / `area_layer_5` / `layer_6_difficulty` / `layer_7_direction` / `computational_load`
+   - difficulty 단일 값 → 두 차원 분리 (insight gap + computational load)
+
+3. **chain 시각화 (난이도 5+ 만)**
+   - "선생님은 이렇게 생각했어요" 형식
+   - 학생 막힘 시 chain 의 다음 노드 1개만 질문으로 노출
+
+4. **학술 근거 적용**
+   - ToT (Yao 2023, GPT-4 24-game 4%→74%)
+   - Self-Ask (Press 2023)
+   - CoVe (Dhuliawala 2023)
+
+### 기타 후보 (Phase G 외)
 - 영역별 trigger 보강 (현재 평균 1.1 → 1.5+)
 - 베타 사용자 풀이 모니터링 (candidate_tools 채우기)
 - 기출문제 DB 영역 확장 (현재 calculus 위주)
+- Tier 2 (Phase H): GeoGebra · Lean 4 · Desmos · Manim
 
 ## 핵심 산출물 요약
 

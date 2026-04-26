@@ -19,6 +19,9 @@
 | 운영 (3차 세션) | ✅ Supabase 마이그레이션 + KPI/Refactor/Runbook | + 4 |
 | 운영 (4차 세션) | ✅ 시드 8영역 244 도구 + 직접 입력 UI | + 2 |
 | Phase F (5차 세션) | ✅ 외부 도구 통합 (SymPy 25 + Wolfram + Z3 + matplotlib + 배지 + KPI 45) | 8/8 |
+| Phase F 운영 (5차 후속) | ✅ Wolfram LLM API 활성화 + cross-check 통합 + Manager normalize + 임계값 균형 + 429 fix | + 7 |
+| Phase G-01 (5차 종료) | ✅ 💡 문제 해결 전략 버튼 + Coaching 4단계 가이드 | 1/1 |
+| Phase G-02 (다음 세션) | ⏸ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 0/1 |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -48,23 +51,35 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 
 총 2 commits. 시드 32 → 244 (7.6×). 3중 확장 채널 완성.
 
-### 5차 세션 (2026-04-26) — Phase F 외부 도구 통합
+### 5차 세션 (2026-04-26 ~ 27) — Phase F + 운영 + G-01
 
-**모든 task 단일 세션 자율 진행, 단일 커밋으로 통합.**
+| 단계 | 커밋 | 내용 |
+|---|---|---|
+| F-01~08 | 8787d0b | Phase F 8 task: SymPy 25 + Wolfram + Z3 + matplotlib + 배지 + KPI 45 |
+| Wolfram API | 72297b1 | Full Results → LLM API 전환 |
+| Wolfram 추출 | 15cc36d | 17 헤더 인식 + 등호 우변 추출 강화 |
+| F-09 통합 | bc86d51 | cross-check 를 orchestrator 통합 + wolfram-query-builder |
+| Manager fix | a60453d | area 한글 응답 normalize + 진단 로그 |
+| 임계값 1차 | 8e2436d | 학생 신뢰 우선 — 모두 하향 (calculus=2) |
+| 429 + 속도 | 4deb4c5 | admin bypass + BFS skip + maxSteps 5→3 |
+| 임계값 균형 | 877a735 | 단순=LLM 단독 (calculus=3, math2/common/math1=4) |
+| G-01 | 4f790d0 | 💡 문제 해결 전략 버튼 + Coaching 4단계 가이드 |
 
-| Task | 내용 |
-|---|---|
-| F-01 | services/euler-sympy/main.py — 19 신규 endpoint (총 25) |
-| F-02 | /wolfram_query endpoint + WOLFRAM_APP_ID env |
-| F-03 | z3-solver 4.13.4 + reduce_inequalities (solve_inequality) |
-| F-04 | matplotlib /plot_function · /plot_region · /plot_geometry (PNG base64) |
-| F-05 | src/lib/euler/cross-check.ts — loose match → 기호 동치 → 불일치 분기 |
-| F-06 | VerifiedBadge.tsx + PlotImage.tsx (compact/full 모드) |
-| F-07 | euler-tools-schema 6→17 tool, EULER_TOOLS_BY_AREA, REASONER_THRESHOLD_BY_AREA |
-| F-08 | data/kpi-eval-problems.json 10→45 (영역별 5문항 + cross_check_query) |
+총 9 commits. Phase F 코드 + 운영 활성화 + G-01 = 학생 코칭 본질 회복 출발점.
 
-**경쟁 차별화**: ChatGPT/Khanmigo/Photomath 단일 엔진 — 우리만 다중 cross-check.
+**경쟁 차별화**: ChatGPT/Khanmigo/Photomath 단일 엔진 — 우리만 다중 cross-check + 도구 trigger 학습.
 **비용**: Wolfram \$5/월 + Railway 메모리 ↑ ≈ \$8/월
+
+### 6차 세션 첫 task — Phase G-02
+
+사용자 통찰 5종 정립 (project_phase_g.md):
+1. "Euler Tutor 매력 = 방법 찾기, 계산 X"
+2. "난이도 = 도구 선택 비자명성"
+3. "킬러 문제는 multi-turn 분해 질문이 필요"
+4. "chain 시각화는 난이도 5+ 만"
+5. "8-Layer 인프라가 schema 에만 존재 — 풀이 흐름에서 명시 사용 X"
+
+→ G-02: Recursive Backward Reasoner + Manager 8-Layer 출력 + chain 시각화.
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
