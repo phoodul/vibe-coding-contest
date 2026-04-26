@@ -78,6 +78,17 @@ export default function EulerTutorPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
+  // 입력 영역이 확장될 때(필기 패널 / 이미지 미리보기) 마지막 메시지로 자동 스크롤
+  // — 입력창이 직전 튜터 메시지를 가리지 않도록
+  useEffect(() => {
+    if (!handwriteOpen && !imagePreview) return;
+    // 패널 펼침 애니메이션(약 250ms) 후에 스크롤해야 정확한 위치
+    const timer = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [handwriteOpen, imagePreview]);
+
   function startChat(selectedArea: string) {
     setArea(selectedArea);
     setPhase("chat");
