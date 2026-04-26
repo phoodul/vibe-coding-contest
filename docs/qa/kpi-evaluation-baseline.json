@@ -1,0 +1,1227 @@
+{
+  "mode": "full",
+  "run_at": "2026-04-26T16:46:55.595Z",
+  "summary": {
+    "total": 45,
+    "retriever_hit_rate_top3": 0.6888888888888889,
+    "retriever_hit_rate_top5": 0.7777777777777778,
+    "reasoner_accuracy": 0.6666666666666666,
+    "reasoner_accuracy_hard": 0.47368421052631576,
+    "why_inclusion_rate": 1,
+    "manager_classify_rate": 1,
+    "pass": {
+      "retriever": false,
+      "accuracy": false,
+      "why": true
+    },
+    "chain": {
+      "enabled": false,
+      "executed_count": 0,
+      "avg_depth": 0,
+      "termination_dist": {
+        "reached_conditions": 0,
+        "max_depth": 0,
+        "dead_end": 0,
+        "cycle": 0
+      },
+      "success_rate": 0
+    }
+  },
+  "results": [
+    {
+      "id": "EVAL_01",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "최적화 (자유 극값)",
+        "샌드위치 정리 (조임)"
+      ],
+      "expected_tools": [
+        "평균값 정리 (기본)"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 평균값 정리 문제 풀이\n\n## 단계 1: 평균값 정리 확인\n\n함수 $f(x) = x^2 + x$는 다항함수이므로:\n- $[0, 2]$에서 연속\n- $(0, 2)$에서 미분가능\n\n따라서 평균값 정리를 적용할 수 있습니다.\n\n## 단계 2: 평균값 정리 적용\n\n평균값 정리에 의하면, $(0, 2)$ 내에 적어도 하나의 $c$가 존재하여:\n\n$$f'(c) = \\frac{f(2) - f(0)}{2 - 0}$$\n\n## 단계 3: 좌변 계산 (도함수)\n\n$$f'(x) = 2x + 1$$\n\n따라서:\n$$f'(c) = 2c + 1$$\n\n## 단계 4: 우변 계산 (평균변화율)\n\n$$f(2) = 2^2 + 2 = 4 + 2 = 6$$\n$$f(0) = 0^2 + 0 = 0$$\n\n$$\\frac{f(2) - f(0)}{2 - 0} = \\frac{6 - 0}{2} = 3$$\n\n## 단계 5: 방정식 풀이\n\n$$2c + 1 = 3$$\n$$2c = 2$$\n$$c = 1$$\n\n## 단계 6: 조건 확인\n\n$c = 1$은 $(0, 2)$ 구간 내에 있으므로 조건을 만족합니다. ✓\n\n---\n\n**최종 답:** $c = 1$\n\n**코칭 한마디:** 왜냐하면 평균값 정리는 곡선 위의 어느 한 점에서 접선의 기울기가 양 끝점을 잇는 할선의 기울기와 같아지는 점이 반드시 존재한다는 것을 보장하며, 이는 \"평균적인 변화\"가 \"순간적인 변화\"로 실현되는 지점을 찾는 강력한 도구이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 16788,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_02",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "롤의 정리",
+        "사잇값 정리",
+        "최적화 (자유 극값)",
+        "사잇값 정리 (수학2)",
+        "닫힌구간 최댓·최솟값 (다항함수)"
+      ],
+      "expected_tools": [
+        "롤의 정리",
+        "1계 도함수 부호변화로 극값 판정"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 문제를 단계적으로 풀어보겠습니다.\n\n## 문제 분석\n함수 $f(x) = x^3 - 3x$에서 구간 $[-\\sqrt{3}, \\sqrt{3}]$에서 $f'(c) = 0$을 만족하는 모든 $c$의 합을 구해야 합니다.\n\n## 단계별 풀이\n\n**Step 1: 도함수 구하기**\n$$f(x) = x^3 - 3x$$\n$$f'(x) = 3x^2 - 3$$\n\n**Step 2: $f'(c) = 0$인 $c$ 찾기**\n$$f'(c) = 0$$\n$$3c^2 - 3 = 0$$\n$$3c^2 = 3$$\n$$c^2 = 1$$\n$$c = \\pm 1$$\n\n**Step 3: 구간 내 포함 여부 확인**\n구간 $[-\\sqrt{3}, \\sqrt{3}]$에서:\n- $\\sqrt{3} \\approx 1.732$이므로\n- $-\\sqrt{3} < -1 < 1 < \\sqrt{3}$\n\n따라서 $c = -1$과 $c = 1$ 모두 주어진 닫힌구간에 포함됩니다.\n\n**Step 4: 롤의 정리로 검증 (선택적)**\n- $f(-\\sqrt{3}) = (-\\sqrt{3})^3 - 3(-\\sqrt{3}) = -3\\sqrt{3} + 3\\sqrt{3} = 0$\n- $f(\\sqrt{3}) = (\\sqrt{3})^3 - 3\\sqrt{3} = 3\\sqrt{3} - 3\\sqrt{3} = 0$\n\n구간의 양 끝에서 함수값이 같으므로 롤의 정리에 의해 $f'(c) = 0$인 $c$가 구간 내에 적어도 하나 존재함을 확인할 수 있습니다.\n\n**Step 5: 모든 $c$의 합 계산**\n$$c_1 + c_2 = (-1) + 1 = 0$$\n\n최종 답: 0\n\n코칭 한마디: 왜냐하면 도함수가 0이 되는 점은 함수의 극값 후보를 찾는 것이고, 이차방정식의 두 근의 합은 대칭성을 이용하면 (-b/a 공식 없이도) 빠르게 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 14142,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_03",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "사잇값 정리 (수학2)",
+        "닫힌구간 최댓·최솟값 (다항함수)",
+        "최적화 (자유 극값)",
+        "샌드위치 정리 (조임)"
+      ],
+      "expected_tools": [
+        "사잇값 정리",
+        "연속성 판정"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 단계별 풀이\n\n## 1단계: 문제 이해 및 도구 선택\n\n주어진 함수 $f(x) = x^3 - 3x + 1$이 열린구간 $(0, 1)$에서 적어도 하나의 실근을 가짐을 증명해야 합니다.\n\n**선택할 도구: 사잇값 정리 (중간값 정리)**\n\n## 2단계: 사잇값 정리 확인\n\n사잇값 정리는 다음과 같습니다:\n> 함수 $f(x)$가 닫힌구간 $[a, b]$에서 연속이고, $f(a) \\cdot f(b) < 0$ (즉, $f(a)$와 $f(b)$의 부호가 다르면), 열린구간 $(a, b)$에서 적어도 하나의 실근이 존재한다.\n\n## 3단계: 함수의 연속성 확인\n\n$f(x) = x^3 - 3x + 1$은 다항함수이므로 **모든 실수에서 연속**입니다.\n따라서 닫힌구간 $[0, 1]$에서도 연속입니다.\n\n## 4단계: 양 끝점에서의 함수값 계산\n\n$x = 0$일 때:\n$$f(0) = 0^3 - 3(0) + 1 = 1$$\n\n$x = 1$일 때:\n$$f(1) = 1^3 - 3(1) + 1 = 1 - 3 + 1 = -1$$\n\n## 5단계: 부호 확인\n\n$$f(0) = 1 > 0$$\n$$f(1) = -1 < 0$$\n\n따라서 $f(0) \\cdot f(1) = 1 \\cdot (-1) = -1 < 0$\n\n## 6단계: 사잇값 정리 적용\n\n- $f(x)$는 $[0, 1]$에서 연속\n- $f(0) = 1 > 0$\n- $f(1) = -1 < 0$\n- $f(0) \\cdot f(1) < 0$ (부호가 다름)\n\n**사잇값 정리에 의해**, 열린구간 $(0, 1)$에서 $f(c) = 0$인 $c$가 적어도 하나 존재합니다.\n\n## 결론\n\n함수 $f(x) = x^3 - 3x + 1$은 열린구간 $(0, 1)$에서 적어도 하나의 실근을 가집니다. ∎\n\n---\n\n**최종 답**: 사잇값 정리에 의해 $f(0) = 1 > 0$, $f(1) = -1 < 0$이므로 $(0,1)$에서 적어도 하나의 실근 존재\n\n**코칭 한마디**: 왜냐하면 연속함수가 양 끝점에서 서로 다른 부호를 가지면 그 사이 어딘가에서 반드시 0을 지나가야 하므로, 사잇값 정리는 근의 존재성을 보장하는 가장 직접적이고 강력한 도구이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 17546,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_04",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "역함수",
+        "사잇값 정리 (수학2)",
+        "샌드위치 정리 (조임)"
+      ],
+      "expected_tools": [
+        "1계 도함수 부호변화로 극값 판정",
+        "3차함수의 극값"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 단계적으로 풀이하겠습니다.\n\n## 문제 분석\n함수 $f(x) = x^3 - 3x^2 + 2$의 극댓값과 극솟값을 구해야 합니다.\n\n## 풀이 과정\n\n### 1단계: 1차 도함수 구하기\n극값을 찾기 위해 먼저 도함수를 구합니다.\n\n$$f'(x) = 3x^2 - 6x = 3x(x - 2)$$\n\n### 2단계: 극값 후보 찾기 (임계점)\n$f'(x) = 0$이 되는 점을 찾습니다.\n\n$$3x(x - 2) = 0$$\n$$x = 0 \\text{ 또는 } x = 2$$\n\n### 3단계: 2차 도함수로 극값 판정\n극대인지 극소인지 판별하기 위해 2차 도함수를 구합니다.\n\n$$f''(x) = 6x - 6 = 6(x - 1)$$\n\n**$x = 0$일 때:**\n$$f''(0) = 6(0 - 1) = -6 < 0$$\n따라서 $x = 0$에서 **극대**\n\n**$x = 2$일 때:**\n$$f''(2) = 6(2 - 1) = 6 > 0$$\n따라서 $x = 2$에서 **극소**\n\n### 4단계: 극값 계산\n\n**극댓값 (x = 0에서):**\n$$f(0) = 0^3 - 3(0)^2 + 2 = 2$$\n\n**극솟값 (x = 2에서):**\n$$f(2) = 2^3 - 3(2)^2 + 2 = 8 - 12 + 2 = -2$$\n\n### 5단계: 극댓값과 극솟값의 합\n$$\\text{극댓값} + \\text{극솟값} = 2 + (-2) = 0$$\n\n---\n\n최종 답: **0**\n\n코칭 한마디: 이유는 극값 문제에서 **최적화(자유 극값)** 도구를 사용하는데, 1차 도함수로 극값 후보를 찾고 2차 도함수로 극대/극소를 판정하는 것이 함수의 최고점과 최저점을 정확히 찾는 표준 방법이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13384,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_05",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "(eˣ-1)/x 의 극한",
+        "확률변수의 분산·표준편차",
+        "지수·로그 적분",
+        "회전체 부피 (껍질법)",
+        "치환 적분"
+      ],
+      "expected_tools": [
+        "치환 적분",
+        "정적분 치환 (한도 변환)"
+      ],
+      "hit_top3": false,
+      "hit_top5": true,
+      "reasoner_text": "# 정적분 풀이\n\n## 문제 분석\n$\\int_0^1 x \\cdot e^{x^2} \\, dx$를 계산해야 합니다.\n\n피적분함수를 보면 $x$와 $e^{x^2}$의 곱으로 되어 있고, $e^{x^2}$의 지수 부분인 $x^2$를 미분하면 $2x$가 나옵니다. 이는 **치환적분**을 사용하라는 신호입니다.\n\n## 단계별 풀이\n\n### 1단계: 치환 설정\n$u = x^2$로 놓으면\n- $\\frac{du}{dx} = 2x$\n- $du = 2x \\, dx$\n- $x \\, dx = \\frac{1}{2} du$\n\n### 2단계: 적분 구간 변환\n- $x = 0$일 때: $u = 0^2 = 0$\n- $x = 1$일 때: $u = 1^2 = 1$\n\n### 3단계: 치환하여 적분 변환\n$$\\int_0^1 x \\cdot e^{x^2} \\, dx = \\int_0^1 e^{x^2} \\cdot x \\, dx = \\int_0^1 e^u \\cdot \\frac{1}{2} \\, du$$\n\n$$= \\frac{1}{2} \\int_0^1 e^u \\, du$$\n\n### 4단계: 적분 계산\n$$= \\frac{1}{2} \\left[ e^u \\right]_0^1$$\n\n$$= \\frac{1}{2} (e^1 - e^0)$$\n\n$$= \\frac{1}{2} (e - 1)$$\n\n$$= \\frac{e-1}{2}$$\n\n---\n\n**최종 답:** $\\dfrac{e-1}{2}$\n\n**코칭 한마디:** 왜냐하면 피적분함수에서 \"복잡한 함수($e^{x^2}$)의 안쪽($x^2$)을 미분한 것($2x$)이 바깥에 있을 때\" 치환적분을 사용하면 간단한 지수함수 적분으로 바꿀 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12444,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_06",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 3,
+      "retrieved_tools": [
+        "삼각방정식의 풀이",
+        "sin² · cos² 적분 — 차수 낮추기",
+        "사잇값 정리 (수학2)",
+        "(1-cos x)/x² 극한",
+        "삼각함수의 미분"
+      ],
+      "expected_tools": [
+        "부분 적분",
+        "삼각함수 미분"
+      ],
+      "hit_top3": false,
+      "hit_top5": true,
+      "reasoner_text": "정적분 $\\int_0^{\\pi} x \\sin x \\, dx$를 단계적으로 풀이하겠습니다.\n\n## 풀이 과정\n\n**Step 1: 부분적분 설정**\n\n$x \\sin x$의 적분은 **부분적분**을 사용합니다.\n\n부분적분 공식: $\\int u \\, dv = uv - \\int v \\, du$\n\n- $u = x$ → $du = dx$\n- $dv = \\sin x \\, dx$ → $v = -\\cos x$\n\n**Step 2: 부분적분 적용**\n\n$$\\int_0^{\\pi} x \\sin x \\, dx = \\left[ -x \\cos x \\right]_0^{\\pi} - \\int_0^{\\pi} (-\\cos x) \\, dx$$\n\n$$= \\left[ -x \\cos x \\right]_0^{\\pi} + \\int_0^{\\pi} \\cos x \\, dx$$\n\n**Step 3: 첫 번째 항 계산**\n\n$$\\left[ -x \\cos x \\right]_0^{\\pi} = -\\pi \\cos \\pi - (-0 \\cdot \\cos 0)$$\n\n$$= -\\pi \\cdot (-1) - 0 = \\pi$$\n\n**Step 4: 두 번째 항 계산**\n\n$$\\int_0^{\\pi} \\cos x \\, dx = \\left[ \\sin x \\right]_0^{\\pi}$$\n\n$$= \\sin \\pi - \\sin 0 = 0 - 0 = 0$$\n\n**Step 5: 최종 계산**\n\n$$\\int_0^{\\pi} x \\sin x \\, dx = \\pi + 0 = \\pi$$\n\n---\n\n**최종 답**: $\\pi$\n\n**코칭 한마디**: 왜냐하면 $x$와 $\\sin x$의 곱을 적분할 때는 부분적분을 사용하는데, 미분하면 간단해지는 것($x$)을 $u$로, 적분이 쉬운 것($\\sin x$)을 $dv$로 선택하면 문제가 단순화되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13137,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_07",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 3,
+      "retrieved_tools": [
+        "회전체의 부피 (디스크)",
+        "회전체 부피 (껍질법)",
+        "곡선과 x축 사이 넓이",
+        "곡선의 점근선 (수직·수평·사선)",
+        "회전체 부피 (원판법)"
+      ],
+      "expected_tools": [
+        "회전체 부피 (원판법)",
+        "넓이 = 정적분"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 문제를 단계적으로 풀이하겠습니다.\n\n## 문제 분석\n\n곡선 $y = \\sqrt{x}$, $x$축, 직선 $x = 4$로 둘러싸인 영역을 $x$축 둘레로 회전시킨 회전체의 부피를 구해야 합니다.\n\n## 풀이 과정\n\n### 1단계: 영역 파악\n- 곡선: $y = \\sqrt{x}$ (위쪽 경계)\n- 아래쪽 경계: $x$축 ($y = 0$)\n- 왼쪽 경계: $x = 0$ (곡선이 $x$축과 만나는 점)\n- 오른쪽 경계: $x = 4$\n\n### 2단계: 회전체 부피 공식 선택\n$x$축 둘레로 회전시키므로 **원판법(디스크법)**을 사용합니다.\n\n회전체의 부피 공식:\n$$V = \\pi \\int_{a}^{b} [f(x)]^2 dx$$\n\n여기서 $f(x) = \\sqrt{x}$, $a = 0$, $b = 4$\n\n### 3단계: 적분 설정\n$$V = \\pi \\int_{0}^{4} (\\sqrt{x})^2 dx$$\n\n$$V = \\pi \\int_{0}^{4} x \\, dx$$\n\n### 4단계: 적분 계산\n$$V = \\pi \\left[ \\frac{x^2}{2} \\right]_{0}^{4}$$\n\n$$V = \\pi \\left( \\frac{4^2}{2} - \\frac{0^2}{2} \\right)$$\n\n$$V = \\pi \\left( \\frac{16}{2} - 0 \\right)$$\n\n$$V = \\pi \\cdot 8$$\n\n$$V = 8\\pi$$\n\n---\n\n**최종 답:** $8\\pi$\n\n**코칭 한마디:** 왜냐하면 $x$축 둘레로 회전할 때는 각 $x$ 위치에서 반지름이 $f(x)$인 원판을 쌓는 원판법을 사용해야 하고, 이때 단면적 $\\pi[f(x)]^2$를 적분 구간에 걸쳐 더하면 전체 부피가 나오기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12314,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_08",
+      "difficulty": 3,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "연쇄법칙",
+        "삼각함수의 미분",
+        "부정적분의 정의",
+        "로그함수의 미분",
+        "역함수"
+      ],
+      "expected_tools": [
+        "연쇄법칙",
+        "삼각함수 미분"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 문제를 단계적으로 풀어보겠습니다.\n\n## 문제 분석\n$f(x) = \\sin(2x^2 + 1)$의 도함수를 구해야 합니다.\n\n이 함수는 **합성함수** 형태입니다:\n- 바깥 함수: $\\sin(u)$\n- 안쪽 함수: $u = 2x^2 + 1$\n\n## 풀이 과정\n\n**1단계: 연쇄법칙 적용**\n\n합성함수의 미분은 연쇄법칙을 사용합니다:\n$$f'(x) = \\frac{d}{dx}[\\sin(2x^2 + 1)]$$\n\n$u = 2x^2 + 1$로 놓으면:\n$$f'(x) = \\frac{d}{du}[\\sin(u)] \\cdot \\frac{du}{dx}$$\n\n**2단계: 바깥 함수 미분 (삼각함수의 미분)**\n\n$$\\frac{d}{du}[\\sin(u)] = \\cos(u) = \\cos(2x^2 + 1)$$\n\n**3단계: 안쪽 함수 미분**\n\n$$\\frac{du}{dx} = \\frac{d}{dx}[2x^2 + 1] = 4x$$\n\n**4단계: 결과 종합**\n\n$$f'(x) = \\cos(2x^2 + 1) \\cdot 4x$$\n\n$$f'(x) = 4x\\cos(2x^2 + 1)$$\n\n## 사용된 도구\n- **연쇄법칙 (L6)**: 합성함수의 미분\n- **삼각함수의 미분 (L5)**: $\\sin$의 도함수는 $\\cos$\n\n---\n\n**최종 답**: $f'(x) = 4x\\cos(2x^2 + 1)$\n\n**코칭 한마디**: 왜냐하면 함수 안에 또 다른 함수가 들어있는 합성함수는 \"바깥 미분 × 안쪽 미분\" 순서로 연쇄법칙을 적용해야 하며, 이를 통해 복잡한 함수도 체계적으로 미분할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12641,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_09",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "곡선의 길이 (현장적분)",
+        "매개변수 미분",
+        "접선의 방정식",
+        "미분계수의 정의",
+        "한 점에서의 접선의 방정식"
+      ],
+      "expected_tools": [
+        "음함수 미분법",
+        "접선의 방정식"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 문제를 단계적으로 풀이하겠습니다.\n\n## 문제 분석\n곡선 $x^2 + y^2 = 4$ 위의 점 $(1, \\sqrt{3})$에서의 접선의 기울기를 구해야 합니다.\n\n## 풀이 과정\n\n### 단계 1: 음함수 미분법 적용\n곡선 $x^2 + y^2 = 4$를 $x$에 대해 미분합니다.\n\n$$\\frac{d}{dx}(x^2 + y^2) = \\frac{d}{dx}(4)$$\n\n### 단계 2: 양변을 미분\n좌변을 미분하면:\n$$2x + 2y\\frac{dy}{dx} = 0$$\n\n### 단계 3: $\\dfrac{dy}{dx}$ 에 대해 정리\n$$2y\\frac{dy}{dx} = -2x$$\n\n$$\\frac{dy}{dx} = -\\frac{x}{y}$$\n\n### 단계 4: 주어진 점에서의 기울기 계산\n점 $(1, \\sqrt{3})$을 대입하면:\n\n$$\\frac{dy}{dx}\\bigg|_{(1, \\sqrt{3})} = -\\frac{1}{\\sqrt{3}}$$\n\n### 단계 5: 유리화 (선택사항)\n분모를 유리화하면:\n\n$$\\frac{dy}{dx} = -\\frac{1}{\\sqrt{3}} = -\\frac{1}{\\sqrt{3}} \\cdot \\frac{\\sqrt{3}}{\\sqrt{3}} = -\\frac{\\sqrt{3}}{3}$$\n\n### 검증\n점 $(1, \\sqrt{3})$이 곡선 위에 있는지 확인:\n$$1^2 + (\\sqrt{3})^2 = 1 + 3 = 4$$ ✓\n\n---\n\n**최종 답:** $-\\dfrac{\\sqrt{3}}{3}$ (또는 $-\\dfrac{1}{\\sqrt{3}}$)\n\n**코칭 한마디:** 왜냐하면 $y$를 $x$의 함수로 명시적으로 나타내기 어려운 음함수 형태일 때는 **음함수 미분법**을 사용하여 양변을 직접 미분하면, $y$를 따로 정리하지 않고도 $\\frac{dy}{dx}$를 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13622,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_10",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "속도·시간 → 변위·거리",
+        "위치·속도·가속도",
+        "함수의 평균값",
+        "닫힌구간 최댓·최솟값 (다항함수)",
+        "직선의 벡터방정식"
+      ],
+      "expected_tools": [
+        "이동거리 = ∫|v| dt",
+        "위치·속도·가속도 관계",
+        "정적분 치환 (한도 변환)"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 풀이\n\n## 1단계: 속도 함수 분석\n\n주어진 속도 함수: $v(t) = 3t^2 - 12t + 9$\n\n먼저 속도의 부호가 바뀌는 시점을 찾기 위해 $v(t) = 0$인 지점을 구합니다.\n\n$$v(t) = 3t^2 - 12t + 9 = 3(t^2 - 4t + 3) = 3(t-1)(t-3) = 0$$\n\n따라서 $t = 1, 3$\n\n## 2단계: 각 구간에서 속도의 부호 확인\n\n- $0 \\le t < 1$: $v(0) = 9 > 0$ → 양의 방향으로 이동\n- $1 < t < 3$: $v(2) = 12 - 24 + 9 = -3 < 0$ → 음의 방향으로 이동\n- $3 < t \\le 5$: $v(4) = 48 - 48 + 9 = 9 > 0$ → 양의 방향으로 이동\n\n## 3단계: 각 구간에서의 변위 계산\n\n**[0, 1] 구간:**\n$$\\int_0^1 (3t^2 - 12t + 9)dt = [t^3 - 6t^2 + 9t]_0^1 = 1 - 6 + 9 = 4$$\n\n**[1, 3] 구간:**\n$$\\int_1^3 (3t^2 - 12t + 9)dt = [t^3 - 6t^2 + 9t]_1^3$$\n$$= (27 - 54 + 27) - (1 - 6 + 9) = 0 - 4 = -4$$\n\n**[3, 5] 구간:**\n$$\\int_3^5 (3t^2 - 12t + 9)dt = [t^3 - 6t^2 + 9t]_3^5$$\n$$= (125 - 150 + 45) - (27 - 54 + 27) = 20 - 0 = 20$$\n\n## 4단계: 이동 거리 계산\n\n점 P가 움직인 **거리**는 각 구간에서 이동한 거리의 절댓값의 합입니다.\n\n$$\\text{거리} = |4| + |-4| + |20| = 4 + 4 + 20 = 28$$\n\n---\n\n**최종 답:** 28\n\n**코칭 한마디:** 왜냐하면 속도가 음수인 구간에서는 방향이 바뀌므로, 단순히 적분하면 변위만 구해지고, 실제 이동한 거리를 구하려면 속도가 0이 되는 지점을 찾아 구간을 나눈 후 각 구간의 적분값에 절댓값을 취해서 더해야 하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 18698,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M01",
+      "difficulty": 3,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "이차방정식의 인수분해",
+        "인수분해 기본 패턴",
+        "이차함수와 x축 교점",
+        "이차방정식의 근의 공식",
+        "근과 계수의 관계 (이차)"
+      ],
+      "expected_tools": [
+        "이차방정식의 인수분해"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 이차방정식 풀이\n\n## 문제\n$x^2 - 5x + 6 = 0$의 두 근을 구하시오.\n\n---\n\n## 단계별 풀이\n\n### 1단계: 문제 분석\n이차방정식 $x^2 - 5x + 6 = 0$을 풀어야 합니다.\n계수를 확인하면: $a=1, b=-5, c=6$\n\n### 2단계: 도구 선택\n이 문제는 **인수분해**로 쉽게 풀 수 있습니다.\n- $x^2$의 계수가 1이고\n- 상수항 6을 두 수의 곱으로, -5를 두 수의 합으로 나타낼 수 있는지 확인\n\n### 3단계: 인수분해 적용\n6의 약수 쌍을 찾아봅시다:\n- $1 \\times 6 = 6$, $1 + 6 = 7$ ❌\n- $2 \\times 3 = 6$, $2 + 3 = 5$ ✓\n\n하지만 중간항이 $-5x$이므로, 두 수가 **-2와 -3**이어야 합니다.\n- $(-2) \\times (-3) = 6$ ✓\n- $(-2) + (-3) = -5$ ✓\n\n따라서:\n$$x^2 - 5x + 6 = (x - 2)(x - 3) = 0$$\n\n### 4단계: 근 구하기\n$(x - 2)(x - 3) = 0$\n\n곱이 0이 되려면 적어도 하나의 인수가 0이어야 하므로:\n- $x - 2 = 0$ → $x = 2$\n- $x - 3 = 0$ → $x = 3$\n\n### 5단계: 검증\n- $x = 2$일 때: $2^2 - 5(2) + 6 = 4 - 10 + 6 = 0$ ✓\n- $x = 3$일 때: $3^2 - 5(3) + 6 = 9 - 15 + 6 = 0$ ✓\n\n---\n\n**최종 답:** $x = 2, 3$\n\n**코칭 한마디:** 이유는 인수분해가 식의 구조를 $(x-p)(x-q)=0$ 형태로 바꿔서 \"곱이 0이면 적어도 하나는 0\"이라는 원리로 근을 직접 읽을 수 있게 만들기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 14051,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M02",
+      "difficulty": 3,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "피타고라스 정리",
+        "삼각형의 닮음 조건 (AA·SAS·SSS)",
+        "삼각형의 합동 조건 (SSS·SAS·ASA)",
+        "두 점 사이의 거리",
+        "직육면체·정육면체의 대각선"
+      ],
+      "expected_tools": [
+        "피타고라스 정리"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 단계별 풀이\n\n## 1단계: 문제 상황 파악\n- 직각삼각형이 주어짐\n- 두 변의 길이: 3, 4\n- **두 변 사이의 각이 직각** → 이 두 변은 **직각을 끼고 있는 두 변**\n- 따라서 3과 4는 **밑변과 높이**(직각을 이루는 두 변)\n- 구하려는 것: 빗변의 길이\n\n## 2단계: 적절한 도구 선택\n주어진 도구 중에서 **피타고라스 정리 (L4)**가 가장 적합합니다.\n\n**피타고라스 정리**: 직각삼각형에서 직각을 끼고 있는 두 변의 길이를 $a, b$, 빗변의 길이를 $c$라 하면\n$$a^2 + b^2 = c^2$$\n\n## 3단계: 피타고라스 정리 적용\n- 직각을 끼고 있는 두 변: $a = 3$, $b = 4$\n- 빗변: $c = ?$\n\n$$c^2 = a^2 + b^2$$\n$$c^2 = 3^2 + 4^2$$\n$$c^2 = 9 + 16$$\n$$c^2 = 25$$\n$$c = \\sqrt{25} = 5$$\n\n(길이는 양수이므로 $c = 5$)\n\n## 4단계: 검증\n$3^2 + 4^2 = 9 + 16 = 25 = 5^2$ ✓\n\n---\n\n**최종 답: 5**\n\n**코칭 한마디:** 이유는 직각삼각형에서 직각을 끼고 있는 두 변을 알 때 빗변을 구하는 가장 기본적이고 직접적인 도구가 피타고라스 정리이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 11609,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M03",
+      "difficulty": 3,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "일차함수의 그래프",
+        "직선의 방정식 (점-기울기·절편·일반형)",
+        "도형의 평행이동",
+        "음함수 미분",
+        "쌍곡선의 정의와 표준형"
+      ],
+      "expected_tools": [
+        "연립일차방정식 (가감법·대입법)"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 연립방정식을 단계적으로 풀이하겠습니다.\n\n## 문제\n$$\\begin{cases} 2x + y = 7 \\\\ x - y = 2 \\end{cases}$$\n\n## 풀이\n\n**방법 1: 가감법 (더하기)**\n\n두 식을 변끼리 더하면:\n$$(2x + y) + (x - y) = 7 + 2$$\n$$3x = 9$$\n$$x = 3$$\n\n$x = 3$을 두 번째 식에 대입:\n$$3 - y = 2$$\n$$y = 1$$\n\n**검증**\n- 첫 번째 식: $2(3) + 1 = 6 + 1 = 7$ ✓\n- 두 번째 식: $3 - 1 = 2$ ✓\n\n**방법 2: 대입법 (참고)**\n\n두 번째 식에서:\n$$x = y + 2$$\n\n첫 번째 식에 대입:\n$$2(y + 2) + y = 7$$\n$$2y + 4 + y = 7$$\n$$3y = 3$$\n$$y = 1$$\n\n따라서 $x = 1 + 2 = 3$\n\n## 기하학적 의미\n\n이 연립방정식은 두 직선의 교점을 구하는 것과 같습니다.\n- $2x + y = 7$ (기울기 -2인 직선)\n- $x - y = 2$ (기울기 1인 직선)\n\n두 직선이 점 $(3, 1)$에서 만납니다.\n\n---\n\n**최종 답**: $(x, y) = (3, 1)$\n\n**코칭 한마디**: 왜냐하면 연립방정식은 두 직선의 교점을 찾는 문제이고, 참고 도구 중 \"일차함수의 그래프\"와 \"직선의 방정식\"이 이 개념의 기하학적 배경을 설명해주지만, 대수적 풀이(가감법, 대입법)가 더 직접적이고 효율적인 해법이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12677,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M04",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "구의 부피·겉넓이",
+        "원의 둘레·넓이",
+        "부채꼴의 호의 길이·넓이",
+        "삼각함수 주기·대칭",
+        "원의 방정식"
+      ],
+      "expected_tools": [
+        "원의 둘레·넓이"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 문제 풀이\n\n## 단계 1: 필요한 공식 확인\n\n**선택 도구: 원의 둘레·넓이 (L2)**\n\n반지름이 $r$인 원에 대해:\n- 둘레: $2\\pi r$\n- 넓이: $\\pi r^2$\n\n## 단계 2: 주어진 조건 해석\n\n둘레와 넓이의 비가 $1:5$라는 것은:\n$$\\text{둘레} : \\text{넓이} = 1 : 5$$\n\n이를 식으로 나타내면:\n$$\\frac{\\text{둘레}}{\\text{넓이}} = \\frac{1}{5}$$\n\n## 단계 3: 식 세우기\n\n$$\\frac{2\\pi r}{\\pi r^2} = \\frac{1}{5}$$\n\n## 단계 4: 식 정리하기\n\n분자와 분모를 간단히 정리:\n$$\\frac{2\\pi r}{\\pi r^2} = \\frac{2}{r}$$\n\n따라서:\n$$\\frac{2}{r} = \\frac{1}{5}$$\n\n## 단계 5: $r$ 구하기\n\n양변에 $r$을 곱하고 정리:\n$$2 = \\frac{r}{5}$$\n\n$$r = 10$$\n\n## 검증\n\n$r=10$일 때:\n- 둘레 = $2\\pi \\times 10 = 20\\pi$\n- 넓이 = $\\pi \\times 10^2 = 100\\pi$\n- 비 = $20\\pi : 100\\pi = 1 : 5$ ✓\n\n---\n\n**최종 답: $r = 10$**\n\n**코칭 한마디:** 이유는 둘레와 넓이 모두 $r$에 대한 식으로 표현할 수 있고, 비율 관계를 방정식으로 만들면 $r$의 값을 직접 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 10745,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M05",
+      "difficulty": 3,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "분산·표준편차",
+        "두 점의 중점",
+        "기댓값",
+        "평균변화율과 순간변화율",
+        "함수의 평균값"
+      ],
+      "expected_tools": [
+        "평균·중앙값·최빈값",
+        "분산·표준편차"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 데이터를 단계적으로 분석하겠습니다.\n\n## 문제 분석\n데이터: $\\{2, 4, 4, 6, 8, 10\\}$\n자료의 개수: $n = 6$\n\n## 1단계: 평균 구하기\n\n평균 $\\bar{x}$는 모든 자료의 합을 자료의 개수로 나눈 값입니다.\n\n$$\\bar{x} = \\frac{2 + 4 + 4 + 6 + 8 + 10}{6}$$\n\n$$\\bar{x} = \\frac{34}{6} = \\frac{17}{3}$$\n\n## 2단계: 편차 구하기\n\n각 자료값과 평균의 차이(편차)를 구합니다.\n\n- $2 - \\frac{17}{3} = \\frac{6-17}{3} = -\\frac{11}{3}$\n- $4 - \\frac{17}{3} = \\frac{12-17}{3} = -\\frac{5}{3}$\n- $4 - \\frac{17}{3} = -\\frac{5}{3}$\n- $6 - \\frac{17}{3} = \\frac{18-17}{3} = \\frac{1}{3}$\n- $8 - \\frac{17}{3} = \\frac{24-17}{3} = \\frac{7}{3}$\n- $10 - \\frac{17}{3} = \\frac{30-17}{3} = \\frac{13}{3}$\n\n## 3단계: 분산 구하기\n\n분산 $\\sigma^2$는 편차의 제곱의 평균입니다.\n\n$$\\sigma^2 = \\frac{1}{6}\\left[\\left(-\\frac{11}{3}\\right)^2 + \\left(-\\frac{5}{3}\\right)^2 + \\left(-\\frac{5}{3}\\right)^2 + \\left(\\frac{1}{3}\\right)^2 + \\left(\\frac{7}{3}\\right)^2 + \\left(\\frac{13}{3}\\right)^2\\right]$$\n\n$$= \\frac{1}{6} \\cdot \\frac{1}{9}\\left[121 + 25 + 25 + 1 + 49 + 169\\right]$$\n\n$$= \\frac{1}{54} \\times 390$$\n\n$$= \\frac{390}{54} = \\frac{65}{9}$$\n\n## 검산\n$121 + 25 + 25 + 1 + 49 + 169 = 390$ ✓\n\n---\n\n최종 답: 평균 = $\\dfrac{17}{3}$, 분산 = $\\dfrac{65}{9}$\n\n코칭 한마디: 왜냐하면 분산은 자료가 평균으로부터 얼마나 흩어져 있는지를 수치화한 것으로, 각 편차를 제곱하여 평균을 내면 자료의 퍼진 정도를 객관적으로 비교할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13219,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_C01",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "인수정리",
+        "역함수",
+        "무리함수 y=√(ax+b)+c",
+        "(eˣ-1)/x 의 극한",
+        "나머지정리"
+      ],
+      "expected_tools": [
+        "인수정리",
+        "조립제법·다항식 나눗셈"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 문제 풀이\n\n## 주어진 정보\n- 다항식 $P(x) = x^3 - 4x^2 + ax - 2$\n- $(x-1)$로 나누어떨어진다\n- 구하는 것: 상수 $a$의 값과 몫\n\n## 단계별 풀이\n\n### 1단계: 인수정리 적용\n다항식 $P(x)$가 $(x-1)$로 나누어떨어진다는 것은 $P(1) = 0$을 의미합니다.\n\n$$P(1) = 1^3 - 4(1)^2 + a(1) - 2 = 0$$\n\n$$1 - 4 + a - 2 = 0$$\n\n$$a - 5 = 0$$\n\n$$a = 5$$\n\n### 2단계: 다항식 확정\n$$P(x) = x^3 - 4x^2 + 5x - 2$$\n\n### 3단계: 조립제법으로 몫 구하기\n$(x-1)$로 나누므로 $x=1$을 이용합니다.\n\n```\n1 |  1   -4    5   -2\n  |      1   -3    2\n  |________________\n     1   -3    2    0\n```\n\n### 4단계: 몫 확인\n조립제법 결과에서:\n- 몫: $x^2 - 3x + 2$\n- 나머지: $0$ (나누어떨어짐 확인)\n\n### 검증\n몫을 인수분해하면:\n$$x^2 - 3x + 2 = (x-1)(x-2)$$\n\n따라서:\n$$P(x) = (x-1)(x^2-3x+2) = (x-1)(x-1)(x-2) = (x-1)^2(x-2)$$\n\n확인: $P(1) = 0$ ✓\n\n---\n\n**최종 답:** $a = 5$, 몫 = $x^2 - 3x + 2$\n\n**코칭 한마디:** 왜냐하면 \"다항식이 $(x-k)$로 나누어떨어진다\"는 조건은 인수정리를 사용하라는 신호이며, 이를 통해 $P(k)=0$이라는 등식을 세워 미지수를 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13947,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_C02",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "이차부등식의 풀이",
+        "이심률",
+        "연립이차방정식 (대입·소거)",
+        "이차곡선 위 한 점에서의 접선",
+        "등차수열 일반항·합 (수학1 재확인)"
+      ],
+      "expected_tools": [
+        "이차부등식의 풀이"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 이차부등식 풀이\n\n## 단계 1: 이차방정식 풀기\n먼저 $x^2 - 4x - 5 = 0$을 풀어 경계값을 구합니다.\n\n인수분해:\n$$x^2 - 4x - 5 = (x-5)(x+1) = 0$$\n\n따라서 $x = 5$ 또는 $x = -1$\n\n## 단계 2: 이차함수의 그래프 개형 파악\n$f(x) = x^2 - 4x - 5$는 최고차항의 계수가 1(양수)이므로 아래로 볼록한 포물선입니다.\n\n## 단계 3: 부등식의 의미 해석\n$x^2 - 4x - 5 \\le 0$은 이차함수의 값이 0 이하인 $x$의 범위를 구하는 것입니다.\n\n아래로 볼록한 포물선이 x축과 만나는 두 점 사이에서 함수값이 음수(또는 0)입니다.\n\n## 단계 4: 해의 범위 결정\n- 두 근: $x = -1, 5$\n- 부등호가 $\\le$ (등호 포함)이므로 경계값 포함\n- 아래로 볼록한 포물선이므로 두 근 **사이**에서 $f(x) \\le 0$\n\n$$\\boxed{-1 \\le x \\le 5}$$\n\n---\n\n**최종 답**: $-1 \\le x \\le 5$\n\n**코칭 한마디**: 이차부등식을 푸는 이유는, 이차함수의 그래프가 x축의 위쪽에 있는지 아래쪽에 있는지를 판단하여 실생활 문제(최댓값, 최솟값, 범위 제한 등)를 해결할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12782,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_C03",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "복소수의 절댓값과 켤레",
+        "복소수의 기본 연산",
+        "코시-슈바르츠 부등식 (2변수)",
+        "삼각함수의 합성 (a sin + b cos)",
+        "리만합과 정적분의 변환"
+      ],
+      "expected_tools": [
+        "복소수의 기본 연산",
+        "복소수의 절댓값과 켤레"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "이 문제를 단계적으로 풀어보겠습니다.\n\n## 1단계: 복소수의 곱셈 계산\n\n$z = (2+i)(1-3i)$를 전개합니다.\n\n$z = 2 \\cdot 1 + 2 \\cdot (-3i) + i \\cdot 1 + i \\cdot (-3i)$\n\n$z = 2 - 6i + i - 3i^2$\n\n$i^2 = -1$ 이므로:\n\n$z = 2 - 6i + i - 3(-1)$\n\n$z = 2 - 6i + i + 3$\n\n$z = 5 - 5i$\n\n## 2단계: 복소수의 절댓값 구하기\n\n복소수 $z = a + bi$의 절댓값은 $|z| = \\sqrt{a^2 + b^2}$입니다.\n\n$z = 5 - 5i$이므로:\n\n$|z| = \\sqrt{5^2 + (-5)^2}$\n\n$|z| = \\sqrt{25 + 25}$\n\n$|z| = \\sqrt{50}$\n\n$|z| = \\sqrt{25 \\times 2}$\n\n$|z| = 5\\sqrt{2}$\n\n## 별해: 절댓값의 곱셈 성질 이용\n\n복소수의 절댓값은 $|z_1 \\cdot z_2| = |z_1| \\cdot |z_2|$의 성질이 있습니다.\n\n$|2+i| = \\sqrt{2^2 + 1^2} = \\sqrt{5}$\n\n$|1-3i| = \\sqrt{1^2 + (-3)^2} = \\sqrt{10}$\n\n따라서:\n$|z| = |2+i| \\cdot |1-3i| = \\sqrt{5} \\cdot \\sqrt{10} = \\sqrt{50} = 5\\sqrt{2}$\n\n---\n\n**최종 답**: $5\\sqrt{2}$\n\n**코칭 한마디**: 이유는 복소수의 절댓값 곱셈 성질 $|z_1 z_2| = |z_1||z_2|$를 사용하면 복잡한 전개 없이 각각의 절댓값만 구해 곱하면 되어 계산 실수를 줄일 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13776,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_C04",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 3,
+      "retrieved_tools": [
+        "역함수",
+        "매개변수 미분",
+        "sin x / x 의 극한",
+        "곡선의 길이 (현장적분)",
+        "음함수 미분"
+      ],
+      "expected_tools": [
+        "산술-기하 평균 부등식",
+        "코시-슈바르츠 부등식 (2변수)"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "이 문제를 단계적으로 풀어보겠습니다.\n\n## 문제 분석\n양수 $x, y$가 $x + y = 4$를 만족할 때, $\\frac{1}{x} + \\frac{4}{y}$의 최솟값을 구해야 합니다.\n\n## 풀이\n\n### 방법 1: 코시-슈바르츠 부등식 (산술-조화 평균 응용)\n\n제약조건 $x + y = 4$와 목적식 $\\frac{1}{x} + \\frac{4}{y}$를 곱하면:\n\n$$\\left(\\frac{1}{x} + \\frac{4}{y}\\right)(x + y) = \\frac{1}{x} \\cdot x + \\frac{1}{x} \\cdot y + \\frac{4}{y} \\cdot x + \\frac{4}{y} \\cdot y$$\n\n$$= 1 + \\frac{y}{x} + \\frac{4x}{y} + 4 = 5 + \\frac{y}{x} + \\frac{4x}{y}$$\n\n산술-기하 평균 부등식에 의해:\n$$\\frac{y}{x} + \\frac{4x}{y} \\geq 2\\sqrt{\\frac{y}{x} \\cdot \\frac{4x}{y}} = 2\\sqrt{4} = 4$$\n\n따라서:\n$$\\left(\\frac{1}{x} + \\frac{4}{y}\\right) \\cdot 4 \\geq 5 + 4 = 9$$\n\n$$\\frac{1}{x} + \\frac{4}{y} \\geq \\frac{9}{4}$$\n\n### 등호 조건 확인\n\n등호는 $\\frac{y}{x} = \\frac{4x}{y}$일 때 성립합니다.\n\n$$y^2 = 4x^2$$\n$$y = 2x$$ (양수 조건)\n\n$x + y = 4$에 대입하면:\n$$x + 2x = 4$$\n$$x = \\frac{4}{3}, \\quad y = \\frac{8}{3}$$\n\n검증:\n$$\\frac{1}{x} + \\frac{4}{y} = \\frac{1}{\\frac{4}{3}} + \\frac{4}{\\frac{8}{3}} = \\frac{3}{4} + \\frac{12}{8} = \\frac{3}{4} + \\frac{3}{2} = \\frac{3}{4} + \\frac{6}{4} = \\frac{9}{4}$$\n\n### 방법 2: 미분을 이용한 검증\n\n$y = 4 - x$를 대입하면:\n$$f(x) = \\frac{1}{x} + \\frac{4}{4-x}, \\quad 0 < x < 4$$\n\n$$f'(x) = -\\frac{1}{x^2} + \\frac{4}{(4-x)^2}$$\n\n$f'(x) = 0$일 때:\n$$\\frac{4}{(4-x)^2} = \\frac{1}{x^2}$$\n$$4x^2 = (4-x)^2$$\n$$2x = 4-x$$ (양수 조건)\n$$x = \\frac{4}{3}$$\n\n이는 위에서 구한 값과 일치합니다.\n\n최종 답: $\\dfrac{9}{4}$\n\n코칭 한마디: 왜냐하면 제약조건과 목적식을 곱한 후 산술-기하 평균을 적용하는 것은 \"가중 평균의 최적화\"에서 자주 등장하는 강력한 테크닉이며, 특히 계수의 비(1:4)와 변수의 비(x:y=1:2)가 정확히 대응될 때 최솟값이 나타나기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 17222,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_C05",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "인수분해 기본 패턴",
+        "중복순열 nΠr",
+        "이항정리",
+        "중복조합 nHr",
+        "이항계수 항등식 (대칭·합)"
+      ],
+      "expected_tools": [
+        "이항정리"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "이 문제를 단계적으로 풀어보겠습니다.\n\n## 문제 분석\n$(2x - 1)^5$를 전개했을 때 $x^2$의 계수를 구해야 합니다.\n\n## 풀이\n\n**1단계: 이항정리 적용**\n\n이항정리에 의해:\n$$(a + b)^n = \\sum_{r=0}^{n} \\binom{n}{r} a^{n-r} b^r$$\n\n여기서 $a = 2x$, $b = -1$, $n = 5$를 대입하면:\n\n$$(2x - 1)^5 = \\sum_{r=0}^{5} \\binom{5}{r} (2x)^{5-r} (-1)^r$$\n\n**2단계: 일반항 구하기**\n\n전개식의 일반항은:\n$$\\binom{5}{r} (2x)^{5-r} (-1)^r = \\binom{5}{r} \\cdot 2^{5-r} \\cdot x^{5-r} \\cdot (-1)^r$$\n\n**3단계: $x^2$항 찾기**\n\n$x^2$항이 되려면 $x$의 지수가 2여야 하므로:\n$$5 - r = 2$$\n$$r = 3$$\n\n**4단계: 계수 계산**\n\n$r = 3$일 때의 계수:\n$$\\binom{5}{3} \\cdot 2^{5-3} \\cdot (-1)^3$$\n\n$$= \\binom{5}{3} \\cdot 2^2 \\cdot (-1)$$\n\n$$= \\frac{5!}{3! \\cdot 2!} \\cdot 4 \\cdot (-1)$$\n\n$$= \\frac{5 \\times 4}{2 \\times 1} \\cdot 4 \\cdot (-1)$$\n\n$$= 10 \\cdot 4 \\cdot (-1)$$\n\n$$= -40$$\n\n최종 답: -40\n\n코칭 한마디: 이항정리를 사용하는 이유는 $(a+b)^n$ 형태의 거듭제곱을 일일이 곱셈하지 않고도 각 항의 계수를 조합을 이용해 체계적으로 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12159,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M1_01",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "밑변환 공식",
+        "로그함수의 미분",
+        "로그의 연산법칙",
+        "로그의 정의와 기본 성질",
+        "로그함수의 성질"
+      ],
+      "expected_tools": [
+        "로그의 연산법칙"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 문제를 단계적으로 풀어보겠습니다.\n\n## 문제\n$\\log_2 5 + \\log_2 8 - \\log_2 10$의 값을 구하시오.\n\n## 풀이\n\n**1단계: 적절한 로그 연산법칙 선택**\n\n이 문제는 **로그의 연산법칙 (L4)**을 사용합니다.\n- 덧셈: $\\log_a M + \\log_a N = \\log_a (M \\times N)$\n- 뺄셈: $\\log_a M - \\log_a N = \\log_a \\frac{M}{N}$\n\n**2단계: 로그의 덧셈 법칙 적용**\n\n$\\log_2 5 + \\log_2 8 = \\log_2 (5 \\times 8) = \\log_2 40$\n\n**3단계: 로그의 뺄셈 법칙 적용**\n\n$\\log_2 40 - \\log_2 10 = \\log_2 \\frac{40}{10} = \\log_2 4$\n\n**4단계: 계산**\n\n$\\log_2 4 = \\log_2 2^2 = 2$\n\n(왜냐하면 $2^2 = 4$이므로, 밑이 2인 로그에서 4는 2의 지수 2를 의미합니다)\n\n## 검산\n$\\log_2 5 + \\log_2 8 - \\log_2 10$\n$= \\log_2 5 + 3 - \\log_2 10$ (∵ $\\log_2 8 = \\log_2 2^3 = 3$)\n$= \\log_2 \\frac{5 \\times 8}{10}$\n$= \\log_2 4 = 2$ ✓\n\n---\n\n**최종 답: 2**\n\n**코칭 한마디: 왜냐하면 같은 밑을 가진 로그들의 덧셈과 뺄셈은 곱셈과 나눗셈으로 합칠 수 있어서, 복잡해 보이는 식을 간단한 하나의 로그로 만들 수 있기 때문입니다.**",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12332,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M1_02",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "로그함수의 성질",
+        "매개변수 미분",
+        "일차방정식의 풀이",
+        "인수분해 기본 패턴"
+      ],
+      "expected_tools": [
+        "지수·로그방정식과 부등식"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "이 문제를 단계적으로 풀어보겠습니다.\n\n## 단계 1: 치환을 통한 식 변형\n\n주어진 방정식: $4^x - 3 \\cdot 2^x + 2 = 0$\n\n$4^x = (2^2)^x = (2^x)^2$ 임을 이용하여, $t = 2^x$ (단, $t > 0$)로 치환하면:\n\n$$t^2 - 3t + 2 = 0$$\n\n## 단계 2: 이차방정식 풀이 (인수분해)\n\n$t^2 - 3t + 2 = 0$을 인수분해하면:\n\n$$(t-1)(t-2) = 0$$\n\n따라서:\n- $t = 1$ 또는 $t = 2$\n\n## 단계 3: 원래 변수로 복원\n\n$t = 2^x$이므로:\n\n**경우 1**: $2^x = 1$\n- $2^x = 2^0$\n- $x = 0$\n\n**경우 2**: $2^x = 2$\n- $2^x = 2^1$\n- $x = 1$\n\n## 단계 4: 검증\n\n- $x = 0$일 때: $4^0 - 3 \\cdot 2^0 + 2 = 1 - 3 + 2 = 0$ ✓\n- $x = 1$일 때: $4^1 - 3 \\cdot 2^1 + 2 = 4 - 6 + 2 = 0$ ✓\n\n## 단계 5: 모든 실근의 합\n\n모든 실근의 합 = $0 + 1 = 1$\n\n---\n\n**최종 답: 1**\n\n**코칭 한마디: 왜냐하면 지수방정식에서 $2^x$를 하나의 문자로 치환하면 복잡한 지수식이 우리가 잘 아는 이차방정식으로 바뀌어 인수분해 같은 기본 도구를 쓸 수 있기 때문입니다.**",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 11846,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M1_03",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 3,
+      "retrieved_tools": [
+        "반각·차수 낮추기 공식",
+        "sin x / x 의 극한",
+        "배각 공식",
+        "삼각방정식의 풀이",
+        "(1-cos x)/x² 극한"
+      ],
+      "expected_tools": [
+        "삼각함수 기본항등식",
+        "삼각방정식의 풀이"
+      ],
+      "hit_top3": false,
+      "hit_top5": true,
+      "reasoner_text": "주어진 방정식을 단계적으로 풀어보겠습니다.\n\n## 1단계: 방정식 분석 및 인수분해\n\n주어진 방정식: $2\\sin^2\\theta - 3\\sin\\theta + 1 = 0$\n\n$\\sin\\theta = t$로 치환하면:\n$$2t^2 - 3t + 1 = 0$$\n\n인수분해하면:\n$$(2t-1)(t-1) = 0$$\n\n따라서:\n- $t = \\frac{1}{2}$ 또는 $t = 1$\n- 즉, $\\sin\\theta = \\frac{1}{2}$ 또는 $\\sin\\theta = 1$\n\n## 2단계: 각 경우의 해 구하기\n\n**경우 1:** $\\sin\\theta = \\frac{1}{2}$\n\n$0 \\le \\theta < 2\\pi$ 범위에서:\n- $\\theta = \\frac{\\pi}{6}$ (1사분면)\n- $\\theta = \\pi - \\frac{\\pi}{6} = \\frac{5\\pi}{6}$ (2사분면)\n\n**경우 2:** $\\sin\\theta = 1$\n\n$0 \\le \\theta < 2\\pi$ 범위에서:\n- $\\theta = \\frac{\\pi}{2}$\n\n## 3단계: 모든 해 확인\n\n방정식의 모든 해:\n$$\\theta = \\frac{\\pi}{6}, \\frac{\\pi}{2}, \\frac{5\\pi}{6}$$\n\n## 4단계: 해의 합 계산\n\n$$\\text{해의 합} = \\frac{\\pi}{6} + \\frac{\\pi}{2} + \\frac{5\\pi}{6}$$\n\n통분하면:\n$$= \\frac{\\pi}{6} + \\frac{3\\pi}{6} + \\frac{5\\pi}{6}$$\n\n$$= \\frac{\\pi + 3\\pi + 5\\pi}{6}$$\n\n$$= \\frac{9\\pi}{6} = \\frac{3\\pi}{2}$$\n\n---\n\n**최종 답:** $\\dfrac{3\\pi}{2}$\n\n**코칭 한마디:** 삼각방정식은 $\\sin\\theta$를 하나의 변수로 보고 대수방정식으로 풀어낸 뒤, 주어진 범위에서 단위원을 떠올려 모든 해를 빠짐없이 찾아야 하는 이유는, 삼각함수의 주기성 때문에 같은 함숫값이 여러 각도에서 나타나기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13259,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M1_04",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "부분분수 전개와 중간소거 (telescoping)",
+        "이항정리",
+        "상용로그의 정수부와 소수부",
+        "중복조합 nHr",
+        "수학적 귀납법"
+      ],
+      "expected_tools": [
+        "Σ 분해 (선형성)",
+        "Σk²·Σk³ 공식"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 단계적으로 풀이하겠습니다.\n\n## 문제 분석\n$\\sum_{k=1}^{10} (2k - 1)$ 은 첫째항이 1, 공차가 2인 등차수열의 첫 10개 항의 합입니다.\n\n## 풀이 과정\n\n### 방법 1: 직접 계산\n각 항을 나열하면:\n- $k=1$: $2(1)-1 = 1$\n- $k=2$: $2(2)-1 = 3$\n- $k=3$: $2(3)-1 = 5$\n- $k=4$: $2(4)-1 = 7$\n- $k=5$: $2(5)-1 = 9$\n- $k=6$: $2(6)-1 = 11$\n- $k=7$: $2(7)-1 = 13$\n- $k=8$: $2(8)-1 = 15$\n- $k=9$: $2(9)-1 = 17$\n- $k=10$: $2(10)-1 = 19$\n\n따라서 $1+3+5+7+9+11+13+15+17+19 = 100$\n\n### 방법 2: 등차수열의 합 공식 이용\n첫째항 $a=1$, 공차 $d=2$, 항의 개수 $n=10$\n\n등차수열의 합: $S_n = \\frac{n(a+l)}{2}$ (단, $l$은 마지막 항)\n\n마지막 항: $l = 2(10)-1 = 19$\n\n$S_{10} = \\frac{10(1+19)}{2} = \\frac{10 \\times 20}{2} = 100$\n\n### 방법 3: 시그마 공식 이용\n$$\\sum_{k=1}^{10} (2k-1) = 2\\sum_{k=1}^{10} k - \\sum_{k=1}^{10} 1$$\n\n$$= 2 \\cdot \\frac{10 \\cdot 11}{2} - 10$$\n\n$$= 110 - 10 = 100$$\n\n**최종 답: 100**\n\n**코칭 한마디:** 이유는 홀수의 합은 항상 (항의 개수)²이 되는 아름다운 성질이 있고, 여기서는 10² = 100이 됩니다. 이런 패턴을 기억하면 빠르게 검산할 수 있어요!",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12169,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M1_05",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "시그마의 기본 성질",
+        "무한등비급수의 합",
+        "Σk²·Σk³ 공식",
+        "부분분수 전개와 중간소거 (telescoping)",
+        "로피탈 정리"
+      ],
+      "expected_tools": [
+        "무한등비급수의 합"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 무한급수 문제 풀이\n\n## 문제 분석\n주어진 급수: $\\sum_{n=1}^{\\infty} \\dfrac{1}{3^n}$\n\n이 급수를 자세히 보면:\n$$\\sum_{n=1}^{\\infty} \\dfrac{1}{3^n} = \\dfrac{1}{3^1} + \\dfrac{1}{3^2} + \\dfrac{1}{3^3} + \\cdots = \\dfrac{1}{3} + \\dfrac{1}{9} + \\dfrac{1}{27} + \\cdots$$\n\n## 급수의 형태 파악\n이것은 **등비급수** 형태입니다.\n- 첫째항: $a = \\dfrac{1}{3}$\n- 공비: $r = \\dfrac{1}{3}$ (각 항이 이전 항에 $\\dfrac{1}{3}$을 곱한 형태)\n\n확인: $\\dfrac{1}{9} = \\dfrac{1}{3} \\times \\dfrac{1}{3}$, $\\dfrac{1}{27} = \\dfrac{1}{9} \\times \\dfrac{1}{3}$ ✓\n\n## 무한등비급수의 합 공식 적용\n\n**무한등비급수의 합 공식 (L5):**\n$$\\sum_{n=1}^{\\infty} ar^{n-1} = \\dfrac{a}{1-r} \\quad (|r| < 1 \\text{일 때 수렴})$$\n\n또는 다르게 표현하면:\n$$\\sum_{n=1}^{\\infty} ar^n = \\dfrac{ar}{1-r} \\quad (|r| < 1 \\text{일 때 수렴})$$\n\n## 수렴성 확인\n$|r| = \\left|\\dfrac{1}{3}\\right| = \\dfrac{1}{3} < 1$ \n\n따라서 이 급수는 수렴합니다. ✓\n\n## 합 계산\n우리 급수는 $\\sum_{n=1}^{\\infty} \\dfrac{1}{3^n} = \\sum_{n=1}^{\\infty} \\left(\\dfrac{1}{3}\\right)^n$ 형태이므로:\n\n$$S = \\dfrac{ar}{1-r} = \\dfrac{\\dfrac{1}{3}}{1-\\dfrac{1}{3}} = \\dfrac{\\dfrac{1}{3}}{\\dfrac{2}{3}} = \\dfrac{1}{3} \\times \\dfrac{3}{2} = \\dfrac{1}{2}$$\n\n## 검증\n처음 몇 항의 부분합으로 확인:\n- $S_1 = \\dfrac{1}{3} \\approx 0.333$\n- $S_2 = \\dfrac{1}{3} + \\dfrac{1}{9} = \\dfrac{4}{9} \\approx 0.444$\n- $S_3 = \\dfrac{4}{9} + \\dfrac{1}{27} = \\dfrac{13}{27} \\approx 0.481$\n\n$0.5$에 가까워지고 있음을 확인할 수 있습니다. ✓\n\n---\n\n**최종 답:** $\\dfrac{1}{2}$\n\n**코칭 한마디:** 왜냐하면 무한등비급수 공식을 사용하는 이유는, 각 항이 일정한 비율로 줄어드는 패턴을 발견했을 때 무한히 더하는 복잡한 계산을 단 하나의 공식으로 정확하게 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 17412,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M2_01",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "사잇값 정리 (수학2)",
+        "일차함수의 그래프",
+        "확률변수의 분산·표준편차"
+      ],
+      "expected_tools": [
+        "0/0 꼴 — 인수분해·유리화"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "이 문제를 단계적으로 풀어보겠습니다.\n\n## 문제 분석\n\n$\\lim_{x \\to 2} \\dfrac{x^2 - 4}{x - 2}$를 구해야 합니다.\n\n$x = 2$를 직접 대입하면 $\\dfrac{4-4}{2-2} = \\dfrac{0}{0}$ (불정형)이 되므로, 식을 변형해야 합니다.\n\n## 풀이 과정\n\n**Step 1**: 분자를 인수분해합니다.\n\n$$x^2 - 4 = (x+2)(x-2)$$\n\n**Step 2**: 극한식을 다시 쓰면\n\n$$\\lim_{x \\to 2} \\dfrac{x^2 - 4}{x - 2} = \\lim_{x \\to 2} \\dfrac{(x+2)(x-2)}{x - 2}$$\n\n**Step 3**: $x \\to 2$일 때, $x \\neq 2$이므로 $(x-2)$를 약분할 수 있습니다.\n\n$$\\lim_{x \\to 2} \\dfrac{(x+2)(x-2)}{x - 2} = \\lim_{x \\to 2} (x+2)$$\n\n**Step 4**: 이제 $x = 2$를 대입할 수 있습니다.\n\n$$\\lim_{x \\to 2} (x+2) = 2 + 2 = 4$$\n\n## 검증\n\n원래 함수 $f(x) = \\dfrac{x^2-4}{x-2}$는 $x=2$에서 정의되지 않지만, $x \\neq 2$인 모든 점에서 $f(x) = x+2$와 같습니다. 따라서 극한값은 4입니다.\n\n---\n\n**최종 답: 4**\n\n**코칭 한마디: 왜냐하면 $\\dfrac{0}{0}$ 꼴의 불정형이 나오면 분자를 인수분해하여 분모와 공통인수를 약분함으로써 극한을 계산할 수 있는 형태로 바꿀 수 있기 때문입니다.**",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12195,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M2_02",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "일차부등식의 풀이",
+        "사잇값 정리 (수학2)",
+        "로그함수의 성질",
+        "이차방정식 근의 분포",
+        "함수의 극한 (직관적 정의)"
+      ],
+      "expected_tools": [
+        "함수의 연속",
+        "0/0 꼴 — 인수분해·유리화"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 문제를 단계적으로 풀어보겠습니다.\n\n## 문제 분석\n함수 $f(x)$가 $x=1$에서 연속이 되려면, 다음 조건을 만족해야 합니다:\n$$\\lim_{x \\to 1} f(x) = f(1) = a$$\n\n## 단계별 풀이\n\n**Step 1: $x \\neq 1$일 때 함수 간단히 하기**\n\n$x \\neq 1$일 때:\n$$f(x) = \\frac{x^2 - 1}{x - 1}$$\n\n분자를 인수분해하면:\n$$f(x) = \\frac{(x+1)(x-1)}{x-1}$$\n\n$x \\neq 1$이므로 $(x-1)$을 약분할 수 있습니다:\n$$f(x) = x + 1 \\quad (x \\neq 1)$$\n\n**Step 2: 극한값 구하기**\n\n$$\\lim_{x \\to 1} f(x) = \\lim_{x \\to 1} (x+1) = 1 + 1 = 2$$\n\n**Step 3: 연속 조건 적용**\n\n함수가 $x=1$에서 연속이려면:\n$$\\lim_{x \\to 1} f(x) = f(1)$$\n\n따라서:\n$$2 = a$$\n\n**검증:**\n- $x \\to 1^-$일 때: $\\lim_{x \\to 1^-} (x+1) = 2$\n- $x \\to 1^+$일 때: $\\lim_{x \\to 1^+} (x+1) = 2$\n- $f(1) = a = 2$\n\n모든 조건이 만족됩니다.\n\n---\n\n**최종 답:** $a = 2$\n\n**코칭 한마디:** 왜냐하면 연속성은 \"그래프가 끊어지지 않는다\"는 의미이고, 이를 수식으로 표현하면 \"함수값 = 극한값\"이 되어야 하므로, 불연속점 근처의 극한을 먼저 구한 후 그 값과 함수값을 일치시키는 것입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12890,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M2_03",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 3,
+      "retrieved_tools": [
+        "최적화 (자유 극값)",
+        "이차방정식 근의 분포",
+        "사잇값 정리 (수학2)",
+        "극값 — 이계도함수 부호 (수학2 한정 다항함수)",
+        "닫힌구간 최댓·최솟값 (다항함수)"
+      ],
+      "expected_tools": [
+        "극값 — 일계도함수 부호변화",
+        "다항함수의 미분 (멱법칙)"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 함수의 극댓값을 구하기 위해 단계적으로 풀이하겠습니다.\n\n## 1단계: 1계 도함수 구하기\n\n$f(x) = x^3 - 3x^2 - 9x + 5$\n\n$f'(x) = 3x^2 - 6x - 9$\n\n## 2단계: 극값 후보 찾기 (임계점)\n\n극값이 존재하려면 $f'(x) = 0$이어야 합니다.\n\n$3x^2 - 6x - 9 = 0$\n\n$x^2 - 2x - 3 = 0$\n\n$(x - 3)(x + 1) = 0$\n\n따라서 $x = -1$ 또는 $x = 3$\n\n## 3단계: 극대/극소 판정 (이계도함수 이용)\n\n$f''(x) = 6x - 6$\n\n**$x = -1$일 때:**\n- $f''(-1) = 6(-1) - 6 = -12 < 0$\n- 이계도함수가 음수이므로 **극댓값**을 가집니다.\n\n**$x = 3$일 때:**\n- $f''(3) = 6(3) - 6 = 12 > 0$\n- 이계도함수가 양수이므로 극솟값을 가집니다.\n\n## 4단계: 극댓값 계산\n\n$x = -1$에서 극댓값을 가지므로:\n\n$f(-1) = (-1)^3 - 3(-1)^2 - 9(-1) + 5$\n\n$= -1 - 3 + 9 + 5$\n\n$= 10$\n\n## 검증 (부호 변화 확인)\n\n- $x < -1$: $f'(x) > 0$ (증가)\n- $-1 < x < 3$: $f'(x) < 0$ (감소)\n- $x > 3$: $f'(x) > 0$ (증가)\n\n$x = -1$에서 증가→감소로 변하므로 극댓값이 맞습니다.\n\n---\n\n**최종 답: 10**\n\n**코칭 한마디:** 이유는 극값 문제에서 이계도함수 부호 판정법을 사용하면 한 번의 미분 추가만으로 극대/극소를 명확히 구별할 수 있어, 부호표를 그리는 것보다 빠르고 정확하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 14348,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M2_04",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "곡선의 길이 (현장적분)",
+        "일차함수의 그래프",
+        "함수의 평균값 (적분)",
+        "닫힌구간 최댓·최솟값 (다항함수)",
+        "직선의 방정식 (점-기울기·절편·일반형)"
+      ],
+      "expected_tools": [
+        "두 곡선 사이 넓이",
+        "곡선과 x축 사이 넓이"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 곡선과 직선으로 둘러싸인 넓이 구하기\n\n## 1단계: 교점 찾기\n\n곡선 $y = x^2$와 직선 $y = 2x$의 교점을 구합니다.\n\n$$x^2 = 2x$$\n$$x^2 - 2x = 0$$\n$$x(x-2) = 0$$\n$$x = 0 \\text{ 또는 } x = 2$$\n\n교점: $(0, 0)$과 $(2, 4)$\n\n## 2단계: 위아래 관계 확인\n\n$0 < x < 2$ 구간에서 어느 함수가 위에 있는지 확인합니다.\n\n$x = 1$일 때:\n- 직선: $y = 2(1) = 2$\n- 곡선: $y = 1^2 = 1$\n\n따라서 $0 < x < 2$에서 **직선이 곡선보다 위**에 있습니다.\n\n## 3단계: 넓이 계산\n\n둘러싸인 부분의 넓이는:\n\n$$S = \\int_0^2 (2x - x^2)dx$$\n\n$$= \\left[x^2 - \\frac{x^3}{3}\\right]_0^2$$\n\n$$= \\left(2^2 - \\frac{2^3}{3}\\right) - (0 - 0)$$\n\n$$= 4 - \\frac{8}{3}$$\n\n$$= \\frac{12}{3} - \\frac{8}{3}$$\n\n$$= \\frac{4}{3}$$\n\n---\n\n**최종 답**: $\\frac{4}{3}$\n\n**코칭 한마디**: 왜냐하면 두 곡선으로 둘러싸인 넓이는 \"위 함수 - 아래 함수\"를 적분해야 정확한 넓이를 구할 수 있기 때문입니다. 교점을 먼저 찾아 적분 구간을 정하고, 어느 함수가 위에 있는지 확인하는 것이 핵심입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 11936,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_M2_05",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "다항함수 적분 (멱적분)",
+        "삼각함수 적분 (기본)",
+        "평균값 정리 (기본)",
+        "부정적분의 정의",
+        "닫힌구간 최댓·최솟값 (다항함수)"
+      ],
+      "expected_tools": [
+        "정적분의 정의 (FTC)",
+        "다항함수 적분 (멱적분)"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 정적분 문제를 단계별로 풀이하겠습니다.\n\n## 문제 분석\n$\\displaystyle\\int_0^2 (3x^2 - 4x + 1)\\, dx$ 를 계산해야 합니다.\n\n## 풀이 과정\n\n### 1단계: 부정적분 구하기\n다항함수의 적분 공식을 사용합니다.\n$$\\int x^n dx = \\frac{x^{n+1}}{n+1} + C$$\n\n각 항을 적분하면:\n$$\\int (3x^2 - 4x + 1)\\, dx = \\int 3x^2\\, dx - \\int 4x\\, dx + \\int 1\\, dx$$\n\n$$= 3 \\cdot \\frac{x^3}{3} - 4 \\cdot \\frac{x^2}{2} + x + C$$\n\n$$= x^3 - 2x^2 + x + C$$\n\n### 2단계: 정적분 계산 (미적분학의 기본정리 적용)\n$$\\int_0^2 (3x^2 - 4x + 1)\\, dx = \\left[x^3 - 2x^2 + x\\right]_0^2$$\n\n상한 $x=2$ 일 때:\n$$= (2)^3 - 2(2)^2 + (2) = 8 - 8 + 2 = 2$$\n\n하한 $x=0$ 일 때:\n$$= (0)^3 - 2(0)^2 + (0) = 0$$\n\n### 3단계: 최종 계산\n$$\\int_0^2 (3x^2 - 4x + 1)\\, dx = 2 - 0 = 2$$\n\n---\n\n**최종 답: 2**\n\n**코칭 한마디: 이유는 다항함수의 정적분에서는 멱적분 공식을 사용하면 각 항의 차수를 1씩 올리고 새 차수로 나누어 계산할 수 있어, 복잡한 식도 기계적으로 빠르게 처리할 수 있기 때문입니다.**",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 11328,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_P01",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "이항분포 B(n,p)",
+        "이항분포의 정규근사",
+        "전확률 정리",
+        "정규분포 N(μ, σ²)",
+        "조건부확률"
+      ],
+      "expected_tools": [
+        "이항분포 B(n,p)"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 문제를 단계적으로 풀이하겠습니다.\n\n## 문제 분석\n확률변수 $X \\sim B(10, 0.3)$이므로\n- $n = 10$ (시행 횟수)\n- $p = 0.3$ (성공 확률)\n- $X = 3$ (성공 횟수)\n\n## 풀이 과정\n\n**1단계: 이항분포 확률질량함수 적용**\n\n이항분포 $B(n, p)$에서 확률변수 $X$가 정확히 $k$번 성공할 확률은:\n\n$$P(X = k) = \\binom{n}{k} p^k (1-p)^{n-k}$$\n\n**2단계: 값 대입**\n\n$$P(X = 3) = \\binom{10}{3} (0.3)^3 (0.7)^7$$\n\n**3단계: 이항계수 계산**\n\n$$\\binom{10}{3} = \\frac{10!}{3! \\cdot 7!} = \\frac{10 \\times 9 \\times 8}{3 \\times 2 \\times 1} = \\frac{720}{6} = 120$$\n\n**4단계: 확률값 계산**\n\n$$(0.3)^3 = 0.027$$\n$$(0.7)^7 = 0.0823543$$\n\n$$P(X = 3) = 120 \\times 0.027 \\times 0.0823543$$\n$$= 120 \\times 0.002223566$$\n$$= 0.26682792$$\n$$\\approx 0.2668$$\n\n---\n\n최종 답: $P(X = 3) = \\binom{10}{3}(0.3)^3(0.7)^7 \\approx 0.2668$\n\n코칭 한마디: 이항분포 공식을 사용하는 이유는, 독립적으로 반복되는 시행에서 정확히 k번 성공할 확률을 계산할 때 \"몇 번째에 성공하는지\"는 중요하지 않고 \"총 몇 번 성공하는지\"만 중요하기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 11800,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_P02",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "표준정규분포표 활용",
+        "표준화 Z = (X-μ)/σ",
+        "정규분포 N(μ, σ²)",
+        "표본평균의 분포",
+        "모평균의 신뢰구간"
+      ],
+      "expected_tools": [
+        "표준정규분포표 활용"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 문제 풀이\n\n## 주어진 정보\n- 확률변수 $Z \\sim N(0, 1)$ (표준정규분포)\n- 구하는 값: $P(0 \\le Z \\le 1.96)$\n\n## 단계별 풀이\n\n### 1단계: 표준정규분포의 성질 확인\n$Z \\sim N(0, 1)$이므로 이미 표준정규분포를 따릅니다.\n- 평균 $\\mu = 0$\n- 표준편차 $\\sigma = 1$\n\n### 2단계: 표준정규분포표 활용 전략\n표준정규분포표는 일반적으로 $P(0 \\le Z \\le z)$ 또는 $P(Z \\le z)$ 형태로 제공됩니다.\n\n우리가 구하려는 것이 정확히 $P(0 \\le Z \\le 1.96)$ 형태이므로, 표에서 $z = 1.96$에 해당하는 값을 찾으면 됩니다.\n\n### 3단계: 표준정규분포표에서 값 찾기\n표준정규분포표에서 $z = 1.96$일 때:\n\n$$P(0 \\le Z \\le 1.96) = 0.4750$$\n\n### 4단계: 검증 (참고)\n만약 누적분포함수표 $P(Z \\le z)$를 사용한다면:\n$$P(0 \\le Z \\le 1.96) = P(Z \\le 1.96) - P(Z \\le 0)$$\n$$= 0.9750 - 0.5000 = 0.4750$$\n\n표준정규분포의 대칭성에 의해:\n$$P(Z \\le 0) = 0.5$$\n\n---\n\n**최종 답: 0.4750 (또는 0.475)**\n\n**코칭 한마디: 왜냐하면 표준정규분포표는 확률계산을 빠르고 정확하게 하기 위한 도구이며, $z = 1.96$은 특히 95% 신뢰구간에서 자주 사용되는 중요한 값이기 때문입니다.**",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13530,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_P03",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "중복순열 nΠr",
+        "중복조합 nHr",
+        "조합의 분할 정리",
+        "중복순열·중복조합·같은 것 포함",
+        "원순열"
+      ],
+      "expected_tools": [
+        "순열·조합 기본"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 문제 풀이: 조합의 수 구하기\n\n## 문제 분석\n서로 다른 6개에서 4개를 뽑는 조합의 수를 구하는 문제입니다.\n- 서로 다른 6개의 원소\n- 4개를 선택\n- 순서 상관없음 (조합)\n\n## 풀이 과정\n\n### 1단계: 적절한 공식 선택\n이 문제는 **기본 조합(Combination)** 문제입니다.\n서로 다른 n개에서 r개를 뽑는 조합의 수는:\n\n$$_nC_r = \\binom{n}{r} = \\frac{n!}{r!(n-r)!}$$\n\n### 2단계: 값 대입\nn = 6, r = 4를 대입하면:\n\n$$_6C_4 = \\binom{6}{4} = \\frac{6!}{4!(6-4)!} = \\frac{6!}{4! \\times 2!}$$\n\n### 3단계: 계산\n$$_6C_4 = \\frac{6 \\times 5 \\times 4!}{4! \\times 2 \\times 1}$$\n\n$$= \\frac{6 \\times 5}{2 \\times 1}$$\n\n$$= \\frac{30}{2}$$\n\n$$= 15$$\n\n**또는 대칭성 이용:**\n$$_6C_4 = _6C_{6-4} = _6C_2 = \\frac{6 \\times 5}{2 \\times 1} = 15$$\n\n---\n\n**최종 답: 15**\n\n**코칭 한마디:** 이 문제는 제시된 도구들(중복순열, 중복조합, 원순열 등)이 아닌 **기본 조합 공식**을 사용하는 이유는, '서로 다른' 원소에서 '순서 없이' 선택하는 가장 기초적인 경우의 수 문제이기 때문입니다. 중복이나 특수한 배열 조건이 없을 때는 항상 기본 공식부터 확인하세요!",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13438,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_P04",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "이항분포 B(n,p)",
+        "독립시행의 확률",
+        "확률의 곱셈정리",
+        "기댓값",
+        "기댓값의 선형성"
+      ],
+      "expected_tools": [
+        "여사건의 확률",
+        "사건의 독립",
+        "독립시행의 확률"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "이 문제를 단계적으로 풀어보겠습니다.\n\n## 문제 분석\n- 합격 확률: p = 0.4\n- 불합격 확률: 1 - p = 0.6\n- 시행 횟수: 2번\n- 구하는 것: 적어도 한 번 합격할 확률\n\n## 풀이 과정\n\n### 방법 1: 여사건을 이용한 풀이 (추천)\n\n\"적어도 한 번 합격\" = \"한 번도 합격하지 못하는 경우의 여사건\"\n\n**1단계: 한 번도 합격하지 못할 확률 구하기**\n- 1차 시험 불합격 확률: 0.6\n- 2차 시험 불합격 확률: 0.6\n- 시행이 독립이므로: P(두 번 모두 불합격) = 0.6 × 0.6 = 0.36\n\n**2단계: 여사건의 확률 이용**\nP(적어도 한 번 합격) = 1 - P(두 번 모두 불합격)\n= 1 - 0.36\n= **0.64**\n\n### 방법 2: 직접 계산 (검산용)\n\n적어도 한 번 합격하는 경우:\n- (1차 합격, 2차 불합격): 0.4 × 0.6 = 0.24\n- (1차 불합격, 2차 합격): 0.6 × 0.4 = 0.24\n- (1차 합격, 2차 합격): 0.4 × 0.4 = 0.16\n\nP(적어도 한 번 합격) = 0.24 + 0.24 + 0.16 = **0.64**\n\n### 방법 3: 이항분포 활용\n\nX: 2번 시행 중 합격 횟수 → X ~ B(2, 0.4)\n\nP(X ≥ 1) = 1 - P(X = 0) = 1 - ₂C₀(0.4)⁰(0.6)² = 1 - 0.36 = **0.64**\n\n---\n\n**최종 답: 0.64 (또는 16/25)**\n\n**코칭 한마디:** 왜냐하면 \"적어도 한 번\"이라는 표현이 나오면 여사건(한 번도 안 일어나는 경우)을 이용하는 것이 계산이 훨씬 간단하고, 실수도 줄일 수 있기 때문입니다!",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13861,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_P05",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "확률변수 함수의 기댓값",
+        "확률변수의 분산·표준편차",
+        "확률변수와 확률분포",
+        "기댓값",
+        "(eˣ-1)/x 의 극한"
+      ],
+      "expected_tools": [
+        "기댓값"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 확률변수 X의 기댓값 구하기\n\n## 문제 분석\n확률변수 X가 취할 수 있는 값과 각각의 확률이 주어졌습니다.\n- X = 0일 확률: 0.2\n- X = 1일 확률: 0.5\n- X = 2일 확률: 0.3\n\n## 단계별 풀이\n\n### 1단계: 기댓값의 정의 확인\n이산확률변수 X의 기댓값은 다음과 같이 정의됩니다:\n$$E(X) = \\sum_{i} x_i \\cdot P(X=x_i)$$\n\n각 값에 그 값이 나올 확률을 곱한 후 모두 더합니다.\n\n### 2단계: 기댓값 계산\n$$E(X) = 0 \\times P(X=0) + 1 \\times P(X=1) + 2 \\times P(X=2)$$\n\n$$E(X) = 0 \\times 0.2 + 1 \\times 0.5 + 2 \\times 0.3$$\n\n$$E(X) = 0 + 0.5 + 0.6$$\n\n$$E(X) = 1.1$$\n\n### 3단계: 검증\n확률의 합: $0.2 + 0.5 + 0.3 = 1.0$ ✓ (확률의 총합이 1이므로 올바른 확률분포입니다)\n\n---\n\n**최종 답: 1.1**\n\n**코칭 한마디: 왜냐하면 기댓값은 확률변수가 평균적으로 어떤 값을 가질지 예측하는 도구이므로, 각 값에 그 값이 나올 가능성(확률)을 가중치로 곱하여 모두 더하는 가중평균 개념으로 계산합니다.**",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12567,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_G01",
+      "difficulty": 3,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "일차함수의 그래프",
+        "공간에서 두 점 사이 거리",
+        "피타고라스 정리",
+        "타원의 정의와 표준형",
+        "도형의 평행이동"
+      ],
+      "expected_tools": [
+        "공간에서 두 점 사이 거리"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 문제 풀이: 두 점 A(1, 2, 3)과 B(4, 6, 3) 사이의 거리\n\n## 단계 1: 적절한 도구 선택\n이 문제는 3차원 공간상의 두 점 사이 거리를 구하는 문제입니다.\n**선택할 도구: 공간에서 두 점 사이 거리 (L3)**\n\n## 단계 2: 공간에서 두 점 사이 거리 공식 적용\n\n두 점 $A(x_1, y_1, z_1)$과 $B(x_2, y_2, z_2)$ 사이의 거리는 다음 공식으로 구합니다:\n\n$$d = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2 + (z_2-z_1)^2}$$\n\n## 단계 3: 좌표값 대입\n\n주어진 점:\n- $A(1, 2, 3)$ → $x_1=1, y_1=2, z_1=3$\n- $B(4, 6, 3)$ → $x_2=4, y_2=6, z_2=3$\n\n각 좌표의 차이를 계산합니다:\n- $x_2 - x_1 = 4 - 1 = 3$\n- $y_2 - y_1 = 6 - 2 = 4$\n- $z_2 - z_1 = 3 - 3 = 0$\n\n## 단계 4: 거리 계산\n\n$$d = \\sqrt{3^2 + 4^2 + 0^2}$$\n\n$$d = \\sqrt{9 + 16 + 0}$$\n\n$$d = \\sqrt{25}$$\n\n$$d = 5$$\n\n## 검증\nz좌표가 같으므로(둘 다 3), 실제로는 xy평면에 평행한 평면 위의 두 점입니다.\n2차원에서 (1,2)와 (4,6) 사이의 거리로도 확인할 수 있으며, 3-4-5 직각삼각형이 형성됩니다.\n\n---\n\n**최종 답: 5**\n\n**코칭 한마디: 왜냐하면 3차원 공간에서 두 점 사이의 최단거리는 직선이며, 이를 구하기 위해 각 좌표축 방향의 변화량을 피타고라스 정리로 종합한 거리 공식을 사용하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13590,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_G02",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "벡터 수직 조건",
+        "삼각함수의 합성 (a sin + b cos)",
+        "두 벡터의 사잇각",
+        "벡터의 내적",
+        "두 평면이 이루는 각"
+      ],
+      "expected_tools": [
+        "벡터의 내적",
+        "두 벡터의 사잇각"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 문제 풀이: 두 벡터의 사잇각의 코사인 값\n\n## 1단계: 문제 분석 및 도구 선택\n\n두 벡터 $\\vec{a} = (1, 2, 2)$, $\\vec{b} = (2, -1, 2)$의 사잇각의 코사인 값을 구해야 합니다.\n\n**필요한 도구**: \n- **두 벡터의 사잇각 (L4)**: 사잇각의 코사인 공식\n- **벡터의 내적 (L4)**: 내적 계산\n\n## 2단계: 두 벡터의 사잇각 공식\n\n두 벡터 $\\vec{a}$, $\\vec{b}$의 사잇각을 $\\theta$라 할 때:\n\n$$\\cos\\theta = \\frac{\\vec{a} \\cdot \\vec{b}}{|\\vec{a}||\\vec{b}|}$$\n\n## 3단계: 벡터의 내적 계산\n\n$$\\vec{a} \\cdot \\vec{b} = (1)(2) + (2)(-1) + (2)(2)$$\n$$= 2 - 2 + 4$$\n$$= 4$$\n\n## 4단계: 각 벡터의 크기 계산\n\n$|\\vec{a}|$를 계산:\n$$|\\vec{a}| = \\sqrt{1^2 + 2^2 + 2^2}$$\n$$= \\sqrt{1 + 4 + 4}$$\n$$= \\sqrt{9}$$\n$$= 3$$\n\n$|\\vec{b}|$를 계산:\n$$|\\vec{b}| = \\sqrt{2^2 + (-1)^2 + 2^2}$$\n$$= \\sqrt{4 + 1 + 4}$$\n$$= \\sqrt{9}$$\n$$= 3$$\n\n## 5단계: 사잇각의 코사인 값 계산\n\n$$\\cos\\theta = \\frac{\\vec{a} \\cdot \\vec{b}}{|\\vec{a}||\\vec{b}|}$$\n$$= \\frac{4}{3 \\times 3}$$\n$$= \\frac{4}{9}$$\n\n---\n\n**최종 답**: $\\dfrac{4}{9}$\n\n**코칭 한마디**: 왜냐하면 두 벡터의 사잇각을 구할 때는 내적 공식 $\\cos\\theta = \\frac{\\vec{a} \\cdot \\vec{b}}{|\\vec{a}||\\vec{b}|}$을 사용하는데, 이것이 기하학적 의미(방향의 유사도)와 대수적 계산을 연결해주는 가장 직접적인 도구이기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12991,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_G03",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 1,
+      "retrieved_tools": [
+        "피타고라스 정리",
+        "음함수 미분",
+        "타원의 정의와 표준형",
+        "쌍곡선의 정의와 표준형",
+        "벡터의 기본 연산"
+      ],
+      "expected_tools": [
+        "타원의 정의와 표준형"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 타원 방정식을 단계적으로 분석하겠습니다.\n\n## 1단계: 타원의 표준형 확인\n\n주어진 타원: $\\dfrac{x^2}{25} + \\dfrac{y^2}{9} = 1$\n\n이것은 타원의 표준형 $\\dfrac{x^2}{a^2} + \\dfrac{y^2}{b^2} = 1$ 의 형태입니다.\n\n## 2단계: 타원의 매개변수 파악\n\n- $a^2 = 25$ → $a = 5$\n- $b^2 = 9$ → $b = 3$\n\n$a > b$ 이므로 장축은 x축 방향입니다.\n\n## 3단계: 초점 거리 관계식 적용\n\n타원에서 장축 반지름 $a$, 단축 반지름 $b$, 초점까지의 거리 $c$ 사이의 관계:\n\n$$c^2 = a^2 - b^2$$\n\n**피타고라스 정리**를 이용하면:\n$$c^2 = 25 - 9 = 16$$\n$$c = 4$$\n\n## 4단계: 두 초점 사이 거리 계산\n\n초점의 좌표: $F_1(-4, 0)$, $F_2(4, 0)$\n\n두 초점 사이의 거리:\n$$2c = 2 \\times 4 = 8$$\n\n---\n\n**최종 답: 8**\n\n**코칭 한마디: 이유는 타원의 기하학적 구조에서 장축·단축·초점거리가 직각삼각형을 이루기 때문에, 피타고라스 정리로 $c^2 = a^2 - b^2$ 관계를 바로 얻을 수 있기 때문입니다.**",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 11801,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_G04",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "점과 평면 사이의 거리",
+        "피타고라스 정리",
+        "공간에서 두 점 사이 거리",
+        "벡터의 기본 연산",
+        "구의 방정식"
+      ],
+      "expected_tools": [
+        "점과 평면 사이의 거리"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "이 문제를 단계적으로 풀어보겠습니다.\n\n## 문제 분석\n점 P(1, 2, 3)에서 평면 2x - y + 2z - 5 = 0까지의 거리를 구해야 합니다.\n\n## 풀이 과정\n\n### 1단계: 점과 평면 사이의 거리 공식 확인\n\n점 $(x_0, y_0, z_0)$에서 평면 $ax + by + cz + d = 0$까지의 거리 공식은:\n\n$$\\text{거리} = \\frac{|ax_0 + by_0 + cz_0 + d|}{\\sqrt{a^2 + b^2 + c^2}}$$\n\n### 2단계: 주어진 값 정리\n\n- 점: $(x_0, y_0, z_0) = (1, 2, 3)$\n- 평면: $2x - y + 2z - 5 = 0$\n- 따라서: $a = 2, b = -1, c = 2, d = -5$\n\n### 3단계: 분자 계산 (점을 평면의 방정식에 대입)\n\n$$|ax_0 + by_0 + cz_0 + d| = |2(1) + (-1)(2) + 2(3) + (-5)|$$\n\n$$= |2 - 2 + 6 - 5|$$\n\n$$= |1|$$\n\n$$= 1$$\n\n### 4단계: 분모 계산 (평면의 법선벡터 크기)\n\n$$\\sqrt{a^2 + b^2 + c^2} = \\sqrt{2^2 + (-1)^2 + 2^2}$$\n\n$$= \\sqrt{4 + 1 + 4}$$\n\n$$= \\sqrt{9}$$\n\n$$= 3$$\n\n### 5단계: 거리 계산\n\n$$\\text{거리} = \\frac{1}{3}$$\n\n**최종 답: $\\dfrac{1}{3}$**\n\n**코칭 한마디:** 이유는 점과 평면 사이의 거리 공식이 평면에 수직인 최단거리를 평면의 법선벡터를 이용해 직접 계산해주기 때문입니다 - 다른 방법으로는 수선의 발을 먼저 구해야 하지만 이 공식을 쓰면 한 번에 답을 얻을 수 있죠!",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 13005,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_G05",
+      "difficulty": 4,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "구의 방정식",
+        "코시-슈바르츠 부등식 (2변수)",
+        "복소수의 절댓값과 켤레",
+        "이차방정식의 인수분해",
+        "연립일차방정식 (가감법·대입법)"
+      ],
+      "expected_tools": [
+        "구의 방정식"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 구의 방정식 풀이\n\n주어진 구의 방정식을 표준형으로 변환하여 중심과 반지름을 구하겠습니다.\n\n## 단계 1: 주어진 방정식 정리\n\n$$x^2 + y^2 + z^2 - 2x + 4y - 6z + 5 = 0$$\n\n## 단계 2: 각 변수별로 완전제곱식 만들기\n\n구의 표준형은 $(x-a)^2 + (y-b)^2 + (z-c)^2 = r^2$ 입니다.\n\n### x에 대한 항 정리:\n$$x^2 - 2x = (x-1)^2 - 1$$\n\n### y에 대한 항 정리:\n$$y^2 + 4y = (y+2)^2 - 4$$\n\n### z에 대한 항 정리:\n$$z^2 - 6z = (z-3)^2 - 9$$\n\n## 단계 3: 원래 방정식에 대입\n\n$$(x-1)^2 - 1 + (y+2)^2 - 4 + (z-3)^2 - 9 + 5 = 0$$\n\n$$(x-1)^2 + (y+2)^2 + (z-3)^2 - 1 - 4 - 9 + 5 = 0$$\n\n$$(x-1)^2 + (y+2)^2 + (z-3)^2 - 9 = 0$$\n\n## 단계 4: 표준형으로 변환\n\n$$(x-1)^2 + (y+2)^2 + (z-3)^2 = 9$$\n\n$$(x-1)^2 + (y+2)^2 + (z-3)^2 = 3^2$$\n\n## 결과\n\n- **중심**: $(1, -2, 3)$\n- **반지름**: $3$\n\n---\n\n**최종 답**: 중심 $(1, -2, 3)$, 반지름 $3$\n\n**코칭 한마디**: 왜냐하면 구의 일반형을 표준형으로 바꾸려면 각 변수에 대해 완전제곱식을 만들어야 하고, 이를 통해 중심 좌표와 반지름을 직접 읽을 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12419,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_CL01",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "로피탈 정리",
+        "부분적분",
+        "(eˣ-1)/x 의 극한",
+        "평균값 정리 (기본)",
+        "부정적분의 정의"
+      ],
+      "expected_tools": [
+        "치환적분",
+        "지수·로그 적분"
+      ],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 적분을 단계적으로 풀이하겠습니다.\n\n## 문제 분석\n$$\\int_0^1 2x \\cdot e^{x^2}\\, dx$$\n\n이 적분을 보면 $2x$와 $e^{x^2}$의 곱 형태입니다.\n여기서 핵심은 $e^{x^2}$를 미분하면 $2x \\cdot e^{x^2}$가 된다는 관찰입니다.\n\n## 풀이 과정\n\n**Step 1: 치환을 생각해봅시다**\n\n$u = x^2$로 놓으면:\n- $\\frac{du}{dx} = 2x$\n- $du = 2x\\, dx$\n\n**Step 2: 적분 변환**\n\n$$\\int_0^1 2x \\cdot e^{x^2}\\, dx = \\int e^{x^2} \\cdot 2x\\, dx$$\n\n$u = x^2$, $du = 2x\\, dx$를 대입하면:\n\n$$= \\int e^u\\, du$$\n\n**Step 3: 부정적분 계산**\n\n$$\\int e^u\\, du = e^u + C = e^{x^2} + C$$\n\n**Step 4: 정적분 계산**\n\n$$\\int_0^1 2x \\cdot e^{x^2}\\, dx = \\left[e^{x^2}\\right]_0^1$$\n\n$$= e^{1^2} - e^{0^2}$$\n\n$$= e^1 - e^0$$\n\n$$= e - 1$$\n\n## 검산\n미분으로 확인: $\\frac{d}{dx}(e^{x^2}) = e^{x^2} \\cdot 2x$ ✓\n\n---\n\n**최종 답:** $e - 1$\n\n**코칭 한마디:** 이유는 피적분함수가 어떤 함수의 도함수 형태(여기서는 $e^{x^2}$의 도함수)로 보일 때, 부정적분의 정의를 이용하면 역도함수를 바로 찾아 계산이 간단해지기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12740,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_CL02",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "(eˣ-1)/x 의 극한",
+        "로그함수의 미분",
+        "로피탈 정리",
+        "사잇값 정리 (수학2)",
+        "부분적분"
+      ],
+      "expected_tools": [
+        "부분적분"
+      ],
+      "hit_top3": false,
+      "hit_top5": true,
+      "reasoner_text": "주어진 정적분 문제를 단계적으로 풀어보겠습니다.\n\n## 문제: $\\displaystyle\\int_0^1 x e^x\\, dx$\n\n### 1단계: 적절한 방법 선택\n이 문제는 **두 함수의 곱** ($x \\cdot e^x$)을 적분하는 형태입니다.\n→ **부분적분**을 사용해야 합니다.\n\n### 2단계: 부분적분 공식 적용\n부분적분 공식: $\\displaystyle\\int u\\, dv = uv - \\int v\\, du$\n\n다음과 같이 설정합니다:\n- $u = x$ → $du = dx$\n- $dv = e^x dx$ → $v = e^x$\n\n### 3단계: 부분적분 계산\n$$\\int_0^1 x e^x\\, dx = \\left[x e^x\\right]_0^1 - \\int_0^1 e^x\\, dx$$\n\n### 4단계: 각 항 계산\n첫 번째 항:\n$$\\left[x e^x\\right]_0^1 = (1 \\cdot e^1) - (0 \\cdot e^0) = e - 0 = e$$\n\n두 번째 항:\n$$\\int_0^1 e^x\\, dx = \\left[e^x\\right]_0^1 = e^1 - e^0 = e - 1$$\n\n### 5단계: 최종 계산\n$$\\int_0^1 x e^x\\, dx = e - (e-1) = e - e + 1 = 1$$\n\n---\n\n**최종 답: 1**\n\n**코칭 한마디:** 이유는 $x$와 $e^x$의 곱을 적분할 때, 미분하면 간단해지는 함수($x$)를 $u$로, 적분해도 복잡하지 않은 함수($e^x$)를 $dv$로 선택하면 부분적분으로 문제가 깔끔하게 해결되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 11910,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_CL03",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "sin x / x 의 극한",
+        "(1-cos x)/x² 극한",
+        "ln(1+x)/x 의 극한",
+        "(eˣ-1)/x 의 극한",
+        "매개변수 미분"
+      ],
+      "expected_tools": [
+        "sin x / x 의 극한",
+        "로피탈의 정리"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 극한값을 단계적으로 구해보겠습니다.\n\n## 문제 분석\n\n$$\\lim_{x \\to 0} \\frac{\\sin 3x}{x}$$\n\n이 문제는 $x \\to 0$일 때 $\\frac{\\sin 3x}{x}$ 형태의 극한을 구하는 문제입니다.\n\n## 풀이 과정\n\n### 1단계: 기본 극한 공식 확인\n기본 극한 공식: $\\displaystyle\\lim_{t \\to 0} \\frac{\\sin t}{t} = 1$\n\n### 2단계: 변수 치환을 이용한 변형\n$3x$를 하나의 변수로 보기 위해 식을 변형합니다.\n\n$$\\lim_{x \\to 0} \\frac{\\sin 3x}{x} = \\lim_{x \\to 0} \\frac{\\sin 3x}{3x} \\cdot 3$$\n\n분자와 분모에 3을 곱하고 나누어 정리하면:\n\n$$= 3 \\cdot \\lim_{x \\to 0} \\frac{\\sin 3x}{3x}$$\n\n### 3단계: 변수 치환\n$t = 3x$로 놓으면:\n- $x \\to 0$일 때, $t \\to 0$\n\n따라서:\n$$3 \\cdot \\lim_{x \\to 0} \\frac{\\sin 3x}{3x} = 3 \\cdot \\lim_{t \\to 0} \\frac{\\sin t}{t}$$\n\n### 4단계: 기본 극한 공식 적용\n$$= 3 \\cdot 1 = 3$$\n\n## 검증\n$x$가 0에 가까운 작은 값일 때:\n- $x = 0.1$: $\\frac{\\sin 0.3}{0.1} \\approx \\frac{0.2955}{0.1} = 2.955 \\approx 3$ ✓\n\n---\n\n**최종 답: 3**\n\n**코칭 한마디:** 왜냐하면 $\\sin 3x$처럼 각도에 계수가 붙어있을 때는, 분자와 분모를 같은 수로 조정해서 \"$\\frac{\\sin(\\text{무언가})}{(\\text{무언가})}$\" 형태를 만들어야 기본 극한 공식 $\\lim_{t→0}\\frac{\\sin t}{t}=1$을 직접 사용할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 14362,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_CL04",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 2,
+      "retrieved_tools": [
+        "매개변수 미분",
+        "매개변수 미분법",
+        "곡선의 길이 (현장적분)",
+        "로그미분법",
+        "위치·속도·가속도"
+      ],
+      "expected_tools": [
+        "매개변수 미분"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "# 매개변수 미분 문제 풀이\n\n## 주어진 정보\n- $x = t^2 + 1$\n- $y = t^3 - t$\n- $t = 2$에서 $\\dfrac{dy}{dx}$ 구하기\n\n## 단계별 풀이\n\n### 1단계: 매개변수 미분법 적용\n\n매개변수로 표현된 곡선에서 $\\dfrac{dy}{dx}$는 다음과 같이 구합니다:\n\n$$\\dfrac{dy}{dx} = \\dfrac{\\dfrac{dy}{dt}}{\\dfrac{dx}{dt}} = \\dfrac{y'(t)}{x'(t)}$$\n\n### 2단계: $\\dfrac{dx}{dt}$ 계산\n\n$$\\dfrac{dx}{dt} = \\dfrac{d}{dt}(t^2 + 1) = 2t$$\n\n### 3단계: $\\dfrac{dy}{dt}$ 계산\n\n$$\\dfrac{dy}{dt} = \\dfrac{d}{dt}(t^3 - t) = 3t^2 - 1$$\n\n### 4단계: $\\dfrac{dy}{dx}$ 표현\n\n$$\\dfrac{dy}{dx} = \\dfrac{dy/dt}{dx/dt} = \\dfrac{3t^2 - 1}{2t}$$\n\n### 5단계: $t=2$일 때 값 계산\n\n$$\\dfrac{dy}{dx}\\bigg|_{t=2} = \\dfrac{3(2)^2 - 1}{2(2)} = \\dfrac{3 \\times 4 - 1}{4} = \\dfrac{12 - 1}{4} = \\dfrac{11}{4}$$\n\n---\n\n**최종 답:** $\\dfrac{11}{4}$\n\n**코칭 한마디:** 왜냐하면 매개변수로 표현된 곡선에서는 $x$와 $y$ 모두 $t$의 함수이므로, 연쇄법칙(chain rule)에 의해 $\\dfrac{dy}{dx} = \\dfrac{dy/dt}{dx/dt}$로 구할 수 있고, 이는 \"변화율의 비\"를 통해 기울기를 구하는 자연스러운 방법이기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 11726,
+      "chain": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "EVAL_CL05",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 3,
+      "retrieved_tools": [
+        "회전체의 부피 (디스크)",
+        "회전체 부피 (껍질법)",
+        "곡선의 점근선 (수직·수평·사선)",
+        "곡선과 x축 사이 넓이",
+        "로그함수의 성질"
+      ],
+      "expected_tools": [
+        "회전체의 부피 (디스크)"
+      ],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "주어진 문제를 단계적으로 풀이하겠습니다.\n\n## 문제 분석\n곡선 $y = \\sqrt{x}$ ($0 \\le x \\le 4$)를 $x$축 둘레로 회전시킨 입체의 부피를 구해야 합니다.\n\n## 풀이 과정\n\n### 1단계: 적절한 도구 선택\n$x$축 둘레로 회전하는 입체이므로 **회전체의 부피 (디스크법)**을 사용합니다.\n\n### 2단계: 디스크법 공식 적용\n$x$축 둘레로 회전시킬 때 부피 공식:\n$$V = \\pi \\int_{a}^{b} [f(x)]^2 \\, dx$$\n\n여기서:\n- $f(x) = \\sqrt{x}$\n- $a = 0, \\, b = 4$\n\n### 3단계: 적분 설정\n$$V = \\pi \\int_{0}^{4} (\\sqrt{x})^2 \\, dx$$\n\n$$V = \\pi \\int_{0}^{4} x \\, dx$$\n\n### 4단계: 적분 계산\n$$V = \\pi \\left[ \\frac{x^2}{2} \\right]_{0}^{4}$$\n\n$$V = \\pi \\left( \\frac{4^2}{2} - \\frac{0^2}{2} \\right)$$\n\n$$V = \\pi \\left( \\frac{16}{2} - 0 \\right)$$\n\n$$V = \\pi \\cdot 8$$\n\n$$V = 8\\pi$$\n\n### 검증\n- $x = 0$일 때: 반지름 = $\\sqrt{0} = 0$\n- $x = 4$일 때: 반지름 = $\\sqrt{4} = 2$\n- 원뿔 모양의 입체가 형성됩니다.\n\n---\n\n**최종 답**: $8\\pi$\n\n**코칭 한마디**: 왜냐하면 $x$축 둘레로 회전할 때는 각 단면이 반지름 $f(x)$인 원이 되므로, 넓이 $\\pi[f(x)]^2$를 $x$에 대해 적분하여 전체 부피를 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12491,
+      "chain": {
+        "enabled": false
+      }
+    }
+  ]
+}

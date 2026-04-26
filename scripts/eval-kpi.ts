@@ -8,8 +8,9 @@
  *   4) 난이도 ≥ 5 정답률 ≥ 70%
  *
  * 모드:
- *   pnpm dlx tsx scripts/eval-kpi.ts --mock   (env 없이 schema 검증 + 시뮬레이션)
- *   pnpm dlx tsx scripts/eval-kpi.ts --full   (실제 API 호출 — env 필요)
+ *   pnpm dlx tsx scripts/eval-kpi.ts --mock          (env 없이 schema 검증 + 시뮬레이션)
+ *   pnpm dlx tsx scripts/eval-kpi.ts --full          (baseline — Manager → Retriever → Reasoner 단발)
+ *   pnpm dlx tsx scripts/eval-kpi.ts --full --chain  (Phase G-02 — Recursive Backward Chain inject)
  *
  * 환경변수 (--full 모드):
  *   - OPENAI_API_KEY (embedding)
@@ -59,6 +60,14 @@ interface RetrievedTool {
   matched_via: "forward" | "backward";
 }
 
+interface ChainMeta {
+  enabled: boolean;
+  termination?: "reached_conditions" | "max_depth" | "dead_end" | "cycle";
+  depth?: number;
+  used_tools?: string[];
+  duration_ms?: number;
+}
+
 interface ProblemEvalResult {
   id: string;
   difficulty: number;
@@ -73,6 +82,7 @@ interface ProblemEvalResult {
   why_included: boolean;
   errors: string[];
   duration_ms: number;
+  chain?: ChainMeta;
 }
 
 interface KpiSummary {
@@ -88,14 +98,28 @@ interface KpiSummary {
     accuracy: boolean;
     why: boolean;
   };
+  chain?: {
+    enabled: boolean;
+    executed_count: number;
+    avg_depth: number;
+    termination_dist: Record<string, number>;
+    success_rate: number;
+  };
 }
 
 const REPO_ROOT = process.cwd();
 const EVAL_FILE = path.join(REPO_ROOT, "data", "kpi-eval-problems.json");
 const RESULT_DIR = path.join(REPO_ROOT, "docs", "qa");
-const RESULT_FILE = path.join(RESULT_DIR, "kpi-evaluation-result.json");
 
 const MODE = process.argv.includes("--full") ? "full" : "mock";
+const CHAIN_ON = process.argv.includes("--chain");
+const RESULT_SUFFIX = CHAIN_ON ? "chain" : "baseline";
+const RESULT_FILE = path.join(
+  RESULT_DIR,
+  MODE === "mock"
+    ? "kpi-evaluation-result.json"
+    : `kpi-evaluation-${RESULT_SUFFIX}.json`
+);
 
 const HAIKU_MODEL = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
 const SONNET_MODEL = process.env.ANTHROPIC_SONNET_MODEL_ID || "claude-sonnet-4-5-20250929";
@@ -319,17 +343,199 @@ const REASONER_SYSTEM = `당신은 한국 수학 학원의 시니어 강사이�
   최종 답: <간단한 표현>
   코칭 한마디: <학생에게 "왜 이 도구를 쓰는지" 설명을 한 문장 — '왜냐하면' 또는 '이유는' 으로 시작>`;
 
-async function runReasoner(problem: string, retrieved: RetrievedTool[]): Promise<string> {
+async function runReasoner(
+  problem: string,
+  retrieved: RetrievedTool[],
+  chainContext?: string
+): Promise<string> {
   const toolsHint = retrieved.length
     ? `\n\n참고 도구 후보 (Retriever):\n${retrieved.map((t, i) => `  ${i + 1}. ${t.tool_name} (L${t.tool_layer})`).join("\n")}`
+    : "";
+  const chainHint = chainContext
+    ? `\n\n## 분해 사고 경로 (Recursive Backward Chain — Phase G-02)\n${chainContext}\n\n위 chain 의 분해 순서를 따라 풀이를 전개하세요.`
     : "";
   const text = await callAnthropic(
     SONNET_MODEL,
     REASONER_SYSTEM,
-    [{ role: "user", content: `${problem}${toolsHint}` }],
+    [{ role: "user", content: `${problem}${toolsHint}${chainHint}` }],
     1500
   );
   return text;
+}
+
+// ============================================================
+// Phase G-02: Recursive Backward Chain (eval inline 구현)
+// orchestrator route 의 recursive-reasoner.ts 와 동등하나, retrieve 는
+// 본 스크립트의 runRetriever 를 사용 (server supabase 의존 회피).
+// ============================================================
+
+interface ChainNodeEval {
+  depth: number;
+  goal: string;
+  tool: string | null;
+  rationale: string;
+  next_subgoal: string | null;
+  reached_conditions: boolean;
+}
+
+interface ChainResultEval {
+  chain: ChainNodeEval[];
+  termination: "reached_conditions" | "max_depth" | "dead_end" | "cycle";
+  used_tools: string[];
+  duration_ms: number;
+}
+
+const SUBGOAL_DECOMPOSE_SYSTEM = `당신은 **Recursive Backward Reasoner** 입니다.
+학생이 어려운 수학 문제를 풀 때 목표 → subgoal → subgoal 의 subgoal 순서로 거꾸로 분해.
+
+## 작업
+"currentGoal 을 풀려면 무엇이 필요한가?" — 단 하나의 가장 자연스러운 분해 경로를 선택.
+- candidateTools 중 가장 적합한 도구를 골라 tool 에 적기. 없으면 null.
+- 그 도구를 적용하기 위해 충족해야 할 새 subgoal 을 next_subgoal 에 적기.
+- currentGoal 이 conditions 로 직접 풀린다고 판단하면 reached_conditions=true + next_subgoal=null.
+- previousChain 에 이미 등장한 goal 이면 cycle 회피.
+
+## 출력 (JSON only)
+{ "tool": "...", "rationale": "...", "next_subgoal": "..." | null, "reached_conditions": false }`;
+
+function buildDecomposeUser(args: {
+  problem: string;
+  conditions: string[];
+  currentGoal: string;
+  candidateTools: { tool_name: string; tool_layer: number }[];
+  previousChain: ChainNodeEval[];
+}): string {
+  const tools = args.candidateTools.length
+    ? args.candidateTools
+        .map((t, i) => `  ${i + 1}. ${t.tool_name} (L${t.tool_layer})`)
+        .join("\n")
+    : "  (없음 — 일반 추론으로 분해)";
+  const chain = args.previousChain.length
+    ? args.previousChain
+        .map((n) => `  depth ${n.depth}: ${n.goal}${n.tool ? ` [${n.tool}]` : ""}`)
+        .join("\n")
+    : "  (아직 없음)";
+  return `### 문제
+${args.problem}
+
+### 알려진 조건
+${args.conditions.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}
+
+### 현재 분해할 목표 (depth ${args.previousChain.length})
+${args.currentGoal}
+
+### 후보 도구 (Retriever — backward)
+${tools}
+
+### 지금까지의 chain
+${chain}
+
+JSON 만 출력하세요. 단일 분해 경로만.`;
+}
+
+function isCycle(newGoal: string, chain: ChainNodeEval[]): boolean {
+  if (!newGoal) return false;
+  const norm = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
+  const target = norm(newGoal);
+  return chain.some((n) => norm(n.goal) === target);
+}
+
+async function runRecursiveChain(args: {
+  problem: string;
+  conditions: string[];
+  goal: string;
+  maxDepth?: number;
+}): Promise<ChainResultEval> {
+  const t0 = Date.now();
+  const cap = Math.max(1, Math.min(args.maxDepth ?? 5, 8));
+  const chain: ChainNodeEval[] = [];
+  const usedTools = new Set<string>();
+  let currentGoal = args.goal;
+  let termination: ChainResultEval["termination"] = "max_depth";
+
+  for (let depth = 0; depth < cap; depth++) {
+    const tools = await runRetriever(args.conditions, currentGoal, 5).catch(() => []);
+    const candidateTools = tools.map((t) => ({
+      tool_name: t.tool_name,
+      tool_layer: t.tool_layer,
+    }));
+
+    const userPrompt = buildDecomposeUser({
+      problem: args.problem,
+      conditions: args.conditions,
+      currentGoal,
+      candidateTools,
+      previousChain: chain,
+    });
+
+    let parsed: {
+      tool?: string | null;
+      rationale?: string;
+      next_subgoal?: string | null;
+      reached_conditions?: boolean;
+    } | null = null;
+    try {
+      const text = await callAnthropic(
+        SONNET_MODEL,
+        SUBGOAL_DECOMPOSE_SYSTEM,
+        [{ role: "user", content: userPrompt }],
+        600
+      );
+      parsed = tryParseJson(text);
+    } catch (e) {
+      console.warn(`  chain depth=${depth}: decompose failed: ${(e as Error).message}`);
+    }
+
+    if (!parsed) {
+      termination = "dead_end";
+      break;
+    }
+
+    const node: ChainNodeEval = {
+      depth,
+      goal: currentGoal,
+      tool: parsed.tool ?? null,
+      rationale: parsed.rationale ?? "",
+      next_subgoal: parsed.next_subgoal ?? null,
+      reached_conditions: !!parsed.reached_conditions,
+    };
+    chain.push(node);
+    if (node.tool) usedTools.add(node.tool);
+
+    if (node.reached_conditions) {
+      termination = "reached_conditions";
+      break;
+    }
+    if (!node.next_subgoal) {
+      termination = "dead_end";
+      break;
+    }
+    if (isCycle(node.next_subgoal, chain)) {
+      termination = "cycle";
+      break;
+    }
+    currentGoal = node.next_subgoal;
+  }
+
+  return {
+    chain,
+    termination,
+    used_tools: Array.from(usedTools),
+    duration_ms: Date.now() - t0,
+  };
+}
+
+function chainToText(result: ChainResultEval): string {
+  if (!result.chain.length) return "";
+  const lines = result.chain.map((n) => {
+    const head = n.depth === 0
+      ? `최종 목표: ${n.goal}`
+      : `↳ 그래서 다음을 풀어야 해요: ${n.goal}`;
+    const tool = n.tool ? `\n   사용 도구: ${n.tool}` : "";
+    const why = n.rationale ? `\n   이유: ${n.rationale}` : "";
+    return `${head}${tool}${why}`;
+  });
+  return lines.join("\n");
 }
 
 function extractFinalAnswer(reasonerText: string): string {
@@ -377,6 +583,8 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
   let manager: ManagerResult | null = null;
   let retrieved: RetrievedTool[] = [];
   let reasonerText = "";
+  let chainMeta: ChainMeta = { enabled: CHAIN_ON };
+  let chainContext: string | undefined;
 
   try {
     manager = await runManager(p.problem);
@@ -393,8 +601,32 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
     }
   }
 
+  // Phase G-02 chain: 모드가 ON 이고 난이도 >= 5 일 때만
+  if (CHAIN_ON && manager && p.difficulty >= 5) {
+    try {
+      const cr = await runRecursiveChain({
+        problem: p.problem,
+        conditions: manager.conditions,
+        goal: manager.goal,
+        maxDepth: 5,
+      });
+      chainMeta = {
+        enabled: true,
+        termination: cr.termination,
+        depth: cr.chain.length,
+        used_tools: cr.used_tools,
+        duration_ms: cr.duration_ms,
+      };
+      if (cr.chain.length > 0) {
+        chainContext = chainToText(cr);
+      }
+    } catch (e) {
+      errors.push(`Chain: ${(e as Error).message}`);
+    }
+  }
+
   try {
-    reasonerText = await runReasoner(p.problem, retrieved);
+    reasonerText = await runReasoner(p.problem, retrieved, chainContext);
   } catch (e) {
     errors.push(`Reasoner: ${(e as Error).message}`);
   }
@@ -424,6 +656,7 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
     why_included: hasWhy(reasonerText),
     errors,
     duration_ms: Date.now() - start,
+    chain: chainMeta,
   };
 }
 
@@ -448,6 +681,35 @@ function summarize(results: ProblemEvalResult[]): KpiSummary {
   const accHard = hardResults.length > 0 ? hardCorrectCount / hardResults.length : 0;
   const why = whyCount / total;
 
+  // Chain 통계 (chain.enabled === true 인 결과만 집계)
+  const chainResults = results.filter((r) => r.chain?.enabled);
+  const chainExecuted = chainResults.filter((r) => r.chain?.depth && r.chain.depth > 0);
+  const termDist: Record<string, number> = {
+    reached_conditions: 0,
+    max_depth: 0,
+    dead_end: 0,
+    cycle: 0,
+  };
+  for (const r of chainExecuted) {
+    if (r.chain?.termination) termDist[r.chain.termination] = (termDist[r.chain.termination] ?? 0) + 1;
+  }
+  const avgDepth =
+    chainExecuted.length > 0
+      ? chainExecuted.reduce((s, r) => s + (r.chain?.depth ?? 0), 0) / chainExecuted.length
+      : 0;
+  const chainSummary = chainResults.length
+    ? {
+        enabled: true,
+        executed_count: chainExecuted.length,
+        avg_depth: avgDepth,
+        termination_dist: termDist,
+        success_rate:
+          chainExecuted.length > 0
+            ? termDist.reached_conditions / chainExecuted.length
+            : 0,
+      }
+    : { enabled: false, executed_count: 0, avg_depth: 0, termination_dist: termDist, success_rate: 0 };
+
   return {
     total,
     retriever_hit_rate_top3: top3,
@@ -461,6 +723,7 @@ function summarize(results: ProblemEvalResult[]): KpiSummary {
       accuracy: accHard >= 0.7,
       why: why >= 0.9,
     },
+    chain: chainSummary,
   };
 }
 
@@ -504,7 +767,18 @@ function printReport(results: ProblemEvalResult[], summary: KpiSummary, mode: st
   console.log(
     `"왜" 포함률: ${formatPercent(summary.why_inclusion_rate)} ${summary.pass.why ? "✅ PASS (≥90%)" : "❌ FAIL (<90%)"}`
   );
-  console.log(`Manager 분류 성공률: ${formatPercent(summary.manager_classify_rate)}\n`);
+  console.log(`Manager 분류 성공률: ${formatPercent(summary.manager_classify_rate)}`);
+  if (summary.chain?.enabled) {
+    console.log(`\nRecursive Chain (Phase G-02):`);
+    console.log(`  실행 건수: ${summary.chain.executed_count}/${summary.total} (난이도 ≥ 5 만)`);
+    console.log(`  평균 depth: ${summary.chain.avg_depth.toFixed(2)}`);
+    console.log(`  조건 도달률: ${formatPercent(summary.chain.success_rate)}`);
+    console.log(`  종료 분포:`);
+    for (const [k, v] of Object.entries(summary.chain.termination_dist)) {
+      console.log(`    ${k}: ${v}`);
+    }
+  }
+  console.log("");
 }
 
 // ============================================================
@@ -520,9 +794,10 @@ async function main() {
   const seedFile = JSON.parse(seedRaw) as { tools: { name: string }[] };
   const seedToolNames = new Set(seedFile.tools.map((t) => t.name));
 
-  console.log(`Mode: ${MODE}`);
+  console.log(`Mode: ${MODE} ${MODE === "full" ? `(chain=${CHAIN_ON ? "ON" : "OFF"})` : ""}`);
   console.log(`Problems: ${evalFile.problems.length}`);
-  console.log(`Seed tools: ${seedToolNames.size}\n`);
+  console.log(`Seed tools: ${seedToolNames.size}`);
+  console.log(`Result file: ${path.relative(REPO_ROOT, RESULT_FILE)}\n`);
 
   const results: ProblemEvalResult[] = [];
 
