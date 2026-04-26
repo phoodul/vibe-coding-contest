@@ -14,16 +14,20 @@ import { filterProblems, EXAM_YEARS, EXAM_TYPES, TOTAL_PROBLEMS, type MathProble
 import problemTexts from "@/lib/data/problem-texts.json";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { HandwriteModal } from "@/components/euler/HandwriteModal";
 
 type Phase = "select" | "past-exam" | "chat";
 type InputMode = "text" | "photo" | "handwrite" | "voice";
 
 export default function EulerTutorPage() {
+  const searchParams = useSearchParams();
   const [phase, setPhase] = useState<Phase>("select");
   const [area, setArea] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [useGpt, setUseGpt] = useState(false);
   const [inputMode, setInputMode] = useState<InputMode>("text");
+  const [handwriteOpen, setHandwriteOpen] = useState(false);
 
   // 기출문제
   const [examYear, setExamYear] = useState<number>(2026);
@@ -31,22 +35,32 @@ export default function EulerTutorPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, status, append, setMessages } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, status, append, setMessages, setInput } =
     useChat({
       api: "/api/euler-tutor",
       body: { area, useGpt, input_mode: inputMode },
     });
 
-  // sessionStorage 에서 필기 캔버스 결과 픽업
+  // URL ?openHandwrite=1 또는 sessionStorage 에 필기 결과가 있으면 자동 처리
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // PWA / canvas 페이지에서 redirect 한 경우 바로 채팅 + 모달 오픈
+    const shouldOpenHandwrite = searchParams?.get("openHandwrite") === "1";
+    if (shouldOpenHandwrite) {
+      if (!area) setArea("미적분");
+      setPhase("chat");
+      setHandwriteOpen(true);
+    }
+
+    // sessionStorage 호환 — 기존 /euler/canvas 페이지에서 OCR 결과 받아 채팅 시작
     try {
       const raw = sessionStorage.getItem("euler_canvas_seed");
       if (!raw) return;
       const seed = JSON.parse(raw) as { text: string; source?: string; ts?: number };
       sessionStorage.removeItem("euler_canvas_seed");
       if (!seed.text) return;
-      setArea("미적분");
+      if (!area) setArea("미적분");
       setInputMode("handwrite");
       setPhase("chat");
       setTimeout(() => {
@@ -181,6 +195,31 @@ export default function EulerTutorPage() {
       handleSubmit(e);
     }
   }, [imagePreview, sendImage, handleSubmit]);
+
+  // 필기 모달에서 OCR 결과를 같은 채팅 세션에 추가
+  const handleHandwriteResult = useCallback((text: string) => {
+    setInputMode("handwrite");
+    const isFirst = messages.length === 0;
+    append({
+      role: "user",
+      content: isFirst
+        ? `[필기로 입력]\n\n${text}\n\n이 문제를 같이 풀어보고 싶어요!`
+        : `[필기로 입력한 답/풀이]\n\n${text}`,
+    });
+  }, [append, messages.length]);
+
+  // 새 문제 시작 — 같은 영역 유지, 메시지만 reset
+  const handleNewProblem = useCallback(() => {
+    if (messages.length > 0) {
+      const ok = window.confirm("현재 풀이를 마치고 새 문제로 넘어갈까요?");
+      if (!ok) return;
+    }
+    setMessages([]);
+    setImagePreview(null);
+    setInput("");
+    setInputMode("text");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, [messages.length, setMessages, setInput]);
 
   // 선택 화면
   if (phase === "select") {
@@ -401,12 +440,19 @@ export default function EulerTutorPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Link
-              href="/euler/canvas"
-              className="text-[10px] px-2 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-colors"
-              title="필기 모드"
+            <button
+              onClick={handleNewProblem}
+              className="text-[10px] px-2 py-1 rounded-full border border-violet-500/40 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 transition-colors"
+              title="새 문제"
             >
-              ✏️ 필기
+              🆕 새 문제
+            </button>
+            <Link
+              href="/euler/report"
+              className="text-[10px] px-2 py-1 rounded-full border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition-colors"
+              title="약점 리포트"
+            >
+              📊 리포트
             </Link>
             <button
               onClick={() => setUseGpt(!useGpt)}
@@ -438,10 +484,10 @@ export default function EulerTutorPage() {
                 <Image src={useGpt ? "/gauss-portrait.jpg" : "/euler-portrait.jpg"} alt={useGpt ? "Gauss" : "Euler"} width={64} height={64} className="object-cover w-full h-full" />
               </div>
               <p className="text-muted text-sm mb-1">
-                문제를 입력하거나 📷 사진으로 올려주세요.
+                문제를 입력하거나 📷 사진, ✏️ 필기로 올려주세요.
               </p>
               <p className="text-muted/50 text-xs">
-                스크린샷, 교재 사진 모두 가능합니다.
+                같은 대화 안에서 텍스트·사진·필기를 자유롭게 섞어 풀 수 있어요.
               </p>
             </motion.div>
           )}
@@ -551,6 +597,17 @@ export default function EulerTutorPage() {
             >
               📷
             </motion.button>
+            {/* 필기 모달 버튼 */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="button"
+              onClick={() => setHandwriteOpen(true)}
+              className="px-3 py-3 rounded-xl glass border border-white/10 text-lg hover:border-emerald-500/30 transition-colors flex-shrink-0"
+              title="필기로 입력"
+            >
+              ✏️
+            </motion.button>
             <input
               ref={fileInputRef}
               type="file"
@@ -582,6 +639,13 @@ export default function EulerTutorPage() {
           </form>
         </div>
       </div>
+
+      {/* 필기 입력 모달 — 같은 채팅 세션에 OCR 결과 추가 */}
+      <HandwriteModal
+        open={handwriteOpen}
+        onClose={() => setHandwriteOpen(false)}
+        onResult={handleHandwriteResult}
+      />
     </div>
   );
 }
