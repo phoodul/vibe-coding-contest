@@ -69,7 +69,15 @@ export default function EulerBetaPage() {
       } else if (msg.includes("unauthenticated")) {
         setErrorMsg("로그인이 필요해요.");
       } else {
-        setErrorMsg("처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.");
+        // 임시 디버깅 — 정확한 에러 형식 파악 후 제거
+        const debug = JSON.stringify({
+          code: error.code ?? null,
+          message: msg.slice(0, 100),
+          details: error.details ?? null,
+          hint: error.hint ?? null,
+        });
+        setErrorMsg(`디버그: ${debug.slice(0, 240)}`);
+        console.error("[redeem_euler_beta] unhandled error:", error);
       }
       return;
     }
