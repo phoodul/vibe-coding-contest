@@ -96,6 +96,18 @@
 5. UI 영역 선택 확장 (`MATH_AREAS` 분류 재구성)
 6. (선택) 기출문제 DB 확장
 
+### 추가 task — 도구 직접 입력 UI (사용자 요청)
+
+사용자: "도구를 내가 추가하려면 어떻게 해야해. 각 영역별 도구가 수백 개"
+
+`/admin/math-tools` 확장:
+- ➕ **도구 직접 추가 폼** (id, name, layer, formula_latex, prerequisites, triggers N개)
+  · 제출 → math_tools insert + 임베딩 자동 생성 → math_tool_triggers insert
+- (선택) **JSON 일괄 업로드 폼** (파일 → 검증 → 일괄 적재)
+
+→ 운영 중 사용자가 웹 UI로 직접 도구 추가 가능.
++ Reasoner 자동 보고 + LLM 시드 = **3중 확장 채널** 완성.
+
 ### 비용 < $5 (임베딩 + LLM 생성)
 
 ## 핵심 산출물 요약
