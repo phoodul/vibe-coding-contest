@@ -23,6 +23,7 @@
 | Phase G-01 (5차 종료) | ✅ 💡 문제 해결 전략 버튼 + Coaching 4단계 가이드 | 1/1 |
 | Phase G-02 (6차 세션) | ✅ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 4/4 |
 | 중학교 시드 분할 (6차 세션) | ✅ middle → middle1/middle2/middle3 (8/8/19 도구) | 2/2 |
+| Phase G-03 (7차 세션) | ✅ chain miss 인프라 + Trigger 1.07→1.90 + KPI A/B 측정 | 3/3 |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -85,6 +86,18 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 총 6 commits. Phase G-02 + 중학교 학년 분리.
 
 **경쟁 차별화 강화**: chain 시각화로 "AI 가 왜 이렇게 생각했는지" 가시화 — ChatGPT Study Mode 가 못하는 영역.
+
+### 7차 세션 (2026-04-27 Night) — Phase G-03 chain miss 추적 + Trigger 보강 + KPI A/B
+
+| 단계 | 커밋 | 내용 |
+|---|---|---|
+| G03-A | e27a1b5 | euler_solve_logs +chain_termination/depth/used_tools, weakness aggregator chain_miss, ChainTerminationChart |
+| G03-B | 0377124 | scripts/augment-triggers.ts Haiku 자동 trigger 생성 + 9 영역 +201 trigger (1.07→1.90) + DB 임베딩 926 적재 |
+| G03-C | 9fd6d8d | scripts/eval-kpi.ts --chain A/B 모드 + 45 문항 baseline vs chain 측정 + docs/qa/kpi-chain-ab-report.md |
+
+총 3 commits. Phase G-03 인프라 + 시드 보강 + 정답률 측정.
+
+**KPI A/B 핵심**: 난이도 ≥5 정답률 baseline 47.4% = chain ON 47.4% (변동 없음). Chain 19/19 reached_conditions (100% robust). Sonnet 단발 자체가 이미 강해 chain 의 정답률 효과 미미. 다만 chain 시각화의 학생 코칭 가치는 별개 — Phase G-03 누적 데이터로 향후 측정.
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|

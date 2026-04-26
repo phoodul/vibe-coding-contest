@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-27 Night (6차 세션 자율 진행)
-- Phase: **Phase G-02 완료 + 중학교 시드 학년별 분리**
-- Step: 다음 세션 — 베타 사용자 피드백 + chain UX 검증 + Phase G-03 후보 (LayerStuckChart 에 chain miss 패턴 표시)
-- Session: 6차 (G-02 Recursive Chain + Middle 분리, Night mode 자율)
+- Time: 2026-04-27 Night (7차 세션 자율 진행)
+- Phase: **Phase G-03 완료 (chain miss 인프라 + Trigger 보강 + KPI A/B 측정)**
+- Step: 다음 세션 — 사용자 검증 + Phase G-04 후보 (chain min_depth 강제 / chain inject 강화 / 실제 수능 평가셋)
+- Session: 7차 (G-03 인프라 + 시각화 + Trigger 1.07→1.90 + KPI A/B baseline vs chain, Night mode 자율)
 
 ## 운영 상태 — Production 라이브
 
@@ -12,7 +12,7 @@
 |---|---|---|
 | Web (Vercel) | ✅ Live | https://vibe-coding-contest.vercel.app |
 | DB (Supabase) | ✅ 14 마이그레이션 적용 | wrcpehyvxvgvkdzeiehf |
-| 시드 (math_tools) | ✅ **244 도구 / 262 trigger / 524 임베딩** (8영역) | data/math-tools-seed/ + math-tools-seed.json |
+| 시드 (math_tools) | ✅ **244 도구 / 463 trigger / 926 임베딩** (avg 1.90) | data/math-tools-seed/ + math-tools-seed.json |
 | 운영 도구 추가 | ✅ 웹 UI + API | /admin/math-tools |
 | 외부 도구 (Phase F) | ✅ SymPy 25 + Z3 + matplotlib | services/euler-sympy/ |
 | Wolfram Alpha | ⏸ 코드 완료 / WOLFRAM_APP_ID 발급 대기 | $5/월 plan |
@@ -89,6 +89,35 @@
 3. **법무 자문 (LEG-02)** — 변호사 1회 30~80만원 (베타 검증 후)
 4. **KPI Full 측정** — `pnpm dlx dotenv-cli -e .env -- pnpm dlx tsx scripts/eval-kpi.ts --full`
 5. **풀이 누적 7일+10문제 후 리포트 검증** — 주 1회 자동 갱신
+
+## 7차 세션 완료 (2026-04-27 Night, 자율)
+
+### Phase G-03 — chain miss 추적 + Trigger 보강 + KPI A/B 측정
+
+| 커밋 | 내용 |
+|---|---|
+| e27a1b5 | G03-A: euler_solve_logs 에 chain_termination/depth/used_tools 컬럼 (마이그레이션 + logger + orchestrator + weakness aggregator + report page ChainTerminationChart) |
+| 0377124 | G03-B: scripts/augment-triggers.ts (Haiku 자동 trigger 생성) → 9 영역 +201 trigger / 244 도구 / 463 trigger / avg 1.07 → 1.90 |
+| 9fd6d8d | G03-C: scripts/eval-kpi.ts --chain 플래그 + 45 문항 A/B 측정 (baseline vs chain) + docs/qa/kpi-chain-ab-report.md |
+
+### KPI A/B 측정 핵심 결과
+
+| 지표 | Baseline | Chain ON | Δ |
+|---|---|---|---|
+| **난이도 ≥5 정답률** | 9/19 = **47.4%** | 9/19 = **47.4%** | **0pp** |
+| 전체 정답률 | 66.7% | 68.9% | +2.2pp (난이도 3 1건 우연) |
+| Retriever top-3 | 68.9% | 68.9% | 0pp |
+| Retriever top-5 | 77.8% | 75.6% | -2.2pp (오차) |
+| Chain 19/45 실행 | — | 19/19 reached, avg depth 2.21 | 100% 종료 성공 |
+
+**결론**: chain 알고리즘은 robust 하나 Sonnet 단발이 이미 강해 정답률 영향 미미.
+하지만 chain 시각화의 학생 코칭 가치는 별개 — Phase G-03 누적 데이터로 향후 측정 가능.
+
+향후 개선 후보 (Phase G-04):
+- chain min_depth 강제 (depth=1 reached 막기) → ToT 효과 살리기
+- chain inject 강화 (참고 → 의무)
+- SymPy tool 호출을 chain step 마다 강제 (계산 오류 차단)
+- 실제 수능 28~30번 평가셋 확보
 
 ## 6차 세션 완료 (2026-04-27 Night, 자율)
 

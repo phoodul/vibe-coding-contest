@@ -1,5 +1,73 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-27 Night (7차 세션 — G-03 chain miss + Trigger 보강 + KPI A/B, Night mode 자율)
+
+### 진행 요약
+사용자 지시: "G-03 + Trigger 보강 + 역행/순행 분해 방식의 킬러 정답률 A/B 측정". 6 task, 3 commits, KPI 결과 데이터까지 산출.
+
+### 1. Phase G-03: chain miss 추적 인프라 (e27a1b5)
+
+**마이그레이션** — `supabase/migrations/20260507_euler_solve_logs_chain.sql`
+- `chain_termination` (reached_conditions/max_depth/dead_end/cycle), `chain_depth` (0~8), `chain_used_tools` (text[])
+- 인덱스 `euler_logs_chain_idx` (where chain_termination is not null)
+- mcp__supabase__apply_migration 으로 직접 적용 (✓ success)
+
+**서버 사이드** — solve-logger / orchestrator route / weakness-aggregator
+- SolveLogInput 에 chain 메타 3종 추가
+- orchestrator: `chainLogMeta` 외부 변수로 잡아 logSolve 호출 시 전달
+- weakness-aggregator: `chain_miss` 진단 카테고리 추가 — chain_termination !== reached_conditions 누적
+
+**클라이언트** — `progress` API + `/euler/report` 페이지
+- progress route: chain {executed_count, avg_depth, distribution, success_rate} 집계
+- ChainTerminationChart 컴포넌트 — 4종 종료 사유별 분포 + 힌트 멘트 (조건 도달/최대 깊이/막다른 길/순환)
+
+### 2. Trigger 보강 — 244 / 262 → 244 / 463 (avg 1.07 → 1.90) (0377124)
+
+- `scripts/augment-triggers.ts` 신규: Haiku 4.5 로 도구당 부족한 방향 trigger 1개 자동 생성
+  · 기존 trigger 가 forward 만 있으면 backward 추가, 그 반대도 동일
+  · 5개씩 병렬 호출 + 검증 (direction/condition/goal_pattern/why 필드 정합성)
+- 9 영역 모두 적용 (write 모드): +201 trigger / 0 failed
+  · calculus_extra +28 · common +31 · geometry +24 · math1 +29 · math2 +30
+  · middle1 +7 · middle2 +6 · middle3 +15 · probability +30
+- DB 적재: `seed-math-tools.ts` 실행 → 244 tools upsert + 463 triggers reinsert + 926 임베딩 (forward+backward)
+
+### 3. KPI A/B 측정 — chain ON vs OFF (9fd6d8d)
+
+**eval-kpi.ts 확장**:
+- `--chain` 플래그 추가 → 난이도 ≥5 문항만 recursiveBackwardChain 실행
+- chain 결과를 chainContext 로 직렬화 → Reasoner systemPrompt 에 inject
+- runRecursiveChain inline 구현 (server supabase 의존 회피, 본 스크립트의 runRetriever 재사용)
+- KpiSummary.chain {executed_count, avg_depth, termination_dist, success_rate} 추가
+- 결과 파일 분리: kpi-evaluation-baseline.json / kpi-evaluation-chain.json
+
+**측정 결과** (45 합성 문항, 9 영역):
+
+| 지표 | Baseline | Chain ON | Δ |
+|---|---|---|---|
+| **난이도 ≥5 정답률** | 9/19 = **47.4%** | 9/19 = **47.4%** | **0pp** |
+| 전체 정답률 | 30/45 = 66.7% | 31/45 = 68.9% | +2.2pp (난이도 3 1건 우연) |
+| Retriever top-3 | 68.9% | 68.9% | 0 |
+| Retriever top-5 | 77.8% | 75.6% | -2.2pp (오차) |
+| Chain (chain ON 만) | — | **19/19 reached, avg depth 2.21** | 100% 종료 |
+
+**핵심 인사이트**:
+1. chain 알고리즘 자체는 robust — 19건 모두 reached_conditions, dead_end/cycle 0건
+2. Sonnet 4.6 단발이 이미 강해 chain inject 가 정답률을 끌어올리지 못함 (계산 오류는 chain 으로 못 막음)
+3. 평균 depth 2.21 너무 얕음 — Tree-of-Thoughts 효과는 d=4~5 에서 발생 (Yao 2023)
+4. chain 시각화의 **학생 코칭 가치는 별개** — 학습 리포트에 chain miss 패턴 누적 (Phase G-03 인프라) 으로 향후 측정 가능
+
+**향후 개선 (Phase G-04 후보)**:
+- chain min_depth 강제 (depth=1 reached 막기)
+- chain inject 어조 강화 (참고 → 의무)
+- SymPy tool 호출을 chain step 마다 강제 (계산 오류 차단)
+- 실제 수능 28~30번 평가셋 확보
+
+### 산출물
+- `docs/qa/kpi-evaluation-baseline.json` — 45 문항 chain OFF raw
+- `docs/qa/kpi-evaluation-chain.json` — 45 문항 chain ON raw
+- `docs/qa/kpi-chain-ab-report.md` — 분석 보고서
+- DB: 463 triggers / 926 embeddings
+
 ## 2026-04-27 Night (6차 세션 — G-02 + 중학교 분리, Night mode 자율)
 
 ### 진행 요약
