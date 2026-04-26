@@ -1,5 +1,41 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-26 (4차 세션 — 시드 영역 확장 + 직접 입력 UI)
+
+### 진행 요약
+사용자 요청 "미적분만으론 베타 모집 폭이 좁다" 대응. 4차 세션 핵심.
+
+### 1. 시드 영역 확장 (1909c54)
+- `data/math-tools-seed/` 디렉터리 도입 (8 영역 분리 관리)
+  · middle 35 / common 34 / math1 29 / math2 30
+  · probability 30 / geometry 25 / calculus_extra 29
+  · 기존 calculus seed 32 와 합산 **244 도구 / 262 trigger**
+- `scripts/seed-math-tools.ts` 디렉터리 모드 + `--only=<file>` 옵션 추가
+- Manager prompt area enum: 한국 교육과정 8단계로 재편
+  (middle/common/math1/math2/calculus/probability/geometry/free)
+- `MATH_AREAS` UI 8개 카드 (수학Ⅰ·Ⅱ 분리, 중학 추가)
+- Supabase 적재: 244 도구 / 262 trigger / **524 임베딩** (≈ \$0.001)
+
+### 2. 직접 입력 UI (859cdca)
+- `POST /api/admin/math-tools` — 검증 + insert + 임베딩 자동 + 롤백
+- `GET` — 등록 도구·trigger 카운트
+- `/admin/math-tools` 헤더에 카운트 표시 + "➕ 도구 직접 추가" 토글
+- AddToolForm: id/name/layer/formula/prerequisites + 동적 trigger N개
+  (forward/backward/both 조건별 분기 입력)
+- 임베딩 비용 ≈ \$0.000004/도구 (운영 중 점진 확장 부담 0)
+
+### 3중 확장 채널 완성
+1. LLM 시드 자동화 (대량)
+2. 운영자 웹 UI (1건씩)
+3. Reasoner 자동 보고 + 검수 큐 (사용자 풀이로부터)
+
+### 다음 세션 후보
+- 영역별 trigger 보강 (현재 평균 1.1, 양방향 1.5+ 목표)
+- 영역별 KPI 평가 (8개 영역 각 5문항 합성)
+- 베타 사용자 풀이로 Reasoner 자동 보고가 candidate_tools 채우는지 모니터링
+
+---
+
 ## 2026-04-26 (3차 세션 — 운영 라이브 + 베타 UX 완성)
 
 ### 진행 요약

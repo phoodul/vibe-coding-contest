@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-26 (3차 세션 종료)
-- Phase: **정식 출시 단계 — 운영 인프라 완료, 베타 50명 모집 준비**
-- Step: 베타 사용자 검증 + LEG-02 변호사 자문 진행
-- Session: 3차 (베타 모집 직전)
+- Time: 2026-04-26 (4차 세션 종료)
+- Phase: **정식 출시 단계 — 시드 8영역 244 도구 / 운영 도구 추가 UI 완성**
+- Step: 베타 사용자 풀이 검증 + 영역별 trigger 보강 + LEG-02 자문
+- Session: 4차 (시드 영역 확장 직후)
 
 ## 운영 상태 — Production 라이브
 
@@ -12,7 +12,8 @@
 |---|---|---|
 | Web (Vercel) | ✅ Live | https://vibe-coding-contest.vercel.app |
 | DB (Supabase) | ✅ 14 마이그레이션 적용 | wrcpehyvxvgvkdzeiehf |
-| 시드 (math_tools) | ✅ 32 도구 / 39 trigger / 78 임베딩 | data/math-tools-seed.json |
+| 시드 (math_tools) | ✅ **244 도구 / 262 trigger / 524 임베딩** (8영역) | data/math-tools-seed/ + math-tools-seed.json |
+| 운영 도구 추가 | ✅ 웹 UI + API | /admin/math-tools |
 | μSvc (Railway) | ✅ Live | https://vibe-coding-contest-production.up.railway.app |
 | Vercel env | ✅ 19 row 등록 (Production + Preview) | EULER_*, ANTHROPIC_HAIKU, CRON_SECRET 포함 |
 | 베타 게이트 | ✅ 동작 검증 | 코드 `EULER2026`, 50명 cap |
@@ -63,6 +64,21 @@
 
 총 3차 세션 14 commits, production 운영 인프라 + UX 개선 모두 완료.
 
+### 4차 세션 추가 작업 (2026-04-26)
+
+**시드 영역 확장**: `1909c54`
+- `data/math-tools-seed/` 디렉터리 (8 영역 분리 관리)
+- middle 35 / common 34 / math1 29 / math2 30 / probability 30 / geometry 25 / calculus_extra 29 + 기존 32 = **244 도구**
+- 262 trigger / 524 임베딩 적재 (≈ \$0.001)
+- Manager area enum 8단계 + UI MATH_AREAS 8개 카드
+
+**운영 도구 추가 UI**: `859cdca`
+- POST/GET `/api/admin/math-tools` (insert + 임베딩 + 롤백)
+- `/admin/math-tools` 헤더 + AddToolForm (동적 trigger N개)
+- 운영 중 1건씩 점진 추가 채널 완성
+
+→ 3중 확장 채널 (LLM 시드 / 운영자 UI / Reasoner 자동보고) 완성.
+
 ## Next Action (사용자 직접 단계)
 
 1. **베타 사용자 풀이 검증** — 본인 + 지인으로 시나리오 재현
@@ -71,44 +87,22 @@
 4. **KPI Full 측정** — `pnpm dlx dotenv-cli -e .env -- pnpm dlx tsx scripts/eval-kpi.ts --full`
 5. **풀이 누적 7일+10문제 후 리포트 검증** — 주 1회 자동 갱신
 
-## 다음 세션 첫 Task — 시드 영역 확장 ⭐
+## 다음 세션 후보
 
-사용자 피드백 (3차 세션 종료 시): "미적분만으론 베타 모집 폭이 좁다.
-중학수학·공통수학·수학1·수학2·확률통계·기하 등도 보충해야 베타 테스트가 의미 있다."
+### A. 영역별 trigger 보강 (현재 평균 1.1 → 1.5+)
+양방향 trigger (forward + backward) 가 모두 있는 도구 비율 향상.
+Retriever 양방향 검색 정확도 직접 영향. 영역별 LLM 보강.
 
-### 작업 범위 (약 200 도구 추가, 자율 진행 3~4시간)
+### B. 영역별 KPI 평가 셋
+8개 영역 각 5문항씩 합성 (현재 KPI 10문항 → 40문항).
+영역별 hit rate / coaching quality 측정.
 
-| 영역 | 추가 도구 | 비고 |
-|---|---|---|
-| 중학교 수학 | 30~40 | 방정식·함수·도형·통계 기초 |
-| 공통수학 (고1) | 30~40 | 수와 식·방정식·함수·도형 |
-| 수학1 | 30 | 지수·로그·삼각함수·수열 |
-| 수학2 | 30 | 극한·미분·적분 기초 |
-| 확률과통계 | 30 | 경우의 수·확률·통계 |
-| 기하 | 25 | 이차곡선·벡터·공간도형 |
-| 미적분 보강 | +30 (32 → 60+) | 도구 다양성 강화 |
+### C. 베타 사용자 풀이 모니터링
+Reasoner 자동 보고가 candidate_tools 를 잘 채우는지 관찰.
+풀이 데이터 누적되면 사용자 빈출 도구 식별 가능.
 
-### 단계
-1. LLM 자동화 시드 생성 (Sonnet, 영역별 JSON 파일)
-2. 사용자 검수 (`/admin/math-tools` 또는 JSON 직접)
-3. `scripts/seed-math-tools.ts` 일괄 적재 (임베딩 ~$0.001)
-4. Manager prompt 영역 enum 확장 (middle / common / math1 / math2 / probability / geometry)
-5. UI 영역 선택 확장 (`MATH_AREAS` 분류 재구성)
-6. (선택) 기출문제 DB 확장
-
-### 추가 task — 도구 직접 입력 UI (사용자 요청)
-
-사용자: "도구를 내가 추가하려면 어떻게 해야해. 각 영역별 도구가 수백 개"
-
-`/admin/math-tools` 확장:
-- ➕ **도구 직접 추가 폼** (id, name, layer, formula_latex, prerequisites, triggers N개)
-  · 제출 → math_tools insert + 임베딩 자동 생성 → math_tool_triggers insert
-- (선택) **JSON 일괄 업로드 폼** (파일 → 검증 → 일괄 적재)
-
-→ 운영 중 사용자가 웹 UI로 직접 도구 추가 가능.
-+ Reasoner 자동 보고 + LLM 시드 = **3중 확장 채널** 완성.
-
-### 비용 < $5 (임베딩 + LLM 생성)
+### D. (이월) 기출문제 DB 영역 확장
+현재 calculus 위주. 다른 영역 기출 매핑 필요.
 
 ## 핵심 산출물 요약
 
