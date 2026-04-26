@@ -40,13 +40,18 @@ begin
     raise exception 'invalid_code';
   end if;
 
-  -- 이미 redeem 한 사용자
-  if exists (select 1 from public.euler_beta_invites where user_id = v_user and status = 'active') then
+  -- 이미 redeem 한 사용자 (alias 로 fully-qualify — returns table(status,...) 와의 ambiguous 회피)
+  if exists (
+    select 1 from public.euler_beta_invites ebi
+    where ebi.user_id = v_user and ebi.status = 'active'
+  ) then
     return query select 'active'::text, (select count(*)::int from public.euler_beta_invites);
     return;
   end if;
 
-  select count(*)::int into v_total from public.euler_beta_invites where status = 'active';
+  select count(*)::int into v_total
+  from public.euler_beta_invites ebi
+  where ebi.status = 'active';
   if v_total >= v_max then
     raise exception 'beta_full';
   end if;
