@@ -100,7 +100,7 @@ export default function EulerFamilyPage() {
     return (
       <main className="mx-auto max-w-3xl px-4 py-16 text-center text-white">
         <h1 className="text-2xl font-bold">로그인이 필요해요</h1>
-        <Link href="/auth/login?next=/euler/family" className="text-violet-400 underline mt-4 inline-block">
+        <Link href="/login?next=/euler/family" className="text-violet-400 underline mt-4 inline-block">
           로그인하러 가기
         </Link>
       </main>

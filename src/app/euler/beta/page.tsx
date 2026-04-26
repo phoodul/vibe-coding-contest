@@ -27,7 +27,7 @@ export default function EulerBetaPage() {
       } = await supabase.auth.getUser();
       if (!user) {
         if (!cancelled) {
-          router.replace(`/auth/login?next=${encodeURIComponent(`/euler/beta?next=${next}`)}`);
+          router.replace(`/login?next=${encodeURIComponent(`/euler/beta?next=${next}`)}`);
         }
         return;
       }

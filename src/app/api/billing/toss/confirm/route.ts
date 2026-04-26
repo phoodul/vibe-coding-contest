@@ -47,7 +47,7 @@ export async function GET(req: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.redirect(new URL("/auth/login?next=/euler/billing", req.url));
+    return NextResponse.redirect(new URL("/login?next=/euler/billing", req.url));
   }
 
   // Toss confirm API

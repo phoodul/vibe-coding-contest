@@ -191,3 +191,4 @@ palace-*.png
 supabase/.temp/
 supabase/migrations/.empty
 .vercel
+.env*.local

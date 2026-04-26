@@ -25,7 +25,7 @@ export default function EulerCanvasPage() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        router.replace("/auth/login?next=/euler/canvas");
+        router.replace("/login?next=/euler/canvas");
         return;
       }
       const { data } = await supabase
