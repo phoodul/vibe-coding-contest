@@ -1,0 +1,338 @@
+{
+  "version": 1,
+  "created_at": "2026-04-26",
+  "area": "probability",
+  "note": "확률과 통계 — 경우의 수·확률·확률분포·통계적 추정. 보편적 정의·정리.",
+  "tools": [
+    {
+      "id": "P_perm_repetition_full",
+      "name": "중복순열 nΠr",
+      "knowledge_layer": 4,
+      "formula_latex": "{}_n \\Pi_r = n^r",
+      "prerequisites": ["곱의 법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "n개에서 r개를 중복허용·순서 있게 뽑기", "derived_fact": "n^r", "why": "각 자리마다 n 가지 독립 선택" }
+      ]
+    },
+    {
+      "id": "P_perm_circular",
+      "name": "원순열",
+      "knowledge_layer": 4,
+      "formula_latex": "(n-1)!",
+      "prerequisites": ["순열"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "n명을 원형 배치", "derived_fact": "(n-1)!", "why": "회전 동치류로 나누면 한 명 고정" }
+      ]
+    },
+    {
+      "id": "P_perm_same_things",
+      "name": "같은 것이 있는 순열",
+      "knowledge_layer": 4,
+      "formula_latex": "\\frac{n!}{p! \\cdot q! \\cdot r!}",
+      "prerequisites": ["순열"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "동종 항목이 반복", "derived_fact": "동치 순열로 나눔", "why": "구분 불가능한 동일 그룹의 내부 순열로 나눠 보정" }
+      ]
+    },
+    {
+      "id": "P_combination_with_repetition",
+      "name": "중복조합 nHr",
+      "knowledge_layer": 5,
+      "formula_latex": "{}_n H_r = {}_{n+r-1} C_r",
+      "prerequisites": ["조합"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "n 종에서 r 개를 중복허용·순서 무관 선택", "derived_fact": "막대-별 모형으로 (n+r-1)Cr", "why": "동일 항목 그룹화 — 막대 n-1개와 별 r개 배치" }
+      ]
+    },
+    {
+      "id": "P_partition_combination",
+      "name": "조합의 분할 정리",
+      "knowledge_layer": 5,
+      "formula_latex": "{}_n C_r = {}_{n-1} C_{r-1} + {}_{n-1} C_r",
+      "prerequisites": ["조합"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "조합 항등식 증명", "premises": ["특정 원소 포함 vs 미포함 분할"], "why": "이항계수의 파스칼 항등식 — 한 원소 기준 케이스 분해" }
+      ]
+    },
+    {
+      "id": "P_binomial_coefficient_identity",
+      "name": "이항계수 항등식 (대칭·합)",
+      "knowledge_layer": 5,
+      "formula_latex": "{}_n C_r = {}_n C_{n-r};\\;\\; \\sum_{k=0}^{n} {}_n C_k = 2^n",
+      "prerequisites": ["조합"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "조합 합·대칭 활용", "derived_fact": "패턴 인식으로 즉시 산출", "why": "(1+1)^n 의 이항전개 + 부분집합 카운팅" }
+      ]
+    },
+    {
+      "id": "P_probability_addition",
+      "name": "확률의 덧셈정리",
+      "knowledge_layer": 4,
+      "formula_latex": "P(A \\cup B) = P(A) + P(B) - P(A \\cap B)",
+      "prerequisites": ["확률 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 사건 중 적어도 하나", "derived_fact": "교집합 보정", "why": "이중 카운트 방지" }
+      ]
+    },
+    {
+      "id": "P_conditional_probability",
+      "name": "조건부확률",
+      "knowledge_layer": 5,
+      "formula_latex": "P(A|B) = \\frac{P(A \\cap B)}{P(B)}",
+      "prerequisites": ["확률"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "사건 B가 일어났을 때 A 의 확률", "derived_fact": "A∩B 를 B 로 정규화", "why": "표본공간을 B 로 좁힘" }
+      ]
+    },
+    {
+      "id": "P_multiplication_rule",
+      "name": "확률의 곱셈정리",
+      "knowledge_layer": 5,
+      "formula_latex": "P(A \\cap B) = P(A) P(B|A) = P(B) P(A|B)",
+      "prerequisites": ["조건부확률"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 사건이 잇따라 일어남", "derived_fact": "조건부 확률을 통한 분해", "why": "조건부확률 정의의 양변 정리" }
+      ]
+    },
+    {
+      "id": "P_independence",
+      "name": "사건의 독립",
+      "knowledge_layer": 4,
+      "formula_latex": "A,B \\text{ 독립} \\Leftrightarrow P(A \\cap B) = P(A) P(B)",
+      "prerequisites": ["확률"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "사건이 서로 영향이 없음", "derived_fact": "확률의 단순 곱", "why": "B 발생이 A 확률을 바꾸지 않을 때" }
+      ]
+    },
+    {
+      "id": "P_total_probability",
+      "name": "전확률 정리",
+      "knowledge_layer": 5,
+      "formula_latex": "P(A) = \\sum_i P(B_i) P(A|B_i)\\;(B_i \\text{ 분할})",
+      "prerequisites": ["조건부확률"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "복합 사건의 전체 확률", "premises": ["배반 분할"], "why": "표본공간 분할 후 각 부분의 확률 가중합" }
+      ]
+    },
+    {
+      "id": "P_bayes_theorem",
+      "name": "베이즈 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "P(B_i|A) = \\frac{P(B_i) P(A|B_i)}{\\sum_j P(B_j) P(A|B_j)}",
+      "prerequisites": ["전확률"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "관찰된 사건 A 가 어느 가설 B_i 에서 비롯되었을 확률", "premises": ["사전확률 + 가능도"], "why": "조건의 방향을 뒤집기 — 사후확률 계산" }
+      ]
+    },
+    {
+      "id": "P_random_variable_basics",
+      "name": "확률변수와 확률분포",
+      "knowledge_layer": 4,
+      "formula_latex": "X: S \\to \\mathbb R,\\;\\; \\sum_x P(X=x) = 1",
+      "prerequisites": ["확률"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "결과를 수치화", "derived_fact": "확률질량/밀도함수", "why": "사건을 수치 함수로 추상화" }
+      ]
+    },
+    {
+      "id": "P_expected_value",
+      "name": "기댓값",
+      "knowledge_layer": 4,
+      "formula_latex": "E(X) = \\sum_x x \\cdot P(X=x)",
+      "prerequisites": ["확률변수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "장기 평균 결과", "derived_fact": "값×확률 합", "why": "가능한 모든 결과의 가중평균" }
+      ]
+    },
+    {
+      "id": "P_expectation_linearity",
+      "name": "기댓값의 선형성",
+      "knowledge_layer": 5,
+      "formula_latex": "E(aX+b) = aE(X) + b;\\;\\; E(X+Y)=E(X)+E(Y)",
+      "prerequisites": ["기댓값"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "기댓값의 합·상수배", "derived_fact": "선형성으로 분해", "why": "독립 여부와 관계없이 항상 성립" }
+      ]
+    },
+    {
+      "id": "P_variance",
+      "name": "확률변수의 분산·표준편차",
+      "knowledge_layer": 5,
+      "formula_latex": "V(X) = E(X^2) - (E(X))^2;\\;\\; \\sigma(X) = \\sqrt{V(X)}",
+      "prerequisites": ["기댓값"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "흩어짐 정도", "derived_fact": "E(X²) - E(X)²", "why": "편차 제곱의 기댓값 — 계산 친화적 형태" }
+      ]
+    },
+    {
+      "id": "P_variance_linear",
+      "name": "분산의 선형 변환",
+      "knowledge_layer": 5,
+      "formula_latex": "V(aX+b) = a^2 V(X)",
+      "prerequisites": ["분산"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "X 의 일차변환", "derived_fact": "상수항 무관, 곱은 제곱", "why": "분산은 위치 불변, 척도 제곱 변환" }
+      ]
+    },
+    {
+      "id": "P_binomial_distribution",
+      "name": "이항분포 B(n,p)",
+      "knowledge_layer": 5,
+      "formula_latex": "P(X=k) = {}_n C_k p^k (1-p)^{n-k};\\;\\; E=np,\\; V=npq",
+      "prerequisites": ["조합", "독립시행"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "n번 독립시행, 성공확률 p, 성공 횟수 X", "derived_fact": "이항계수 × 확률", "why": "각 케이스 확률은 같고 경우의 수는 nCk" }
+      ]
+    },
+    {
+      "id": "P_normal_distribution",
+      "name": "정규분포 N(μ, σ²)",
+      "knowledge_layer": 5,
+      "formula_latex": "f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-(x-\\mu)^2/(2\\sigma^2)}",
+      "prerequisites": ["확률변수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "평균 μ, 표준편차 σ 의 종 모양 분포", "derived_fact": "구간 확률은 적분 또는 표준화 후 표 사용", "why": "중심극한정리에 의해 자연 현상에 보편적" }
+      ]
+    },
+    {
+      "id": "P_standardization",
+      "name": "표준화 Z = (X-μ)/σ",
+      "knowledge_layer": 5,
+      "formula_latex": "X \\sim N(\\mu, \\sigma^2) \\Rightarrow Z = \\frac{X-\\mu}{\\sigma} \\sim N(0,1)",
+      "prerequisites": ["정규분포"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "정규분포 확률을 표준정규분포표로 변환", "derived_fact": "선형 표준화", "why": "평행이동 + 척도 변환으로 표준화" }
+      ]
+    },
+    {
+      "id": "P_normal_approx_binomial",
+      "name": "이항분포의 정규근사",
+      "knowledge_layer": 6,
+      "formula_latex": "X \\sim B(n,p),\\; np \\ge 5,\\; nq \\ge 5 \\Rightarrow X \\approx N(np, npq)",
+      "prerequisites": ["이항", "정규"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "n 이 충분히 크고 p 가 극단적이지 않다", "derived_fact": "정규분포로 근사", "why": "중심극한정리의 특수 경우" }
+      ]
+    },
+    {
+      "id": "P_sample_mean_distribution",
+      "name": "표본평균의 분포",
+      "knowledge_layer": 6,
+      "formula_latex": "X_i \\sim N(\\mu, \\sigma^2) \\text{ iid} \\Rightarrow \\bar{X} \\sim N(\\mu, \\sigma^2/n)",
+      "prerequisites": ["정규분포"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "n개 표본의 평균 분포", "derived_fact": "분산이 1/n 로 감소", "why": "독립 합의 분산 가법성" }
+      ]
+    },
+    {
+      "id": "P_confidence_interval_mean",
+      "name": "모평균의 신뢰구간",
+      "knowledge_layer": 6,
+      "formula_latex": "\\bar{X} - z_{\\alpha/2} \\frac{\\sigma}{\\sqrt n} \\le \\mu \\le \\bar{X} + z_{\\alpha/2} \\frac{\\sigma}{\\sqrt n}",
+      "prerequisites": ["표본평균 분포"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "모평균의 신뢰구간", "premises": ["표본평균 + σ/√n + z_{α/2}"], "why": "표본평균이 모평균 주변에 정규분포 — 양쪽 z 만큼" }
+      ]
+    },
+    {
+      "id": "P_continuous_uniform",
+      "name": "연속균등분포",
+      "knowledge_layer": 4,
+      "formula_latex": "f(x) = \\frac{1}{b-a}\\;(a \\le x \\le b)",
+      "prerequisites": ["연속확률변수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "구간에서 모든 값이 같은 확률밀도", "derived_fact": "확률 = 길이 비율", "why": "균등 밀도 → 부분 길이가 곧 확률" }
+      ]
+    },
+    {
+      "id": "P_pdf_to_probability",
+      "name": "확률밀도함수와 확률",
+      "knowledge_layer": 5,
+      "formula_latex": "P(a \\le X \\le b) = \\int_a^b f(x) dx",
+      "prerequisites": ["연속확률변수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "연속 확률변수의 구간 확률", "derived_fact": "밀도함수 적분", "why": "밀도의 면적이 확률" }
+      ]
+    },
+    {
+      "id": "P_complement",
+      "name": "여사건의 확률",
+      "knowledge_layer": 3,
+      "formula_latex": "P(A^c) = 1 - P(A)",
+      "prerequisites": ["확률"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "P(A) 를 직접 구하기 어렵다", "premises": ["여사건이 단순"], "why": "전체확률 1 에서 빼기 — 직접보다 쉬울 때 강력" }
+      ]
+    },
+    {
+      "id": "P_geometric_probability",
+      "name": "기하학적 확률",
+      "knowledge_layer": 5,
+      "formula_latex": "P = \\frac{\\text{사건 영역의 길이/넓이/부피}}{\\text{전체 영역}}",
+      "prerequisites": ["연속균등"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "연속 공간 위 균등 표본", "derived_fact": "측도의 비", "why": "균등성 가정에서 측도가 곧 확률" }
+      ]
+    },
+    {
+      "id": "P_repeated_trials",
+      "name": "독립시행의 확률",
+      "knowledge_layer": 4,
+      "formula_latex": "n \\text{ 번 시행 중 } k \\text{ 번 성공: } {}_n C_k p^k q^{n-k}",
+      "prerequisites": ["독립", "조합"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "동일·독립 시행 반복", "derived_fact": "이항분포", "why": "각 시행이 동일·독립이면 이항 모형" }
+      ]
+    },
+    {
+      "id": "P_expectation_function",
+      "name": "확률변수 함수의 기댓값",
+      "knowledge_layer": 5,
+      "formula_latex": "E(g(X)) = \\sum_x g(x) P(X=x)",
+      "prerequisites": ["기댓값"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "X 의 함수의 기댓값", "derived_fact": "g(x) 가중합", "why": "치환된 값의 가중평균" }
+      ]
+    },
+    {
+      "id": "P_normal_table_lookup",
+      "name": "표준정규분포표 활용",
+      "knowledge_layer": 5,
+      "formula_latex": "P(0 \\le Z \\le z) \\text{ 표 검색 → 대칭·여사건으로 확장}",
+      "prerequisites": ["표준화"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "특정 구간의 표준정규 확률", "derived_fact": "표 + 대칭성으로 산출", "why": "표는 양수 영역만 — 대칭성으로 음수 영역 환원" }
+      ]
+    }
+  ]
+}

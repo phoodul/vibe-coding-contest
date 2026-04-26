@@ -1,0 +1,338 @@
+{
+  "version": 1,
+  "created_at": "2026-04-26",
+  "area": "math2",
+  "note": "수학2 — 함수의 극한·연속·미분·적분 (다항·유리·무리). 보편적 정의·정리.",
+  "tools": [
+    {
+      "id": "M2_limit_definition",
+      "name": "함수의 극한 (직관적 정의)",
+      "knowledge_layer": 4,
+      "formula_latex": "\\lim_{x \\to a} f(x) = L \\Leftrightarrow x \\to a \\text{ 일 때 } f(x) \\to L",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "x→a 일 때 f(x) 의 거동", "derived_fact": "좌·우극한 비교", "why": "극한값은 좌·우극한이 모두 같을 때만 정의" }
+      ]
+    },
+    {
+      "id": "M2_limit_one_sided",
+      "name": "좌극한·우극한",
+      "knowledge_layer": 4,
+      "formula_latex": "\\lim_{x \\to a^-} f(x),\\;\\; \\lim_{x \\to a^+} f(x)",
+      "prerequisites": ["극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "분기·절댓값·계단함수가 등장", "derived_fact": "좌·우 따로 평가", "why": "함수의 정의가 한 점 양쪽에서 다를 수 있다" }
+      ]
+    },
+    {
+      "id": "M2_limit_zero_over_zero",
+      "name": "0/0 꼴 — 인수분해·유리화",
+      "knowledge_layer": 4,
+      "formula_latex": "\\lim_{x \\to a} \\frac{f(x)}{g(x)},\\; f(a)=g(a)=0 \\Rightarrow \\text{인수분해 또는 유리화로 (x-a) 약분}",
+      "prerequisites": ["인수분해"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "0/0 부정형", "derived_fact": "공통인수 (x-a) 약분 후 재대입", "why": "분자·분모가 동시에 0 → 같은 인수 존재" }
+      ]
+    },
+    {
+      "id": "M2_limit_inf_over_inf",
+      "name": "∞/∞ 꼴 — 최고차로 나누기",
+      "knowledge_layer": 4,
+      "formula_latex": "\\lim_{x \\to \\infty} \\frac{a_n x^n + \\dots}{b_m x^m + \\dots} = \\begin{cases} a_n/b_m & (n=m) \\\\ 0 & (n<m) \\\\ \\pm\\infty & (n>m) \\end{cases}",
+      "prerequisites": ["극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "유리식의 ∞ 극한", "derived_fact": "최고차 비교", "why": "최고차항이 거동을 지배" }
+      ]
+    },
+    {
+      "id": "M2_limit_sandwich",
+      "name": "샌드위치 정리 (조임)",
+      "knowledge_layer": 5,
+      "formula_latex": "g(x) \\le f(x) \\le h(x),\\; \\lim g = \\lim h = L \\Rightarrow \\lim f = L",
+      "prerequisites": ["부등식과 극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "f 의 극한이 직접 평가 어려움", "premises": ["위·아래 평가 함수의 극한이 일치"], "why": "양쪽 극한이 같으면 가운데도 같다 — 진동 함수에 강력" }
+      ]
+    },
+    {
+      "id": "M2_continuity",
+      "name": "함수의 연속",
+      "knowledge_layer": 4,
+      "formula_latex": "f \\text{ at } a \\text{ 연속} \\Leftrightarrow \\lim_{x \\to a} f(x) = f(a)",
+      "prerequisites": ["극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "연속성 판정", "derived_fact": "정의값 = 극한값 확인", "why": "연속의 정의 — 그래프가 끊기지 않음" }
+      ]
+    },
+    {
+      "id": "M2_ivt_basic",
+      "name": "사잇값 정리 (수학2)",
+      "knowledge_layer": 5,
+      "formula_latex": "f \\in C[a,b],\\; f(a) f(b) < 0 \\Rightarrow \\exists c \\in (a,b): f(c)=0",
+      "prerequisites": ["연속함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "방정식 f(x)=0 의 실근이 (a,b) 에 존재함을 보여라", "premises": ["연속 + 부호변화"], "why": "연속함수는 중간값을 빠짐없이 거친다" }
+      ]
+    },
+    {
+      "id": "M2_evt_basic",
+      "name": "최대·최소 정리",
+      "knowledge_layer": 5,
+      "formula_latex": "f \\in C[a,b] \\Rightarrow f \\text{ 는 } [a,b] \\text{ 에서 최대·최솟값을 가진다}",
+      "prerequisites": ["연속함수", "닫힌구간"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "닫힌구간 위 최댓값·최솟값", "premises": ["연속 + 닫힌구간"], "why": "두 조건의 결합이 극값의 존재를 보장" }
+      ]
+    },
+    {
+      "id": "M2_derivative_definition",
+      "name": "미분계수의 정의",
+      "knowledge_layer": 4,
+      "formula_latex": "f'(a) = \\lim_{h \\to 0} \\frac{f(a+h)-f(a)}{h}",
+      "prerequisites": ["극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "미분 가능성·정의 직접 확인", "derived_fact": "차분상의 극한", "why": "순간변화율 — 평균변화율의 극한" }
+      ]
+    },
+    {
+      "id": "M2_derivative_polynomial",
+      "name": "다항함수의 미분 (멱법칙)",
+      "knowledge_layer": 3,
+      "formula_latex": "(x^n)' = n x^{n-1};\\;\\; (\\sum c_i x^i)' = \\sum i c_i x^{i-1}",
+      "prerequisites": ["미분 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "다항함수의 도함수", "derived_fact": "각 항에 멱법칙 적용", "why": "선형성 + 멱법칙으로 즉시 산출" }
+      ]
+    },
+    {
+      "id": "M2_tangent_line",
+      "name": "한 점에서의 접선의 방정식",
+      "knowledge_layer": 4,
+      "formula_latex": "y - f(a) = f'(a)(x - a)",
+      "prerequisites": ["미분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "곡선 y=f(x) 의 접선", "premises": ["접점 (a, f(a)) + 기울기 f'(a)"], "why": "접선은 점-기울기 형태의 직선" }
+      ]
+    },
+    {
+      "id": "M2_tangent_external",
+      "name": "곡선 밖의 점에서 그은 접선",
+      "knowledge_layer": 5,
+      "formula_latex": "\\text{접점 } t \\text{ 가정 } \\to \\text{ 접선이 외부 점 통과 조건 식}",
+      "prerequisites": ["접선의 방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "곡선 밖 점에서 접선의 개수·식", "premises": ["접점을 미지수로 놓고 통과 조건"], "why": "접점 매개변수화로 단변수 방정식으로 환원" }
+      ]
+    },
+    {
+      "id": "M2_increasing_decreasing",
+      "name": "함수의 증가·감소 판정",
+      "knowledge_layer": 4,
+      "formula_latex": "f'(x) > 0 \\text{ on } I \\Rightarrow f \\nearrow \\text{ on } I",
+      "prerequisites": ["미분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "단조성 판정", "derived_fact": "도함수 부호 분석", "why": "기울기의 부호가 증감을 결정" }
+      ]
+    },
+    {
+      "id": "M2_extremum_first_derivative",
+      "name": "극값 — 일계도함수 부호변화",
+      "knowledge_layer": 4,
+      "formula_latex": "f'(c)=0 \\text{ 에서 } f' \\text{ 부호가 } + \\to - \\Rightarrow \\text{극대};\\; - \\to + \\Rightarrow \\text{극소}",
+      "prerequisites": ["증감"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "함수의 극값 위치·종류", "premises": ["임계점 + 부호표"], "why": "기울기가 0 인 점에서 부호가 바뀌면 극값" }
+      ]
+    },
+    {
+      "id": "M2_extremum_second_derivative",
+      "name": "극값 — 이계도함수 부호 (수학2 한정 다항함수)",
+      "knowledge_layer": 5,
+      "formula_latex": "f'(c)=0,\\; f''(c)>0 \\Rightarrow \\text{극소};\\; f''(c)<0 \\Rightarrow \\text{극대}",
+      "prerequisites": ["미분", "이계도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "임계점에서 극값 종류 판정", "derived_fact": "f'' 부호로 즉시 분류", "why": "오목·볼록이 극값 종류를 결정" }
+      ]
+    },
+    {
+      "id": "M2_max_min_closed_interval",
+      "name": "닫힌구간 최댓·최솟값 (다항함수)",
+      "knowledge_layer": 4,
+      "formula_latex": "f \\in C[a,b],\\; \\text{후보 = 임계점 } \\cup \\{a,b\\}",
+      "prerequisites": ["극값", "EVT"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "[a,b] 에서 최대·최솟값", "premises": ["임계점 + 끝점 함숫값 비교"], "why": "최값은 내부 극값 또는 경계 — EVT 가 존재 보장" }
+      ]
+    },
+    {
+      "id": "M2_concavity",
+      "name": "그래프의 오목·볼록과 변곡점",
+      "knowledge_layer": 5,
+      "formula_latex": "f''(x) > 0 \\Rightarrow \\text{아래로 볼록};\\; f''(x)<0 \\Rightarrow \\text{위로 볼록}",
+      "prerequisites": ["이계도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "변곡점·곡선 개형", "derived_fact": "f'' 부호변화 점", "why": "굽힘의 방향 변화가 변곡" }
+      ]
+    },
+    {
+      "id": "M2_velocity_acceleration",
+      "name": "위치·속도·가속도",
+      "knowledge_layer": 4,
+      "formula_latex": "v = x'(t),\\;\\; a = x''(t)",
+      "prerequisites": ["미분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "위치함수 x(t)", "derived_fact": "도함수가 속도, 이계도함수가 가속도", "why": "변화율의 계층적 정의" }
+      ]
+    },
+    {
+      "id": "M2_indefinite_integral",
+      "name": "부정적분의 정의",
+      "knowledge_layer": 4,
+      "formula_latex": "\\int f(x) dx = F(x) + C \\Leftrightarrow F'(x) = f(x)",
+      "prerequisites": ["미분의 역연산"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "도함수가 주어짐", "derived_fact": "원함수 + 적분상수", "why": "미분의 역연산 — 상수항 자유도" }
+      ]
+    },
+    {
+      "id": "M2_power_integral",
+      "name": "다항함수 적분 (멱적분)",
+      "knowledge_layer": 3,
+      "formula_latex": "\\int x^n dx = \\frac{x^{n+1}}{n+1} + C\\;(n \\ne -1)",
+      "prerequisites": ["부정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "다항함수의 적분", "derived_fact": "각 항에 멱적분 + 선형성", "why": "미분의 역" }
+      ]
+    },
+    {
+      "id": "M2_definite_integral",
+      "name": "정적분의 정의 (FTC)",
+      "knowledge_layer": 5,
+      "formula_latex": "\\int_a^b f(x) dx = F(b) - F(a)\\;(\\text{F 는 f 의 한 부정적분})",
+      "prerequisites": ["부정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "정적분 평가", "derived_fact": "원함수의 두 끝값 차", "why": "미적분학의 기본정리 — 미분과 적분이 역연산" }
+      ]
+    },
+    {
+      "id": "M2_definite_integral_props",
+      "name": "정적분의 기본 성질",
+      "knowledge_layer": 4,
+      "formula_latex": "\\int_a^a f = 0;\\;\\; \\int_a^b f = -\\int_b^a f;\\;\\; \\int_a^c f = \\int_a^b f + \\int_b^c f",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "구간 분할·역방향", "derived_fact": "선형성·구간가법성", "why": "정적분의 기하학적 의미 — 부호 있는 면적" }
+      ]
+    },
+    {
+      "id": "M2_area_under_curve",
+      "name": "곡선과 x축 사이 넓이",
+      "knowledge_layer": 4,
+      "formula_latex": "S = \\int_a^b |f(x)| dx",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "곡선·축 사이 넓이", "premises": ["부호분기 + 절댓값"], "why": "음수 영역은 부호를 뒤집어야 실제 면적" }
+      ]
+    },
+    {
+      "id": "M2_area_between_curves",
+      "name": "두 곡선 사이 넓이",
+      "knowledge_layer": 5,
+      "formula_latex": "S = \\int_a^b |f(x) - g(x)| dx",
+      "prerequisites": ["곡선 넓이"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 곡선이 둘러싸는 넓이", "premises": ["교점 두 개 + 위·아래 분기"], "why": "위 - 아래 가 양수가 되도록 부호 정리" }
+      ]
+    },
+    {
+      "id": "M2_volume_of_revolution",
+      "name": "회전체의 부피 (디스크)",
+      "knowledge_layer": 6,
+      "formula_latex": "V = \\pi \\int_a^b [f(x)]^2 dx",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "x축 회전체 부피", "premises": ["원판 면적 πf(x)² 적분"], "why": "각 단면이 반지름 f(x) 인 원" }
+      ]
+    },
+    {
+      "id": "M2_position_from_velocity",
+      "name": "속도·시간 → 변위·거리",
+      "knowledge_layer": 5,
+      "formula_latex": "\\text{변위} = \\int v\\, dt,\\;\\; \\text{거리} = \\int |v|\\, dt",
+      "prerequisites": ["속도"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "속도함수가 주어짐", "derived_fact": "변위는 부호 포함, 거리는 절댓값", "why": "변위는 방향 포함, 거리는 누적 절댓값" }
+      ]
+    },
+    {
+      "id": "M2_avg_change_vs_inst",
+      "name": "평균변화율과 순간변화율",
+      "knowledge_layer": 4,
+      "formula_latex": "\\frac{f(b)-f(a)}{b-a} \\to_{b \\to a} f'(a)",
+      "prerequisites": ["미분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 점 평균변화율", "derived_fact": "한 점의 도함수 값으로 수렴", "why": "미분계수의 정의" }
+      ]
+    },
+    {
+      "id": "M2_diff_continuity_relation",
+      "name": "미분가능성 ⇒ 연속성",
+      "knowledge_layer": 5,
+      "formula_latex": "f \\text{ at } a \\text{ 미분가능} \\Rightarrow f \\text{ at } a \\text{ 연속 (역은 거짓)}",
+      "prerequisites": ["미분", "연속"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "미분가능성 가정", "derived_fact": "연속도 자동 성립", "why": "도함수 정의의 분모 0 한계 — 분자도 0 이어야 가능" }
+      ]
+    },
+    {
+      "id": "M2_polynomial_div_remainder_at_alpha",
+      "name": "f(x)=(x-α)Q(x)+f(α) 활용",
+      "knowledge_layer": 5,
+      "formula_latex": "\\text{나머지정리: } f(x) = (x-\\alpha) Q(x) + f(\\alpha)",
+      "prerequisites": ["나머지정리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "도함수·접선 등을 풀이에 결합", "premises": ["f(α) 의 값을 미분 정보와 연결"], "why": "다항식 구조와 미분 정보의 합성" }
+      ]
+    },
+    {
+      "id": "M2_integral_eq_for_f",
+      "name": "적분방정식 — f 결정 (정적분 상수 활용)",
+      "knowledge_layer": 6,
+      "formula_latex": "f(x) = g(x) + \\int_a^b f(t) dt \\Rightarrow \\text{정적분 부분을 상수 k 로 치환}",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "f 자체가 정적분으로 정의된 식", "premises": ["정적분=상수 (적분구간이 상수)"], "why": "변수 x 가 적분 안에 없으면 정적분은 단순 상수" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "created_at": "2026-04-26",
+  "area": "geometry",
+  "note": "기하 — 이차곡선·평면벡터·공간기하·공간벡터. 보편적 정의·정리.",
+  "tools": [
+    {
+      "id": "G_parabola",
+      "name": "포물선의 정의와 표준형",
+      "knowledge_layer": 4,
+      "formula_latex": "y^2 = 4px;\\;\\; \\text{초점 } (p,0),\\; \\text{준선 } x=-p",
+      "prerequisites": ["거리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "초점·준선이 주어진 자취", "derived_fact": "거리 동등 방정식 → 표준형", "why": "포물선은 초점에서의 거리 = 준선까지의 거리인 점들의 자취" }
+      ]
+    },
+    {
+      "id": "G_ellipse",
+      "name": "타원의 정의와 표준형",
+      "knowledge_layer": 4,
+      "formula_latex": "\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1;\\;\\; \\text{두 초점 거리합} = 2a",
+      "prerequisites": ["거리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 초점에서의 거리합 일정", "derived_fact": "표준형 식", "why": "두 점에서 거리합이 일정한 자취" }
+      ]
+    },
+    {
+      "id": "G_hyperbola",
+      "name": "쌍곡선의 정의와 표준형",
+      "knowledge_layer": 4,
+      "formula_latex": "\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1;\\;\\; |\\text{거리차}| = 2a",
+      "prerequisites": ["거리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 초점에서 거리차의 절댓값 일정", "derived_fact": "표준형 식 + 점근선 y=±(b/a)x", "why": "거리차 일정한 자취" }
+      ]
+    },
+    {
+      "id": "G_eccentricity",
+      "name": "이심률",
+      "knowledge_layer": 5,
+      "formula_latex": "e = c/a;\\; \\text{타원 } 0<e<1,\\; \\text{포물선 } e=1,\\; \\text{쌍곡선 } e>1",
+      "prerequisites": ["이차곡선"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "이차곡선의 모양 분류", "derived_fact": "e 값으로 종류 결정", "why": "준선·초점 거리비가 곡선 종류를 결정" }
+      ]
+    },
+    {
+      "id": "G_conic_tangent",
+      "name": "이차곡선 위 한 점에서의 접선",
+      "knowledge_layer": 5,
+      "formula_latex": "\\text{타원 } \\frac{x_1 x}{a^2} + \\frac{y_1 y}{b^2} = 1 \\text{ (치환식)}",
+      "prerequisites": ["이차곡선"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "이차곡선 위 점이 명시", "derived_fact": "치환식으로 즉시 산출", "why": "이차형식의 표준 접선 공식" }
+      ]
+    },
+    {
+      "id": "G_vector_basics",
+      "name": "벡터의 기본 연산",
+      "knowledge_layer": 3,
+      "formula_latex": "\\vec a + \\vec b,\\;\\; k\\vec a,\\;\\; \\vec{AB} = B - A",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "위치·이동을 벡터로 표현", "derived_fact": "성분별 연산", "why": "벡터는 좌표의 차이로 정의" }
+      ]
+    },
+    {
+      "id": "G_vector_inner_product",
+      "name": "벡터의 내적",
+      "knowledge_layer": 4,
+      "formula_latex": "\\vec a \\cdot \\vec b = |\\vec a||\\vec b|\\cos\\theta = a_1 b_1 + a_2 b_2",
+      "prerequisites": ["벡터"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 벡터의 사잇각·정사영", "derived_fact": "내적 = 노름곱·cos", "why": "내적은 정사영의 길이를 다른 벡터 노름으로 곱한 값" },
+        { "direction": "backward", "goal_pattern": "두 벡터가 수직임을 보여라", "premises": ["내적 = 0"], "why": "cos 90° = 0" }
+      ]
+    },
+    {
+      "id": "G_vector_norm",
+      "name": "벡터의 크기",
+      "knowledge_layer": 3,
+      "formula_latex": "|\\vec a| = \\sqrt{a_1^2 + a_2^2 + a_3^2}",
+      "prerequisites": ["피타고라스"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "벡터 길이가 필요", "derived_fact": "성분 제곱합의 제곱근", "why": "피타고라스의 다차원 일반화" }
+      ]
+    },
+    {
+      "id": "G_vector_angle",
+      "name": "두 벡터의 사잇각",
+      "knowledge_layer": 4,
+      "formula_latex": "\\cos\\theta = \\frac{\\vec a \\cdot \\vec b}{|\\vec a||\\vec b|}",
+      "prerequisites": ["내적", "노름"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 벡터의 각", "premises": ["내적/노름곱"], "why": "내적 정의의 역" }
+      ]
+    },
+    {
+      "id": "G_vector_projection",
+      "name": "벡터의 정사영",
+      "knowledge_layer": 5,
+      "formula_latex": "\\text{proj}_{\\vec b} \\vec a = \\frac{\\vec a \\cdot \\vec b}{|\\vec b|^2} \\vec b",
+      "prerequisites": ["내적"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "한 벡터의 다른 벡터 위 그림자", "premises": ["내적/노름² × 단위벡터"], "why": "한 방향 성분만 추출" }
+      ]
+    },
+    {
+      "id": "G_position_vector_division",
+      "name": "내분점·외분점",
+      "knowledge_layer": 4,
+      "formula_latex": "P = \\frac{m\\vec b + n\\vec a}{m+n}\\;(\\text{내분 } m:n)",
+      "prerequisites": ["벡터"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 점을 m:n 으로 분할", "derived_fact": "가중평균 위치벡터", "why": "선형보간의 일반화" }
+      ]
+    },
+    {
+      "id": "G_line_vector_form",
+      "name": "직선의 벡터방정식",
+      "knowledge_layer": 4,
+      "formula_latex": "\\vec r = \\vec{r_0} + t \\vec d",
+      "prerequisites": ["벡터"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "한 점과 방향벡터", "derived_fact": "매개변수형 직선", "why": "방향벡터의 t 배만큼 이동한 점들" }
+      ]
+    },
+    {
+      "id": "G_plane_normal_form",
+      "name": "평면의 방정식 (법선벡터형)",
+      "knowledge_layer": 5,
+      "formula_latex": "\\vec n \\cdot (\\vec r - \\vec{r_0}) = 0;\\;\\; ax + by + cz + d = 0",
+      "prerequisites": ["내적"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "평면의 식", "premises": ["한 점 + 법선벡터"], "why": "평면 위 모든 변위는 법선과 수직" }
+      ]
+    },
+    {
+      "id": "G_plane_distance",
+      "name": "점과 평면 사이의 거리",
+      "knowledge_layer": 5,
+      "formula_latex": "d = \\frac{|ax_0 + by_0 + cz_0 + d|}{\\sqrt{a^2+b^2+c^2}}",
+      "prerequisites": ["평면 방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "한 점에서 평면까지 수직거리", "derived_fact": "평면 점-직선 거리의 3D 일반화", "why": "법선 방향 정사영의 절댓값" }
+      ]
+    },
+    {
+      "id": "G_line_plane_relation",
+      "name": "직선과 평면의 위치관계",
+      "knowledge_layer": 5,
+      "formula_latex": "\\vec d \\cdot \\vec n = 0 \\Rightarrow \\text{평행 또는 포함};\\; \\ne 0 \\Rightarrow \\text{한 점에서 만남}",
+      "prerequisites": ["내적", "평면"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "직선 방향과 평면 법선의 내적", "derived_fact": "위치관계 분류", "why": "방향과 법선의 직교성이 만남 여부 결정" }
+      ]
+    },
+    {
+      "id": "G_two_planes_angle",
+      "name": "두 평면이 이루는 각",
+      "knowledge_layer": 5,
+      "formula_latex": "\\cos\\theta = \\frac{|\\vec{n_1} \\cdot \\vec{n_2}|}{|\\vec{n_1}||\\vec{n_2}|}",
+      "prerequisites": ["내적"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 평면이 만나서 이루는 각", "derived_fact": "법선벡터 사잇각", "why": "평면 각은 법선 각과 같다 (또는 보각)" }
+      ]
+    },
+    {
+      "id": "G_3d_distance",
+      "name": "공간에서 두 점 사이 거리",
+      "knowledge_layer": 3,
+      "formula_latex": "d = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2 + (z_2-z_1)^2}",
+      "prerequisites": ["피타고라스"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "공간 두 점 거리", "derived_fact": "성분 차의 제곱합 제곱근", "why": "3차원 피타고라스" }
+      ]
+    },
+    {
+      "id": "G_sphere_eq",
+      "name": "구의 방정식",
+      "knowledge_layer": 4,
+      "formula_latex": "(x-a)^2 + (y-b)^2 + (z-c)^2 = r^2",
+      "prerequisites": ["거리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "공간에서 한 점에서 등거리 자취", "derived_fact": "구의 식", "why": "구는 중심에서 등거리인 점들" }
+      ]
+    },
+    {
+      "id": "G_3d_solid_diagonal",
+      "name": "직육면체·정육면체의 대각선",
+      "knowledge_layer": 4,
+      "formula_latex": "\\sqrt{a^2+b^2+c^2}",
+      "prerequisites": ["3D 거리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "직육면체 대각선 길이", "derived_fact": "세 변 제곱합 제곱근", "why": "공간 거리 공식의 직접 적용" }
+      ]
+    },
+    {
+      "id": "G_dihedral_angle",
+      "name": "이면각",
+      "knowledge_layer": 6,
+      "formula_latex": "\\text{공통변에 수직인 두 반직선의 사잇각}",
+      "prerequisites": ["평면 각"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 면이 이루는 각", "premises": ["공통변 수직 단면 + 사잇각"], "why": "두 평면 각은 그 공통선에 수직인 단면에서 측정" }
+      ]
+    },
+    {
+      "id": "G_three_perpendiculars",
+      "name": "삼수선의 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "\\text{평면 위 한 점에서 평면 밖 한 점까지의 수선·정사영 관계}",
+      "prerequisites": ["수직"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "공간에서의 수선·정사영", "premises": ["밑면 정사영 + 수선"], "why": "정사영 + 두 수선의 직각 관계" }
+      ]
+    },
+    {
+      "id": "G_projection_area",
+      "name": "정사영의 넓이",
+      "knowledge_layer": 5,
+      "formula_latex": "S' = S \\cos\\theta",
+      "prerequisites": ["이면각"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "도형을 다른 평면에 정사영", "derived_fact": "원래 넓이 × cos(이면각)", "why": "정사영은 한 방향만 cos θ 비율로 줄인 변환" }
+      ]
+    },
+    {
+      "id": "G_vector_inner_product_perp",
+      "name": "벡터 수직 조건",
+      "knowledge_layer": 4,
+      "formula_latex": "\\vec a \\perp \\vec b \\Leftrightarrow \\vec a \\cdot \\vec b = 0",
+      "prerequisites": ["내적"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 벡터의 수직", "premises": ["내적 = 0"], "why": "cos 90° = 0" }
+      ]
+    },
+    {
+      "id": "G_unit_vector",
+      "name": "단위벡터",
+      "knowledge_layer": 3,
+      "formula_latex": "\\hat a = \\vec a / |\\vec a|",
+      "prerequisites": ["벡터"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "방향만 필요", "derived_fact": "벡터 ÷ 노름", "why": "노름을 1로 정규화" }
+      ]
+    },
+    {
+      "id": "G_parametric_line_segment",
+      "name": "선분의 매개변수화",
+      "knowledge_layer": 4,
+      "formula_latex": "P(t) = (1-t) A + t B,\\; t \\in [0,1]",
+      "prerequisites": ["벡터"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "선분 위 점", "derived_fact": "두 점의 볼록결합", "why": "t=0 → A, t=1 → B" }
+      ]
+    }
+  ]
+}

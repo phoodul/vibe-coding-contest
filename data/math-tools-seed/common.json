@@ -1,0 +1,385 @@
+{
+  "version": 1,
+  "created_at": "2026-04-26",
+  "area": "common",
+  "note": "공통수학 (고1 통합) — 다항식·방정식과 부등식·도형의 방정식·집합과 명제·함수와 그래프. 보편적 정의·정리.",
+  "tools": [
+    {
+      "id": "C_poly_factor_theorem",
+      "name": "인수정리",
+      "knowledge_layer": 4,
+      "formula_latex": "P(\\alpha)=0 \\Leftrightarrow (x-\\alpha) \\mid P(x)",
+      "prerequisites": ["다항식 나눗셈"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "P(α)=0 인 α를 찾음", "derived_fact": "(x-α) 를 인수로 분리", "why": "한 근을 알면 차수를 1 낮출 수 있다" },
+        { "direction": "backward", "goal_pattern": "고차 다항식의 인수분해", "premises": ["유리근 후보 시도"], "why": "유리근 정리로 후보 좁히고 인수정리로 차수 감소" }
+      ]
+    },
+    {
+      "id": "C_remainder_theorem",
+      "name": "나머지정리",
+      "knowledge_layer": 4,
+      "formula_latex": "P(x) \\div (x-\\alpha) \\text{ 의 나머지} = P(\\alpha)",
+      "prerequisites": ["다항식 나눗셈"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "특정 x 값에서의 나머지", "derived_fact": "한 점 대입으로 즉시 산출", "why": "긴 나눗셈 없이 한 번의 함숫값 계산으로 충분" }
+      ]
+    },
+    {
+      "id": "C_rational_root_theorem",
+      "name": "유리근 정리",
+      "knowledge_layer": 5,
+      "formula_latex": "\\sum a_i x^i (a_n,a_0 \\in \\mathbb Z) \\text{ 의 유리근 } p/q \\Rightarrow p \\mid a_0,\\; q \\mid a_n",
+      "prerequisites": ["다항식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "정수계수 고차방정식의 근", "premises": ["가능한 유리근 후보 유한"], "why": "후보 집합을 좁혀 인수정리와 결합" }
+      ]
+    },
+    {
+      "id": "C_polynomial_long_division",
+      "name": "조립제법·다항식 나눗셈",
+      "knowledge_layer": 3,
+      "formula_latex": "P(x) = (x-\\alpha) Q(x) + R",
+      "prerequisites": ["다항식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "한 인수를 찾았다", "derived_fact": "몫·나머지 분리", "why": "차수를 한 단계 낮춰 분해 진행" }
+      ]
+    },
+    {
+      "id": "C_complex_basics",
+      "name": "복소수의 기본 연산",
+      "knowledge_layer": 3,
+      "formula_latex": "i^2=-1;\\;\\; (a+bi)(c+di)=(ac-bd)+(ad+bc)i;\\;\\; \\overline{a+bi}=a-bi",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "허수단위가 등장", "derived_fact": "실수부·허수부 분리 + 켤레", "why": "i^2=-1 외에는 모두 분배법칙" }
+      ]
+    },
+    {
+      "id": "C_complex_modulus",
+      "name": "복소수의 절댓값과 켤레",
+      "knowledge_layer": 4,
+      "formula_latex": "|z|^2 = z\\bar z;\\;\\; |zw|=|z||w|",
+      "prerequisites": ["복소수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "|z| 또는 z\\bar z 가 식에 등장", "derived_fact": "(실수)^2 + (허수)^2 형태", "why": "절댓값 제곱은 켤레와의 곱으로 실수화" }
+      ]
+    },
+    {
+      "id": "C_quadratic_root_distribution",
+      "name": "이차방정식 근의 분포",
+      "knowledge_layer": 5,
+      "formula_latex": "f(\\alpha) f(\\beta) < 0 \\Rightarrow (\\alpha,\\beta) \\text{ 사이에 근 1개}",
+      "prerequisites": ["사잇값정리", "판별식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 실근이 특정 구간에 위치", "premises": ["판별식·축·경계 함숫값 부호"], "why": "그래프의 개형(꼭짓점·축·경계값)이 근의 위치를 결정" }
+      ]
+    },
+    {
+      "id": "C_quadratic_inequality",
+      "name": "이차부등식의 풀이",
+      "knowledge_layer": 4,
+      "formula_latex": "(x-\\alpha)(x-\\beta)>0 \\Leftrightarrow x<\\alpha \\text{ 또는 } x>\\beta\\;(\\alpha<\\beta)",
+      "prerequisites": ["이차방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "이차식의 부호", "derived_fact": "근 사이는 a 와 반대 부호, 근 밖은 a 와 같은 부호", "why": "이차함수 그래프 개형이 부호를 결정" }
+      ]
+    },
+    {
+      "id": "C_simul_quadratic",
+      "name": "연립이차방정식 (대입·소거)",
+      "knowledge_layer": 4,
+      "formula_latex": "\\text{한 식이 일차이면 대입; 두 식이 모두 이차이면 한 변수 소거}",
+      "prerequisites": ["연립방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 변수 두 이차식", "derived_fact": "한 변수 소거 후 단변수 고차식", "why": "차원 감축이 핵심 — 단변수 다항식으로 환원" }
+      ]
+    },
+    {
+      "id": "C_AM_GM",
+      "name": "산술-기하 평균 부등식",
+      "knowledge_layer": 5,
+      "formula_latex": "a,b>0 \\Rightarrow \\frac{a+b}{2} \\ge \\sqrt{ab}\\;(\\text{등호 } a=b)",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "a+b 의 최솟값 또는 ab 의 최댓값", "premises": ["a,b>0 + 곱 또는 합 고정"], "why": "한 쪽이 고정되면 다른 쪽의 극값을 산술-기하 평균이 산출" }
+      ]
+    },
+    {
+      "id": "C_cauchy_schwarz_2d",
+      "name": "코시-슈바르츠 부등식 (2변수)",
+      "knowledge_layer": 5,
+      "formula_latex": "(a^2+b^2)(x^2+y^2) \\ge (ax+by)^2",
+      "prerequisites": ["이차식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "선형식의 최대/최소, 두 벡터 내적의 한계", "premises": ["제약이 두 제곱합"], "why": "내적 ≤ 노름 곱 — 직각 조건이 등호" }
+      ]
+    },
+    {
+      "id": "C_line_equation_forms",
+      "name": "직선의 방정식 (점-기울기·절편·일반형)",
+      "knowledge_layer": 3,
+      "formula_latex": "y - y_1 = m(x - x_1);\\;\\; \\frac{x}{a}+\\frac{y}{b}=1;\\;\\; ax+by+c=0",
+      "prerequisites": ["좌표평면"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "직선의 식", "premises": ["충분한 정보 (점·기울기 등)"], "why": "조건에 가장 가까운 표준형이 산식 부담을 최소화" }
+      ]
+    },
+    {
+      "id": "C_distance_point_to_line",
+      "name": "점과 직선 사이의 거리",
+      "knowledge_layer": 4,
+      "formula_latex": "d = \\frac{|ax_0+by_0+c|}{\\sqrt{a^2+b^2}}",
+      "prerequisites": ["벡터의 정사영"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "한 점에서 직선까지 수직 거리", "derived_fact": "닫힌 형태 산출", "why": "수선의 발이 만드는 직각삼각형" }
+      ]
+    },
+    {
+      "id": "C_circle_eq",
+      "name": "원의 방정식",
+      "knowledge_layer": 3,
+      "formula_latex": "(x-a)^2+(y-b)^2=r^2",
+      "prerequisites": ["거리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "중심·반지름이 명시", "derived_fact": "원의 식", "why": "원은 중심에서 등거리인 점의 자취" },
+        { "direction": "backward", "goal_pattern": "주어진 점들을 지나는 원", "premises": ["3점 또는 중심+1점"], "why": "원은 3개 매개변수 (a,b,r)" }
+      ]
+    },
+    {
+      "id": "C_circle_line_intersection",
+      "name": "원과 직선의 위치관계",
+      "knowledge_layer": 4,
+      "formula_latex": "d \\;\\text{vs}\\; r:\\; d<r (\\text{두 점}),\\; d=r (\\text{접}),\\; d>r (\\text{만나지 않음})",
+      "prerequisites": ["점-직선 거리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "원과 직선의 만남 여부", "derived_fact": "중심-직선 거리와 반지름 비교", "why": "기하학적 거리가 교점 개수와 일대일 대응" }
+      ]
+    },
+    {
+      "id": "C_circle_tangent_external",
+      "name": "원 위 점에서의 접선",
+      "knowledge_layer": 4,
+      "formula_latex": "x^2+y^2=r^2 \\text{ 위 } (x_1,y_1) \\text{ 에서 접선: } x_1 x + y_1 y = r^2",
+      "prerequisites": ["원의 방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "접점이 원 위에 명시", "derived_fact": "치환식으로 즉시 산출", "why": "내적 형태 — 반지름벡터와 접선벡터의 직교 조건" }
+      ]
+    },
+    {
+      "id": "C_translation_graph",
+      "name": "함수의 평행이동·대칭이동",
+      "knowledge_layer": 3,
+      "formula_latex": "y=f(x-a)+b \\text{ : } x\\text{축 } a,\\; y\\text{축 } b \\text{ 평행이동}",
+      "prerequisites": ["함수의 그래프"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "그래프 위치 변환", "derived_fact": "내부 부호·외부 더하기", "why": "좌표계 이동의 역변환이 식에 반영" }
+      ]
+    },
+    {
+      "id": "C_set_basics",
+      "name": "집합의 연산 (∪·∩·여집합)",
+      "knowledge_layer": 2,
+      "formula_latex": "(A \\cup B)^c = A^c \\cap B^c\\;(\\text{드모르간 법칙})",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "여집합과 합·교의 결합", "derived_fact": "드모르간으로 변환", "why": "여집합이 교집합·합집합을 서로 바꾼다" }
+      ]
+    },
+    {
+      "id": "C_inclusion_exclusion_2",
+      "name": "포함-배제 원리 (2집합)",
+      "knowledge_layer": 4,
+      "formula_latex": "|A \\cup B| = |A| + |B| - |A \\cap B|",
+      "prerequisites": ["집합"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 집합의 합집합 크기", "derived_fact": "교집합으로 보정", "why": "이중 카운트를 한 번 빼서 보정" }
+      ]
+    },
+    {
+      "id": "C_proposition_contrapositive",
+      "name": "명제의 대우",
+      "knowledge_layer": 3,
+      "formula_latex": "(p \\Rightarrow q) \\Leftrightarrow (\\lnot q \\Rightarrow \\lnot p)",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "p ⇒ q 증명이 어렵다", "premises": ["대우는 동치"], "why": "대우는 원명제와 진릿값이 같다 — 더 다루기 쉬운 쪽 선택" }
+      ]
+    },
+    {
+      "id": "C_proof_by_contradiction",
+      "name": "귀류법",
+      "knowledge_layer": 4,
+      "formula_latex": "\\lnot q \\text{ 가정 } \\to \\text{ 모순 } \\Rightarrow q",
+      "prerequisites": ["명제의 부정"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "직접 증명이 어려운 명제", "premises": ["부정 가정"], "why": "부정에서 모순 도출은 원명제 성립과 동치" }
+      ]
+    },
+    {
+      "id": "C_function_inverse",
+      "name": "역함수",
+      "knowledge_layer": 4,
+      "formula_latex": "f(g(x))=g(f(x))=x;\\;\\; y=f(x) \\Leftrightarrow x=f^{-1}(y)",
+      "prerequisites": ["일대일대응"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "일대일대응 함수의 역", "derived_fact": "x,y 자리 교환 후 y에 대해 풀이", "why": "역함수는 입출력 관계의 뒤집기" }
+      ]
+    },
+    {
+      "id": "C_function_composition",
+      "name": "합성함수",
+      "knowledge_layer": 3,
+      "formula_latex": "(g \\circ f)(x) = g(f(x))",
+      "prerequisites": ["함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 함수의 결합", "derived_fact": "안쪽 → 바깥쪽 순으로 평가", "why": "함수 적용은 결합법칙은 성립하지만 교환법칙은 안 성립" }
+      ]
+    },
+    {
+      "id": "C_rational_function",
+      "name": "유리함수 y=k/(x-p)+q",
+      "knowledge_layer": 4,
+      "formula_latex": "y = \\frac{k}{x-p} + q\\; (\\text{점근선 } x=p,\\; y=q)",
+      "prerequisites": ["반비례", "평행이동"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "분모가 일차인 유리식", "derived_fact": "두 점근선과 대칭점", "why": "기본 1/x 의 평행이동" }
+      ]
+    },
+    {
+      "id": "C_irrational_function",
+      "name": "무리함수 y=√(ax+b)+c",
+      "knowledge_layer": 4,
+      "formula_latex": "y = \\sqrt{a(x-p)} + q",
+      "prerequisites": ["함수의 평행이동"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "근호가 포함된 함수", "derived_fact": "정의역은 ax+b≥0", "why": "실수 근호의 정의역 제약" }
+      ]
+    },
+    {
+      "id": "C_function_domain_range",
+      "name": "정의역·치역",
+      "knowledge_layer": 2,
+      "formula_latex": "\\text{정의역: 입력 가능 집합, 치역: 실제 출력 집합}",
+      "prerequisites": ["함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "함수가 주어짐", "derived_fact": "각 식 종류별 제약 (분모≠0, 근호≥0 등)", "why": "정의 가능 영역이 후속 분석의 출발점" }
+      ]
+    },
+    {
+      "id": "C_perm_combination",
+      "name": "순열·조합 기본",
+      "knowledge_layer": 3,
+      "formula_latex": "{}_n P_r = \\frac{n!}{(n-r)!},\\;\\; {}_n C_r = \\frac{n!}{r!(n-r)!}",
+      "prerequisites": ["곱의 법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "순서가 의미가 있으면 P, 없으면 C", "derived_fact": "팩토리얼 비", "why": "동치 그룹의 크기로 순열을 나눈 것이 조합" }
+      ]
+    },
+    {
+      "id": "C_perm_repetition",
+      "name": "중복순열·중복조합·같은 것 포함",
+      "knowledge_layer": 4,
+      "formula_latex": "\\Pi_r = n^r,\\;\\; H_r = {}_{n+r-1}C_r,\\;\\; \\frac{n!}{p!q!\\cdots}",
+      "prerequisites": ["순열·조합"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "중복 허용 또는 같은 항목 반복", "derived_fact": "각 케이스별 식 적용", "why": "동일성·반복이 카운팅 공식 분기" }
+      ]
+    },
+    {
+      "id": "C_binomial_theorem",
+      "name": "이항정리",
+      "knowledge_layer": 5,
+      "formula_latex": "(a+b)^n = \\sum_{k=0}^{n} {}_n C_k a^{n-k} b^k",
+      "prerequisites": ["조합"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "이항식의 거듭제곱 전개", "derived_fact": "k번째 항 = nCk · a^(n-k) · b^k", "why": "n번 곱셈에서 b를 k번 선택하는 경우의 수" },
+        { "direction": "backward", "goal_pattern": "특정 항의 계수", "premises": ["이항계수 한 항 산출"], "why": "전개 전체를 계산하지 않고 한 항만 추출" }
+      ]
+    },
+    {
+      "id": "C_sigma_basics",
+      "name": "시그마의 기본 성질",
+      "knowledge_layer": 3,
+      "formula_latex": "\\sum_{k=1}^{n} c = cn,\\;\\; \\sum_{k=1}^{n} k = \\tfrac{n(n+1)}{2}",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "유한합 표준 패턴", "derived_fact": "닫힌 형태 산출", "why": "표준 합 공식은 외워두면 즉시 적용" }
+      ]
+    },
+    {
+      "id": "C_sigma_squares_cubes",
+      "name": "Σk²·Σk³ 공식",
+      "knowledge_layer": 4,
+      "formula_latex": "\\sum k^2 = \\frac{n(n+1)(2n+1)}{6},\\;\\; \\sum k^3 = \\left(\\frac{n(n+1)}{2}\\right)^2",
+      "prerequisites": ["Σ 기본"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "합이 다항식 형태", "derived_fact": "차수별 표준 공식 합성", "why": "유한합의 다항식은 표준 합 4종으로 분해" }
+      ]
+    },
+    {
+      "id": "C_arithmetic_sequence",
+      "name": "등차수열 합·일반항",
+      "knowledge_layer": 3,
+      "formula_latex": "a_n = a + (n-1)d,\\;\\; S_n = \\frac{n(a + a_n)}{2}",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "공차가 일정한 수열", "derived_fact": "선형 일반항 + 사다리꼴 합", "why": "등차는 일차함수에 대응 — 합은 사다리꼴 면적" }
+      ]
+    },
+    {
+      "id": "C_geometric_sequence",
+      "name": "등비수열 합·일반항",
+      "knowledge_layer": 3,
+      "formula_latex": "a_n = ar^{n-1},\\;\\; S_n = \\frac{a(r^n-1)}{r-1}\\;(r \\ne 1)",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "공비가 일정한 수열", "derived_fact": "지수 일반항 + 등비합 공식", "why": "곱셈 점화식의 닫힌 해" }
+      ]
+    },
+    {
+      "id": "C_recurrence_an_Sn",
+      "name": "Sn 과 an 의 관계",
+      "knowledge_layer": 4,
+      "formula_latex": "a_n = S_n - S_{n-1}\\;(n \\ge 2),\\;\\; a_1 = S_1",
+      "prerequisites": ["수열의 합"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "Sn 만 주어지고 일반항을 구하라", "premises": ["계차 분리 + n=1 별도 확인"], "why": "차분으로 일반항 복원 — n=1 의 경계 처리 필수" }
+      ]
+    }
+  ]
+}

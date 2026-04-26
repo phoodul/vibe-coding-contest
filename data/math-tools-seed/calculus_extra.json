@@ -1,0 +1,327 @@
+{
+  "version": 1,
+  "created_at": "2026-04-26",
+  "area": "calculus",
+  "note": "미적분 보강 — 기존 32 도구에 30개 추가. 초월함수·치환/부분적분·매개·역함수·급수.",
+  "tools": [
+    {
+      "id": "CL_natural_e",
+      "name": "자연상수 e의 정의",
+      "knowledge_layer": 5,
+      "formula_latex": "e = \\lim_{n \\to \\infty} (1+1/n)^n = \\lim_{x \\to 0} (1+x)^{1/x}",
+      "prerequisites": ["극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "(1+무한소) 의 발산형 극한", "derived_fact": "e 의 정의식 활용", "why": "e 는 미분이 자기자신인 유일한 밑" }
+      ]
+    },
+    {
+      "id": "CL_log_limit",
+      "name": "ln(1+x)/x 의 극한",
+      "knowledge_layer": 5,
+      "formula_latex": "\\lim_{x \\to 0} \\frac{\\ln(1+x)}{x} = 1",
+      "prerequisites": ["e의 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "x→0 의 ln 부정형", "derived_fact": "1로 환원", "why": "ln 의 미분이 1/x 이므로 x=0 근처 선형 근사" }
+      ]
+    },
+    {
+      "id": "CL_exp_limit",
+      "name": "(eˣ-1)/x 의 극한",
+      "knowledge_layer": 5,
+      "formula_latex": "\\lim_{x \\to 0} \\frac{e^x - 1}{x} = 1",
+      "prerequisites": ["e의 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "x→0 의 지수 부정형", "derived_fact": "1로 환원", "why": "e^x 의 미분이 e^x, 0에서 값 1" }
+      ]
+    },
+    {
+      "id": "CL_sinx_over_x",
+      "name": "sin x / x 의 극한",
+      "knowledge_layer": 5,
+      "formula_latex": "\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1",
+      "prerequisites": ["삼각함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "x→0 의 sin 부정형", "derived_fact": "1", "why": "샌드위치 정리로 cos x ≤ sin x/x ≤ 1" }
+      ]
+    },
+    {
+      "id": "CL_one_minus_cos",
+      "name": "(1-cos x)/x² 극한",
+      "knowledge_layer": 5,
+      "formula_latex": "\\lim_{x \\to 0} \\frac{1 - \\cos x}{x^2} = \\frac{1}{2}",
+      "prerequisites": ["sinx/x"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "x→0 의 코사인 차분형", "derived_fact": "1/2", "why": "1-cos x = 2 sin²(x/2) 변형 후 sin/x" }
+      ]
+    },
+    {
+      "id": "CL_derivative_exp",
+      "name": "지수함수의 미분",
+      "knowledge_layer": 5,
+      "formula_latex": "(e^x)' = e^x;\\;\\; (a^x)' = a^x \\ln a",
+      "prerequisites": ["지수함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "지수함수 미분", "derived_fact": "자기자신 또는 ln a 배", "why": "e 의 정의에서 자기보존 — 일반 a 는 ln a 인자" }
+      ]
+    },
+    {
+      "id": "CL_derivative_log",
+      "name": "로그함수의 미분",
+      "knowledge_layer": 5,
+      "formula_latex": "(\\ln x)' = 1/x;\\;\\; (\\log_a x)' = \\frac{1}{x \\ln a}",
+      "prerequisites": ["로그함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "로그함수 미분", "derived_fact": "1/(x ln a)", "why": "지수함수 미분의 역함수 미분" }
+      ]
+    },
+    {
+      "id": "CL_derivative_trig",
+      "name": "삼각함수의 미분",
+      "knowledge_layer": 5,
+      "formula_latex": "(\\sin x)' = \\cos x,\\;\\; (\\cos x)' = -\\sin x,\\;\\; (\\tan x)' = \\sec^2 x",
+      "prerequisites": ["삼각함수", "sinx/x"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "삼각함수 미분", "derived_fact": "표준 공식 적용", "why": "정의에서 도출 — sin'=cos 가 기본" }
+      ]
+    },
+    {
+      "id": "CL_derivative_inverse",
+      "name": "역함수의 미분",
+      "knowledge_layer": 6,
+      "formula_latex": "(f^{-1})'(y) = \\frac{1}{f'(x)}\\;(y = f(x))",
+      "prerequisites": ["역함수", "미분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "역함수의 도함수", "derived_fact": "원함수 도함수의 역수", "why": "y=f(x) 와 x=f⁻¹(y) 는 그래프 대칭 — 기울기 역수" }
+      ]
+    },
+    {
+      "id": "CL_implicit_diff",
+      "name": "음함수 미분",
+      "knowledge_layer": 6,
+      "formula_latex": "F(x,y) = 0 \\Rightarrow \\frac{\\partial F}{\\partial x} + \\frac{\\partial F}{\\partial y} \\cdot y' = 0",
+      "prerequisites": ["연쇄법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "y 가 명시되지 않은 곡선의 기울기", "premises": ["x 에 대해 양변 미분"], "why": "y 도 x 의 함수라 보고 연쇄법칙 적용" }
+      ]
+    },
+    {
+      "id": "CL_param_derivative",
+      "name": "매개변수 미분",
+      "knowledge_layer": 6,
+      "formula_latex": "x=f(t),\\; y=g(t) \\Rightarrow \\frac{dy}{dx} = \\frac{g'(t)}{f'(t)}",
+      "prerequisites": ["연쇄법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "x, y 가 모두 t 의 함수", "derived_fact": "g'(t)/f'(t)", "why": "dy/dx = (dy/dt)/(dx/dt) — 연쇄법칙의 직접 적용" }
+      ]
+    },
+    {
+      "id": "CL_logarithmic_diff",
+      "name": "로그미분법",
+      "knowledge_layer": 6,
+      "formula_latex": "y = f(x)^{g(x)} \\Rightarrow \\ln y = g(x) \\ln f(x) \\to \\text{양변 미분}",
+      "prerequisites": ["로그함수", "음함수 미분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "지수에 변수가 들어간 함수의 미분", "premises": ["양변에 ln 후 음함수 미분"], "why": "지수의 변수를 곱셈 형태로 끌어내림" }
+      ]
+    },
+    {
+      "id": "CL_substitution_integral",
+      "name": "치환적분",
+      "knowledge_layer": 6,
+      "formula_latex": "\\int f(g(x)) g'(x) dx = \\int f(u) du\\;(u = g(x))",
+      "prerequisites": ["부정적분", "연쇄법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "복잡한 적분에 내부함수와 그 도함수가 동시 등장", "premises": ["u = g(x), du = g'(x) dx"], "why": "연쇄법칙의 역연산" }
+      ]
+    },
+    {
+      "id": "CL_integration_by_parts",
+      "name": "부분적분",
+      "knowledge_layer": 6,
+      "formula_latex": "\\int u\\, dv = uv - \\int v\\, du",
+      "prerequisites": ["곱의 미분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "두 종류 함수의 곱 적분 (다항×지수, 다항×삼각, log 등)", "premises": ["u·dv 분리, ILATE 우선순위"], "why": "곱의 미분의 역변환 — 하나 미분, 하나 적분" }
+      ]
+    },
+    {
+      "id": "CL_partial_fraction",
+      "name": "부분분수 분해 (적분용)",
+      "knowledge_layer": 6,
+      "formula_latex": "\\frac{P(x)}{(x-a)(x-b)} = \\frac{A}{x-a} + \\frac{B}{x-b}",
+      "prerequisites": ["분수식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "유리식 적분", "premises": ["분모 인수분해 후 부분분수"], "why": "단순 분수의 합으로 분리하면 ln 적분으로 환원" }
+      ]
+    },
+    {
+      "id": "CL_integral_exp_log",
+      "name": "지수·로그 적분",
+      "knowledge_layer": 5,
+      "formula_latex": "\\int e^x dx = e^x + C,\\;\\; \\int \\frac{1}{x} dx = \\ln|x| + C",
+      "prerequisites": ["미분의 역"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "기본 지수·로그 적분", "derived_fact": "직접 적분", "why": "미분의 역연산" }
+      ]
+    },
+    {
+      "id": "CL_integral_trig",
+      "name": "삼각함수 적분 (기본)",
+      "knowledge_layer": 5,
+      "formula_latex": "\\int \\sin x dx = -\\cos x + C,\\;\\; \\int \\cos x dx = \\sin x + C,\\;\\; \\int \\sec^2 x dx = \\tan x + C",
+      "prerequisites": ["삼각함수 미분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "기본 삼각함수 적분", "derived_fact": "표준 공식", "why": "도함수의 역" }
+      ]
+    },
+    {
+      "id": "CL_integral_power_reduction",
+      "name": "sin² · cos² 적분 — 차수 낮추기",
+      "knowledge_layer": 6,
+      "formula_latex": "\\int \\sin^2 x dx = \\int \\frac{1 - \\cos 2x}{2} dx",
+      "prerequisites": ["반각공식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "삼각함수 짝수 거듭제곱 적분", "premises": ["반각공식으로 차수 1로"], "why": "고차는 직접 적분 불가 — 반각으로 환원" }
+      ]
+    },
+    {
+      "id": "CL_arc_length",
+      "name": "곡선의 길이 (현장적분)",
+      "knowledge_layer": 6,
+      "formula_latex": "L = \\int_a^b \\sqrt{1 + (f'(x))^2} dx",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "곡선 y=f(x) 의 길이", "premises": ["미세한 호 ds = √(1 + y'²) dx"], "why": "미세 직각삼각형 dx, dy 의 빗변 적분" }
+      ]
+    },
+    {
+      "id": "CL_volume_shell",
+      "name": "회전체 부피 (껍질법)",
+      "knowledge_layer": 6,
+      "formula_latex": "V = 2\\pi \\int_a^b x \\cdot f(x) dx\\;(\\text{y축 회전})",
+      "prerequisites": ["적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "y축 회전 부피 (디스크 적용 어려운 경우)", "premises": ["원통 껍질 둘레 × 높이 × 두께"], "why": "y축 회전은 띠를 원통 껍질로 보면 단순" }
+      ]
+    },
+    {
+      "id": "CL_taylor_basics",
+      "name": "테일러 전개 (기초 — 다항 근사)",
+      "knowledge_layer": 6,
+      "formula_latex": "f(x) \\approx f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\dots",
+      "prerequisites": ["고계도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "함수의 다항 근사", "premises": ["a 근방 도함수들"], "why": "도함수가 함수의 국소 모양을 결정 — 테일러 다항식이 최선의 근사" }
+      ]
+    },
+    {
+      "id": "CL_lhopital",
+      "name": "로피탈의 정리",
+      "knowledge_layer": 6,
+      "formula_latex": "\\lim \\frac{f}{g} = \\lim \\frac{f'}{g'}\\;(0/0 \\text{ 또는 } \\infty/\\infty)",
+      "prerequisites": ["미분", "극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "0/0 또는 ∞/∞ 극한", "derived_fact": "도함수 비로 환원", "why": "지역적으로 함수가 도함수 × 변위로 근사" }
+      ]
+    },
+    {
+      "id": "CL_asymptote_oblique",
+      "name": "곡선의 점근선 (수직·수평·사선)",
+      "knowledge_layer": 5,
+      "formula_latex": "\\text{사선: } y = mx + b,\\; m = \\lim_{x\\to\\infty} f(x)/x,\\; b = \\lim (f(x) - mx)",
+      "prerequisites": ["극한"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "곡선 개형의 점근거동", "derived_fact": "세 종류 점근선 식", "why": "큰 x 에서의 동치 직선/상수" }
+      ]
+    },
+    {
+      "id": "CL_curve_sketching",
+      "name": "곡선 개형 (대칭·점근·증감·오목)",
+      "knowledge_layer": 6,
+      "formula_latex": "\\text{정의역 → 대칭 → 점근 → 도함수 부호표 → 변곡 → 그리기}",
+      "prerequisites": ["미분", "이계도함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "곡선의 개형 그리기", "premises": ["체크리스트"], "why": "단계별 체크가 누락 없는 개형을 보장" }
+      ]
+    },
+    {
+      "id": "CL_related_rates",
+      "name": "관련변화율 (시간 미분)",
+      "knowledge_layer": 6,
+      "formula_latex": "F(x(t), y(t)) = 0 \\Rightarrow F_x x' + F_y y' = 0",
+      "prerequisites": ["연쇄법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "한 변수의 변화율로 다른 변수의 변화율", "premises": ["관계식 양변 t 미분"], "why": "음함수 미분의 시간버전" }
+      ]
+    },
+    {
+      "id": "CL_optim_unconstrained",
+      "name": "최적화 (자유 극값)",
+      "knowledge_layer": 5,
+      "formula_latex": "f'(x) = 0 \\to f''(x) \\text{ 부호로 극값 종류 판정}",
+      "prerequisites": ["극값"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "최댓·최솟값 (제약 없음)", "premises": ["임계점 + 이계 검정 또는 부호표"], "why": "최값은 임계점에서만 발생 가능" }
+      ]
+    },
+    {
+      "id": "CL_optim_constrained_substitution",
+      "name": "최적화 — 제약을 대입으로 제거",
+      "knowledge_layer": 6,
+      "formula_latex": "\\text{제약 } g(x,y)=0 \\to y = h(x) \\to f(x, h(x)) \\text{ 의 단변수 극값}",
+      "prerequisites": ["극값"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "제약이 있는 최적화", "premises": ["제약을 한 변수로 풀어 대입"], "why": "단변수 문제로 환원" }
+      ]
+    },
+    {
+      "id": "CL_average_value",
+      "name": "함수의 평균값 (적분)",
+      "knowledge_layer": 5,
+      "formula_latex": "\\bar f = \\frac{1}{b-a} \\int_a^b f(x) dx",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "구간 평균값", "derived_fact": "적분/길이", "why": "이산 평균의 연속 일반화" }
+      ]
+    },
+    {
+      "id": "CL_riemann_sum_to_integral",
+      "name": "리만합과 정적분의 변환",
+      "knowledge_layer": 6,
+      "formula_latex": "\\lim_{n \\to \\infty} \\frac{1}{n} \\sum_{k=1}^{n} f(a + (b-a)k/n) = \\frac{1}{b-a}\\int_a^b f(x) dx",
+      "prerequisites": ["정적분"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "Σ 형태의 극한 → 적분으로 변환", "premises": ["1/n 가중치 인식"], "why": "리만합의 정의 그대로" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,327 @@
+{
+  "version": 1,
+  "created_at": "2026-04-26",
+  "area": "math1",
+  "note": "수학1 — 지수·로그함수·삼각함수·수열. 보편적 정의·정리.",
+  "tools": [
+    {
+      "id": "M1_exp_laws",
+      "name": "지수법칙",
+      "knowledge_layer": 3,
+      "formula_latex": "a^m \\cdot a^n = a^{m+n},\\;\\; (a^m)^n = a^{mn},\\;\\; a^{-n}=1/a^n",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "지수가 변수·식인 표현", "derived_fact": "지수의 사칙연산으로 단순화", "why": "지수는 곱셈 횟수의 산술화" }
+      ]
+    },
+    {
+      "id": "M1_exp_function",
+      "name": "지수함수의 성질",
+      "knowledge_layer": 4,
+      "formula_latex": "y = a^x \\;(a>0,\\; a \\ne 1);\\; \\text{치역 } (0,\\infty)",
+      "prerequisites": ["지수법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "지수함수의 단조·점근선", "derived_fact": "a>1 증가, 0<a<1 감소; 점근선 y=0", "why": "밑의 크기가 증가/감소를 결정" }
+      ]
+    },
+    {
+      "id": "M1_log_definition",
+      "name": "로그의 정의와 기본 성질",
+      "knowledge_layer": 4,
+      "formula_latex": "\\log_a b = c \\Leftrightarrow a^c = b\\;(a>0, a \\ne 1, b>0)",
+      "prerequisites": ["지수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "지수방정식이 어렵다", "derived_fact": "양변에 로그 — 지수가 곱으로 내려옴", "why": "로그는 지수의 역연산" }
+      ]
+    },
+    {
+      "id": "M1_log_laws",
+      "name": "로그의 연산법칙",
+      "knowledge_layer": 4,
+      "formula_latex": "\\log_a(MN)=\\log_a M+\\log_a N,\\;\\; \\log_a M^k = k\\log_a M,\\;\\; \\log_a M = \\frac{\\log_b M}{\\log_b a}",
+      "prerequisites": ["로그 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "곱·몫·거듭제곱이 로그 안에 있다", "derived_fact": "합·차·계수배로 분해", "why": "로그는 곱셈을 덧셈으로 변환" }
+      ]
+    },
+    {
+      "id": "M1_change_of_base",
+      "name": "밑변환 공식",
+      "knowledge_layer": 5,
+      "formula_latex": "\\log_a b = \\frac{1}{\\log_b a};\\;\\; \\log_a b \\cdot \\log_b c = \\log_a c",
+      "prerequisites": ["로그법칙"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "다른 밑의 로그를 비교", "derived_fact": "공통 밑으로 통일", "why": "밑이 다르면 직접 비교 불가 — 통일이 핵심" }
+      ]
+    },
+    {
+      "id": "M1_log_function",
+      "name": "로그함수의 성질",
+      "knowledge_layer": 4,
+      "formula_latex": "y = \\log_a x;\\; \\text{정의역 } (0,\\infty);\\; y=a^x \\text{의 역함수}",
+      "prerequisites": ["로그"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "로그함수의 단조·점근선", "derived_fact": "a>1 증가, 0<a<1 감소; 점근선 x=0", "why": "지수함수와 y=x 대칭 — 모든 성질이 대응" }
+      ]
+    },
+    {
+      "id": "M1_exp_log_eq",
+      "name": "지수·로그방정식과 부등식",
+      "knowledge_layer": 5,
+      "formula_latex": "a^{f(x)}=a^{g(x)} \\Leftrightarrow f(x)=g(x);\\;\\; \\log_a f(x)=\\log_a g(x) \\Leftrightarrow f(x)=g(x)>0",
+      "prerequisites": ["지수·로그함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "지수·로그를 포함한 방정식·부등식", "premises": ["밑 통일 + 정의역 확인"], "why": "단조함수의 일대일성으로 지수·로그 벗기기. 부등식은 밑이 0<a<1 이면 부등호 뒤집기" }
+      ]
+    },
+    {
+      "id": "M1_radian",
+      "name": "호도법 (라디안)",
+      "knowledge_layer": 3,
+      "formula_latex": "180^\\circ = \\pi \\text{ rad};\\;\\; l = r\\theta,\\; S=\\tfrac{1}{2}r^2\\theta",
+      "prerequisites": ["원"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "삼각함수 미분·적분 또는 부채꼴 공식", "derived_fact": "라디안 환산 후 계산", "why": "호의 길이가 각의 척도 — 미적분이 단순해진다" }
+      ]
+    },
+    {
+      "id": "M1_trig_basic",
+      "name": "삼각함수의 정의 (단위원)",
+      "knowledge_layer": 4,
+      "formula_latex": "\\sin\\theta = y,\\; \\cos\\theta = x,\\; \\tan\\theta = y/x \\;(P(x,y) \\text{ 단위원 위})",
+      "prerequisites": ["좌표평면", "원"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "각이 임의 실수", "derived_fact": "단위원 좌표로 정의 확장", "why": "직각삼각형 정의의 일반화 — 음수·둔각 모두 통일" }
+      ]
+    },
+    {
+      "id": "M1_trig_identity_pythagoras",
+      "name": "삼각함수 기본항등식",
+      "knowledge_layer": 4,
+      "formula_latex": "\\sin^2\\theta + \\cos^2\\theta = 1;\\;\\; 1+\\tan^2\\theta = \\sec^2\\theta",
+      "prerequisites": ["삼각함수 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "sin·cos·tan 가 함께 등장", "derived_fact": "한 함수만 남기고 소거", "why": "단위원 위 좌표는 x²+y²=1" }
+      ]
+    },
+    {
+      "id": "M1_trig_addition",
+      "name": "삼각함수 덧셈정리",
+      "knowledge_layer": 5,
+      "formula_latex": "\\sin(\\alpha\\pm\\beta) = \\sin\\alpha\\cos\\beta \\pm \\cos\\alpha\\sin\\beta;\\;\\; \\cos(\\alpha\\pm\\beta) = \\cos\\alpha\\cos\\beta \\mp \\sin\\alpha\\sin\\beta",
+      "prerequisites": ["삼각함수 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "각의 합·차의 sin·cos", "derived_fact": "각 단독 함수의 곱·합", "why": "회전의 합성 — 회전행렬 곱에서 자연스레 도출" }
+      ]
+    },
+    {
+      "id": "M1_trig_double_angle",
+      "name": "배각 공식",
+      "knowledge_layer": 5,
+      "formula_latex": "\\sin 2\\theta = 2\\sin\\theta\\cos\\theta,\\;\\; \\cos 2\\theta = \\cos^2\\theta - \\sin^2\\theta = 1-2\\sin^2\\theta",
+      "prerequisites": ["덧셈정리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "2θ 가 단독 등장", "derived_fact": "θ 의 sin·cos 로 분해", "why": "α=β=θ 인 덧셈정리의 특수화" }
+      ]
+    },
+    {
+      "id": "M1_trig_half_angle",
+      "name": "반각·차수 낮추기 공식",
+      "knowledge_layer": 5,
+      "formula_latex": "\\sin^2\\theta = \\frac{1-\\cos 2\\theta}{2},\\;\\; \\cos^2\\theta = \\frac{1+\\cos 2\\theta}{2}",
+      "prerequisites": ["배각공식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "sin² 또는 cos² 를 적분 또는 단순화", "premises": ["배각공식 역방향"], "why": "차수를 낮춰 적분 가능 형태로 환원" }
+      ]
+    },
+    {
+      "id": "M1_trig_synthesis",
+      "name": "삼각함수의 합성 (a sin + b cos)",
+      "knowledge_layer": 5,
+      "formula_latex": "a\\sin\\theta + b\\cos\\theta = \\sqrt{a^2+b^2} \\sin(\\theta+\\varphi)",
+      "prerequisites": ["덧셈정리"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "asinθ + bcosθ 의 최댓·최솟값", "premises": ["a²+b² 의 제곱근"], "why": "합성하면 단일 sin 파의 진폭이 곧 최댓값" }
+      ]
+    },
+    {
+      "id": "M1_law_of_sines",
+      "name": "사인법칙",
+      "knowledge_layer": 5,
+      "formula_latex": "\\frac{a}{\\sin A} = \\frac{b}{\\sin B} = \\frac{c}{\\sin C} = 2R",
+      "prerequisites": ["삼각함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "삼각형의 변·각·외접원 반지름", "premises": ["한 변과 대각 또는 외접원"], "why": "외접원이 삼각형 변과 각을 묶는 보편 비례식" }
+      ]
+    },
+    {
+      "id": "M1_law_of_cosines",
+      "name": "코사인법칙",
+      "knowledge_layer": 5,
+      "formula_latex": "c^2 = a^2 + b^2 - 2ab\\cos C",
+      "prerequisites": ["삼각함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "삼각형의 한 변·세 변·끼인각", "premises": ["두 변 + 끼인각 또는 세 변"], "why": "피타고라스의 일반화 — 끼인각 보정항 -2ab cos C" }
+      ]
+    },
+    {
+      "id": "M1_triangle_area",
+      "name": "삼각형 넓이 (sin 활용)",
+      "knowledge_layer": 4,
+      "formula_latex": "S = \\tfrac{1}{2} ab \\sin C",
+      "prerequisites": ["삼각함수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "두 변과 끼인각", "derived_fact": "닫힌 형태 넓이", "why": "밑변·높이의 일반화 — sin C 가 높이비" }
+      ]
+    },
+    {
+      "id": "M1_arithmetic_seq",
+      "name": "등차수열 일반항·합 (수학1 재확인)",
+      "knowledge_layer": 3,
+      "formula_latex": "a_n = a + (n-1)d,\\;\\; S_n = \\tfrac{n(2a + (n-1)d)}{2}",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "공차 d 가 일정", "derived_fact": "선형 일반항 + 이차 합", "why": "S_n 은 n 의 이차식 — d 가 0 이면 일차" }
+      ]
+    },
+    {
+      "id": "M1_geometric_sum_infinite",
+      "name": "무한등비급수의 합",
+      "knowledge_layer": 5,
+      "formula_latex": "|r|<1 \\Rightarrow \\sum_{n=0}^{\\infty} ar^n = \\frac{a}{1-r}",
+      "prerequisites": ["등비수열"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "공비 절댓값이 1보다 작은 무한급수", "derived_fact": "닫힌 형태로 수렴", "why": "유한합의 r^n 항이 0으로 수렴" }
+      ]
+    },
+    {
+      "id": "M1_recurrence_arith_geo",
+      "name": "점화식 — 등차·등비형",
+      "knowledge_layer": 4,
+      "formula_latex": "a_{n+1} = a_n + d\\;(\\text{등차});\\;\\; a_{n+1} = r a_n\\;(\\text{등비})",
+      "prerequisites": ["수열"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "점화식이 표준 형태", "derived_fact": "패턴 인식 후 일반항", "why": "표준형은 닫힌 해를 직접 안다" }
+      ]
+    },
+    {
+      "id": "M1_recurrence_a_pa_q",
+      "name": "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+      "knowledge_layer": 5,
+      "formula_latex": "a_{n+1} = p a_n + q \\Rightarrow a_n - \\frac{q}{1-p} = p^{n-1}\\left(a_1 - \\frac{q}{1-p}\\right)\\;(p \\ne 1)",
+      "prerequisites": ["등비수열"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "선형 점화식의 일반항", "premises": ["고정점 q/(1-p) 분리"], "why": "고정점을 빼면 등비수열로 환원" }
+      ]
+    },
+    {
+      "id": "M1_mathematical_induction",
+      "name": "수학적 귀납법",
+      "knowledge_layer": 5,
+      "formula_latex": "P(1) \\text{ 참 } + (P(k) \\Rightarrow P(k+1)) \\Rightarrow \\forall n,\\; P(n)",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "모든 자연수 n 에 대한 명제", "premises": ["기저 + 귀납단계"], "why": "도미노 원리 — 무한 명제를 두 단계로 환원" }
+      ]
+    },
+    {
+      "id": "M1_sigma_split",
+      "name": "Σ 분해 (선형성)",
+      "knowledge_layer": 3,
+      "formula_latex": "\\sum (a_k + b_k) = \\sum a_k + \\sum b_k,\\;\\; \\sum c \\cdot a_k = c \\sum a_k",
+      "prerequisites": [],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "복합 식의 합", "derived_fact": "단순 항으로 분리", "why": "합은 선형 — 분해 후 각각 닫힌 공식 적용" }
+      ]
+    },
+    {
+      "id": "M1_telescoping",
+      "name": "부분분수 전개와 중간소거 (telescoping)",
+      "knowledge_layer": 5,
+      "formula_latex": "\\frac{1}{k(k+1)} = \\frac{1}{k} - \\frac{1}{k+1};\\;\\; \\sum (b_k - b_{k+1}) = b_1 - b_{n+1}",
+      "prerequisites": ["부분분수"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "1/(k(k+1)) 형 합", "premises": ["부분분수 분리"], "why": "이웃 항이 소거되어 양 끝만 남음" }
+      ]
+    },
+    {
+      "id": "M1_trig_period_symmetry",
+      "name": "삼각함수 주기·대칭",
+      "knowledge_layer": 4,
+      "formula_latex": "\\sin(\\theta+2\\pi)=\\sin\\theta,\\;\\; \\sin(-\\theta)=-\\sin\\theta,\\;\\; \\cos(-\\theta)=\\cos\\theta",
+      "prerequisites": ["삼각함수 정의"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "각이 큰 값 또는 음수", "derived_fact": "주기·대칭으로 [0,2π) 로 환산", "why": "단위원 회전의 주기성·대칭성" }
+      ]
+    },
+    {
+      "id": "M1_trig_eq",
+      "name": "삼각방정식의 풀이",
+      "knowledge_layer": 5,
+      "formula_latex": "\\sin x = k \\Rightarrow x = \\arcsin k + 2n\\pi \\text{ 또는 } \\pi - \\arcsin k + 2n\\pi",
+      "prerequisites": ["삼각함수 주기"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "backward", "goal_pattern": "삼각방정식의 해", "premises": ["기본해 + 주기 + 대칭해"], "why": "단위원에서 한 값을 갖는 점은 두 곳, 주기마다 반복" }
+      ]
+    },
+    {
+      "id": "M1_trig_inequality",
+      "name": "삼각부등식",
+      "knowledge_layer": 5,
+      "formula_latex": "\\sin x > k \\text{ 의 해} \\to \\text{단위원 위 호 구간으로 변환}",
+      "prerequisites": ["삼각방정식"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "삼각함수가 부등식에 포함", "derived_fact": "단위원 호 구간으로 시각화", "why": "주기와 대칭이 부등식 해를 호 구간으로 정렬" }
+      ]
+    },
+    {
+      "id": "M1_log_decimal",
+      "name": "상용로그의 정수부와 소수부",
+      "knowledge_layer": 5,
+      "formula_latex": "\\log N = n + \\alpha\\;(n=\\text{정수부},\\; 0 \\le \\alpha < 1)",
+      "prerequisites": ["로그"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "큰 수의 자릿수·맨앞 숫자", "derived_fact": "정수부+1 = 자릿수, 소수부 = 첫 숫자 결정", "why": "10^(정수부) ≤ N < 10^(정수부+1)" }
+      ]
+    },
+    {
+      "id": "M1_arithmetic_geometric_mean_seq",
+      "name": "등차중항·등비중항",
+      "knowledge_layer": 4,
+      "formula_latex": "\\text{등차: } 2b = a+c;\\;\\; \\text{등비: } b^2 = ac",
+      "prerequisites": ["등차·등비수열"],
+      "source": "parametric",
+      "triggers": [
+        { "direction": "forward", "condition": "세 항이 등차·등비를 이룸", "derived_fact": "중항 조건식", "why": "이웃 두 항의 평균이 중항" }
+      ]
+    }
+  ]
+}

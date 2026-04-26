@@ -1,15 +1,16 @@
 /**
- * Phase B-05: 시드 도구 적재 자동화 진입점.
+ * Phase B-05 / Phase E (영역 확장): 시드 도구 적재 자동화 진입점.
  *
  * 동작:
- *   1) data/math-tools-seed.json 검증
+ *   1) data/math-tools-seed.json (단일) **또는** data/math-tools-seed/*.json (디렉터리) 검증
  *   2) 저작권 차단 — data/textbook-corpus.txt 와 trigram Jaccard 비교 (>0.8 reject)
  *   3) 각 trigger 별 embedding (forward/backward) 생성
  *   4) Supabase math_tools / math_tool_triggers upsert
  *
  * 실행:
- *   pnpm dlx tsx scripts/seed-math-tools.ts --dry-run   (검증만)
- *   pnpm dlx tsx scripts/seed-math-tools.ts             (실제 적재 — service role 필요)
+ *   pnpm dlx tsx scripts/seed-math-tools.ts --dry-run         (전체 검증)
+ *   pnpm dlx tsx scripts/seed-math-tools.ts                    (전체 실 적재)
+ *   pnpm dlx tsx scripts/seed-math-tools.ts --only=middle.json (특정 파일만)
  *
  * 환경변수:
  *   - OPENAI_API_KEY (embedding)
@@ -17,7 +18,7 @@
  *   - SUPABASE_SERVICE_ROLE_KEY (실제 적재 시 필수, dry-run 에서는 skip)
  */
 
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
@@ -47,8 +48,39 @@ interface SeedFile {
 
 const REPO_ROOT = process.cwd();
 const SEED_FILE = path.join(REPO_ROOT, "data", "math-tools-seed.json");
+const SEED_DIR = path.join(REPO_ROOT, "data", "math-tools-seed");
 const CORPUS_FILE = path.join(REPO_ROOT, "data", "textbook-corpus.txt");
 const SIMILARITY_THRESHOLD = 0.8;
+
+function getOnlyFilter(): string | null {
+  const arg = process.argv.find((a) => a.startsWith("--only="));
+  return arg ? arg.slice("--only=".length) : null;
+}
+
+async function loadSeedFiles(only: string | null): Promise<{ file: string; seed: SeedFile }[]> {
+  const out: { file: string; seed: SeedFile }[] = [];
+
+  // 1) 디렉터리 모드 우선 (영역별 분리 관리 시)
+  if (existsSync(SEED_DIR)) {
+    const entries = (await readdir(SEED_DIR)).filter((f) => f.endsWith(".json")).sort();
+    for (const f of entries) {
+      if (only && f !== only) continue;
+      const raw = await readFile(path.join(SEED_DIR, f), "utf8");
+      out.push({ file: `seed/${f}`, seed: JSON.parse(raw) as SeedFile });
+    }
+  }
+
+  // 2) 레거시 단일 파일 (있으면 함께)
+  if (existsSync(SEED_FILE) && (!only || only === "math-tools-seed.json")) {
+    const raw = await readFile(SEED_FILE, "utf8");
+    out.push({ file: "math-tools-seed.json", seed: JSON.parse(raw) as SeedFile });
+  }
+
+  if (out.length === 0) {
+    throw new Error(`no seed files found (looked at ${SEED_FILE} and ${SEED_DIR})`);
+  }
+  return out;
+}
 
 function trigrams(text: string): Set<string> {
   const norm = text.toLowerCase().replace(/\s+/g, " ").trim();
@@ -91,11 +123,33 @@ function validateTool(t: SeedTool, idx: number): string[] {
 
 async function main() {
   const dryRun = process.argv.includes("--dry-run");
-  console.log(`[seed-math-tools] dry-run=${dryRun}`);
+  const only = getOnlyFilter();
+  console.log(`[seed-math-tools] dry-run=${dryRun} only=${only ?? "(all)"}`);
 
-  const seedRaw = await readFile(SEED_FILE, "utf8");
-  const seed = JSON.parse(seedRaw) as SeedFile;
-  console.log(`[seed-math-tools] loaded ${seed.tools.length} tools (version ${seed.version})`);
+  const files = await loadSeedFiles(only);
+  console.log(`[seed-math-tools] loaded ${files.length} seed file(s):`);
+  for (const { file, seed: s } of files) {
+    console.log(`  - ${file}: ${s.tools.length} tools (version ${s.version})`);
+  }
+
+  // 단일 SeedFile 로 평탄화 (id 중복 시 마지막 승)
+  const merged: SeedTool[] = [];
+  const idIndex = new Map<string, string>();
+  for (const { file, seed: s } of files) {
+    for (const t of s.tools) {
+      if (idIndex.has(t.id)) {
+        console.error(
+          `[seed-math-tools] duplicate id "${t.id}" in ${file} (already in ${idIndex.get(t.id)})`
+        );
+        process.exit(1);
+      }
+      idIndex.set(t.id, file);
+      merged.push(t);
+    }
+  }
+  const seedVersion = files[0]?.seed.version ?? 1;
+  const seed: SeedFile = { version: seedVersion, tools: merged };
+  console.log(`[seed-math-tools] merged total: ${seed.tools.length} tools`);
 
   // 1) 정합성 검증
   const allErrors: string[] = [];
