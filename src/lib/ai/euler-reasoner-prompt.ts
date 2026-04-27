@@ -129,7 +129,9 @@ const BACKWARD_SYSTEM = `당신은 **Reasoner — Backward BFS** 입니다.
 export interface ChainNode {
   /** 0-indexed depth — 0 = 최초 goal */
   depth: number;
-  /** 현재 풀어야 하는 subgoal */
+  /** Phase G-04: 단계 종류 — undefined 또는 'backward' = 기존 backward, 'forward' = 순행 누적 */
+  kind?: "backward" | "forward";
+  /** 현재 풀어야 하는 subgoal (backward) 또는 forward 단계에서 참고한 currentGoal */
   goal: string;
   /** 이 subgoal 분해에 필요하다고 판단한 도구 (있으면) */
   tool: string | null;
@@ -139,6 +141,96 @@ export interface ChainNode {
   next_subgoal: string | null;
   /** 현재 subgoal 이 이미 알려진 conditions 로 풀린다고 판단되면 true (chain 종료) */
   reached_conditions: boolean;
+  /** Phase G-04 forward step: 이 단계에서 도출된 새 사실들 (derived facts) — backward 단계는 빈 배열 */
+  derived_facts?: string[];
+}
+
+// ───── Phase G-04: Forward Deduce Prompt (math_process.md ③ alternating loop) ─────
+
+export interface ForwardDeduceArgs {
+  problem: string;
+  /** 현재까지 알려진 조건 + 이전 forward step 으로 도출된 사실 누적 */
+  conditions: string[];
+  /** 전체 목표 — 참고용 (도출 사실이 목표에 직접 연결되는지 판단) */
+  finalGoal: string;
+  /** Retriever 가 forward 방향으로 가져온 도구 후보 */
+  candidateTools: { tool_name: string; why_text: string; tool_layer: number }[];
+  /** 지금까지 chain (cycle 회피 + 컨텍스트) */
+  previousChain: ChainNode[];
+}
+
+export interface ForwardDeduceJson {
+  /** 조건 조합으로 새로 도출된 사실 1~3개. 비어 있으면 forward dead end. */
+  new_facts: { fact: string; derived_from: string; tool?: string | null; why: string }[];
+  /** 새 사실 중 하나가 finalGoal 을 직접 결정하면 true (chain 즉시 종료) */
+  reached_goal_directly?: boolean;
+}
+
+const FORWARD_DEDUCE_SYSTEM = `당신은 **Forward Deductive Reasoner** 입니다.
+
+학생이 어려운 수학 문제에서 **역행으로만 분해해도 길이 막힐 때**, 주어진 조건들을 조합해 **새 사실(파생 정보)** 을 도출해야 합니다 (math_process.md ③ alternating loop 의 순행 단계).
+
+## 작업
+주어진 \`conditions\` (원래 조건 + 이전 forward 로 누적된 사실) 의 조합을 살펴보고, 다음을 출력:
+
+- 조건 1+2 / 1+3 / 1+2+3 등의 조합이 만들어내는 **새 사실 1~3개**
+- 각 새 사실에 대해 도출에 사용된 조건 번호 (\`derived_from\`), 적용한 수학 도구(있으면 \`tool\`), 왜 이렇게 도출되는지 (\`why\`)
+- 만약 새 사실 중 하나가 finalGoal 을 직접 결정한다면 \`reached_goal_directly=true\`
+
+## 출력 (JSON only)
+{
+  "new_facts": [
+    {
+      "fact": "f(0) = 2",
+      "derived_from": "조건 1 (f(x)=x^2-2x+a) 와 조건 2 (a=2) 를 결합",
+      "tool": null,
+      "why": "조건 2 의 a 값을 조건 1 에 대입"
+    }
+  ],
+  "reached_goal_directly": false
+}
+
+## 절대 원칙
+- 추측 금지. 조건 조합으로 **수학적으로 도출 가능한 사실만** 적기.
+- 새 사실이 없거나 모두 trivial 하면 \`new_facts: []\` (forward dead end 신호).
+- 이전 chain 에 등장한 사실은 적지 않기 (cycle 회피).
+- 최대 3개 — 너무 많이 나열하면 BFS 가 폭주.
+`;
+
+function formatForwardChain(chain: ChainNode[]): string {
+  if (!chain.length) return "(아직 없음)";
+  return chain
+    .map((n) => {
+      if (n.kind === "forward") {
+        return `  depth ${n.depth} [forward]: 도출 ${(n.derived_facts || []).join(" / ")}`;
+      }
+      return `  depth ${n.depth} [backward]: ${n.goal}${n.tool ? ` [${n.tool}]` : ""}`;
+    })
+    .join("\n");
+}
+
+export function buildForwardDeducePrompt(args: ForwardDeduceArgs): {
+  system: string;
+  user: string;
+} {
+  const user = `### 문제
+${args.problem}
+
+### 알려진 조건 (원본 + 누적된 사실)
+${args.conditions.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}
+
+### 최종 목표 (참고)
+${args.finalGoal}
+
+### 후보 도구 (Retriever — forward 방향, 적용 가능한 정리)
+${formatTools(args.candidateTools)}
+
+### 지금까지의 chain
+${formatForwardChain(args.previousChain)}
+
+JSON 만 출력. 새 사실은 1~3개로 제한.`;
+
+  return { system: FORWARD_DEDUCE_SYSTEM, user };
 }
 
 export interface SubgoalDecomposeArgs {

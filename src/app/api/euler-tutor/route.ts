@@ -16,6 +16,7 @@ import { runReasonerStep } from "@/lib/euler/reasoner";
 import { runReasonerWithTools } from "@/lib/euler/reasoner-with-tools";
 import {
   recursiveBackwardChain,
+  alternatingChain,
   chainToCoachingText,
 } from "@/lib/euler/recursive-reasoner";
 import { REASONER_THRESHOLD_BY_AREA, normalizeArea } from "@/lib/ai/euler-tools-schema";
@@ -195,7 +196,12 @@ ${result.verified
     let chainContext = "";
     // Phase G-03: solve_logs 적재용 chain 메타 (logSolve 호출 시 사용)
     let chainLogMeta: {
-      termination: "reached_conditions" | "max_depth" | "dead_end" | "cycle";
+      termination:
+        | "reached_conditions"
+        | "max_depth"
+        | "dead_end"
+        | "cycle"
+        | "forward_only_progress";
       depth: number;
       used_tools: string[];
     } | null = null;
@@ -287,7 +293,11 @@ ${tools
           // BFS / with-tools 와 sequential (병렬화는 후속). chain 평균 7s.
           if (runChain) {
             try {
-              const chainRes = await recursiveBackwardChain({
+              // Phase G-04: alternating loop (역행↔순행) 를 기본 활성화. 환경변수
+              // EULER_LEGACY_BACKWARD_ONLY=true 설정 시 G-02 backward-only 로 회귀.
+              const useAlternating = process.env.EULER_LEGACY_BACKWARD_ONLY !== "true";
+              const chainFn = useAlternating ? alternatingChain : recursiveBackwardChain;
+              const chainRes = await chainFn({
                 problem: problemText,
                 conditions: mgr.conditions,
                 goal: mgr.goal,

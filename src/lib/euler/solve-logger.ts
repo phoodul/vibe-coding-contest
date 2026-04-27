@@ -58,8 +58,14 @@ export interface SolveLogInput {
   is_correct?: boolean | null;
   reveal_used?: boolean;
   duration_ms?: number | null;
-  /** Phase G-03: Recursive Chain 결과 (실행된 경우만) */
-  chain_termination?: "reached_conditions" | "max_depth" | "dead_end" | "cycle" | null;
+  /** Phase G-03: Recursive Chain 결과 (실행된 경우만). G-04 forward_only_progress 추가. */
+  chain_termination?:
+    | "reached_conditions"
+    | "max_depth"
+    | "dead_end"
+    | "cycle"
+    | "forward_only_progress"
+    | null;
   chain_depth?: number | null;
   chain_used_tools?: string[];
 }
