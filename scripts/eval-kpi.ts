@@ -93,6 +93,11 @@ interface ProblemEvalResult {
   errors: string[];
   duration_ms: number;
   chain?: ChainMeta;
+  // Phase G-05
+  area_label?: string;
+  parse_error?: boolean; // true 면 모수 제외
+  agentic_turns?: number;
+  model_used?: string;
 }
 
 interface KpiSummary {
@@ -131,24 +136,35 @@ function parseRunMode():
   | "baseline"
   | "chain_only"
   | "chain_rag"
-  | "full" {
+  | "full"
+  | "agentic" {
   const idx = process.argv.indexOf("--mode");
   if (idx >= 0 && process.argv[idx + 1]) {
-    const v = process.argv[idx + 1] as "baseline" | "chain_only" | "chain_rag" | "full";
-    if (["baseline", "chain_only", "chain_rag", "full"].includes(v)) return v;
+    const v = process.argv[idx + 1] as "baseline" | "chain_only" | "chain_rag" | "full" | "agentic";
+    if (["baseline", "chain_only", "chain_rag", "full", "agentic"].includes(v)) return v;
   }
   return process.argv.includes("--chain") ? "chain_only" : "baseline";
 }
 const RUN_MODE = parseRunMode();
-const CHAIN_ON = RUN_MODE !== "baseline";
+const CHAIN_ON = RUN_MODE === "chain_only" || RUN_MODE === "chain_rag" || RUN_MODE === "full";
 const RAG_ON = RUN_MODE === "chain_rag" || RUN_MODE === "full"; // G04-5 이후 활성화
 const TRIGGERS_STRONG = RUN_MODE === "full"; // G04-3 expected_triggers (G04-3 이후)
+const AGENTIC_ON = RUN_MODE === "agentic"; // G05: 진짜 multi-turn agentic
+
+// Phase G-05: --model <sonnet|gpt> 플래그
+const MODEL_NAME: "sonnet" | "gpt" = (() => {
+  const i = process.argv.indexOf("--model");
+  if (i >= 0 && process.argv[i + 1] === "gpt") return "gpt";
+  return "sonnet";
+})();
 
 const EVAL_FILE = KILLER_ON
   ? path.join(REPO_ROOT, "user_docs", "suneung-math", "eval", "killer-eval.json")
   : path.join(REPO_ROOT, "data", "kpi-eval-problems.json");
 
-const RESULT_SUFFIX = KILLER_ON ? `killer-${RUN_MODE}` : CHAIN_ON ? "chain" : "baseline";
+const RESULT_SUFFIX = KILLER_ON
+  ? `killer-${MODEL_NAME}-${RUN_MODE}`
+  : CHAIN_ON ? "chain" : "baseline";
 const RESULT_FILE = path.join(
   RESULT_DIR,
   MODE === "mock"
@@ -163,7 +179,10 @@ const LIMIT = (() => {
 })();
 
 const HAIKU_MODEL = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
-const SONNET_MODEL = process.env.ANTHROPIC_SONNET_MODEL_ID || "claude-sonnet-4-5-20250929";
+// Phase G-05: Sonnet 4.6 (latest) 으로 격상. ANTHROPIC_SONNET_MODEL_ID 로 override 가능.
+const SONNET_MODEL = process.env.ANTHROPIC_SONNET_MODEL_ID || "claude-sonnet-4-6";
+// Phase G-05: GPT-5.1 (가우스 호환) — 1단계 측정용
+const GPT_MODEL = process.env.OPENAI_GPT_MODEL_ID || "gpt-5.1";
 
 const WHY_PATTERNS = [/왜냐하면/, /이유는/, /때문에/, /쓰는 이유/, /왜 (?:이|그|쓰)/];
 
@@ -278,6 +297,35 @@ async function judgeKillerAnswer(
 interface AnthropicMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+// Phase G-05: 모델 추상화 — sonnet (Anthropic) / gpt (OpenAI)
+async function callModel(
+  modelName: "sonnet" | "gpt",
+  system: string,
+  messages: AnthropicMessage[],
+  maxTokens = 1500,
+): Promise<string> {
+  if (modelName === "gpt") {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) throw new Error("OPENAI_API_KEY missing");
+    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: GPT_MODEL,
+        max_completion_tokens: maxTokens,
+        messages: [
+          { role: "system", content: system },
+          ...messages.map((m) => ({ role: m.role, content: m.content })),
+        ],
+      }),
+    });
+    if (!resp.ok) throw new Error(`OpenAI ${resp.status}: ${(await resp.text()).slice(0, 200)}`);
+    const data = (await resp.json()) as { choices: { message: { content: string } }[] };
+    return data.choices[0]?.message?.content ?? "";
+  }
+  return callAnthropic(SONNET_MODEL, system, messages, maxTokens);
 }
 
 async function callAnthropic(
@@ -468,8 +516,8 @@ async function runReasoner(
     ? `\n\n## 분해 사고 경로 (Recursive Backward Chain — Phase G-02/G-04)\n${chainContext}\n\n위 chain 의 분해 순서를 따라 풀이를 전개하세요.`
     : "";
   const triggersHint = expectedTriggersHint ? `\n\n## Manager 가 추정한 expected_triggers (G-04)\n${expectedTriggersHint}` : "";
-  const text = await callAnthropic(
-    SONNET_MODEL,
+  const text = await callModel(
+    MODEL_NAME,
     REASONER_SYSTEM,
     [{ role: "user", content: `${problem}${toolsHint}${triggersHint}${similarContext ?? ""}${chainHint}` }],
     1500
@@ -740,6 +788,90 @@ function formatSimilarContextEval(rows: SimilarRow[]): string {
   return `\n\n## 유사 과거 수능 killer 문항이 발동시킨 trigger 패턴 (백엔드 RAG)\n${lines.join("\n")}\n\n위 trigger 들을 풀이 방향성 추론에만 참고. 학생에게는 노출하지 마세요.`;
 }
 
+// ───── Phase G-05: 진짜 multi-turn agentic chain (math_process.md 정신) ─────
+// 매 turn 마다 (원문제 + 누적 trace + 직전 step + 다음 instruction) 모두 컨텍스트 주입.
+// 모델이 5 step 으로 분해해 풀이. 마지막 step 에서만 최종 답.
+
+interface AgenticTurn {
+  step: number;
+  response: string;
+  duration_ms: number;
+}
+
+interface AgenticResult {
+  turns: AgenticTurn[];
+  final_answer_text: string;
+  total_duration_ms: number;
+}
+
+const AGENTIC_SYSTEM = `당신은 한국 수학 전문 시니어 강사입니다. 어려운 수능 문제를 단계적으로 분해해 풀이합니다.
+
+## 핵심 원칙
+- 매 step 마다 한 걸음만. 한 번에 답 도출 X.
+- 매 step 마다 원문제 컨텍스트가 함께 주입됨 — 절대 잊지 마세요.
+- 자가 검증 포함: 계산 오류, 누락 조건, 정의역 위반 점검.
+- 마지막 step 에서만 "최종 답: <값>" 한 줄 출력 (객관식 1~5 또는 정수).`;
+
+async function runAgenticChain(args: {
+  problem: string;
+  modelName: "sonnet" | "gpt";
+  maxTurns?: number;
+}): Promise<AgenticResult> {
+  const t0 = Date.now();
+  const cap = Math.max(2, Math.min(args.maxTurns ?? 5, 8));
+  const turns: AgenticTurn[] = [];
+  const problemContext = `### 원문제 (변하지 않는 컨텍스트)
+${args.problem}
+
+### 풀이 절차
+${cap}단계로 나눠 풀이합니다. 각 단계는 한 걸음만.
+- Step 1: 문제 구조화 — 구해야 할 것 / 조건 / 제약 분리 + 첫 추론 1걸음
+- Step 2~${cap - 1}: 다음 1걸음 (forward 또는 backward) + 자가 검증
+- Step ${cap}: 누적 추론 종합 + "최종 답: <값>" 한 줄`;
+
+  let trace = "";
+  for (let step = 0; step < cap; step++) {
+    const isLast = step === cap - 1;
+    const instruction = isLast
+      ? `### Step ${step + 1} (마지막): 최종 답
+지금까지의 누적 추론을 모두 종합해 최종 답만 정리. 마지막 줄에 반드시 "최종 답: <값>". 객관식이면 1~5, 주관식이면 정수.`
+      : step === 0
+        ? `### Step 1: 문제 구조화 + 첫 추론 1걸음
+원문제를 분해 — (구해야 할 것 list) / (조건 list) / (제약 list) 분리. 그 다음 첫 1걸음만 (forward = 조건 조합으로 새 사실, 또는 backward = 목표를 subgoal 로 분해). 답 도출 X.`
+        : `### Step ${step + 1}: 다음 1걸음 추론
+직전 step 결과를 받아 다음 1걸음 (forward 또는 backward). 자가 검증 (계산 오류, 누락 조건). 답 도출 X.`;
+
+    const userMsg = `${problemContext}
+
+### 누적 reasoning trace (Step 1~${step} 결과)
+${trace || "(아직 없음 — 이번이 Step 1)"}
+
+${instruction}`;
+
+    let respText: string;
+    try {
+      respText = await callModel(
+        args.modelName,
+        AGENTIC_SYSTEM,
+        [{ role: "user", content: userMsg }],
+        isLast ? 600 : 1200,
+      );
+    } catch (e) {
+      console.warn(`[agentic] step ${step + 1} failed:`, (e as Error).message);
+      break;
+    }
+    const stepDur = Date.now() - t0;
+    turns.push({ step: step + 1, response: respText, duration_ms: stepDur });
+    trace += `\n--- Step ${step + 1} 결과 ---\n${respText}\n`;
+  }
+
+  return {
+    turns,
+    final_answer_text: turns[turns.length - 1]?.response ?? "",
+    total_duration_ms: Date.now() - t0,
+  };
+}
+
 async function runRecursiveChain(args: {
   problem: string;
   conditions: string[];
@@ -885,6 +1017,53 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
   let reasonerText = "";
   let chainMeta: ChainMeta = { enabled: CHAIN_ON };
   let chainContext: string | undefined;
+  let agenticTurns = 0;
+
+  // ─── Phase G-05 agentic mode: Manager/Retriever/Chain skip, multi-turn 만 ───
+  if (AGENTIC_ON) {
+    try {
+      const ag = await runAgenticChain({
+        problem: p.problem,
+        modelName: MODEL_NAME,
+        maxTurns: 5,
+      });
+      reasonerText = ag.turns.map((t) => `--- Step ${t.step} ---\n${t.response}`).join("\n\n");
+      agenticTurns = ag.turns.length;
+    } catch (e) {
+      errors.push(`Agentic: ${(e as Error).message}`);
+    }
+    // 채점 (객관식/주관식 분기)
+    let finalAnswer = "";
+    let correct = false;
+    let parseError = false;
+    if (reasonerText) {
+      const judged = await judgeKillerAnswer(reasonerText, p.expected_answer, !!p.is_multiple_choice);
+      finalAnswer = judged.extracted;
+      correct = judged.correct;
+      // parse error: 추출 결과 비어 있고 judge fallback 도 빈값
+      if (!finalAnswer || finalAnswer === "?") parseError = true;
+    } else {
+      parseError = true;
+    }
+    return {
+      id: p.id,
+      difficulty: p.difficulty,
+      manager_ok: false,
+      retrieved_tools: [],
+      expected_tools: p.expected_tools,
+      hit_top3: false,
+      hit_top5: false,
+      reasoner_text: reasonerText,
+      reasoner_answer_correct: correct,
+      why_included: hasWhy(reasonerText),
+      errors,
+      duration_ms: Date.now() - start,
+      area_label: (p as EvalProblemWithArea).area_label,
+      parse_error: parseError,
+      agentic_turns: agenticTurns,
+      model_used: MODEL_NAME,
+    };
+  }
 
   try {
     manager = await runManager(p.problem);
@@ -966,16 +1145,20 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
 
   let finalAnswer = "";
   let correct = false;
+  let parseError = false;
   if (reasonerText) {
     if (typeof p.is_multiple_choice === "boolean") {
       // killer 평가셋: 객관식/주관식 분기 + LLM judge fallback
       const judged = await judgeKillerAnswer(reasonerText, p.expected_answer, p.is_multiple_choice);
       finalAnswer = judged.extracted;
       correct = judged.correct;
+      if (!finalAnswer || finalAnswer === "?") parseError = true;
     } else {
       finalAnswer = extractFinalAnswer(reasonerText);
       correct = answerEquivalent(finalAnswer || reasonerText, p.expected_answer);
     }
+  } else {
+    parseError = true;
   }
 
   return {
@@ -993,6 +1176,9 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
     errors,
     duration_ms: Date.now() - start,
     chain: chainMeta,
+    area_label: (p as EvalProblemWithArea).area_label,
+    parse_error: parseError,
+    model_used: MODEL_NAME,
   };
 }
 
@@ -1000,25 +1186,61 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
 // Aggregate
 // ============================================================
 
+interface AreaStat {
+  area: string;
+  total: number;
+  parse_errors: number;
+  effective_total: number; // total - parse_errors
+  correct: number;
+  accuracy: number;
+}
+
+function summarizeByArea(results: ProblemEvalResult[]): AreaStat[] {
+  const byArea: Record<string, ProblemEvalResult[]> = {};
+  for (const r of results) {
+    const a = r.area_label || "기타";
+    if (!byArea[a]) byArea[a] = [];
+    byArea[a].push(r);
+  }
+  return Object.entries(byArea)
+    .map(([area, rows]) => {
+      const total = rows.length;
+      const parseErrors = rows.filter((r) => r.parse_error).length;
+      const effective = total - parseErrors;
+      const correct = rows.filter((r) => r.reasoner_answer_correct === true).length;
+      return {
+        area,
+        total,
+        parse_errors: parseErrors,
+        effective_total: effective,
+        correct,
+        accuracy: effective > 0 ? correct / effective : 0,
+      };
+    })
+    .sort((a, b) => a.area.localeCompare(b.area));
+}
+
 function summarize(results: ProblemEvalResult[]): KpiSummary {
-  const total = results.length;
-  const hardResults = results.filter((r) => r.difficulty >= 5);
+  // Phase G-05: parse_error 는 모수 제외
+  const validResults = results.filter((r) => !r.parse_error);
+  const total = validResults.length;
+  const hardResults = validResults.filter((r) => r.difficulty >= 5);
 
-  const correctCount = results.filter((r) => r.reasoner_answer_correct === true).length;
+  const correctCount = validResults.filter((r) => r.reasoner_answer_correct === true).length;
   const hardCorrectCount = hardResults.filter((r) => r.reasoner_answer_correct === true).length;
-  const top3HitCount = results.filter((r) => r.hit_top3).length;
-  const top5HitCount = results.filter((r) => r.hit_top5).length;
-  const whyCount = results.filter((r) => r.why_included).length;
-  const managerOkCount = results.filter((r) => r.manager_ok).length;
+  const top3HitCount = validResults.filter((r) => r.hit_top3).length;
+  const top5HitCount = validResults.filter((r) => r.hit_top5).length;
+  const whyCount = validResults.filter((r) => r.why_included).length;
+  const managerOkCount = validResults.filter((r) => r.manager_ok).length;
 
-  const top3 = top3HitCount / total;
-  const top5 = top5HitCount / total;
-  const acc = correctCount / total;
+  const top3 = total > 0 ? top3HitCount / total : 0;
+  const top5 = total > 0 ? top5HitCount / total : 0;
+  const acc = total > 0 ? correctCount / total : 0;
   const accHard = hardResults.length > 0 ? hardCorrectCount / hardResults.length : 0;
-  const why = whyCount / total;
+  const why = total > 0 ? whyCount / total : 0;
 
-  // Chain 통계 (chain.enabled === true 인 결과만 집계)
-  const chainResults = results.filter((r) => r.chain?.enabled);
+  // Chain 통계 (chain.enabled === true 인 결과만 집계, parse_error 도 포함)
+  const chainResults = results.filter((r) => r.chain?.enabled && !r.parse_error);
   const chainExecuted = chainResults.filter((r) => r.chain?.depth && r.chain.depth > 0);
   const termDist: Record<string, number> = {
     reached_conditions: 0,
@@ -1053,7 +1275,7 @@ function summarize(results: ProblemEvalResult[]): KpiSummary {
     reasoner_accuracy: acc,
     reasoner_accuracy_hard: accHard,
     why_inclusion_rate: why,
-    manager_classify_rate: managerOkCount / total,
+    manager_classify_rate: total > 0 ? managerOkCount / total : 0,
     pass: {
       retriever: top3 >= 0.7,
       accuracy: accHard >= 0.7,
@@ -1104,6 +1326,20 @@ function printReport(results: ProblemEvalResult[], summary: KpiSummary, mode: st
     `"왜" 포함률: ${formatPercent(summary.why_inclusion_rate)} ${summary.pass.why ? "✅ PASS (≥90%)" : "❌ FAIL (<90%)"}`
   );
   console.log(`Manager 분류 성공률: ${formatPercent(summary.manager_classify_rate)}`);
+
+  // Phase G-05: 영역별 통계 (parse_error 제외)
+  const areaStats = summarizeByArea(results);
+  if (areaStats.length > 1) {
+    console.log(`\n${line}\n영역별 정답률 (parse_error 모수 제외)\n${line}`);
+    console.log("영역                    | 총 | parse_err | 유효 | 정답 | 정답률");
+    console.log("-".repeat(72));
+    for (const s of areaStats) {
+      console.log(
+        `${s.area.padEnd(22)} | ${String(s.total).padStart(2)} |    ${String(s.parse_errors).padStart(2)}     |  ${String(s.effective_total).padStart(2)}  |  ${String(s.correct).padStart(2)}  | ${formatPercent(s.accuracy)}`,
+      );
+    }
+  }
+
   if (summary.chain?.enabled) {
     console.log(`\nRecursive Chain (Phase G-02):`);
     console.log(`  실행 건수: ${summary.chain.executed_count}/${summary.total} (난이도 ≥ 5 만)`);
@@ -1126,18 +1362,23 @@ interface KillerProblem {
   year: number;
   type: string;
   number: number;
+  area_label?: string; // G-05: "가형(2017~2021)" / "공통(2022~2026)" / "미적분(2022~2026)"
   problem_latex: string;
   answer: string;
   is_multiple_choice: boolean;
 }
 
-function adaptKillerToEval(k: KillerProblem): EvalProblem {
-  // 21번 = 4점 객관식/공통 마지막 = 난이도 5, 28~30번 = 난이도 6
-  const difficulty = k.number >= 29 ? 6 : 5;
+interface EvalProblemWithArea extends EvalProblem {
+  area_label?: string;
+}
+
+function adaptKillerToEval(k: KillerProblem): EvalProblemWithArea {
+  // G-05: 21+22 = 공통(난이도 5), 28+30 = 미적분(난이도 6)
+  const difficulty = k.number >= 28 ? 6 : 5;
   return {
     id: k.id,
-    category: `${k.type}-${k.number}`,
-    area: "killer",
+    category: `${k.area_label ?? k.type}-${k.number}`,
+    area: k.area_label ?? "killer",
     difficulty,
     problem: k.problem_latex,
     expected_answer: k.answer,
@@ -1148,6 +1389,7 @@ function adaptKillerToEval(k: KillerProblem): EvalProblem {
     killer_year: k.year,
     killer_type: k.type,
     killer_number: k.number,
+    area_label: k.area_label,
   };
 }
 

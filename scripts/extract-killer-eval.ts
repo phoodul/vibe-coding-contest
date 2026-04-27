@@ -28,14 +28,24 @@ interface AllProblemsJson {
 
 type ExamType = "가형" | "나형" | "공통" | "미적분" | "기하" | "확률과통계";
 
+type AreaLabel = "가형(2017~2021)" | "공통(2022~2026)" | "미적분(2022~2026)";
+
 interface KillerProblem {
   id: string;
   year: number;
   type: ExamType;
   number: number;
+  /** Phase G-05: 그룹 분리 통계용 — 2017~2021 가형 / 2022~2026 공통 / 2022~2026 미적분 */
+  area_label: AreaLabel;
   problem_latex: string;
   answer: string;
   is_multiple_choice: boolean;
+}
+
+function areaLabelFor(year: number, type: ExamType): AreaLabel {
+  if (year >= 2017 && year <= 2021) return "가형(2017~2021)";
+  if (type === "미적분") return "미적분(2022~2026)";
+  return "공통(2022~2026)";
 }
 
 const ROOT = process.cwd();
@@ -60,57 +70,46 @@ function isMultipleChoice(type: ExamType, number: number): boolean {
 const main: KillerProblem[] = [];
 const extra: KillerProblem[] = [];
 
-// Part 1: 2017~2021 가/나형 → JSON 직접
+// Part 1: 2017~2021 가형만 → 21+28+29+30 (사용자 G-05 정정: 5개년 가형 4문항)
 for (const year of [2017, 2018, 2019, 2020, 2021]) {
-  for (const t of ["가형", "나형"] as const) {
-    const set = ALL[`${year}_${t}`];
-    if (!set) continue;
-    for (const n of [21, 29, 30] as const) {
-      const body = set.problems[String(n)];
-      const ans = findAnswer(year, t, n);
-      if (!body || !ans) continue;
-      main.push({
-        id: `${year}-${t}-${n}`,
-        year,
-        type: t,
-        number: n,
-        problem_latex: body.trim(),
-        answer: ans,
-        is_multiple_choice: isMultipleChoice(t, n),
-      });
-    }
-    const b28 = set.problems["28"];
-    const a28 = findAnswer(year, t, 28);
-    if (b28 && a28) {
-      extra.push({
-        id: `${year}-${t}-28`,
-        year,
-        type: t,
-        number: 28,
-        problem_latex: b28.trim(),
-        answer: a28,
-        is_multiple_choice: isMultipleChoice(t, 28),
-      });
-    }
+  const set = ALL[`${year}_가형`];
+  if (!set) continue;
+  for (const n of [21, 28, 29, 30] as const) {
+    const body = set.problems[String(n)];
+    const ans = findAnswer(year, "가형", n);
+    if (!body || !ans) continue;
+    main.push({
+      id: `${year}-가형-${n}`,
+      year,
+      type: "가형",
+      number: n,
+      area_label: areaLabelFor(year, "가형"),
+      problem_latex: body.trim(),
+      answer: ans,
+      is_multiple_choice: isMultipleChoice("가형", n),
+    });
   }
 }
 
-// Part 2: 2022~2026 공통 21번 → unified JSON
+// Part 2: 2022~2026 공통 21+22번 → unified JSON
 for (const year of [2022, 2023, 2024, 2025, 2026]) {
   const set = ALL[`${year}_unified`];
   if (!set) continue;
-  const body = set.problems["21"];
-  const ans = findAnswer(year, "공통", 21);
-  if (!body || !ans) continue;
-  main.push({
-    id: `${year}-공통-21`,
-    year,
-    type: "공통",
-    number: 21,
-    problem_latex: body.trim(),
-    answer: ans,
-    is_multiple_choice: isMultipleChoice("공통", 21),
-  });
+  for (const n of [21, 22] as const) {
+    const body = set.problems[String(n)];
+    const ans = findAnswer(year, "공통", n);
+    if (!body || !ans) continue;
+    main.push({
+      id: `${year}-공통-${n}`,
+      year,
+      type: "공통",
+      number: n,
+      area_label: areaLabelFor(year, "공통"),
+      problem_latex: body.trim(),
+      answer: ans,
+      is_multiple_choice: isMultipleChoice("공통", n),
+    });
+  }
 }
 
 // Part 3: 2022~2026 선택과목 28/29/30 → md 파싱
@@ -161,36 +160,59 @@ function parseMarkdown(year: number): Record<
   >;
 }
 
+// Part 3: 2022~2026 미적분 28+30 → md 파싱. 기하/확통은 메인 평가셋 X (G-05 결정)
+for (const year of [2022, 2023, 2024, 2025, 2026]) {
+  const parsed = parseMarkdown(year);
+  const sset = parsed["미적분"];
+  if (!sset) continue;
+  for (const n of [28, 30] as const) {
+    const body = sset[String(n)];
+    const ans = findAnswer(year, "미적분", n);
+    if (!body || !ans) continue;
+    main.push({
+      id: `${year}-미적분-${n}`,
+      year,
+      type: "미적분",
+      number: n,
+      area_label: areaLabelFor(year, "미적분"),
+      problem_latex: body,
+      answer: ans,
+      is_multiple_choice: isMultipleChoice("미적분", n),
+    });
+  }
+}
+
+// (보조) 2017~2021 가형 29번 + 2022~2026 미적분 29번 + 기하/확통 28+30 → extra
+for (const year of [2017, 2018, 2019, 2020, 2021]) {
+  const set = ALL[`${year}_가형`];
+  if (!set) continue;
+  const b29 = set.problems["29"];
+  const a29 = findAnswer(year, "가형", 29);
+  if (b29 && a29) {
+    extra.push({
+      id: `${year}-가형-29`,
+      year, type: "가형", number: 29,
+      area_label: "미적분(2022~2026)",
+      problem_latex: b29.trim(), answer: a29,
+      is_multiple_choice: isMultipleChoice("가형", 29),
+    });
+  }
+}
 for (const year of [2022, 2023, 2024, 2025, 2026]) {
   const parsed = parseMarkdown(year);
   for (const subj of ["미적분", "기하", "확률과통계"] as const) {
     const sset = parsed[subj];
     if (!sset) continue;
-    for (const n of [29, 30] as const) {
+    for (const n of subj === "미적분" ? [29] : [28, 29, 30]) {
       const body = sset[String(n)];
       const ans = findAnswer(year, subj, n);
       if (!body || !ans) continue;
-      main.push({
-        id: `${year}-${subj}-${n}`,
-        year,
-        type: subj,
-        number: n,
-        problem_latex: body,
-        answer: ans,
-        is_multiple_choice: isMultipleChoice(subj, n),
-      });
-    }
-    const b28 = sset["28"];
-    const a28 = findAnswer(year, subj, 28);
-    if (b28 && a28) {
       extra.push({
-        id: `${year}-${subj}-28`,
-        year,
-        type: subj,
-        number: 28,
-        problem_latex: b28,
-        answer: a28,
-        is_multiple_choice: isMultipleChoice(subj, 28),
+        id: `${year}-${subj}-${n}`,
+        year, type: subj, number: n,
+        area_label: subj === "미적분" ? "미적분(2022~2026)" : "공통(2022~2026)",
+        problem_latex: body, answer: ans,
+        is_multiple_choice: isMultipleChoice(subj, n),
       });
     }
   }
@@ -226,12 +248,21 @@ fs.writeFileSync(
 console.log(`✅ killer-eval.json: ${main.length} 문항 (메인 21+29+30)`);
 console.log(`✅ killer-eval-extra.json: ${extra.length} 문항 (보조 28)`);
 
+const byArea: Record<string, number> = {};
+for (const p of main) {
+  byArea[p.area_label] = (byArea[p.area_label] || 0) + 1;
+}
+console.log("\n영역 분포 (G-05):");
+for (const [k, v] of Object.entries(byArea).sort()) {
+  console.log(`  ${k}: ${v}`);
+}
+
 const byYear: Record<string, number> = {};
 for (const p of main) {
-  const k = `${p.year}-${p.type}`;
+  const k = `${p.year}-${p.type}-${p.number}`;
   byYear[k] = (byYear[k] || 0) + 1;
 }
-console.log("\n메인 분포:");
+console.log("\n학년도-유형-번호 분포:");
 for (const [k, v] of Object.entries(byYear).sort()) {
   console.log(`  ${k}: ${v}`);
 }
