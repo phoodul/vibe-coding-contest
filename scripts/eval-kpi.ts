@@ -36,6 +36,11 @@ interface EvalProblem {
   expected_tools: string[];
   expected_layers_used: number[];
   rationale: string;
+  // killer 평가셋 전용 메타 (선택)
+  is_multiple_choice?: boolean;
+  killer_year?: number;
+  killer_type?: string;
+  killer_number?: number;
 }
 
 interface EvalFile {
@@ -108,18 +113,49 @@ interface KpiSummary {
 }
 
 const REPO_ROOT = process.cwd();
-const EVAL_FILE = path.join(REPO_ROOT, "data", "kpi-eval-problems.json");
 const RESULT_DIR = path.join(REPO_ROOT, "docs", "qa");
 
+// --killer: 수능 killer 평가셋 (G-04). --mode <baseline|chain_only|chain_rag|full>
+//   baseline = 단발 / chain_only = alternating chain ON / chain_rag = chain + similar_problems RAG
+//   full = chain + RAG + Manager expected_triggers 강화
+//   후방 호환: --chain (= chain_only)
+const KILLER_ON = process.argv.includes("--killer");
 const MODE = process.argv.includes("--full") ? "full" : "mock";
-const CHAIN_ON = process.argv.includes("--chain");
-const RESULT_SUFFIX = CHAIN_ON ? "chain" : "baseline";
+
+function parseRunMode():
+  | "baseline"
+  | "chain_only"
+  | "chain_rag"
+  | "full" {
+  const idx = process.argv.indexOf("--mode");
+  if (idx >= 0 && process.argv[idx + 1]) {
+    const v = process.argv[idx + 1] as "baseline" | "chain_only" | "chain_rag" | "full";
+    if (["baseline", "chain_only", "chain_rag", "full"].includes(v)) return v;
+  }
+  return process.argv.includes("--chain") ? "chain_only" : "baseline";
+}
+const RUN_MODE = parseRunMode();
+const CHAIN_ON = RUN_MODE !== "baseline";
+const RAG_ON = RUN_MODE === "chain_rag" || RUN_MODE === "full"; // G04-5 이후 활성화
+const TRIGGERS_STRONG = RUN_MODE === "full"; // G04-3 expected_triggers (G04-3 이후)
+
+const EVAL_FILE = KILLER_ON
+  ? path.join(REPO_ROOT, "user_docs", "suneung-math", "eval", "killer-eval.json")
+  : path.join(REPO_ROOT, "data", "kpi-eval-problems.json");
+
+const RESULT_SUFFIX = KILLER_ON ? `killer-${RUN_MODE}` : CHAIN_ON ? "chain" : "baseline";
 const RESULT_FILE = path.join(
   RESULT_DIR,
   MODE === "mock"
     ? "kpi-evaluation-result.json"
     : `kpi-evaluation-${RESULT_SUFFIX}.json`
 );
+
+const LIMIT = (() => {
+  const idx = process.argv.indexOf("--limit");
+  if (idx >= 0 && process.argv[idx + 1]) return parseInt(process.argv[idx + 1], 10) || 0;
+  return 0;
+})();
 
 const HAIKU_MODEL = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
 const SONNET_MODEL = process.env.ANTHROPIC_SONNET_MODEL_ID || "claude-sonnet-4-5-20250929";
@@ -158,6 +194,76 @@ function answerEquivalent(actual: string, expected: string): boolean {
     const na = norm(alt);
     return na && (a.includes(na) || na.includes(a));
   });
+}
+
+/** 객관식(1~5) 정답 추출 — "(3)" / "③" / "정답: 3" / "답은 3번" */
+const CIRCLED_NUM: Record<string, string> = {
+  "①": "1", "②": "2", "③": "3", "④": "4", "⑤": "5",
+};
+function extractMultipleChoice(text: string): string | null {
+  // 마지막 100자에서 우선 탐색
+  const tail = text.slice(-200);
+  const patterns = [
+    /(?:최종\s*)?(?:정답|답)\s*[:은는]?\s*[(\[]?\s*([1-5])\s*[)\]]?\s*번?/,
+    /(?:최종\s*)?(?:정답|답)\s*[:은는]?\s*([①-⑤])/,
+    /\(\s*([1-5])\s*\)\s*$/m,
+    /^\s*([①-⑤])\s*$/m,
+  ];
+  for (const re of patterns) {
+    for (const src of [tail, text]) {
+      const m = src.match(re);
+      if (m) return CIRCLED_NUM[m[1]] ?? m[1];
+    }
+  }
+  return null;
+}
+
+/** 주관식 정수 정답 추출 — "최종 답: 162" / "답은 162" / 마지막 줄의 정수 */
+function extractIntegerAnswer(text: string): string | null {
+  const tail = text.slice(-300);
+  const patterns = [
+    /(?:최종\s*)?(?:정답|답)\s*[:은는]?\s*([0-9]+)\b/,
+    /(?:따라서|그러므로)[^.\n]*?\b([0-9]+)\b\s*(?:이다|입니다|\.|\n)/,
+  ];
+  for (const re of patterns) {
+    for (const src of [tail, text]) {
+      const m = src.match(re);
+      if (m) return m[1];
+    }
+  }
+  // fallback: 마지막 정수
+  const all = text.match(/\b([0-9]+)\b/g);
+  return all && all.length ? all[all.length - 1] : null;
+}
+
+/** killer 자동 채점 — is_multiple_choice 에 따라 분기. 실패 시 LLM judge fallback. */
+async function judgeKillerAnswer(
+  reasonerText: string,
+  expected: string,
+  isMultipleChoice: boolean
+): Promise<{ extracted: string; correct: boolean; via: "regex" | "judge" }> {
+  const extractor = isMultipleChoice ? extractMultipleChoice : extractIntegerAnswer;
+  const extracted = extractor(reasonerText) ?? "";
+  if (extracted && answerEquivalent(extracted, expected)) {
+    return { extracted, correct: true, via: "regex" };
+  }
+  // LLM judge fallback (Haiku) — 정답 본문에서 최종 답만 추출
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return { extracted, correct: false, via: "regex" };
+  }
+  try {
+    const judgeText = await callAnthropic(
+      HAIKU_MODEL,
+      `당신은 수능 수학 자동 채점 보조입니다. 풀이 응답에서 ${isMultipleChoice ? "객관식 답 (1~5 정수)" : "주관식 답 (정수)"} 만 추출해 한 줄로 답하세요. 추출 실패 시 "?" 만 출력.`,
+      [{ role: "user", content: `응답:\n${reasonerText.slice(-2000)}\n\n최종 답만 한 줄:` }],
+      40
+    );
+    const judged = (judgeText.match(/[0-9]+/) || ["?"])[0];
+    const ok = judged !== "?" && answerEquivalent(judged, expected);
+    return { extracted: judged, correct: ok, via: "judge" };
+  } catch {
+    return { extracted, correct: false, via: "regex" };
+  }
 }
 
 // ============================================================
@@ -637,10 +743,19 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
   const hitTop3 = p.expected_tools.some((t) => top3.some((r) => r.includes(t.split(" ")[0]) || t.includes(r.split(" ")[0])));
   const hitTop5 = p.expected_tools.some((t) => top5.some((r) => r.includes(t.split(" ")[0]) || t.includes(r.split(" ")[0])));
 
-  const finalAnswer = extractFinalAnswer(reasonerText);
-  const correct = reasonerText
-    ? answerEquivalent(finalAnswer || reasonerText, p.expected_answer)
-    : false;
+  let finalAnswer = "";
+  let correct = false;
+  if (reasonerText) {
+    if (typeof p.is_multiple_choice === "boolean") {
+      // killer 평가셋: 객관식/주관식 분기 + LLM judge fallback
+      const judged = await judgeKillerAnswer(reasonerText, p.expected_answer, p.is_multiple_choice);
+      finalAnswer = judged.extracted;
+      correct = judged.correct;
+    } else {
+      finalAnswer = extractFinalAnswer(reasonerText);
+      correct = answerEquivalent(finalAnswer || reasonerText, p.expected_answer);
+    }
+  }
 
   return {
     id: p.id,
@@ -785,29 +900,67 @@ function printReport(results: ProblemEvalResult[], summary: KpiSummary, mode: st
 // Main
 // ============================================================
 
+interface KillerProblem {
+  id: string;
+  year: number;
+  type: string;
+  number: number;
+  problem_latex: string;
+  answer: string;
+  is_multiple_choice: boolean;
+}
+
+function adaptKillerToEval(k: KillerProblem): EvalProblem {
+  // 21번 = 4점 객관식/공통 마지막 = 난이도 5, 28~30번 = 난이도 6
+  const difficulty = k.number >= 29 ? 6 : 5;
+  return {
+    id: k.id,
+    category: `${k.type}-${k.number}`,
+    area: "killer",
+    difficulty,
+    problem: k.problem_latex,
+    expected_answer: k.answer,
+    expected_tools: [],
+    expected_layers_used: [6, 7],
+    rationale: "",
+    is_multiple_choice: k.is_multiple_choice,
+    killer_year: k.year,
+    killer_type: k.type,
+    killer_number: k.number,
+  };
+}
+
 async function main() {
   const evalRaw = await readFile(EVAL_FILE, "utf-8");
-  const evalFile = JSON.parse(evalRaw) as EvalFile;
+  let problems: EvalProblem[];
+  if (KILLER_ON) {
+    const killerFile = JSON.parse(evalRaw) as { problems: KillerProblem[] };
+    problems = killerFile.problems.map(adaptKillerToEval);
+  } else {
+    const evalFile = JSON.parse(evalRaw) as EvalFile;
+    problems = evalFile.problems;
+  }
+  if (LIMIT > 0) problems = problems.slice(0, LIMIT);
 
   // 시드 도구 이름 집합 (mock 모드 검증용)
   const seedRaw = await readFile(path.join(REPO_ROOT, "data", "math-tools-seed.json"), "utf-8");
   const seedFile = JSON.parse(seedRaw) as { tools: { name: string }[] };
   const seedToolNames = new Set(seedFile.tools.map((t) => t.name));
 
-  console.log(`Mode: ${MODE} ${MODE === "full" ? `(chain=${CHAIN_ON ? "ON" : "OFF"})` : ""}`);
-  console.log(`Problems: ${evalFile.problems.length}`);
+  console.log(`Mode: ${MODE}${KILLER_ON ? ` killer (run=${RUN_MODE}, chain=${CHAIN_ON ? "ON" : "OFF"}, RAG=${RAG_ON ? "ON" : "OFF"}, triggers=${TRIGGERS_STRONG ? "ON" : "OFF"})` : ` (chain=${CHAIN_ON ? "ON" : "OFF"})`}`);
+  console.log(`Problems: ${problems.length}${LIMIT > 0 ? ` (limit ${LIMIT})` : ""}`);
   console.log(`Seed tools: ${seedToolNames.size}`);
   console.log(`Result file: ${path.relative(REPO_ROOT, RESULT_FILE)}\n`);
 
   const results: ProblemEvalResult[] = [];
 
-  for (const p of evalFile.problems) {
+  for (const p of problems) {
     process.stdout.write(`[${p.id}] ${p.category} (난이도 ${p.difficulty}) ... `);
     const result =
       MODE === "mock" ? mockEvaluate(p, seedToolNames) : await fullEvaluate(p);
     results.push(result);
     console.log(
-      `Hit3=${result.hit_top3 ? "✓" : "✗"} 정답=${result.reasoner_answer_correct === true ? "✓" : "✗"} 왜=${result.why_included ? "✓" : "✗"} (${result.duration_ms}ms)`
+      `${KILLER_ON ? "" : `Hit3=${result.hit_top3 ? "✓" : "✗"} `}정답=${result.reasoner_answer_correct === true ? "✓" : "✗"} 왜=${result.why_included ? "✓" : "✗"} (${result.duration_ms}ms)`
     );
   }
 
