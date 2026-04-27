@@ -24,7 +24,7 @@
 | Phase G-02 (6차 세션) | ✅ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 4/4 |
 | 중학교 시드 분할 (6차 세션) | ✅ middle → middle1/middle2/middle3 (8/8/19 도구) | 2/2 |
 | Phase G-03 (7차 세션) | ✅ chain miss 인프라 + Trigger 1.07→1.90 + KPI A/B 측정 | 3/3 |
-| Phase G-04 (8차 세션) | 🔄 killer 정답률 85% 게이트 — 평가셋 + alternating loop + similar_problems RAG + trigger 4채널 | 8/9 (G04-7 측정 보고 대기) |
+| Phase G-04 (8차 세션) | 🔄 killer 정답률 85% 게이트 — 1차 측정: 20~30% (KPI 미달, alternating·RAG 효과 없음). 4채널 trigger 시스템 가동 완료 | 9/9 (방향 결정 대기) |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -115,6 +115,7 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 | G04-6 | c52fe49 | eval-kpi inline alternating + similar RAG (4-way A/B 측정 인프라). 4-way (baseline/chain_only/chain_rag/full) 측정 진행 중 |
 | G04-8 | 59265c2 | trigger 직접 입력 채널 (3) — POST /api/admin/math-tools/[id]/triggers + /admin/math-tools/[toolId]/triggers/new + contributor 권한 토글 (admin 전용) + source 추적 |
 | G04-9 | c2f9268 | 자체 학습 trigger mining 채널 (4) — candidate_triggers 마이그레이션 + trigger-miner.ts + cron 매일 03:30 KST + 검수 큐 UI/API |
+| G04-7 | (보고) | docs/qa/kpi-killer-ab-report.md — 1차 측정 결과: baseline 30% / chain_only 30% / chain_rag 20% (full 측정 진행 중). KPI 85% 게이트 한참 미달. Manager 실패율 60%, alternating loop 효과 없음, RAG 오히려 해로움. SOTA 단발 한계와 일치. 향후 4가지 방향 옵션 제시 |
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
