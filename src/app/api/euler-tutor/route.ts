@@ -12,6 +12,10 @@ import {
   type ManagerResult,
 } from "@/lib/ai/euler-manager-prompt";
 import { retrieveTools } from "@/lib/euler/retriever";
+import {
+  retrieveSimilarProblems,
+  formatSimilarProblemsContext,
+} from "@/lib/euler/similar-problems";
 import { runReasonerStep } from "@/lib/euler/reasoner";
 import { runReasonerWithTools } from "@/lib/euler/reasoner-with-tools";
 import {
@@ -194,6 +198,7 @@ ${result.verified
     let managerContext = "";
     let retrievedContext = "";
     let chainContext = "";
+    let similarContext = ""; // Phase G-04 G04-5: similar_problems RAG (백엔드 한정)
     // Phase G-03: solve_logs 적재용 chain 메타 (logSolve 호출 시 사용)
     let chainLogMeta: {
       termination:
@@ -235,6 +240,20 @@ ${mgr.conditions.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}
               event: EULER_EVENTS.MANAGER_CLASSIFIED,
               metadata: { area: mgr.area, difficulty: mgr.difficulty, n_conditions: mgr.conditions.length },
             });
+          }
+
+          // Phase G-04 G04-5: similar_problems RAG (백엔드 한정, 학생 노출 X)
+          // 환경변수 EULER_SIMILAR_RAG=true 일 때만 활성화. killer 수준 (eff>=5) 만 호출.
+          if (process.env.EULER_SIMILAR_RAG === "true") {
+            try {
+              const eff_pre = effectiveDifficulty(mgr);
+              if (eff_pre >= 5) {
+                const sims = await retrieveSimilarProblems(problemText, 3);
+                similarContext = formatSimilarProblemsContext(sims);
+              }
+            } catch (e) {
+              console.warn("[euler-tutor] similar_problems failed:", (e as Error).message);
+            }
           }
 
           // Phase G-02: Manager 가 layer_6_difficulty 를 보낸 경우 그 값을 우선.
@@ -496,10 +515,10 @@ ${cc.verified
 
 첫 메시지라면 따뜻하게 인사하고, 학생에게 문제를 보여달라고 요청하세요.
 "안녕! ${tutorName}예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"
-학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${lockNote}${solutionContext}${managerContext}${retrievedContext}${chainContext}${criticContext}`;
+학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${lockNote}${solutionContext}${managerContext}${retrievedContext}${similarContext}${chainContext}${criticContext}`;
 
     console.log(
-      `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} chain=${chainContext ? "Y" : "N"} messages=${messages.length}`
+      `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} similar=${similarContext ? "Y" : "N"} chain=${chainContext ? "Y" : "N"} messages=${messages.length}`
     );
 
     // C-06: 풀이 1건이 시작되는 시점(첫 user turn) 에 비동기 로그 적재
