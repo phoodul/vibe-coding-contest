@@ -24,7 +24,7 @@
 | Phase G-02 (6차 세션) | ✅ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 4/4 |
 | 중학교 시드 분할 (6차 세션) | ✅ middle → middle1/middle2/middle3 (8/8/19 도구) | 2/2 |
 | Phase G-03 (7차 세션) | ✅ chain miss 인프라 + Trigger 1.07→1.90 + KPI A/B 측정 | 3/3 |
-| Phase G-04 (8차 세션) | 🔄 killer 정답률 85% 게이트 — 평가셋 + alternating loop + similar_problems RAG + trigger 4채널 | 2/9 |
+| Phase G-04 (8차 세션) | 🔄 killer 정답률 85% 게이트 — 평가셋 + alternating loop + similar_problems RAG + trigger 4채널 | 8/9 (G04-7 측정 보고 대기) |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -109,6 +109,12 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 |---|---|---|
 | G04-1 | 74a607b | 평가셋 추출 — killer-eval.json 58문항 (메인 21+29+30) + extra 22문항 (28번). 출력 user_docs/ 로 저작권 격리 |
 | G04-2 | 211481e | eval-kpi --killer / --mode <baseline\|chain_only\|chain_rag\|full> + 객관식·주관식 정규식 추출 + LLM judge fallback (Haiku) + adaptKillerToEval 어댑터 |
+| G04-3 | c87e08b | Manager prompt 강화 — goals[] / constraints[] / expected_triggers[] (math_process.md ②, Tool=trigger 본질) optional 추가, maxTokens 600→800 |
+| G04-4 | f2a0ef8 | alternatingChain — 역행↔순행 교차 (math_process.md ③). buildForwardDeducePrompt + ChainNode.kind/derived_facts. orchestrator 기본 활성화 (LEGACY 환경변수로 회귀) |
+| G04-5 | 6635504 | similar_problems 마이그레이션 + match_similar_problems RPC + build-similar-problems.ts (58문항/160 trigger 적재) + retrieveSimilarProblems + Reasoner inject (백엔드 한정, 학생 노출 X) |
+| G04-6 | c52fe49 | eval-kpi inline alternating + similar RAG (4-way A/B 측정 인프라). 4-way (baseline/chain_only/chain_rag/full) 측정 진행 중 |
+| G04-8 | 59265c2 | trigger 직접 입력 채널 (3) — POST /api/admin/math-tools/[id]/triggers + /admin/math-tools/[toolId]/triggers/new + contributor 권한 토글 (admin 전용) + source 추적 |
+| G04-9 | c2f9268 | 자체 학습 trigger mining 채널 (4) — candidate_triggers 마이그레이션 + trigger-miner.ts + cron 매일 03:30 KST + 검수 큐 UI/API |
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
