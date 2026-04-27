@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       system,
       prompt: userPrompt,
       temperature: 0.1,
-      maxTokens: 600,
+      maxTokens: 800,
     });
 
     const parsed = tryParseJson<ManagerResult>(text);

@@ -24,7 +24,7 @@
 | Phase G-02 (6차 세션) | ✅ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 4/4 |
 | 중학교 시드 분할 (6차 세션) | ✅ middle → middle1/middle2/middle3 (8/8/19 도구) | 2/2 |
 | Phase G-03 (7차 세션) | ✅ chain miss 인프라 + Trigger 1.07→1.90 + KPI A/B 측정 | 3/3 |
-| Phase G-04 (8차 세션) | 🔄 killer 정답률 85% 게이트 — 평가셋 + alternating loop + similar_problems RAG + trigger 4채널 | 0/9 |
+| Phase G-04 (8차 세션) | 🔄 killer 정답률 85% 게이트 — 평가셋 + alternating loop + similar_problems RAG + trigger 4채널 | 2/9 |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -107,7 +107,8 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 
 | 단계 | 커밋 | 내용 |
 |---|---|---|
-| G04-1 | (진행) | 평가셋 추출 — killer-eval.json 58문항 (메인 21+29+30) + extra 22문항 (28번). 출력 user_docs/ 로 저작권 격리 |
+| G04-1 | 74a607b | 평가셋 추출 — killer-eval.json 58문항 (메인 21+29+30) + extra 22문항 (28번). 출력 user_docs/ 로 저작권 격리 |
+| G04-2 | 211481e | eval-kpi --killer / --mode <baseline\|chain_only\|chain_rag\|full> + 객관식·주관식 정규식 추출 + LLM judge fallback (Haiku) + adaptKillerToEval 어댑터 |
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|
