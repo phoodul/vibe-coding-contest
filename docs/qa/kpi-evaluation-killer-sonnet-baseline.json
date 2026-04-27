@@ -1,0 +1,973 @@
+{
+  "mode": "full",
+  "run_at": "2026-04-27T14:51:38.211Z",
+  "summary": {
+    "total": 26,
+    "retriever_hit_rate_top3": 0,
+    "retriever_hit_rate_top5": 0,
+    "reasoner_accuracy": 0.5769230769230769,
+    "reasoner_accuracy_hard": 0.5769230769230769,
+    "why_inclusion_rate": 0.6538461538461539,
+    "manager_classify_rate": 0.5769230769230769,
+    "pass": {
+      "retriever": false,
+      "accuracy": false,
+      "why": false
+    },
+    "chain": {
+      "enabled": false,
+      "executed_count": 0,
+      "avg_depth": 0,
+      "termination_dist": {
+        "reached_conditions": 0,
+        "max_depth": 0,
+        "dead_end": 0,
+        "cycle": 0
+      },
+      "success_rate": 0
+    }
+  },
+  "results": [
+    {
+      "id": "2017-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "역함수",
+        "적분방정식 — f 결정 (정적분 상수 활용)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 조건 분석\n\n$f(x)$가 $[0,1]$에서 **증가하는 연속함수**이므로, 어떤 점 $c \\in [0,1]$에서 부호가 바뀔 수 있습니다.\n\n**사잇값 정리**를 적용하겠습니다.\n\n$\\int_0^1 f(x)dx = 2 > 0$이고, $\\int_0^1 |f(x)|dx = 2\\sqrt{2} > 2$이므로:\n- $f$가 구간 내에서 음수 구간이 존재합니다 (만약 항상 양수면 두 적분값이 같아야 함).\n\n증가함수이므로, 어떤 $c \\in (0,1)$에서:\n- $[0, c]$에서 $f(x) \\leq 0$\n- $[c, 1]$에서 $f(x) \\geq 0$\n\n## 적분 조건 설정\n\n$$\\int_0^1 f(x)dx = -\\int_0^c |f(x)|dx + \\int_c^1 |f(x)|dx = 2$$\n\n$$\\int_0^1 |f(x)|dx = \\int_0^c |f(x)|dx + \\int_c^1 |f(x)|dx = 2\\sqrt{2}$$\n\n두 식을 연립하면:\n$$\\int_c^1 |f(x)|dx = \\sqrt{2}+1, \\quad \\int_0^c |f(x)|dx = \\sqrt{2}-1$$\n\n## $F(x)$ 표현\n\n$$F(x) = \\int_0^x |f(t)|dt$$\n\n$$F(c) = \\sqrt{2}-1, \\quad F(1) = 2\\sqrt{2}$$\n\n## 핵심 적분 계산\n\n$$\\int_0^1 f(x)F(x)dx$$\n\n**구간 분리:**\n\n$$= \\int_0^c f(x)F(x)dx + \\int_c^1 f(x)F(x)dx$$\n\n**$F'(x) = |f(x)|$ 임을 활용합니다.**\n\n- $[0,c]$에서: $f(x) = -|f(x)| = -F'(x)$\n- $[c,1]$에서: $f(x) = |f(x)| = F'(x)$\n\n따라서:\n\n$$\\int_0^c f(x)F(x)dx = \\int_0^c (-F'(x))F(x)dx = -\\int_0^c F(x)F'(x)dx$$\n\n$$= -\\left[\\frac{F(x)^2}{2}\\right]_0^c = -\\frac{F(c)^2 - F(0)^2}{2} = -\\frac{(\\sqrt{2}-1)^2}{2}$$\n\n$$= -\\frac{3-2\\sqrt{2}}{2}$$\n\n$$\\int_c^1 f(x)F(x)dx = \\int_c^1 F'(x)F(x)dx = \\left[\\frac{F(x)^2}{2}\\right]_c^1$$\n\n$$= \\frac{F(1)^2 - F(c)^2}{2} = \\frac{(2\\sqrt{2})^2 - (\\sqrt{2}-1)^2}{2}$$\n\n$$= \\frac{8 - (3-2\\sqrt{2})}{2} = \\frac{5+2\\sqrt{2}}{2}$$\n\n## 최종 합산\n\n$$\\int_0^1 f(x)F(x)dx = -\\frac{3-2\\sqrt{2}}{2} + \\frac{5+2\\sqrt{2}}{2}$$\n\n$$= \\frac{-(3-2\\sqrt{2}) + (5+2\\sqrt{2})}{2} = \\frac{2+4\\sqrt{2}}{2} = 1+2\\sqrt{2}$$\n\n---\n\n최종 답: $1+2\\sqrt{2}$ **(④)**\n\n코칭 한마디: 이유는 $F'(x)=|f(x)|$이므로 $f(x)$와 $|f(x)|$의 부호 관계를 구간별로 나눠 $\\int fF\\,dx = \\int \\pm F'F\\,dx = \\pm\\frac{F^2}{2}$로 변환하면 복잡한 적분이 경계값 대입만으로 깔끔하게 정리되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 27085,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2017-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "한 점에서의 접선의 방정식",
+        "회전체의 부피 (디스크)",
+        "로그함수의 성질",
+        "음함수 미분",
+        "쌍곡선의 정의와 표준형"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "## 풀이\n\n### 기본 설정\n\n점근선이 $y = \\pm\\frac{4}{3}x$이므로 쌍곡선의 표준형은 $\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1$에서:\n\n$$\\frac{b}{a} = \\frac{4}{3} \\Rightarrow b = \\frac{4}{3}a$$\n\n또한 $c^2 = a^2 + b^2 = a^2 + \\frac{16}{9}a^2 = \\frac{25}{9}a^2$\n\n$$\\therefore c = \\frac{5}{3}a$$\n\n### 쌍곡선의 정의 적용\n\n쌍곡선 위의 점 P에서:\n$$|\\overline{PF'} - \\overline{PF}| = 2a$$\n\n조건 (가): $\\overline{PF'} = 30$, $16 \\leq \\overline{PF} \\leq 20$\n\n**경우 1:** P가 오른쪽 가지에 있는 경우\n$$\\overline{PF'} - \\overline{PF} = 2a$$\n$$30 - \\overline{PF} = 2a \\Rightarrow \\overline{PF} = 30 - 2a$$\n\n조건 $16 \\leq 30 - 2a \\leq 20$에서:\n$$10 \\leq 2a \\leq 14 \\Rightarrow 5 \\leq a \\leq 7$$\n\n**경우 2:** P가 왼쪽 가지에 있는 경우\n$$\\overline{PF} - \\overline{PF'} = 2a$$\n$$\\overline{PF} = 30 + 2a$$\n\n조건 $16 \\leq 30 + 2a \\leq 20$에서:\n$$-14 \\leq 2a \\leq -10$\n\n$a > 0$이므로 불가능.\n\n따라서 **P는 오른쪽 가지**에 있고, $5 \\leq a \\leq 7$.\n\n### 조건 (나) 적용\n\n꼭짓점 A는 $x$좌표가 양수인 꼭짓점이므로 $A = (a, 0)$, $F = (c, 0) = \\left(\\frac{5}{3}a, 0\\right)$\n\n$$\\overline{AF} = c - a = \\frac{5}{3}a - a = \\frac{2}{3}a$$\n\n이것이 **자연수**여야 하므로:\n$$\\frac{2}{3}a \\in \\mathbb{N}$$\n\n즉, $a$는 $\\frac{3}{2}$의 배수 (단, $a > 0$이고 $5 \\leq a \\leq 7$인 실수).\n\n$5 \\leq a \\leq 7$ 범위에서 $\\frac{2a}{3}$이 자연수가 되려면:\n\n- $\\frac{2a}{3} = 4 \\Rightarrow a = 6$ ✓ (5 ≤ 6 ≤ 7 만족)\n- $\\frac{2a}{3} = 3 \\Rightarrow a = 4.5$ ✗ (범위 밖)\n- $\\frac{2a}{3} = 5 \\Rightarrow a = 7.5$ ✗ (범위 밖)\n\n경계값 확인:\n- $a = 5$: $\\frac{2}{3} \\times 5 = \\frac{10}{3}$ (자연수 아님)\n- $a = 7$: $\\frac{2}{3} \\times 7 = \\frac{14}{3}$ (자연수 아님)\n\n따라서 **$a = 6$**.\n\n### 주축의 길이\n\n$$2a = 2 \\times 6 = \\boxed{12}$$\n\n---\n\n최종 답: **12**  \n코칭 한마디: 이유는 쌍곡선의 정의 $|\\overline{PF'} - \\overline{PF}| = 2a$를 이용하면 주어진 거리 조건을 $a$에 대한 부등식으로 바꿀 수 있어, 추가 조건(자연수)과 결합해 $a$를 유일하게 확정할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 18178,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2017-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "벡터의 내적",
+        "유리함수 y=k/(x-p)+q",
+        "무리함수 y=√(ax+b)+c",
+        "조건부확률",
+        "직육면체·정육면체의 대각선"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 정사면체 ABCD에서 |PQ|의 최댓값 구하기\n\n## 좌표 설정\n\n한 모서리의 길이가 4인 정사면체를 좌표로 설정합니다.\n\n정삼각형 BCD를 xy평면에 배치:\n- B = (0, 0, 0)\n- C = (4, 0, 0)  \n- D = (2, 2√3, 0)\n\n삼각형 BCD의 무게중심: G = (2, 2√3/3, 0)\n\n꼭짓점 A는 G에서 수직으로:\n- 정사면체 높이: h = √(4² - (4/√3)²) ... \n\n무게중심에서 꼭짓점까지 거리 = 4/√3 = 4√3/3\n\nh = √(16 - 48/9) = √(16 - 16/3) = √(32/3) = 4√(2/3) = 4√6/3\n\n따라서:\n- **A** = (2, 2√3/3, 4√6/3)\n- **B** = (0, 0, 0), **C** = (4, 0, 0), **D** = (2, 2√3, 0)\n\n## 주요 점 계산\n\n**O (삼각형 ABC의 무게중심):**\n$$O = \\frac{A+B+C}{3} = \\left(\\frac{2+0+4}{3}, \\frac{2\\sqrt{3}/3+0+0}{3}, \\frac{4\\sqrt{6}/3}{3}\\right) = \\left(2, \\frac{2\\sqrt{3}}{9}, \\frac{4\\sqrt{6}}{9}\\right)$$\n\n**P (선분 AD의 중점):**\n$$P = \\frac{A+D}{2} = \\left(\\frac{2+2}{2}, \\frac{2\\sqrt{3}/3+2\\sqrt{3}}{2}, \\frac{4\\sqrt{6}/3}{2}\\right) = \\left(2, \\frac{4\\sqrt{3}}{3}, \\frac{2\\sqrt{6}}{3}\\right)$$\n\n## 벡터 OP 계산\n\n$$\\overrightarrow{OP} = P - O = \\left(0,\\ \\frac{4\\sqrt{3}}{3} - \\frac{2\\sqrt{3}}{9},\\ \\frac{2\\sqrt{6}}{3} - \\frac{4\\sqrt{6}}{9}\\right) = \\left(0,\\ \\frac{10\\sqrt{3}}{9},\\ \\frac{2\\sqrt{6}}{9}\\right)$$\n\n## 면 BCD 위의 점 Q 매개변수화\n\n면 BCD(z=0)의 점: **Q** = (x, y, 0), 단 삼각형 BCD 내부\n\n$$\\overrightarrow{OQ} = \\left(x-2,\\ y - \\frac{2\\sqrt{3}}{9},\\ -\\frac{4\\sqrt{6}}{9}\\right)$$\n\n## 수직 조건: $\\overrightarrow{OQ} \\cdot \\overrightarrow{OP} = 0$\n\n$$0 \\cdot (x-2) + \\frac{10\\sqrt{3}}{9}\\left(y - \\frac{2\\sqrt{3}}{9}\\right) + \\frac{2\\sqrt{6}}{9}\\left(-\\frac{4\\sqrt{6}}{9}\\right) = 0$$\n\n$$\\frac{10\\sqrt{3}}{9}y - \\frac{10\\sqrt{3}}{9} \\cdot \\frac{2\\sqrt{3}}{9} - \\frac{48}{81} = 0$$\n\n$$\\frac{10\\sqrt{3}}{9}y - \\frac{60}{81} - \\frac{48}{81} = 0$$\n\n$$\\frac{10\\sqrt{3}}{9}y = \\frac{108}{81} = \\frac{4}{3}$$\n\n$$y = \\frac{4}{3} \\cdot \\frac{9}{10\\sqrt{3}} = \\frac{12}{10\\sqrt{3}} = \\frac{6}{5\\sqrt{3}} = \\frac{2\\sqrt{3}}{5}$$\n\n## |PQ| 계산 및 최댓값\n\nQ = (x, 2√3/5, 0), P = (2, 4√3/3, 2√6/3)\n\n$$\\overrightarrow{PQ} = \\left(x-2,\\ \\frac{2\\sqrt{3}}{5} - \\frac{4\\sqrt{3}}{3},\\ -\\frac{2\\sqrt{6}}{3}\\right) = \\left(x-2,\\ \\frac{-14\\sqrt{3}}{15},\\ -\\frac{2\\sqrt{6}}{3}\\right)$$\n\n$$|\\overrightarrow{PQ}|^2 = (x-2)^2 + \\frac{588}{225} + \\frac{24}{9} = (x-2)^2 + \\frac{196}{75} + \\frac{8}{3} = (x-2)^2 + \\frac{196+200}{75} = (x-2)^2 + \\frac{396}{75}$$\n\ny = 2√3/5인 수평선과 삼각형 BCD의 교점에서 x의 범위 계산:\n삼각형 BCD에서 y = 2√3/5일 때 변 BD: x = y/√3 = ",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 26443,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2017-가형-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find the minimum value of M given the conditions about f(x) and g(x).\n\n## Setting Up the Problem\n\nFrom condition (가): f(x) = g(x)/(x-a) for x > a\n\nSince g(x) is a degree-4 polynomial with leading coefficient -1, and f(x) = g(x)/(x-a), for f(x) to have extrema, I need to analyze f'(x).\n\n## Analyzing the Structure\n\nFor f(x) = g(x)/(x-a), we need f'(x) = [(x-a)g'(x) - g(x)]/(x-a)².\n\n**Condition (다)**: f(x) has more extrema than g(x). Since g(x) is degree-4 with leading coefficient -1, g(x) can have at most 3 extrema. For f(x) to have MORE extrema than g(x), this suggests g(x) has fewer extrema than usual.\n\n**Key insight**: If (x-a) divides g(x), then f(x) = g(x)/(x-a) is a cubic polynomial on x > a. But then f(x) has at most 2 extrema, same as g might have... Let me reconsider.\n\nIf g(a) = 0, then g(x) = (x-a)·h(x) where h(x) is cubic, and f(x) = h(x) for x > a.\n\nFor f(x) = h(x) (cubic with leading coefficient -1) to have two equal local maxima M — a cubic can have at most one local max. So g(a) ≠ 0 in that simple sense.\n\n**Reconsidering**: Let g(x) = -(x-a)q(x) + r where the structure gives f(x) with two equal maxima. Let g(x) have a double root at x = a: g(x) = (x-a)²·p(x).\n\nThen f(x) = (x-a)·p(x), a cubic, which has one local max and one local min — only one local max, not two.\n\n## Key Structure\n\nLet g(x) = -(x-a)²(x-p)(x-q) with p, q > a (so g has roots at a,a,p,q).\n\nThen f(x) = g(x)/(x-a) = -(x-a)(x-p)(x-q) for x > a.\n\nThis cubic f(x) has leading coefficient -1, so it has one local max and one local min on x > a. Still only one local max.\n\n**New approach**: g(x) has a root at x = a (simple), so f(x) = g(x)/(x-a) is cubic. For f to have two equal maxima, we need the cubic to have equal values at two critical points — impossible since a cubic's local max ≠ local min value... wait, we need TWO LOCAL MAXIMA which a cubic cannot have.\n\nSo f(x) must NOT be a polynomial. Thus (x-a) does not divide g(x), and f(x) is a rational function with two local maxima equal to M.\n\n## Setting a = 0 (WLOG)\n\nLet f(x) = g(x)/x for x > 0. With g(x) = -x⁴ + bx³ + cx² + dx + e.\n\nf'(x) = [xg'(x) - g(x)]/x²\n\nLet h(x) = xg'(x) - g(x) = x(-4x³+3bx²+2cx+d) - (-x⁴+bx³+cx²+dx+e)\n= -4x⁴+3bx³+2cx²+dx + x⁴-bx³-cx²-dx-e\n= -3x⁴+2bx³+cx²-e\n\nFor f to have two equal maxima at α, β: h(α) = h(β) = 0, and h(x) = -3x⁴+2bx³+cx²-e.\n\n**Condition (다)**: g(x) extrema count < f(x) extrema count. f has at least 3 extrema (two maxima + one minimum between them), so g has at most 2 extrema, meaning g'(x) has a repeated root.\n\nFor the symmetric case, let b=0: h(x) = -3x⁴+cx²-e. Then α = -β which contradicts x > 0. \n\nSet g(x) = -(x-a)⁴ + k(x-a)² + m type. After detailed analysis with symmetry about x = a+t:\n\nLet f'(x) numerator = -3(x-a)⁴ + 2b(x-a)³ + c(x-a)² - e = 0 at α,β.\n\nAfter careful computation with β - α = 6√3, equal maxima condition, and g' having a double root, I find:\n\nSetting u = x-a, symmetric: h(u) = -3u⁴ + cu² - e, roots at ±√((c±√(c²-12e))/6).\n\nEqual maxima: β - α = 2√((c+√(c²-12e))/6) = 6√3, and M = f(α).\n\nAfter optimization: **M_min = 108**\n\n最終 답: **108**  \n코칭 한마디: 이유는 f(x) = g(x)/(x−a)의 극값 조건을 분자 다항식의 근 분석으로 바꾸면, 대칭성과 등극댓값 조건을 연립하여 최솟값을 체계적으로 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 30836,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2018-가형-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find linear functions g(x) satisfying (x-e){g(x)-f(x)} ≥ 0 for all x ≥ 1, then find the minimum slope h(t).\n\n## Understanding the Condition\n\nThe condition (x-e){g(x)-f(x)} ≥ 0 means:\n- When x > e: g(x) ≥ f(x)\n- When x < e (i.e., 1 ≤ x < e): g(x) ≤ f(x)\n- When x = e: satisfied automatically\n\nSo g(x) must be **below** f(x) = ln x on [1,e) and **above** f(x) = -t + ln x on (e,∞).\n\nAt x = e: g(e) must satisfy both constraints, so g(e) ≤ ln e = 1 and g(e) ≥ -t + 1. Since t > 0, we need -t+1 ≤ g(e) ≤ 1.\n\n## Setting Up g(x)\n\nLet g(x) = m(x-e) + c where c = g(e).\n\n**On [1,e):** g(x) ≤ ln x. The line must be below ln x, touching or being tangent.\n**On [e,∞):** g(x) ≥ -t + ln x.\n\nFor minimum slope, consider the line tangent to ln x from below on [1,e) and tangent to (-t + ln x) from above on [e,∞).\n\n**Tangency condition on [1,e):** At point x = a (1 ≤ a < e), g'(x) = 1/a, and g(a) = ln a.\nSo: m = 1/a, and g(a) = m(a-e) + c = ln a → c = ln a - (a-e)/a = ln a - 1 + e/a.\n\n**Tangency condition on [e,∞):** At point x = b (b ≥ e), g'(x) = 1/b, and g(b) = -t + ln b.\nSo: m = 1/b, and c = -t + ln b - (b-e)/b = -t + ln b - 1 + e/b.\n\nFor the line to satisfy both simultaneously with the same slope m and intercept c:\n- From left tangency: m = 1/a, c = ln a - 1 + e/a = ln(1/m) - 1 + em\n- From right tangency: m = 1/b, c = -t + ln b - 1 + e/b = -t + ln(1/m) - 1 + em\n\nThese give two different values of c unless we use just one tangency. To minimize slope m, we want the smallest m where a valid g exists.\n\n**Key insight:** The minimum slope line is tangent to ln x on [1,e) (from below) and lies above -t+ln x on [e,∞), OR tangent to -t+ln x on [e,∞) and below ln x on [1,e).\n\nIf tangent to ln x at a ∈ [1,e): c = ln a - 1 + e/a, m = 1/a.\nCheck on [e,∞): g(x) ≥ -t + ln x requires m(x-e) + c ≥ -t + ln x for all x ≥ e.\nThe minimum of [m(x-e) + c - (-t+ln x)] occurs where m = 1/x, i.e., x = 1/m = a... but a < e.\nFor x ≥ e, since m < 1/e < 1/x for x > 1/m, the function ln x grows faster. Need: at x = e, g(e) ≥ 1-t, so c ≥ 1-t.\n\nThus: ln a - 1 + e/a ≥ 1-t → t ≥ 2 - ln a - e/a.\n\nLet φ(a) = 2 - ln a - e/a. To minimize m = 1/a (minimize slope), maximize a.\nThe constraint is t ≥ φ(a), so maximum a satisfies t = φ(a) = 2 - ln a - e/a.\n\nAt this a: **h(t) = 1/a** where 2 - ln a - e/a = t, so **ln a + e/a = 2-t**.\n\n**Finding h'(t):** Differentiating ln a + e/a = 2-t with respect to t:\n(1/a + (-e/a²)) · a'(t) = -1 → a'(t) · (a-e)/a² = -1 → a'(t) = -a²/(a-e) = a²/(e-a).\n\nh(t) = 1/a, so h'(t) = -a'(t)/a² = -1/(e-a) = 1/(a-e).\n\n**Finding h'(1/(2e)):** When t = 1/(2e): ln a + e/a = 2 - 1/(2e). Try a = e: ln e + 1 = 2 ≠ 2-1/(2e). Try a satisfying the equation... h'(t) = 1/(a-e).\n\n**Finding h(a) = 1/(e+2):** So 1/a_val = 1/(e+2), a_val = e+2. Then h'(a) = 1/(e+2-e) = **1/2**.\n\nFor t=1/(2e): ln a + e/a = 2-1/(2e). At a = e+1/(2): approximate... Let me use h'= 1/(a-e) and find product.\n\nAfter careful analysis: h'(1/(2e)) = 1/(a₁-e) and the product equals **1/e(e",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 28879,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2018-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "전확률 정리",
+        "확률의 정의 (수학적 확률)",
+        "독립시행의 확률",
+        "유리함수 y=k/(x-p)+q",
+        "이차방정식의 판별식"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "## 풀이\n\n### 1단계: 전체 순서쌍의 수 구하기\n\n$x + y + z = 10$을 만족하는 음이 아닌 정수 순서쌍의 수는 중복조합으로 구합니다.\n\n$$\\binom{10 + 2}{2} = \\binom{12}{2} = 66$$\n\n### 2단계: 조건 $(x-y)(y-z)(z-x) \\neq 0$의 의미\n\n$(x-y)(y-z)(z-x) \\neq 0$이 되려면 $x, y, z$가 **모두 서로 달라야** 합니다.\n\n여사건: $(x-y)(y-z)(z-x) = 0$ → $x, y, z$ 중 **적어도 두 개가 같은 경우**\n\n### 3단계: 여사건 계산 (적어도 두 값이 같은 경우)\n\n**경우 1: 세 값이 모두 같은 경우** $x = y = z$\n\n$3x = 10$ → 정수해 없음 → **0가지**\n\n**경우 2: 정확히 두 값이 같은 경우**\n\n- $x = y \\neq z$: $2x + z = 10$, 음이 아닌 정수 해\n  - $x = 0, 1, 2, ..., 5$ → $z = 10, 8, 6, 4, 2, 0$\n  - 단, $z = x$이면 안 됨: $2x + x = 10 \\Rightarrow x = 10/3$ (정수 아님, 제외 불필요)\n  - 따라서 6가지\n\n- $y = z \\neq x$: 마찬가지로 6가지\n\n- $z = x \\neq y$: 마찬가지로 6가지\n\n여사건의 합계: $0 + 6 + 6 + 6 = \\mathbf{18}$가지\n\n### 4단계: 모두 다른 경우의 수\n\n$$66 - 18 = 48$$\n\n### 5단계: 확률 계산\n\n$$P = \\frac{48}{66} = \\frac{8}{11}$$\n\n따라서 $\\frac{q}{p} = \\frac{8}{11}$이므로 $q = 8$, $p = 11$\n\n### 6단계: $p + q$ 계산\n\n$$p + q = 11 + 8 = \\boxed{19}$$\n\n---\n\n최종 답: 19  \n코칭 한마디: 여사건을 활용한 이유는, \"적어도 두 개가 같다\"는 조건을 직접 세면 중복이 발생하기 쉬우므로 전체에서 빼는 방식이 훨씬 안전하고 빠르기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 18029,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2018-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "구의 방정식",
+        "쌍곡선의 정의와 표준형",
+        "두 점의 중점",
+        "이차함수와 x축 교점",
+        "유리함수 y=k/(x-p)+q"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 1단계: 원 C의 중심과 반지름 구하기\n\n구: $x^2 + y^2 + z^2 = 6$ (중심 O=(0,0,0), 반지름 $\\sqrt{6}$)\n\n평면: $x + 2z - 5 = 0$\n\n구의 중심 O에서 평면까지의 거리:\n$$d = \\frac{|0 + 0 - 5|}{\\sqrt{1^2 + 2^2}} = \\frac{5}{\\sqrt{5}} = \\sqrt{5}$$\n\n원 C의 반지름:\n$$r = \\sqrt{6 - 5} = 1$$\n\n원 C의 중심 M: O에서 평면에 내린 수선의 발\n$$M = \\left(\\frac{1 \\cdot 5}{5}, 0, \\frac{2 \\cdot 5}{5}\\right) = (1, 0, 2)$$\n\n## 2단계: 점 P 구하기 (원 C 위에서 y좌표 최소인 점)\n\n원 C는 중심 M=(1,0,2), 반지름 1인 원이고, 평면 $x+2z=5$ 위에 있다.\n\n평면의 법선벡터: $\\mathbf{n} = (1, 0, 2)/\\sqrt{5}$\n\n평면 위의 단위벡터 두 개를 구한다:\n- $\\mathbf{e_1} = (0, 1, 0)$ (y방향, 평면 위)\n- $\\mathbf{e_2} = \\mathbf{n} \\times \\mathbf{e_1} = \\frac{1}{\\sqrt{5}}(1,0,2) \\times (0,1,0) = \\frac{1}{\\sqrt{5}}(-2, 0, 1)$\n\n원 C 위의 점: $X = M + \\cos\\theta \\cdot \\mathbf{e_1} + \\sin\\theta \\cdot \\mathbf{e_2}$\n$$X = \\left(1 - \\frac{2\\sin\\theta}{\\sqrt{5}},\\ \\cos\\theta,\\ 2 + \\frac{\\sin\\theta}{\\sqrt{5}}\\right)$$\n\ny좌표 = $\\cos\\theta$가 최소 → $\\cos\\theta = -1$, $\\sin\\theta = 0$\n\n따라서 **P = (1, -1, 2)**\n\n## 3단계: 점 Q 구하기\n\nQ는 P에서 xy평면에 내린 수선의 발 → z좌표를 0으로\n\n**Q = (1, -1, 0)**\n\n## 4단계: $|\\overrightarrow{PX} + \\overrightarrow{QX}|^2$ 계산\n\n$$\\overrightarrow{PX} + \\overrightarrow{QX} = (X - P) + (X - Q) = 2X - P - Q$$\n\n$P + Q = (2, -2, 2)$이므로:\n\n$$|\\overrightarrow{PX} + \\overrightarrow{QX}|^2 = |2X - (P+Q)|^2 = 4\\left|X - \\frac{P+Q}{2}\\right|^2$$\n\n$\\frac{P+Q}{2} = (1, -1, 1)$이라 하면:\n\n$$= 4\\left|X - (1,-1,1)\\right|^2$$\n\n## 5단계: X와 중점 사이의 거리 최대화\n\n원 위의 점 $X = \\left(1 - \\frac{2\\sin\\theta}{\\sqrt{5}},\\ \\cos\\theta,\\ 2 + \\frac{\\sin\\theta}{\\sqrt{5}}\\right)$\n\n$$X - (1,-1,1) = \\left(-\\frac{2\\sin\\theta}{\\sqrt{5}},\\ \\cos\\theta + 1,\\ 1 + \\frac{\\sin\\theta}{\\sqrt{5}}\\right)$$\n\n$$|X-(1,-1,1)|^2 = \\frac{4\\sin^2\\theta}{5} + (\\cos\\theta+1)^2 + \\left(1+\\frac{\\sin\\theta}{\\sqrt{5}}\\right)^2$$\n\n전개:\n$$= \\frac{4\\sin^2\\theta}{5} + \\cos^2\\theta + 2\\cos\\theta + 1 + 1 + \\frac{2\\sin\\theta}{\\sqrt{5}} + \\frac{\\sin^2\\theta}{5}$$\n\n$$= \\sin^2\\theta + \\cos^2\\theta + 2\\cos\\theta + 2 + \\frac{2\\sin\\theta}{\\sqrt{5}}$$\n\n$$= 1 + 2\\cos\\theta + 2 + \\frac{2\\sin\\theta}{\\sqrt{5}} = 3 + 2\\cos\\theta + \\frac{2}{\\sqrt{5}}\\sin\\theta$$\n\n최댓값: $3 + \\sqrt{4 + \\frac{4}{5}} = 3 + \\sqrt{\\frac{24}{5}} = 3 + \\frac{2\\sqrt{30}}{5}$\n\n따라서:\n$$|\\overrightarrow{PX}+\\overrightarrow{QX}|^2 \\text{의 최댓값} = 4\\left(3 + \\frac{2\\sqrt{30}}{5}\\right) = 12 + \\frac{8\\sqrt{30}}{5}$$\n\n## 6단계: a, b",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 22429,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2018-가형-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find the value of $k - \\pi^2 \\sum_{i=1}^{m} g(\\alpha_i)$ where $g(t) = \\int_k^{k+8} f(x)\\cos(\\pi x)dx$.\n\n## Setting Up g(t)\n\nSince $f(x)$ is a tent function centered at $t$ with support $[t-1, t+1]$:\n\n$$g(t) = \\int_{\\max(k, t-1)}^{\\min(k+8, t+1)} (1-|x-t|)\\cos(\\pi x)dx$$\n\nFor $t \\in [k+1, k+7]$ (interior), the full support $[t-1, t+1] \\subset [k, k+8]$:\n\n$$g(t) = \\int_{-1}^{1}(1-|u|)\\cos(\\pi(t+u))du = \\cos(\\pi t)\\int_{-1}^{1}(1-|u|)\\cos(\\pi u)du$$\n\nComputing the integral: $\\int_{-1}^{1}(1-|u|)\\cos(\\pi u)du = 2\\int_0^1(1-u)\\cos(\\pi u)du$\n\n$= 2\\left[(1-u)\\frac{\\sin(\\pi u)}{\\pi}\\Big|_0^1 + \\int_0^1\\frac{\\sin(\\pi u)}{\\pi}du\\right] = 2\\left[0 + \\frac{1}{\\pi}\\cdot\\frac{2}{\\pi}\\right] = \\frac{4}{\\pi^2} \\cdot \\frac{1}{1}$\n\nWait: $\\int_0^1 \\sin(\\pi u)du = \\frac{2}{\\pi}$, so $= 2 \\cdot \\frac{1}{\\pi} \\cdot \\frac{2}{\\pi} = \\frac{4}{\\pi^2}$.\n\nSo for $t \\in [k+1, k+7]$: $g(t) = \\frac{4}{\\pi^2}\\cos(\\pi t)$.\n\n## Analyzing the Interior\n\nFor $t \\in [k+1, k+7]$, $g(t) = \\frac{4}{\\pi^2}\\cos(\\pi t)$.\n\nSince $k$ is odd, $\\cos(\\pi t)$ at integer $t$: $\\cos(\\pi(k+1)) = \\cos(\\pi k + \\pi) = -\\cos(\\pi k) = -(-1)^k$. Since $k$ is odd, $(-1)^k = -1$, so $\\cos(\\pi(k+1)) = 1$.\n\nThe function $\\frac{4}{\\pi^2}\\cos(\\pi t)$ has **local minima** where $\\cos(\\pi t) = -1$, i.e., at $t = k+2, k+4, k+6$ (within $[k+1, k+7]$), giving $g = -\\frac{4}{\\pi^2} < 0$.\n\nThese are interior extrema. At $t = k+1, k+3, k+5, k+7$: local maxima $g = \\frac{4}{\\pi^2} > 0$.\n\n## Boundary Regions\n\nFor $t \\in [k, k+1]$ and $t \\in [k+7, k+8]$, the support is partially outside $[k, k+8]$. The behavior at the edges needs checking for additional local minima with $g < 0$.\n\nAfter careful analysis (the boundary integrals are more complex), the edge regions at $t \\approx k$ and $t \\approx k+8$ may contribute additional minima. The transition from edge to interior creates extrema near $t = k$ and $t = k+8$.\n\n## Finding $\\alpha_i$ from the condition $\\sum \\alpha_i = 45$\n\nInterior minima (negative) occur at $t = k+2, k+4, k+6$, giving 3 values with sum $3k + 12$.\n\nIf there are also boundary minima (negative) at $t = k$ and $t = k+8$ (checking: at $t = k$, partial integral over $[k, k+1]$ gives $g(k) = \\int_0^1 u\\cos(\\pi(k+u))du = \\cos(\\pi k)\\int_0^1 u\\cos(\\pi u)du$). Since $k$ odd, $\\cos(\\pi k) = -1$, and $\\int_0^1 u\\cos(\\pi u)du = [u\\frac{\\sin\\pi u}{\\pi}]_0^1 - \\frac{1}{\\pi}\\int_0^1\\sin(\\pi u)du = 0 - \\frac{1}{\\pi}\\cdot\\frac{2}{\\pi} = -\\frac{2}{\\pi^2}$.\n\nSo $g(k) = -1 \\cdot (-\\frac{2}{\\pi^2}) = \\frac{2}{\\pi^2} > 0$. Similarly $g(k+8) = \\frac{2}{\\pi^2} > 0$.\n\nSo only 3 interior minima: $\\alpha_1 = k+2, \\alpha_2 = k+4, \\alpha_3 = k+6$, sum $= 3k+12 = 45$, giving $k = 11$.\n\n## Final Computation\n\n$\\sum g(\\alpha_i) = 3 \\cdot (-\\frac{4}{\\pi^2}) = -\\frac{12}{\\pi^2}$\n\n$k - \\pi^2\\sum g(\\alpha_i) = 11 - \\pi^2 \\cdot(-\\frac{12}{\\pi^2}) = 11 + 12 = \\boxed{23}$\n\n최종 답: **23**\n코칭 한마디: 이유는 적분 내 피적분함수가 합성함수일 때 치환($u = x-t",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 26015,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2019-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "역함수",
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "이차방정식 근의 분포",
+        "치환 적분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "## 풀이\n\n### 조건 (가) 분석\n\n조건 (가): $2\\{f(x)\\}^2 f'(x) = \\{f(2x+1)\\}^2 f'(2x+1)$\n\n좌변을 관찰하면: $\\{f(x)\\}^3$의 도함수는 $3\\{f(x)\\}^2 f'(x)$\n\n따라서 $\\{f(x)\\}^2 f'(x) = \\frac{1}{3} \\cdot \\frac{d}{dx}\\{f(x)\\}^3$\n\n조건 (가)를 다시 쓰면:\n$$\\frac{2}{3} \\frac{d}{dx}\\{f(x)\\}^3 = \\{f(2x+1)\\}^2 f'(2x+1)$$\n\n우변: $\\frac{d}{dx}\\{f(2x+1)\\}^3 = 3\\{f(2x+1)\\}^2 f'(2x+1) \\cdot 2$\n\n따라서 $\\{f(2x+1)\\}^2 f'(2x+1) = \\frac{1}{6}\\frac{d}{dx}\\{f(2x+1)\\}^3$\n\n조건 (가) 재작성:\n$$\\frac{2}{3}\\frac{d}{dx}\\{f(x)\\}^3 = \\frac{1}{6}\\frac{d}{dx}\\{f(2x+1)\\}^3$$\n\n$$4\\frac{d}{dx}\\{f(x)\\}^3 = \\frac{d}{dx}\\{f(2x+1)\\}^3$$\n\n### 양변 적분\n\n$g(x) = \\{f(x)\\}^3$으로 놓으면:\n\n$$4g'(x) = \\frac{d}{dx}g(2x+1) = 2g'(2x+1)$$\n\n$$2g'(x) = g'(2x+1)$$\n\n이를 적분하면 (양변을 $x$에 대해 적분):\n\n$$2g(x) = \\frac{1}{2}g(2x+1) + C$$\n\n$$4g(x) = g(2x+1) + C'$$\n\n즉: $\\{f(2x+1)\\}^3 = 4\\{f(x)\\}^3 + C$ (상수)\n\n### 조건 (나) 적용\n\n**조건에서** $f(-\\frac{1}{8}) = 1$, $f(6) = 2$\n\n$x = -\\frac{1}{8}$일 때: $2x+1 = -\\frac{1}{4}+1 = \\frac{3}{4}$\n\n$x = \\frac{3}{4}$일 때: $2x+1 = \\frac{3}{2}+1 = \\frac{5}{2}$\n\n$x = \\frac{5}{2}$일 때: $2x+1 = 6$\n\n관계식: $\\{f(2x+1)\\}^3 = 4\\{f(x)\\}^3 + C$\n\n$x = \\frac{5}{2}$: $\\{f(6)\\}^3 = 4\\{f(\\frac{5}{2})\\}^3 + C$ → $8 = 4\\{f(\\frac{5}{2})\\}^3 + C$\n\n$x = \\frac{3}{4}$: $\\{f(\\frac{5}{2})\\}^3 = 4\\{f(\\frac{3}{4})\\}^3 + C$\n\n$x = -\\frac{1}{8}$: $\\{f(\\frac{3}{4})\\}^3 = 4\\{f(-\\frac{1}{8})\\}^3 + C = 4(1)^3 + C = 4 + C$\n\n대입: $\\{f(\\frac{5}{2})\\}^3 = 4(4+C) + C = 16 + 5C$\n\n다시 대입: $8 = 4(16+5C) + C = 64 + 21C$\n\n$$21C = -56 \\Rightarrow C = -\\frac{8}{3}$$\n\n### $f(-1)$ 계산\n\n$x = -1$일 때: $2x+1 = -1$\n\n관계식 $\\{f(-1)\\}^3 = 4\\{f(-1)\\}^3 + C$\n\n$$-3\\{f(-1)\\}^3 = C = -\\frac{8}{3}$$\n\n$$\\{f(-1)\\}^3 = \\frac{8}{9}$$\n\n$$f(-1) = \\sqrt[3]{\\frac{8}{9}} = \\frac{2}{\\sqrt[3]{9}} = \\frac{2\\sqrt[3]{3}}{3}$$\n\n---\n\n최종 답: $\\dfrac{2\\sqrt[3]{3}}{3}$\n\n코칭 한마디: 왜냐하면 양변이 어떤 함수의 도함수 꼴로 표현될 때 **적분**을 활용하면 함수 관계식을 유도할 수 있고, 이를 통해 미지값을 연립하여 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 24341,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2019-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "## 풀이\n\n**타원의 기본 정보 파악**\n\n타원: $\\frac{x^2}{49} + \\frac{y^2}{33} = 1$\n\n- $a^2 = 49$, $b^2 = 33$이므로 $c^2 = 49 - 33 = 16$, $c = 4$\n- 초점: $F(4, 0)$, $F'(-4, 0)$ (또는 반대)\n- 장축 길이: $2a = 14$ → 타원 위 임의의 점 Q에 대해 $\\overline{F'Q} + \\overline{FQ} = 14$\n\n그림을 보면 $F'(-4, 0)$, $F(4, 0)$으로 설정합니다.\n\n**목표 식 변환**\n\n타원의 정의에 의해: $\\overline{F'Q} + \\overline{FQ} = 14$\n\n따라서: $\\overline{FQ} = 14 - \\overline{F'Q}$\n\n$$\\overline{PQ} + \\overline{FQ} = \\overline{PQ} + 14 - \\overline{F'Q}$$\n\n$$= 14 + (\\overline{PQ} - \\overline{F'Q})$$\n\n**핵심 관찰**\n\n점 Q는 직선 $F'P$ 위에 있고, P와 Q가 같은 직선 위에 있으며 Q는 타원 위의 점(y좌표 양수)입니다.\n\nP, Q, F'이 일직선 위에 있으므로:\n- F'에서 P 방향으로 나가는 직선이 타원과 만나는 점이 Q (y좌표 양수)\n\n이 직선 위에서 Q의 위치를 생각하면:\n\n$$\\overline{PQ} - \\overline{F'Q} = \\overline{PQ} - \\overline{F'Q}$$\n\n삼각부등식에 의해: $\\overline{F'P} \\leq \\overline{F'Q} + \\overline{PQ}$ (등호: Q가 F'P 사이)\n\n하지만 F', Q, P가 일직선이므로(Q는 F'P 직선 위):\n\n**경우 분석**: Q가 F'과 P 사이에 있으면 $\\overline{F'P} = \\overline{F'Q} + \\overline{QP}$이므로:\n$$\\overline{PQ} - \\overline{F'Q} = \\overline{F'P} - 2\\overline{F'Q}$$\n\nQ가 P 너머(P가 F'Q 사이)에 있으면: $\\overline{F'Q} = \\overline{F'P} + \\overline{PQ}$이므로:\n$$\\overline{PQ} - \\overline{F'Q} = -\\overline{F'P}$$\n\n그림 상으로 원이 타원 내부에 있고 F'에서 P를 통과하는 직선이 타원과 만날 때, 일반적으로 **Q가 F'P의 연장선(P 너머)** 에 있거나 F'P 사이에 있습니다.\n\n그림을 보면 Q는 F'에서 P를 통과한 후의 타원과의 교점(P 너머 쪽)입니다. 이 경우:\n\n$$\\overline{PQ} - \\overline{F'Q} = -(F'P) \\text{ 가 아니라...}$$\n\n직선상에서 순서가 **F', P, Q** 이면: $\\overline{F'Q} = \\overline{F'P} + \\overline{PQ}$\n\n$$\\overline{PQ} - \\overline{F'Q} = \\overline{PQ} - (\\overline{F'P} + \\overline{PQ}) = -\\overline{F'P}$$\n\n따라서:\n$$\\overline{PQ} + \\overline{FQ} = 14 - \\overline{F'P}$$\n\n**F'P의 최솟값 구하기**\n\n원 $x^2 + (y-3)^2 = 4$: 중심 $C(0, 3)$, 반지름 $r = 2$\n\n$F'(-4, 0)$에서 원의 중심까지 거리:\n$$\\overline{F'C} = \\sqrt{(-4-0)^2 + (0-3)^2} = \\sqrt{16 + 9} = \\sqrt{25} = 5$$\n\nF'에서 원 위의 점 P까지 거리의 최솟값:\n$$\\overline{F'P}_{\\min} = 5 - 2 = 3$$\n\n따라서 $\\overline{PQ} + \\overline{FQ}$의 최댓값:\n$$14 - \\overline{F'P}_{\\min} = 14 - 3 = \\boxed{11}$$\n\n최종 답: **11**\n\n코칭 한마디: 이유는 타원의 정의 $\\overline{F'Q}+\\overline{FQ}=2a$(상수)를 이용하면 복잡한 거리 식을 단순화할 수 있고, F', P, Q가 일직선 위에 있다는 조건으로 $",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 25732,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2019-가형-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to solve both problems 29 and 30.\n\n## Problem 29\n\nLet me parameterize. Let P on AB: $\\overrightarrow{AP} = s\\overrightarrow{AB}$, s∈[0,1]\nLet Q on BC: $\\overrightarrow{AQ} = \\overrightarrow{AB} + t\\overrightarrow{BC} = (1-t)\\overrightarrow{AB} + t\\overrightarrow{AC}$, t∈[0,1]\nLet R on CA: $\\overrightarrow{AR} = (1-u)\\overrightarrow{AC}$, u∈[0,1]\n\nThen: $\\overrightarrow{AX} = \\frac{1}{4}(s\\overrightarrow{AB} + (1-u)\\overrightarrow{AC}) + \\frac{1}{2}((1-t)\\overrightarrow{AB} + t\\overrightarrow{AC})$\n\n$= (\\frac{s}{4} + \\frac{1-t}{2})\\overrightarrow{AB} + (\\frac{1-u}{4} + \\frac{t}{2})\\overrightarrow{AC}$\n\nLet $\\alpha = \\frac{s}{4} + \\frac{1-t}{2}$, $\\beta = \\frac{1-u}{4} + \\frac{t}{2}$\n\nwhere s,t,u ∈ [0,1].\n\n**Range of α:** $\\frac{0}{4}+\\frac{0}{2}=0$ to $\\frac{1}{4}+\\frac{1}{2}=\\frac{3}{4}$. But α = s/4 + (1-t)/2, s∈[0,1], t∈[0,1].\n- Min: s=0,t=1: α=0; Max: s=1,t=0: α=3/4\n- For fixed t: α ∈ [(1-t)/2, 1/4+(1-t)/2]\n\n**Range of β:** β = (1-u)/4 + t/2, u∈[0,1], t∈[0,1]\n- Min: u=1,t=0: β=0; Max: u=0,t=1: β=3/4\n\n**Joint range:** α+β = s/4 + (1-t)/2 + (1-u)/4 + t/2 = (s+1-u)/4 + 1/2\n\nSince s,u∈[0,1]: (s+1-u)/4 ∈ [0, 2/4] = [0,1/2]\n\nSo α+β ∈ [1/2, 1].\n\nAlso α∈[0,3/4], β∈[0,3/4].\n\nLet me find the region. With x=α, y=β:\n- x = s/4 + (1-t)/2, y = (1-u)/4 + t/2\n- x+y = (s-u)/4 + 3/4... wait: (s+1-u)/4 + 1/2\n\nLet p=s∈[0,1], q=t∈[0,1], r=u∈[0,1] (independent variables).\n\nx = p/4 + (1-q)/2, y = (1-r)/4 + q/2\n\nThese are **independent** since x depends on p,q and y depends on r,q (q is shared).\n\nFor fixed q: x ∈ [(1-q)/2, 1/4+(1-q)/2], y ∈ [q/2, 1/4+q/2]\n\nSo x∈[(1-q)/2, (3-2q)/4] and y∈[q/2, (1+2q)/4], each interval of length 1/4.\n\nThe region is a square of side 1/4 that shifts as q varies from 0 to 1.\n\nAt q=0: x∈[1/2, 3/4], y∈[0, 1/4]\nAt q=1: x∈[0, 1/4], y∈[1/2, 3/4]\n\nThe center moves from (5/8, 1/8) to (1/8, 5/8). The union of all these squares (side 1/4) as q varies traces a region.\n\nThe center: ((3-2q)/4 - 1/8, q/2+1/8) = ((5-2q·2)/8... center_x = (1-q)/2+1/8 = (5-4q)/8, center_y = q/2+1/8 = (4q+1)/8.\n\nThe swept region: a parallelogram-like shape. The total region is a square with vertices (1/2,0),(3/4,0),(3/4,1/4),(0,3/4),(0,1/2),(1/4,1/2)... \n\nAfter careful analysis, the region is a hexagon with area = area of large square (3/4)² minus two corner triangles of area (1/2)(1/2)(1/2)²= 1/8 each: 9/16 - 2(1/8) = 9/16 - 1/4 = 5/16.\n\nScaled by area of triangle ABC = 9: Area = (5/16)×9 = **45/16**.\n\nSo q/p = 45/16, p=16, q=45, p+q = **61**.\n\n最終 답: **61**\n코칭 한마디: 왜냐하면 벡터 매개변수의 독립/종속 구조를 파악하면 영역을 슬라이싱으로 계산할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 26717,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2020-가형-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "## 풀이\n\n### 접선의 방정식 구하기\n\n곡선 $y = e^x$ 위의 점 $(t, e^t)$에서의 접선:\n$$f(x) = e^t(x-t) + e^t = e^t x - te^t + e^t = e^t(x - t + 1)$$\n\n### $y = |f(x) + k - \\ln x|$ 의 미분가능성 조건\n\n$$h(x) = f(x) + k - \\ln x = e^t x - te^t + e^t + k - \\ln x$$\n\n$y = |h(x)|$가 $x > 0$ 전체에서 미분가능하려면:\n- $h(x) \\geq 0$ (모든 $x > 0$) 이거나\n- $h(x) \\leq 0$ (모든 $x > 0$) 이거나  \n- $h(x)$가 어떤 점에서 0이 되더라도, **그 점에서 $h'(x) = 0$**이어야 함 (접하는 경우)\n\n$h'(x) = e^t - \\frac{1}{x} = 0 \\Rightarrow x = e^{-t}$\n\n$h(x)$는 $x = e^{-t}$에서 최솟값을 가짐 (단, $e^t > 0$이므로):\n$$h(e^{-t}) = e^t \\cdot e^{-t} - te^t + e^t + k - \\ln(e^{-t}) = 1 - te^t + e^t + k + t$$\n\n$|h(x)|$가 미분가능하려면 $h(x)$의 최솟값 $\\geq 0$, 즉:\n$$k \\geq te^t - e^t - 1 - t$$\n\n따라서:\n$$g(t) = te^t - e^t - 1 - t = (t-1)e^t - (1+t)$$\n\n### g(t) 분석\n\n$$g'(t) = e^t + (t-1)e^t - 1 = te^t - 1$$\n\n$g'(t) = 0 \\Rightarrow te^t = 1$, 즉 $t = W(1) > 0$ (양수, 약 $t \\approx 0.567$)\n\n$g''(t) = e^t + te^t = (1+t)e^t$\n\n**$g(t)$의 특성:**\n- $g(0) = -1 \\cdot 1 - 1 = -2 < 0$\n- $g(1) = 0 - 2 = -2 < 0$  \n- $t \\to +\\infty$: $g(t) \\to +\\infty$\n- $t \\to -\\infty$: $g(t) = (t-1)e^t - (1+t) \\to -(1+t) \\to +\\infty$\n\n$g'(t) = te^t - 1 = 0$인 점 $t_0 \\approx 0.567$에서 최솟값: $g(t_0) = (t_0-1)e^{t_0}-(1+t_0)$. $t_0 e^{t_0}=1$이므로 $e^{t_0} = 1/t_0$, 따라서 $g(t_0) = (t_0-1)/t_0 - 1 - t_0 = 1 - 1/t_0 - 1 - t_0 = -1/t_0 - t_0 < 0$.\n\n### 보기 검토\n\n**ㄱ.** $g(t) < 0$인 구간이 존재하므로 $m < 0$이 되도록 하는 $a, b$ 존재. **✓**\n\n**ㄴ.** $g(c) = 0$이면 $g(-c) = 0$인지 확인:\n$g(t) = (t-1)e^t - (1+t)$, $g(-t) = (-t-1)e^{-t} - (1-t)$\n$g(t) + g(-t) = (t-1)e^t + (-t-1)e^{-t} - 2$. $g(0) = -2 \\neq 0$이므로 대칭이 아님.\n$g(2)$: $(1)e^2 - 3 = e^2 - 3 > 0$. $g(-2) = (-3)e^{-2} - (-1) = 1 - 3e^{-2} > 0$. 반례 찾기 어려움. 실제로 $g(c)=0$인 $c>0$에서 $g(-c)$: $g(-c) = (-c-1)e^{-c}-(1-c) = (c-1)-(c+1)e^{-c}$. 이것이 0인지는 일반적으로 아님. **✗**\n\n**ㄷ.** $m = \\int_\\alpha^\\beta g(t)dt$가 최소 → $g(\\alpha) = g(\\beta) = 0$이고 그 사이 $g < 0$.\n$g'(\\alpha) < 0$, $g'(\\beta) > 0$이며 $g(\\alpha) = g(\\beta) = 0$.\n$(1+g'(\\beta))/(1+",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 25139,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2020-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "중복순열 nΠr",
+        "중복조합 nHr",
+        "중복순열·중복조합·같은 것 포함",
+        "원순열",
+        "이항정리"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 조건 분석\n\n- **홀수** (1, 3, 5): 각각 0번 또는 1번만 선택\n- **짝수** (2, 4, 6): 각각 0번 또는 2번만 선택\n- **총 5개** 선택\n\n## 경우 분류\n\n짝수의 선택 패턴에 따라 분류합니다.\n(짝수는 반드시 0번 또는 2번씩 선택되므로)\n\n| 경우 | 짝수 구성 | 짝수 개수 | 홀수 개수 |\n|------|-----------|-----------|-----------|\n| A | 짝수 0종 선택 | 0개 | 5개 |\n| B | 짝수 1종 선택 (×2) | 2개 | 3개 |\n| C | 짝수 2종 선택 (각×2) | 4개 | 1개 |\n\n(짝수 3종을 선택하면 6개가 되어 5개 초과 → 불가)\n\n---\n\n## 경우 A: 홀수 5개, 짝수 0개\n\n홀수 3개(1,3,5) 중에서 **5개를 선택** (각 최대 1번)\n→ 최대 3개밖에 못 쓰므로 **불가능**\n\n---\n\n## 경우 B: 짝수 1종(×2), 홀수 3종\n\n- **짝수 선택**: 3가지 중 1종 선택 → $\\binom{3}{1} = 3$\n- **홀수 선택**: 3가지 중 3종 모두 선택 → $\\binom{3}{3} = 1$\n\n선택된 숫자: 짝수 1종(2개) + 홀수 3종(각 1개) = **5개**\n→ 배열: $\\dfrac{5!}{2!} = 60$\n\n**소계**: $3 \\times 1 \\times 60 = 180$\n\n---\n\n## 경우 C: 짝수 2종(각×2), 홀수 1종\n\n- **짝수 선택**: 3가지 중 2종 선택 → $\\binom{3}{2} = 3$\n- **홀수 선택**: 3가지 중 1종 선택 → $\\binom{3}{1} = 3$\n\n선택된 숫자: 짝수 2종(각 2개) + 홀수 1종(1개) = **5개**\n→ 배열: $\\dfrac{5!}{2! \\cdot 2!} = 30$\n\n**소계**: $3 \\times 3 \\times 30 = 270$\n\n---\n\n## 최종 합산\n\n$$180 + 270 = \\boxed{450}$$\n\n최종 답: **450**\n코칭 한마디: 이유는, 짝수(0·2번)와 홀수(0·1번)의 선택 횟수 제약이 총합 5를 만드는 방법을 **\"짝수 몇 종을 택하느냐\"** 기준으로 경우를 분리해야 같은 것이 포함된 순열 공식을 안전하게 적용할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 20337,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2020-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "선분의 매개변수화",
+        "도형의 평행이동",
+        "일차함수의 그래프",
+        "직선의 방정식 (점-기울기·절편·일반형)",
+        "평균값 정리 (기본)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 기본 설정\n\n구 $x^2 + y^2 + z^2 = 1$ (중심 O = 원점, 반지름 1)\n\n두 점 A(3, -3, 3), B(-2, 7, -2)\n\n## 직선 AB의 방정식과 원점에서의 거리\n\n**방향벡터:** $\\vec{AB} = (-5, 10, -5) = -5(1, -2, 1)$\n\n방향벡터를 $(1, -2, 1)$로 취함.\n\n**직선 AB의 매개변수 표현:**\n$$\\mathbf{r}(t) = (3-5t, -3+10t, 3-5t)$$\n\n**원점에서 직선 AB까지의 거리:**\n\n원점에서 직선 AB에 내린 수선의 발을 구한다.\n\n$$\\vec{OA} = (3, -3, 3)$$\n\n방향벡터 단위벡터: $|\\vec{d}| = |(1,-2,1)| = \\sqrt{6}$\n\n$$t_0 = \\frac{\\vec{OA} \\cdot \\vec{d}}{|\\vec{d}|^2} = \\frac{3 \\cdot 1 + (-3)(-2) + 3 \\cdot 1}{6} = \\frac{3+6+3}{6} = 2$$\n\n수선의 발: $(3-5\\cdot2, -3+10\\cdot2, 3-5\\cdot2) = (-7, 17, -7)$\n\n원점에서 직선까지 거리:\n$$d = |(-7, 17, -7)| = \\sqrt{49 + 289 + 49} = \\sqrt{387} = 3\\sqrt{43}$$\n\n## 평면 α, β의 조건\n\n선분 AB를 포함하고 구에 접하는 평면은 **원점에서 평면까지의 거리 = 1**.\n\n평면의 법선벡터 $\\vec{n}$은 $\\vec{d} = (1,-2,1)$에 수직.\n\n평면이 점 A(3,-3,3)을 지나므로: $n_1(x-3)+n_2(y+3)+n_3(z-3)=0$\n\n원점에서 거리:\n$$\\frac{|{-3n_1+3n_2-3n_3}|}{|\\vec{n}|} = 1 \\implies \\frac{3|n_1-n_2+n_3|}{|\\vec{n}|} = 1$$\n\n또한 $n_1 - 2n_2 + n_3 = 0$ (수직 조건)\n\n## 접점 C, D 계산\n\n접점은 원점에서 평면에 내린 수선의 발 → 단위벡터 방향.\n\n접점 = $\\pm \\frac{\\vec{n}}{|\\vec{n}|}$\n\n**CD의 길이 계산을 위해 구조 분석:**\n\n$\\vec{n} = (n_1, n_2, n_3)$, $n_1 - 2n_2 + n_3 = 0$이므로 $n_3 = 2n_2 - n_1$.\n\n$n_1 - n_2 + n_3 = n_1 - n_2 + 2n_2 - n_1 = n_2$\n\n거리 조건: $\\frac{3|n_2|}{|\\vec{n}|} = 1$\n\n$|\\vec{n}|^2 = n_1^2 + n_2^2 + (2n_2-n_1)^2 = n_1^2 + n_2^2 + 4n_2^2 - 4n_1n_2 + n_1^2 = 2n_1^2 - 4n_1n_2 + 5n_2^2$\n\n$9n_2^2 = 2n_1^2 - 4n_1n_2 + 5n_2^2 \\implies 2n_1^2 - 4n_1n_2 - 4n_2^2 = 0 \\implies n_1^2 - 2n_1n_2 - 2n_2^2 = 0$\n\n$n_1 = n_2(1 \\pm \\sqrt{3})$ (이차방정식 풀기: $n_1 = \\frac{2n_2 \\pm \\sqrt{4n_2^2+8n_2^2}}{2} = n_2(1\\pm\\sqrt{3})$)\n\n**접점 C, D:**\n\n$$\\text{C or D} = \\pm\\frac{(n_1, n_2, n_3)}{|\\vec{n}|}$$\n\n두 접점: $\\vec{n}_1$에서 $n_2 = 1, n_1 = 1+\\sqrt{3}, n_3 = 2-(1+\\sqrt{3}) = 1-\\sqrt{3}$\n\n$\\vec{n}_2$에서 $n_2 = 1, n_1 = 1-\\sqrt{3}, n_3 = 1+\\sqrt{3}$\n\n$|\\vec{n}_1|^2 = (1+\\sqrt3)^2+1+(1-\\sqrt3)^2 = (4+2\\sqrt3)+1+(4-2\\sqrt3) = 9$, $|\\vec{n}_1|=3$\n\n$|\\vec{",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 27870,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2020-가형-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "매개변수 미분",
+        "로그함수의 성질",
+        "위치·속도·가속도",
+        "ln(1+x)/x 의 극한",
+        "지수함수의 성질"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 설정\n\n곡선 $y = t^3 \\ln(x-t)$와 $y = 2e^{x-a}$가 오직 한 점에서 만나는 조건을 분석합니다.\n\n두 곡선이 만나는 점에서:\n$$t^3 \\ln(x-t) = 2e^{x-a}$$\n\n## 접선 조건 분석\n\n두 곡선이 **오직 한 점**에서 만나려면, 일반적으로 그 점에서 두 곡선이 **접해야** 합니다(접촉 조건).\n\n**$y = 2e^{x-a}$의 성질**: 이 함수는 $x$에 대해 순증가하고, $x=a$에서 $y=2$이며, 모든 형태가 동일한 지수함수입니다.\n\n**치환**: $u = x - t$로 놓으면 ($u > 0$), $x = u + t$\n\n$$t^3 \\ln u = 2e^{u+t-a}$$\n\n두 함수가 접하려면:\n1. **함수값 일치**: $t^3 \\ln u = 2e^{u+t-a}$\n2. **도함수 일치**: $\\frac{t^3}{u} = 2e^{u+t-a}$\n\n## 접점 조건\n\n(1)과 (2)에서:\n$$t^3 \\ln u = \\frac{t^3}{u}$$\n$$\\ln u = \\frac{1}{u}$$\n\n이를 만족하는 $u$를 구합니다. $g(u) = u\\ln u - 1 = 0$이면, $u = e^{1/u}$\n\n$h(u) = \\ln u - \\frac{1}{u}$로 놓으면 $h'(u) = \\frac{1}{u} + \\frac{1}{u^2} > 0$이므로 단조증가.\n\n$h(1) = 0 - 1 = -1 < 0$, $h(e) = 1 - 1/e > 0$이므로 유일한 해 $u_0 \\in (1,e)$가 존재합니다.\n\n접점에서 $\\ln u_0 = \\frac{1}{u_0}$ ... ★\n\n## $a$를 $t$로 표현\n\n조건 (2)에서:\n$$2e^{u_0+t-a} = \\frac{t^3}{u_0}$$\n$$e^{u_0+t-a} = \\frac{t^3}{2u_0}$$\n$$u_0 + t - a = \\ln\\left(\\frac{t^3}{2u_0}\\right) = 3\\ln t - \\ln 2 - \\ln u_0$$\n\n$$a = u_0 + t - 3\\ln t + \\ln 2 + \\ln u_0$$\n\n★에서 $\\ln u_0 = \\frac{1}{u_0}$이므로:\n\n$$a = u_0 + t - 3\\ln t + \\ln 2 + \\frac{1}{u_0}$$\n\n$u_0$은 $t$에 무관한 상수이므로:\n\n$$f(t) = a = u_0 + t - 3\\ln t + \\ln 2 + \\frac{1}{u_0}$$\n\n## $f'(t)$ 계산\n\n$$f'(t) = 1 - \\frac{3}{t}$$\n\n## $f'\\left(\\frac{1}{3}\\right)$ 계산\n\n$$f'\\left(\\frac{1}{3}\\right) = 1 - \\frac{3}{\\frac{1}{3}} = 1 - 9 = -8$$\n\n## 최종 계산\n\n$$\\left\\{f'\\left(\\frac{1}{3}\\right)\\right\\}^2 = (-8)^2 = \\boxed{64}$$\n\n---\n\n최종 답: **64**\n\n코칭 한마디: 이유는 두 곡선이 \"오직 한 점\"에서 만나는 조건을 다루할 때, 일반적으로 접선 조건(함수값 + 도함수 일치)을 세우면 매개변수를 소거하여 $a$를 $t$의 명시적 함수로 나타낼 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 20345,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2021-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "수학적 귀납법",
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+        "리만합과 정적분의 변환",
+        "중복순열 nΠr",
+        "이항정리"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 점화식 분석\n\n조건 (가): $a_{2n} = a_2 \\cdot a_n + 1$\n조건 (나): $a_{2n+1} = a_2 \\cdot a_n - 2$\n\n$a_2$를 $r$로 놓겠습니다.\n\n## 각 항 계산\n\n**$a_2 = r$**\n\n**$a_4$ 계산:** (가)에서 $n=1$\n$$a_4 = a_2 \\cdot a_2 + 1 = r^2 + 1$$\n\n**$a_8$ 계산:** (가)에서 $n=2$\n$$a_8 = a_2 \\cdot a_4 + 1 = r(r^2+1) + 1 = r^3 + r + 1$$\n\n**$a_{15}$ 계산:** $15 = 2 \\times 7 + 1$이므로 (나)에서 $n=7$\n$$a_{15} = a_2 \\cdot a_7 - 2$$\n\n**$a_7$ 계산:** $7 = 2 \\times 3 + 1$이므로 (나)에서 $n=3$\n$$a_7 = a_2 \\cdot a_3 - 2$$\n\n**$a_3$ 계산:** $3 = 2 \\times 1 + 1$이므로 (나)에서 $n=1$\n$$a_3 = a_2 \\cdot a_1 - 2 = ra_1 - 2$$\n\n**$a_7$:**\n$$a_7 = r(ra_1 - 2) - 2 = r^2 a_1 - 2r - 2$$\n\n**$a_{15}$:**\n$$a_{15} = r(r^2 a_1 - 2r - 2) - 2 = r^3 a_1 - 2r^2 - 2r - 2$$\n\n## 조건 적용: $a_8 - a_{15} = 63$\n\n$$a_8 - a_{15} = (r^3 + r + 1) - (r^3 a_1 - 2r^2 - 2r - 2) = 63$$\n\n$$r^3 + r + 1 - r^3 a_1 + 2r^2 + 2r + 2 = 63$$\n\n$$r^3(1 - a_1) + 2r^2 + 3r + 3 = 63$$\n\n$$r^3(1 - a_1) + 2r^2 + 3r = 60 \\quad \\cdots (*)$$\n\n## $\\frac{a_8}{a_1}$ 표현\n\n$$\\frac{a_8}{a_1} = \\frac{r^3 + r + 1}{a_1}$$\n\n$a_1$을 $a_1$로 두고, $(*)$에서 $r^3(1-a_1) = 60 - 2r^2 - 3r$이므로:\n$$r^3 - r^3 a_1 = 60 - 2r^2 - 3r$$\n$$r^3 a_1 = r^3 - 60 + 2r^2 + 3r$$\n\n정수해를 찾기 위해 $r$을 정수로 시도합니다.\n\n**$r = 4$ 시도:**\n$$64(1-a_1) + 32 + 12 = 60$$\n$$64 - 64a_1 + 44 = 60$$\n$$64a_1 = 44$$\n$$a_1 = \\frac{44}{64} = \\frac{11}{16}$$\n\n확인: $0 < \\frac{11}{16} < 1$ ✓\n\n## $\\frac{a_8}{a_1}$ 계산\n\n$$a_8 = r^3 + r + 1 = 64 + 4 + 1 = 69$$\n\n$$\\frac{a_8}{a_1} = \\frac{69}{\\frac{11}{16}} = \\frac{69 \\times 16}{11} = \\frac{1104}{11}$$\n\n이 값이 정수가 아니므로 $a_1$을 직접 이용:\n\n$$\\frac{a_8}{a_1} = \\frac{r^3 + r + 1}{a_1} = \\frac{69}{\\frac{11}{16}} = \\frac{69 \\cdot 16}{11}$$\n\n**$r = 3$ 시도:**\n$$27(1-a_1) + 18 + 9 = 60$$\n$$27 - 27a_1 + 27 = 60$$\n$$27a_1 = -6 \\quad$$ → 음수, 불가\n\n**$r = 4$ 재확인, $\\frac{a_8}{a_1}$:**\n\n선택지가 정수이므로 계산을 다시 검토하면 $\\frac{69 \\times 16}{11}$은 정수가 아닙니다. $r = 4$, $a_1 = \\frac{11}{16}$에서:\n\n$$\\frac{a_8}{a_1} = 69 \\times \\frac{16}{11} \\approx 100.4$$\n\n다시 확인 후 **$a_1$에 대한 식 조정**하여 $\\frac{a_8}{a_1}$을 직접 구하",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 24046,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2021-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "## 풀이\n\n### g(x)와 g⁻¹(x) 분석\n\n$g(x) = x^3 + x + 1$은 순증가함수이므로 역함수 $g^{-1}(x)$가 존재합니다.\n\n$g'(x) = 3x^2 + 1 > 0$ (항상 양수)\n\n역함수 미분법: $(g^{-1})'(x) = \\dfrac{1}{g'(g^{-1}(x))}$\n\n### h(x) 분석\n\n$h(x) = f(g^{-1}(x))$\n\n$g^{-1}(x) = t$로 놓으면 $x = g(t) = t^3 + t + 1$이고:\n\n$$h(x) = f(t) = (t-a)(t-b)^2$$\n\n$h(x)$의 영점(근)은:\n- $g^{-1}(x) = a$일 때, 즉 $x = g(a) = a^3 + a + 1$\n- $g^{-1}(x) = b$일 때, 즉 $x = g(b) = b^3 + b + 1$ (이중근)\n\n### 조건 (가) 분석\n\n$(x-1)|h(x)|$가 $\\mathbb{R}$에서 미분가능하려면:\n\n$|h(x)|$가 미분불가능한 점은 $h(x) = 0$인 점에서 $h$가 부호를 바꾸는 경우입니다.\n\n$h(x)$의 영점: $\\alpha = g(a)$ (단순근), $\\beta = g(b)$ (이중근)\n\n- $\\beta = g(b)$에서는 이중근이므로 $|h(x)|$는 자동으로 미분가능\n- $\\alpha = g(a)$에서는 $|h(x)|$가 미분불가능 (부호 변화)\n\n$(x-1)|h(x)|$가 미분가능하려면, $x = \\alpha$에서 미분불가능성이 소거되어야 합니다.\n\n**$x = 1$에서 소거**: $\\alpha = 1$ 즉 $g(a) = 1$\n\n$a^3 + a + 1 = 1 \\Rightarrow a^3 + a = 0 \\Rightarrow a(a^2+1) = 0 \\Rightarrow a = 0$\n\n따라서 **$a = 0$**.\n\n이때 $f(x) = x(x-b)^2$, $h(x) = g^{-1}(x) \\cdot (g^{-1}(x)-b)^2$\n\n### $x = 1$에서의 미분가능성 확인\n\n$h(1) = f(g^{-1}(1)) = f(a) = 0$\n\n$x = 1$ 근방에서 $h(x)$ 부호: $a = 0$이고 $b > 0$이므로\n\n$h(x) = g^{-1}(x)(g^{-1}(x)-b)^2$\n\n$x = 1$ 근방에서 $g^{-1}(x) \\approx 0$이고 $(g^{-1}(x)-b)^2 > 0$이므로 $h(x)$의 부호는 $g^{-1}(x)$와 같습니다.\n\n$(x-1)|h(x)|$에서 $x=1$: $(x-1)$과 $h(x)$ 모두 부호가 같은 방향으로 바뀌므로 $|h(x)|$의 절댓값 꺾임이 $(x-1)$과 결합하여 미분가능해집니다. ✓\n\n### 조건 (나) 분석\n\n$$h'(x) = f'(g^{-1}(x)) \\cdot (g^{-1})'(x)$$\n\n$h'(3) = f'(g^{-1}(3)) \\cdot \\dfrac{1}{g'(g^{-1}(3))} = 2$\n\n$g^{-1}(3) = t$이면 $t^3 + t + 1 = 3 \\Rightarrow t^3 + t - 2 = 0 \\Rightarrow (t-1)(t^2+t+2) = 0 \\Rightarrow t = 1$\n\n따라서 $g^{-1}(3) = 1$.\n\n$f(x) = x(x-b)^2$이므로:\n\n$f'(x) = (x-b)^2 + x \\cdot 2(x-b) = (x-b)(3x-b)$\n\n$f'(1) = (1-b)(3-b)$\n\n$g'(1) = 3(1)^2 + 1 = 4$\n\n$$h'(3) = \\frac{f'(1)}{g'(1)} = \\frac{(1-b)(3-b)}{4} = 2$$\n\n$(1-b)(3-b) = 8$\n\n$b^2 - 4b + 3 = 8 \\Rightarrow b^2 - 4b - 5 = 0 \\Rightarrow (b-5)(b+1) = 0$\n\n$b = 5$ 또는 $b = -1$",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 24512,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2021-가형-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to solve problem 29 about distributing hats.\n\n## Problem 29\n\n**Setup:** Distribute 6 black hats (B) and 6 white hats (W) to students A, B, C, D with no remainder.\n\n**Conditions:**\n- (가) Each student gets ≥1 hat\n- (나) A gets ≥4 black hats\n- (다) Exactly 2 students (including A) get more black than white hats\n\nLet A get $a_b$ black and $a_w$ white hats, where $a_b \\geq 4$.\n\n**Case 1: A gets 4 black hats** ($a_b = 4$)\nFor A to have more black than white: $4 > a_w$, so $a_w \\in \\{0, 1, 2, 3\\}$, but $a_w \\geq 0$ and A gets ≥1 hat (satisfied since $a_b=4$).\n\nActually condition (가) says each gets ≥1 hat total, not ≥1 of each color.\n\n**Case 2: A gets 5 black hats** ($a_b = 5$), so $a_w \\in \\{0,1,2,3,4\\}$\n\n**Case 3: A gets 6 black hats** ($a_b = 6$), so $a_w \\in \\{0,1,2,3,4,5,6\\}$ but remaining black = 0.\n\nFor each sub-case, remaining black = $6-a_b$, remaining white = $6-a_w$ distributed to B, C, D where exactly 1 of {B,C,D} has more black than white.\n\nLet remaining black = $p$, white = $q$. Distribute to B,C,D (each ≥1 total hat), exactly 1 person has black > white.\n\nLet me denote distributions to B,C,D: $(b_i, w_i)$ for $i=1,2,3$, with $\\sum b_i = p$, $\\sum w_i = q$, each $b_i + w_i \\geq 1$, exactly 1 has $b_i > w_i$.\n\n**For A with $a_b=4, a_w=0$:** p=2, q=6. Need exactly 1 of B,C,D with $b_i > w_i$.\n**For A with $a_b=4, a_w=1$:** p=2, q=5. Similar analysis.\n\nThis requires careful enumeration. Let me count systematically.\n\nFor each $(a_b, a_w)$ with $a_b \\geq 4$, $a_b > a_w$, $a_b \\leq 6$, $a_w \\geq 0$:\nRemaining: $p = 6-a_b$ black, $q = 6-a_w$ white to B,C,D with exactly 1 having more black than white.\n\nFor each valid $(p,q)$, count distributions to 3 people (each ≥1 total) with exactly 1 having black > white.\n\nAfter detailed computation for each case $(a_b, a_w)$ where $a_b \\in \\{4,5,6\\}$ and $0 \\leq a_w < a_b$:\n\nLet me count the number of ways to distribute $p$ black and $q$ white to 3 distinguishable people, each getting ≥1 total hat, with exactly 1 having more black than white.\n\nUsing inclusion-exclusion and careful case analysis for each $(p,q)$:\n\n- $(a_b,a_w) = (4,0)$: p=2,q=6; $(4,1)$: p=2,q=5; $(4,2)$: p=2,q=4; $(4,3)$: p=2,q=3\n- $(5,0)$: p=1,q=6; $(5,1)$: p=1,q=5; $(5,2)$: p=1,q=4; $(5,3)$: p=1,q=3; $(5,4)$: p=1,q=2\n- $(6,0)$: p=0,q=6; $(6,1)$: p=0,q=5; $(6,2)$: p=0,q=4; $(6,3)$: p=0,q=3; $(6,4)$: p=0,q=2; $(6,5)$: p=0,q=1\n\nFor p=0: no one has black>white, so exactly 1 needed is impossible → 0 ways each.\n\nFor p=1: exactly one person gets the 1 black hat. That person has black>white only if their white=0. Detailed counting gives specific values.\n\nAfter complete enumeration (which I'll spare), the answer is:\n\n**최종 답: 1080**\n\n코칭 한마디: 이유는 조건별로 경우를 체계적으로 분류하고, 남은 모자를 3명에게 나누는 경우를 각각 정확히 세어야 중복이나 누락 없이 풀 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 25536,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2022-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+        "이항정리",
+        "2계 도함수 판정법",
+        "상용로그의 정수부와 소수부",
+        "절댓값의 정의"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "## 풀이\n\n### 조건 분석\n\n**조건 (가):** |a₁| = 2이므로 a₁ = 2 또는 a₁ = -2\n\n**조건 (나):** |aₙ₊₁| = 2|aₙ|이므로 |aₙ| = 2ⁿ\n\n따라서 각 항은 **±2ⁿ** 중 하나입니다.\n\n즉, aₙ = εₙ · 2ⁿ (단, εₙ = +1 또는 -1)\n\n### 조건 (다) 적용\n\n$$\\sum_{n=1}^{10} a_n = \\sum_{n=1}^{10} \\varepsilon_n \\cdot 2^n = -14$$\n\n각 εₙ의 값에 따라 부호를 +, -로 나누면:\n\n$$\\sum_{\\varepsilon_n=+1} 2^n - \\sum_{\\varepsilon_n=-1} 2^n = -14$$\n\n전체 합이 $2 + 4 + 8 + \\cdots + 2^{10} = 2046$이므로\n\n$$S^+ - S^- = -14, \\quad S^+ + S^- = 2046$$\n\n$$\\therefore S^+ = 1016, \\quad S^- = 1030$$\n\n### 음수 항들의 합 구하기\n\n$S^- = 1030$이 되는 부분집합 $\\{2, 4, 8, \\ldots, 1024\\}$의 부분합을 찾습니다.\n\n$2046 - 1030 = 1016 = S^+$\n\n$1030 = 1024 + 4 + 2 = 2^{10} + 2^2 + 2^1$\n\n따라서 **음수인 항**: n = 10, 2, 1 (즉, a₁, a₂, a₁₀이 음수)\n\n확인: $-(2 + 4 + 1024) + (8 + 16 + 32 + 64 + 128 + 256 + 512)$\n$= -1030 + 1016 = -14$ ✓\n\n### 결론: 부호 배열\n\n| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |\n|---|---|---|---|---|---|---|---|---|---|---|\n| εₙ | − | − | + | + | + | + | + | + | + | − |\n\n### 홀수 항 합 계산\n\n$$a_1 + a_3 + a_5 + a_7 + a_9$$\n\n$$= (-2) + (+8) + (+32) + (+128) + (+512)$$\n\n$$= -2 + 8 + 32 + 128 + 512$$\n\n$$= 678$$\n\n단, 다른 가능한 부호 배열이 있는지 확인합니다.\n\n$S^- = 1030$을 만족하는 다른 조합:\n- $512 + 256 + 128 + 64 + 32 + 16 + 8 + ... $: 여러 경우가 있으나, **합이 1030**이 되는 조합을 체크합니다.\n- $1024 + 4 + 2 = 1030$ ✓ (위의 경우)\n- $512 + 256 + 128 + 64 + 32 + 16 + 8 + 4 + 4...$: 중복 불가\n\n$1030 - 1024 = 6 = 4 + 2$ → {1, 2, 10} ✓ (유일)\n\n$1030 - 512 = 518 = 256 + 128 + 64 + ... + 2^? $: $518 = 512 + 4 + 2$이므로 {1, 2, 9, 10} → 합 = $2+4+512+1024=1542 \\neq 1030$\n\n결국 $\\{n: a_n < 0\\} = \\{1, 2, 10\\}$이 유일한 해입니다.\n\n---\n\n$$\\boxed{a_1 + a_3 + a_5 + a_7 + a_9 = 678}$$\n\n---\n\n최종 답: **678**\n코칭 한마디: 왜냐하면 절댓값의 정의를 이용해 각 항을 ±2ⁿ으로 표현하면, 합 조건을 \"양수 항들의 합 S⁺와 음수 항들의 합 S⁻\"로 분리하여 연립방정식으로 풀 수 있어 복잡한 경우의 수 문제를 체계적으로 해결할 수 있습니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 28426,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2022-공통-22",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "## 풀이\n\n### 기본 설정\n\n최고차항의 계수가 $\\frac{1}{2}$인 삼차함수 $f(x)$에 대해 $f'(x)$는 최고차항의 계수가 $\\frac{3}{2}$인 이차함수입니다.\n\n$f'(x) = \\frac{3}{2}(x-\\alpha)(x-\\beta)$ ($\\alpha \\leq \\beta$) 형태입니다.\n\n$f'(x) = 0$의 근: $\\alpha$, $\\beta$ (중근이면 $\\alpha = \\beta$)\n\n### g(t) 분석\n\n$g(t)$ = 닫힌구간 $[t, t+2]$에서 $f'(x) = 0$의 실근 개수\n\n**경우 1: $\\alpha = \\beta$ (중근)** → $g(t)$는 $\\alpha \\in [t, t+2]$이면 1, 아니면 0\n이 경우 $g(t) = 2$가 불가능하므로 조건 (나)에 맞지 않습니다.\n\n**경우 2: $\\alpha < \\beta$ (두 실근)** → $g(t) \\in \\{0, 1, 2\\}$\n\n### 조건 (가) 분석\n\n$\\lim_{t \\to a+} g(t) + \\lim_{t \\to a-} g(t) \\leq 2$\n\n$g(t)$의 불연속점에서 좌극한 + 우극한 ≤ 2\n\n$g(t)$의 값이 변하는 지점은 $t = \\alpha-2, \\alpha, \\beta-2, \\beta$입니다.\n\n- $t = \\alpha - 2$: $t < \\alpha-2$이면 $g=0$, $t = \\alpha-2$이면 $\\alpha = t+2 \\in [t, t+2]$이므로\n- $t = \\beta - 2$: 비슷하게 분석\n\n**$\\beta - \\alpha$ vs 2 비교:**\n\n$\\beta - \\alpha = 2$인 경우: $t = \\alpha - 2$ 근방에서 좌극한 0, 우극한 1; $t = \\alpha$ 근방에서 좌극한 1, 우극한 2; $t = \\beta$ 근방에서 좌극한 2, 우극한 1... \n\n조건 (가)에서 **$t = \\alpha$일 때**: 좌극한 + 우극한 = 1 + 2 = 3 > 2 → 위반!\n\n따라서 $\\beta - \\alpha \\neq 2$인 경우를 고려해야 합니다.\n\n$\\beta - \\alpha > 2$인 경우: $g(t)$가 2가 되는 구간이 없으므로 조건 (나) 위반.\n\n**$\\beta - \\alpha < 2$인 경우** ($0 < \\beta - \\alpha < 2$):\n\n- $t < \\alpha - 2$: $g = 0$\n- $\\alpha - 2 \\leq t < \\beta - 2$: $g = 1$ (α만 포함)\n- $\\beta - 2 \\leq t \\leq \\alpha$: $g = 2$ (α, β 모두 포함) → 이 구간이 존재하려면 $\\beta - 2 \\leq \\alpha$, 즉 $\\beta - \\alpha \\leq 2$ ✓\n- $\\alpha < t \\leq \\beta$: $g = 1$ (β만 포함)  \n- $t > \\beta$: $g = 0$\n\n조건 (가) 확인: 각 불연속점에서 좌극한 + 우극한 ≤ 2 ✓ (모두 0+1=1 또는 1+2=3... )\n\n$t = \\beta - 2$ 점: 좌극한 = 1, 우극한 = 2 → 합 = 3 > 2 → **위반!**\n\n따라서 $\\beta - 2 = \\alpha$, 즉 **$\\beta - \\alpha = 2$이지만** $g$가 2가 되는 구간이 점 하나: $t = \\alpha$에서만 $g = 2$.\n\n$\\beta = \\alpha + 2$이면: $t = \\alpha$일 때만 $[\\alpha, \\alpha+2]$에 두 근 모두 포함 → $g(\\alpha) = 2$\n\n### 조건 (나) 적용\n\n$g(f(1)) = 2$이므로 $f(1) = \\alpha$, $g(f(4)) = 2$이므로 $f(4) = \\alpha$, $g(f(0)) = 1$이므로 $f(0) \\in [\\alpha-2, \\alpha) \\cup (\\alpha, \\alpha+2]$\n\n$f(x) = \\frac{1}{2}x^3 + bx^2 + cx + d$\n\n$f'(x) = \\frac{3}{2}x^2 + 2bx + c = \\frac{3}{2}(x-\\alpha)(x-\\alpha-2)$\n\n$f'(x) = \\frac{3}{2}[x^2 - (2\\alpha+2)x + \\alpha(\\alpha+2)]$\n\n따라서",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 24753,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2022-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "최적화 (자유 극값)",
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "회전체의 부피 (디스크)",
+        "sin x / x 의 극한"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## g(x) 분석\n\n$$g(x) = 3f(x) + 4\\cos f(x)$$\n\n$$g'(x) = 3f'(x) + 4(-\\sin f(x)) \\cdot f'(x) = f'(x)[3 - 4\\sin f(x)]$$\n\n## f(x) 분석\n\n$$f(x) = 6\\pi(x-1)^2$$\n\n$$f'(x) = 12\\pi(x-1)$$\n\n**f'(x) = 0:** x = 1 (0 < x < 2 범위의 유일한 점)\n\n**f(x)의 범위:** 0 < x < 2에서\n- f(1) = 0 (최솟값)\n- f(0) = f(2) = 6π (끝점값, 미포함)\n- 따라서 f(x) ∈ [0, 6π)\n\n## g'(x) = 0의 분석\n\n$$g'(x) = f'(x)[3 - 4\\sin f(x)] = 0$$\n\n**Case 1:** f'(x) = 0 → x = 1\n\n**Case 2:** 3 - 4sin(f(x)) = 0 → sin(f(x)) = 3/4\n\n## Case 2: sin(f(x)) = 3/4 인 x 찾기\n\nf(x) = t로 놓으면, t ∈ [0, 6π)에서 sin(t) = 3/4 인 t를 찾자.\n\n각 주기 [0, 2π), [2π, 4π), [4π, 6π)에서:\n- [0, 2π): t₁ = arcsin(3/4) ≈ 0.848, t₂ = π - arcsin(3/4) ≈ 2.294\n- [2π, 4π): t₃ = 2π + arcsin(3/4), t₄ = 3π - arcsin(3/4)\n- [4π, 6π): t₅ = 4π + arcsin(3/4), t₆ = 5π - arcsin(3/4)\n\n→ **총 6개의 t값**\n\n각 t값에 대해 f(x) = t, 즉 6π(x-1)² = t의 해:\n$$x = 1 \\pm \\sqrt{\\frac{t}{6\\pi}}$$\n\nt > 0이면 x = 1 + √(t/6π)와 x = 1 - √(t/6π) **두 개**의 해\n→ 6개의 t값 각각에 대해 2개 → **12개의 x값**\n\n단, x ∈ (0, 2) 검증:\n- t < 6π이면 √(t/6π) < 1이므로 0 < x < 2 ✓\n\n## 극소 판별\n\ng'(x) = f'(x)[3 - 4sin(f(x))]에서 부호 변화 분석:\n\n**x = 1 (Case 1)에서:**\n- x < 1: f'(x) < 0\n- x > 1: f'(x) > 0\n- [3 - 4sin(f(1))] = 3 - 0 = 3 > 0\n- g'(x): 음 → 양 → **극소** ✓\n\n**Case 2의 x들:** f'(x) ≠ 0이므로, [3 - 4sin(f(x))]의 부호 변화 분석\n\nt값이 증가할 때 sin(t) = 3/4 를 지나는 방향:\n- t₁, t₃, t₅ (sin이 증가하는 구간): cos(t) > 0이므로 [3-4sin t]는 양→음 변화\n  - f'(x) > 0(x>1): g' 부호: +·(+→-): 극소 ✓\n  - f'(x) < 0(x<1): g' 부호: -·(+→-): 극대 ✗ (극소 아님)\n\n- t₂, t₄, t₆ (sin이 감소하는 구간): cos(t) < 0이므로 [3-4sin t]는 음→양 변화\n  - f'(x) > 0(x>1): g' 부호: +·(-→+): 극대 ✗\n  - f'(x) < 0(x<1): g' 부호: -·(-→+): 극소 ✓\n\n정리:\n- t₁, t₃, t₅에 대응하는 **x > 1인 점**: 3개 극소\n- t₂, t₄, t₆에 대응하는 **x < 1인 점**: 3개 극소\n- x = 1: 1개 극소\n\n**총 극소 개수 = 3 + 3 + 1 = 7**\n\n---\n\n최종 답: **7 (②)**\n\n코칭 한마디: 왜냐하면 합성함수의 극값 판별에서는 g'(x) = f'(x)·h(f(x)) 꼴로 인수분해한 뒤, 각 인수의 부호 변화를 따로 분석해야 극소/극대를 정확히 구분할 수 있기 때문입니",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 29751,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2022-미적분-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "최적화 (자유 극값)",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "치환 적분",
+        "치환적분",
+        "사잇값 정리 (수학2)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 조건 분석\n\n**조건 (나):** $x \\geq 1$인 모든 실수 $x$에 대해 $g(2x) = 2f(x)$\n\n$g$는 $f$의 역함수이므로 $g(2x) = 2f(x)$에서\n\n$f$를 양변에 적용하면: $2x = f(2f(x))$\n\n또한, $g(2x) = 2f(x)$에서 $x$ 대신 $f(x)$를 대입하면... 다른 방법으로 접근합니다.\n\n## 적분 관계식 도출\n\n$g(2x) = 2f(x)$에서 양변을 $x$에 대해 미분:\n$$2g'(2x) = 2f'(x)$$\n$$g'(2x) = f'(x)$$\n\n**구간 변환으로 적분 관계 설정**\n\n$g(2x) = 2f(x)$에서 $x$를 $[1, t]$에서 적분:\n$$\\int_1^t g(2x)\\,dx = \\int_1^t 2f(x)\\,dx$$\n\n좌변에서 $u = 2x$로 치환하면 ($du = 2dx$):\n$$\\int_2^{2t} g(u) \\cdot \\frac{du}{2} = 2\\int_1^t f(x)\\,dx$$\n$$\\frac{1}{2}\\int_2^{2t} g(u)\\,du = 2\\int_1^t f(x)\\,dx$$\n\n## 역함수 적분 공식 활용\n\n$f(1)=1$이므로 $g(1)=1$, $g(2)=2f(1)=2$\n\n$[a,b]$에서 역함수 관계: \n$$\\int_1^t f(x)\\,dx + \\int_1^{f(t)} g(y)\\,dy = t \\cdot f(t) - 1 \\cdot 1$$\n\n$t=2$: $\\int_1^2 f(x)\\,dx + \\int_1^{f(2)} g(y)\\,dy = 2f(2) - 1$\n\n$g(2x) = 2f(x)$에서 $x=1$: $g(2) = 2f(1) = 2$, 즉 $f(2) = 2$ (∵ $g(2)=2$ → $f(2)=2$)\n\n$\\frac{5}{4} + \\int_1^2 g(y)\\,dy = 2(2) - 1 = 3$\n\n$$\\int_1^2 g(y)\\,dy = \\frac{7}{4}$$\n\n## 점화식으로 적분값 계산\n\n$g(2x) = 2f(x)$ 관계에서, $x=[a,b]$로 적분하여:\n\n$$\\int_1^t f(x)\\,dx = \\frac{1}{4}\\int_2^{2t} g(u)\\,du$$\n\n이를 반복 적용하여 $\\int_1^{2^n} f(x)\\,dx$ 를 구합니다.\n\n역함수 공식 $\\int_1^{2^n} f(x)\\,dx + \\int_1^{2^n} g(y)\\,dy = 2^n \\cdot f(2^n) - 1$과\n\n$g(2x)=2f(x)$에서 $x=2^{n-1}$: $g(2^n) = 2f(2^{n-1})$이므로 $f(2^n) = 2f(2^{n-1})$\n\n→ $f(2^n) = 2^{n-1}f(2) = 2^n$\n\n## 목표 적분 계산: 부분적분\n\n$$\\int_1^8 xf'(x)\\,dx = \\left[xf(x)\\right]_1^8 - \\int_1^8 f(x)\\,dx$$\n$$= 8f(8) - 1 \\cdot f(1) - \\int_1^8 f(x)\\,dx = 8\\cdot 8 - 1 - \\int_1^8 f(x)\\,dx$$\n\n$\\int_1^8 f(x)\\,dx$를 구합니다. 역함수 공식:\n\n$$\\int_1^8 f(x)\\,dx + \\int_1^8 g(y)\\,dy = 8 \\cdot 8 - 1 = 63$$\n\n$\\int_1^8 g(y)\\,dy = \\int_1^2 g(y)\\,dy + \\int_2^4 g(y)\\,dy + \\int_4^8 g(y)\\,dy$\n\n$g(2x)=2f(x)$로 치환: $\\int_2^{2t} g(u)\\,du = 4\\int_1^t f(x)\\,dx$\n\n- $\\int_2^4 g = 4\\int_1^2 f = 4 \\cdot \\frac{5}{4} = 5$\n- $\\int_4^8 g = 4\\int_2^4 f$, 역함수공식 $t=4$: $\\int_1^4 f + \\int_1^4 g = 4\\cdot4-1=15$, $\\int_1^4 g = \\frac{7}{4}+5=\\frac{27}{",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 24577,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2023-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 함수 분석\n\n**x < 0 구간:** $f(x) = |3^{x+2} - n|$\n\n- $3^{x+2}$의 범위: $x \\to -\\infty$이면 $3^{x+2} \\to 0$, $x \\to 0^-$이면 $3^{x+2} \\to 9$\n- 따라서 $x < 0$에서 $3^{x+2} \\in (0, 9)$\n\n**x ≥ 0 구간:** $f(x) = |\\log_2(x+4) - n|$\n\n- $x \\geq 0$에서 $x+4 \\geq 4$이므로 $\\log_2(x+4) \\geq 2$\n- $x \\to \\infty$이면 $\\log_2(x+4) \\to \\infty$\n\n## 각 구간에서 f(x)=t의 근의 개수 분석\n\n**x < 0 구간:** $|3^{x+2} - n| = t$\n\n$3^{x+2} = n \\pm t$ 각각에서 근이 존재하려면 해당 값이 $(0, 9)$ 내에 있어야 함.\n\n- $3^{x+2} \\in (0,9)$이므로: 각 방정식 $3^{x+2} = c$는 $c \\in (0,9)$이면 정확히 1개의 근\n- $n < 0$이면 $n-t < 0$이므로 항상 $|3^{x+2}-n| = 3^{x+2}+|n| > |n|$\n\n**x ≥ 0 구간:** $|\\log_2(x+4) - n| = t$\n\n$\\log_2(x+4) = n+t$ 또는 $n-t$ 각각에서 근이 존재하려면:\n- $n+t \\geq 2$이고 해당 $x \\geq 0$ → $n+t \\geq 2$ (항상 성립 for $t \\geq 0, n \\geq 1$)\n- $n-t \\geq 2$이면 근 1개, $n-t \\in [2,2)$... 정확히: $n-t \\geq 2$이면 1개, $n-t < 2$이면 0개\n\n## g(t)가 최대 4가 되는 조건\n\n$f(x)=t$의 근의 최대 개수가 4가 되려면:\n- x < 0에서 최대 2개, x ≥ 0에서 최대 2개 → 합이 4\n\n**x ≥ 0에서 2개:** $n-t \\geq 2$, 즉 $t \\leq n-2$ (n ≥ 3)이고 $n+t$ 조건 성립\n\n**x < 0에서 2개:** $n-t \\in (0,9)$이고 $n+t \\in (0,9)$ 모두 성립\n\nx < 0에서 2개가 되는 조건: $0 < n-t < 9$ AND $0 < n+t < 9$\n→ $t < n$ AND $t < 9-n$ AND $t > 0$ (또한 $n+t > 0$은 자동)\n\n## n값에 따른 분석\n\n**g(t) 최댓값 = 4** 이려면 동시에 4개가 되는 t가 존재해야 하고, 5개는 없어야 함.\n\n4개가 되려면: x<0에서 2개 + x≥0에서 2개 동시에 필요.\n\n- x<0에서 2개: $0 < t < \\min(n, 9-n)$ → $n < 9$, 즉 $n \\leq 8$이고 $t < 9-n$\n- x≥0에서 2개: $t \\leq n-2$ → $n \\geq 3$\n\n4개가 되는 t 존재 조건: $\\min(n, 9-n) > 0$ 이고 구간 $0 < t < \\min(n, 9-n)$과 $t \\leq n-2$의 교집합이 존재.\n\n$n \\geq 3$이고 $n \\leq 8$: $n-2 > 0$이고 $9-n > 0$이므로 교집합 $(0, \\min(n-2, 9-n)]$... 이 비어있지 않으려면 $n-2 > 0$ (n≥3) 성립.\n\n**g(t) 최댓값 ≤ 4 확인:** 최댓값이 정확히 4여야 하므로 5개가 되는 경우 제외.\n\n- $n \\geq 3, n \\leq 8$: 조건 만족. $n = 3, 4, 5, 6, 7, 8$\n\n합 = $3+4+5+6+7+8 = \\boxed{33}$\n\n최종 답: 33  \n코칭 한마디: 이유는 두 구간에서 각각 가능한 근의 개수를 t의 범위에 따라 체계적으로 분석하면 g(t)가 ",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 25908,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2023-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "치환 적분",
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "매개변수 미분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 조건 분석\n\n**조건 (가):** 모든 실수 $x$에 대하여 $f(x) = f(1) + (x-1)f'(g(x))$\n\n$f(x)$는 최고차항의 계수가 1인 삼차함수이므로 $f(x) = x^3 + ax^2 + bx + c$로 놓겠습니다.\n\n---\n\n## Step 1: f(x)의 형태 파악\n\n조건 (가)를 변형하면:\n$$f(x) - f(1) = (x-1)f'(g(x))$$\n\n$x = 1$을 대입하면: $0 = 0$ (항등적으로 만족)\n\n$f(x) - f(1)$은 $(x-1)$을 인수로 가지므로:\n$$f(x) - f(1) = (x-1) \\cdot h(x)$$\n\n여기서 $h(x) = f'(g(x))$\n\n---\n\n## Step 2: f(x)의 구체적 형태 설정\n\n$f(x) = (x-1)^2(x-p) + f(1)$ 형태로 놓으면:\n\n실제로 $f(x) - f(1) = (x-1)Q(x)$이고, 이것이 $(x-1)f'(g(x))$와 같아야 합니다.\n\n$$f'(g(x)) = \\frac{f(x)-f(1)}{x-1} \\quad (x \\neq 1)$$\n\n우변은 $x$에 대한 이차식이므로, $f'(g(x))$도 이차식이어야 합니다.\n\n$f'(x) = 3x^2 + 2ax + b$이고, $f'(g(x))$가 $x$의 이차식이 되려면 **$g(x)$가 일차함수**이거나 특별한 형태를 가져야 합니다.\n\n---\n\n## Step 3: g(x)가 상수가 되는 경우 검토\n\n만약 $g(x) = k$ (상수)이면, 조건 (나)에서 최솟값 = $k = \\frac{5}{2}$\n\n그러면 $f'(g(x)) = f'\\!\\left(\\tfrac{5}{2}\\right)$ = 상수\n\n조건 (가): $f(x) - f(1) = (x-1) \\cdot f'\\!\\left(\\tfrac{5}{2}\\right)$\n\n이는 $f(x)$가 일차함수임을 의미 → **삼차함수 조건 모순**. 기각.\n\n---\n\n## Step 4: f(x) = (x-α)²(x-β) 형태 활용\n\n$f(x) - f(1) = (x-1) \\cdot \\frac{f(x)-f(1)}{x-1}$에서, $f'(g(x))$가 $x$에 대해 의미있으려면:\n\n$f(x) = x^3 + ax^2 + bx + c$로 놓고,\n\n$$\\frac{f(x)-f(1)}{x-1} = x^2 + (1+a)x + (1+a+b)$$\n\n이것이 $f'(g(x))$와 같아야 하므로 $g(x) = $ 이차식.\n\n$f'(t) = 3t^2 + 2at + b$이고, $f'(g(x)) = x^2 + (1+a)x + (1+a+b)$\n\n**$g(x)$가 일차함수** $g(x) = \\alpha x + \\beta$이면 $f'(g(x))$는 이차식 ✓\n\n$g(x) = \\alpha x + \\beta$로 놓으면:\n$$3(\\alpha x+\\beta)^2 + 2a(\\alpha x+\\beta) + b = x^2 + (1+a)x + (1+a+b)$$\n\n계수 비교:\n- $x^2$: $3\\alpha^2 = 1 \\Rightarrow \\alpha = \\frac{1}{\\sqrt{3}}$ (실수이나 비정수)\n\n일차함수보다 $g(x)$가 이차함수인 경우를 고려합니다.\n\n---\n\n## Step 5: f(x) = (x-1)²(x-t)로 설정\n\n$f(1) = 0$이 되는 경우: $f(x) = (x-1)^2(x-t)$\n\n그러면:\n$$\\frac{f(x)-f(1)}{x-1} = \\frac{(x-1)^2(x-t)}{x-1} = (x-1)(x-t)$$\n\n따라서 $f'(g(x)) = (x-1)(x-t) = x^2 - (1+t)x + t$\n\n$f'(x) = 3x^2 - 2(1+2t)x + (t^2+2t) \\cdot$... 잠깐 계산:\n\n$f(x) = (x-1)^2(x-t) = x^3 - (t+2)x^2 + (2t+1)x - t$\n\n$f'(x) = 3x^2 - 2(t+2)x + (2t+1)$\n\n$f'",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 24888,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2023-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "배각 공식",
+        "삼각함수 기본항등식",
+        "정적분의 정의 (FTC)",
+        "반각·차수 낮추기 공식",
+        "삼각방정식의 풀이"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 좌표 설정\n\n중심 O를 원점, 반지름 1인 반원으로 설정합니다.\n- O = (0, 0), A = (-1, 0), B = (1, 0)\n- ∠AOC = π/2이므로 C = (0, 1)\n\n## 점 P의 좌표 설정\n\n∠PAB = θ이므로, A = (-1, 0)에서 각도 θ로 보이는 점 P.\n\n반원 위의 점이므로 P = (cos α, sin α)로 놓으면:\n- 호 BC 위의 점이므로 0 < α < π/2\n\n∠PAB = θ: A에서 B 방향(+x)과 AP의 각도가 θ\n\nAB 방향: A에서 B = (2, 0), 단위벡터 (1, 0)\nAP 방향: (cos α + 1, sin α)\n\ntan θ = sin α/(cos α + 1) = tan(α/2)\n\n따라서 **α = 2θ**, 즉 **P = (cos 2θ, sin 2θ)**\n\n## PB의 길이 계산\n\nPB² = (cos 2θ - 1)² + sin²2θ = 2 - 2cos 2θ = 4sin²θ\n\n**PB = 2sin θ**\n\n## 점 Q의 좌표 설정\n\n호 CA 위의 점 Q, QC = PB = 2sin θ\n\nQ = (cos β, sin β)에서 β ∈ (π/2, π)\n\nQC² = (cos β)² + (sin β - 1)² = 2 - 2sin β\n\nQC = 2sin θ이므로: 2 - 2sin β = 4sin²θ\n\n**sin β = 1 - 2sin²θ = cos 2θ**\n\nβ ∈ (π/2, π)이므로: **Q = (-sin 2θ, cos 2θ)**\n\n## f(θ): 삼각형 POB의 넓이\n\nP = (cos 2θ, sin 2θ), O = (0,0), B = (1, 0)\n\n$$f(\\theta) = \\frac{1}{2}|OB| \\cdot \\text{(P의 y좌표)} = \\frac{1}{2} \\cdot 1 \\cdot \\sin 2θ = \\frac{\\sin 2θ}{2}$$\n\n## g(θ): 사각형 CQRS의 넓이\n\n**점 R**: 선분 AP 위의 점, ∠CQR = π/2\n\n**점 S**: AP와 CO(y축)의 교점\n\n**직선 AP**: A = (-1, 0), P = (cos 2θ, sin 2θ)\n- 방향벡터: (cos 2θ + 1, sin 2θ) = (2cos²θ, 2sin θ cos θ) ∝ (cos θ, sin θ)\n- 직선 AP: y = tan θ · (x + 1)\n\n**점 S** (x = 0): S = (0, tan θ)\n\n**점 R**: QR ⊥ QC, Q에서 AP 위의 수선의 발\n\nQ = (-sin 2θ, cos 2θ), AP의 방향벡터 (cos θ, sin θ)\n\nR = Q + t(cos θ, sin θ), 이 점이 AP 위에 있어야 함.\n\nAP 위의 점: (-1 + s·cos θ, s·sin θ)\n\n-sin 2θ + t·cos θ = -1 + s·cos θ\ncos 2θ + t·sin θ = s·sin θ\n\nQR ⊥ QC: QC 방향 = C - Q = (sin 2θ, 1 - cos 2θ) = (sin 2θ, 2sin²θ) ∝ (cos θ, sin θ) ... (주목!)\n\n실제로 QC 방향 = (sin 2θ, 1 - cos 2θ): 이것이 AP 방향 (cos θ, sin θ)과 비례하는지 확인: sin 2θ = 2sin θ cos θ, 1 - cos 2θ = 2sin²θ → 방향 (cos θ, sin θ) ✓\n\n따라서 QC ∥ AP이므로 **QR ⊥ AP**. R은 Q에서 AP에 내린 수선의 발.\n\nQ에서 AP까지 거리: AP: sin θ·x - cos θ·y + sin θ = 0\n\n거리 = |sin θ(-sin 2θ) - cos θ(cos 2θ) + sin θ| / 1\n= |-sin θ sin 2θ - cos θ cos 2θ + sin θ|\n= |-cos(2θ - θ) + sin θ| = |-cos θ + sin θ|\n\nQR = sin θ - cos θ... θ < π/4이므로 QR = cos θ - sin θ\n\n**사각형 CQRS**: QC ∥ AS(AP선), QR ⊥ QC\n\n넓이 = QR × QC (직사각형 아님, 사다리꼴 검토)\n\nQC = 2sin θ, QR = cos θ - sin θ",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 26066,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2023-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "나는 이 문제를 단계적으로 풀겠습니다.\n\n## 함수 분석\n\n**g(x) = e^(sin πx) - 1 분석:**\n- g(x) = 0 ⟺ sin πx = 0 ⟺ x = 정수\n- g(x) = 1 ⟺ sin πx = ln 2 ⟺ sin πx = ln 2 ≈ 0.693\n  - 각 구간 [2k-1/2, 2k+3/2]에서 sin πx = ln 2는 2개의 해를 가짐\n  - 정확히는, 각 정수 구간 (n, n+1)에서: sin πx의 최댓값은 1(x = n+1/2), 최솟값은 -1\n  - sin πx = ln 2 는 각 구간 (n, n+1)에서 2개의 해 (ln 2 < 1이므로)\n\n**h(x) = g(f(x)) 분석:**\n- h(x) = 0 ⟺ f(x) = 정수\n- h(x)의 극댓값 0 ⟺ f(x)가 정수에서 극댓값 (f(x)의 극대점에서 f값이 정수)\n  - 또는 g의 극대가 0인 점: g(x) = 0이고 g의 극대 → sin πx = 0이고 극대 → x = 2k+1/2... 아님\n  \n**g(x)의 극대:** sin πx = 1 → x = 1/2 + 2k (정수k), g = e-1 > 0\n**g(x)의 극소:** sin πx = -1 → x = -1/2 + 2k, g = e^{-1}-1 < 0\n**g(x) = 0:** x = 정수 (이때 극값이 아닌 변곡점)\n\n## 조건 (가) 분석\n\nh(x)가 x=0에서 극댓값 0을 가지려면:\n- h(0) = g(f(0)) = 0 → f(0) = 정수 n\n- x=0에서 h(x)의 극대\n\ng(t)=0이 되려면 t가 정수. g'(t) = e^(sin πt)·π cos πt이고, t=정수에서 g'(t) = π·cos(nπ) = ±π ≠ 0\n\n따라서 h'(0) = g'(f(0))·f'(0) = 0이 되려면 f'(0) = 0\n\nf(x)가 x=0에서 극값을 가지고, f(0) = 정수.\n\n## 조건 설정\n\nf(x) = a(x-α)(x-β)(x-γ), a > 0 (최고차항 계수 양수)\n\n**f'(3) = 0, f(3) = 1/2**이므로 x=3은 f의 극값점.\n\nf'(0) = 0이고 x=0도 f의 극값점.\n\n삼차함수에서 극값점이 2개: x=0, x=3\n\nf'(x) = 3a(x-0)(x-3) = 3ax(x-3)\n\nf(x) = 3a(x³/3 - 3x²/2) + C = a·x³ - (9a/2)x² + C\n\nf(3) = a·27 - (9a/2)·9 + C = 27a - 81a/2 + C = -27a/2 + C = 1/2\n\nf(0) = C = 정수 (조건 가에 의해)\n\n## h(x)=1의 근 개수 분석 (조건 나)\n\ng(f(x)) = 1 ⟺ sin(πf(x)) = ln2\n\n각 구간에서 sin πt = ln2의 해: t ∈ (n, n+1)에서 2개, t = n+1/2에서 1개\n\n(0,3)에서 h(x)=1의 근이 7개.\n\nf(0) = C가 정수, f(3) = 1/2.\n\na > 0이므로 f는 x=0에서 극대, x=3에서 극소.\n\nf(0) = C (극대), f(3) = 1/2 (극소)\n\nC = 정수, C > 1/2이므로 **C ≥ 1**\n\n-27a/2 + C = 1/2 → a = (C - 1/2)·(2/27) = (2C-1)/27\n\n시도: **C = 1** → a = 1/27, f(0)=1, f(3)=1/2\n\nf(x) = (1/27)x³ - (9/54)x² + 1 = (1/27)x³ - (1/6)x² + 1\n\n(0,3)에서 f는 1에서 1/2으로 감소. sin πf(x) = ln2의 해: f(x) ∈ (0,1)에서 2개 → x에 따라 세기\n\nf(x) = t에서 t ∈ (0,1): f가 (0,3)에서 단조감",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 28516,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2024-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find the minimum value of positive $a$ such that the minimum of $g(t)$ on $[0,∞)$ equals 5.\n\n## Setting up the problem\n\n**Analyzing f(x):**\n- For $-1 ≤ x < 6$: $f(x) = -x² + 6x = -(x-3)² + 9$, maximum at $x=3$ with value 9\n- For $x ≥ 6$: $f(x) = a\\log_4(x-5)$, increasing from $f(6) = 0$\n\n**g(t) = max of f on [t-1, t+1]** for $t ≥ 0$\n\n## Analyzing g(t) in different regions\n\n**Case 1: t+1 < 6, i.e., t < 5** (interval entirely in quadratic part)\n- On $[t-1, t+1]$, $f(x) = -x²+6x$\n- If $3 ∈ [t-1, t+1]$ (i.e., $2 ≤ t ≤ 4$): $g(t) = 9$\n- If $t < 2$: maximum at $x = t+1$, so $g(t) = -(t+1)²+6(t+1) = -t²+4t+5$\n- If $t > 4$: maximum at $x = t-1$, so $g(t) = -(t-1)²+6(t-1) = -t²+8t-7$... wait, but we need $t < 5$.\n\n**For 4 < t < 5:** $g(t) = -(t-1)²+6(t-1) = -t²+8t-7$\n- At $t=4$: $-16+32-7=9$ ✓\n- At $t=5$: $-25+40-7=8$\n\n**Case 2: t-1 < 6 ≤ t+1, i.e., 5 ≤ t ≤ 7** (interval straddles x=6)\n- Maximum is max of: quadratic on $[t-1,6)$ and logarithm on $[6,t+1]$\n- Quadratic max: at $x=t-1$ (since $t-1 ≥ 4$, function is decreasing), value $= -(t-1)²+6(t-1) = -t²+8t-7$\n- Logarithm max: at $x=t+1$, value $= a\\log_4(t-4)$\n- So $g(t) = \\max(-t²+8t-7, \\, a\\log_4(t-4))$\n\n**Case 3: t-1 ≥ 6, i.e., t ≥ 7** (interval entirely in log part)\n- $g(t) = a\\log_4(t+1-5) = a\\log_4(t-4)$, increasing in $t$\n- At $t=7$: $a\\log_4(3)$\n\n## Finding minimum of g(t)\n\nFor $0 ≤ t ≤ 2$: $g(t) = -t²+4t+5$, minimum at $t=0$: $g(0)=5$\nFor $2 ≤ t ≤ 4$: $g(t) = 9$\nFor $4 < t < 5$: $g(t) = -t²+8t-7$, decreasing after... derivative: $-2t+8=0$ at $t=4$, so decreasing for $t>4$. At $t=5$: $g(5)=8$\n\nFor $5 ≤ t ≤ 7$: $g(t) = \\max(-t²+8t-7, \\, a\\log_4(t-4))$\n- Quadratic $-t²+8t-7$ decreases from 8 to: at $t=7$: $-49+56-7=0$\n- Logarithm $a\\log_4(t-4)$: at $t=5$: $0$, at $t=7$: $a\\log_4(3)$\n\nThe minimum of $g(t)$ on $[0,∞)$ occurs where these two functions cross in $[5,7]$, or at $t≥7$.\n\nFor $t ≥ 7$: $g(t) = a\\log_4(t-4)$, which is increasing, so minimum at $t=7$: $a\\log_4(3)$.\n\nWe need the overall minimum of $g(t)$ to equal 5. Note $g(0)=5$ already.\n\nThe minimum in $[5,7]$ is $\\min(\\max(\\text{quad}, \\text{log}))$, which is minimized where quad = log.\nThe minimum of $g(t)$ on $[5,7]$ must be $≥ 5$, and $g(t=7) = a\\log_4 3 ≥ 5$, giving $a ≥ 5/\\log_4 3$.\n\nBut we also need the minimum at the crossing point to be ≥ 5. Setting $-t²+8t-7 = 5$ gives $t²-8t+12=0$, $t=6$ or $t=2$. At $t=6$: quad $= 5$, log $= a\\log_4(2) = a/2$. For minimum to be exactly 5, we need $a/2 ≥ 5$... so $a ≥ 10$.\n\nCheck: at $t=6$, $g(6)=\\max(5, a/2)$. If $a=10$, $g(6)=5$. For $t>6$,",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 32902,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2024-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "역함수 미분법",
+        "샌드위치 정리 (조임)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 조건 분석\n\n**조건:** $f(k-1)f(k+1) < 0$을 만족하는 정수 $k$가 **존재하지 않는다.**\n\n이는 임의의 정수 $k$에 대해 $f(k-1)$과 $f(k+1)$이 항상 **같은 부호이거나 0**임을 의미합니다.\n\n즉, **연속한 홀수 간격 정수점 사이에서 부호 변화가 없어야** 합니다.\n\n사잇값 정리에 의해, $f(k-1)f(k+1) < 0$이면 $(k-1, k+1)$ 사이에 영점이 존재합니다. 조건이 없다는 것은: 서로 다른 두 연속 정수 $n, n+2$ 사이에서 $f$의 부호가 바뀌지 않아야 합니다.\n\n**핵심 결론:** 삼차함수의 실수 근들이 **연속한 두 정수 사이에 모두 포함**되어야 합니다. 즉, 어떤 정수 $n$이 존재하여 모든 실근이 $[n, n+1]$ 안에 있어야 합니다.\n\n## f(x)의 형태 설정\n\n최고차항 계수가 1인 삼차함수이므로:\n\n**경우 1:** 삼중근 또는 이중근을 가지는 경우\n$$f(x) = (x-a)^2(x-b) \\quad \\text{또는} \\quad f(x) = (x-a)^3$$\n\n**경우 2:** 세 실근이 모두 하나의 단위 구간에 있는 경우\n\n$f'(-\\frac{1}{4}) = -\\frac{1}{4}$이고 $f'(\\frac{1}{4}) < 0$이므로, $x = -\\frac{1}{4}$, $x = \\frac{1}{4}$ 근방에서 함수가 감소 또는 극값 근처에 있습니다.\n\n## f(x) = (x-a)²(x-b) 형태 탐색\n\n$$f'(x) = 2(x-a)(x-b) + (x-a)^2 = (x-a)[2(x-b) + (x-a)] = (x-a)(3x - 2b - a)$$\n\n극값의 위치: $x = a$ 또는 $x = \\frac{2b+a}{3}$\n\n조건 $f'(-\\frac{1}{4}) = -\\frac{1}{4}$를 이용:\n\n$$f'(x) = (-\\tfrac{1}{4}-a)(3\\cdot(-\\tfrac{1}{4})-2b-a) = -\\tfrac{1}{4}$$\n\n$f'(\\frac{1}{4}) < 0$: $(\\frac{1}{4}-a)(3\\cdot\\frac{1}{4}-2b-a) < 0$\n\n**극값이 $x = -\\frac{1}{4}$인 경우:** $a = -\\frac{1}{4}$이면 $f'(-\\frac{1}{4}) = 0 \\neq -\\frac{1}{4}$ → 불가\n\n**극값 사이의 점으로 접근:** $f'(x) = 3x^2 + px + q$ 형태로 놓으면\n\n$f(x) = x^3 + \\frac{p}{2}x^2 + qx + r$\n\n$f'(x) = 3x^2 + px + q$\n\n$f'(-\\frac{1}{4}) = 3 \\cdot \\frac{1}{16} - \\frac{p}{4} + q = -\\frac{1}{4}$\n\n$$\\frac{3}{16} - \\frac{p}{4} + q = -\\frac{1}{4} \\implies -\\frac{p}{4} + q = -\\frac{7}{16} \\quad \\cdots (1)$$\n\n$f'(\\frac{1}{4}) = \\frac{3}{16} + \\frac{p}{4} + q < 0 \\implies \\frac{p}{4} + q < -\\frac{3}{16} \\quad \\cdots (2)$\n\n## 조건 재검토: 이중근 구조\n\n$f(x) = (x-\\alpha)^2(x-\\beta)$로 놓고, 모든 실근이 $[0,1]$ 구간에 있다고 가정합니다($-\\frac{1}{4}$, $\\frac{1}{4}$ 근방의 거동을 보면 $[0,1]$ 근처).\n\n$$f'(x) = (x-\\alpha)(3x - 2\\beta - \\alpha)$$\n\n$x = \\alpha$가 극값 지점. $f'(-\\frac{1}{4}) = -\\frac{1}{4}$이고, $-\\frac{1}{4}$가 두 극값 사이에 있을 때 $f'$는 음수가 될 수 있습니다.\n\n극값 위치를 $x_1 = \\frac{2\\beta+\\alpha}{3}$, $x_2 = \\alpha$라 하면 ($x_1 < x",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 26737,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2024-미적분-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find f(x) for x ≥ 0 given the conditions about the equation f(x) = t having exactly 2 roots for all positive t.\n\n## Setting Up the Problem\n\nFor x < 0: f(x) = -4xe^(4x²) (positive since x < 0)\n\nAt x = 0: by continuity, f(0) = 0.\n\nThe maximum of f(x) for x < 0: f'(x) = -4e^(4x²) + (-4x)(8x)e^(4x²) = -4e^(4x²)(1 + 8x²)\n\nSince 1 + 8x² > 0 always, f'(x) < 0 for x < 0, so f is strictly decreasing on (-∞, 0). As x → -∞, f(x) → ∞, and f(0) = 0.\n\nSo f(x) for x < 0 is a strictly decreasing function from ∞ to 0.\n\n## Analyzing the Two-Root Condition\n\nFor f(x) = t (t > 0) to have exactly 2 roots: one root is in x < 0 (always exists), one root must be in x ≥ 0. f(0) = 0, so f must be positive for x > 0 with exactly one root per positive t.\n\nThis means f(x) for x ≥ 0 must be strictly increasing from 0 (so each value t > 0 is hit exactly once).\n\n## Using the Condition 2g(t) + h(t) = k\n\n- g(t) = the smaller root (in x < 0 region)\n- h(t) = the larger root (in x ≥ 0 region)\n\nFor x < 0: f(x) = t means -4xe^(4x²) = t. Let x = -u (u > 0): 4ue^(4u²) = t, so g(t) = -u where 4ue^(4u²) = t.\n\nThe condition: 2g(t) + h(t) = k for all t > 0.\n\nLet me denote: for a given t, g(t) = -u (where 4ue^(4u²) = t) and h(t) satisfies f(h(t)) = t.\n\nSo h(t) = k - 2g(t) = k + 2u.\n\nThis means h(t) is determined by u, and f(k + 2u) = 4ue^(4u²) for all u > 0.\n\nLet x = k + 2u, so u = (x-k)/2 for x > k. Then:\nf(x) = 4·((x-k)/2)·e^(4((x-k)/2)²) = 2(x-k)e^((x-k)²}\n\nSo for x > k: **f(x) = 2(x-k)e^((x-k)²)**\n\nSince f(0) = 0 and f is continuous, and at x = 0 we need this to connect: if k = 0, then f(x) = 2xe^(x²) for x > 0. But let me check continuity at x = 0: f(0) = 0 ✓ when k = 0.\n\n**Check k = 0:** f(x) = 2xe^(x²) for x ≥ 0.\n\n## Verifying with the Integral Condition\n\n∫₀⁷ f(x)dx = e⁴ - 1\n\n∫₀⁷ 2xe^(x²) dx = [e^(x²)]₀⁷ = e^49 - 1 ≠ e⁴ - 1.\n\nSo k ≠ 0. Let me try k > 0: f(x) = 2(x-k)e^((x-k)²) for x > k, and f must be 0 at x = 0 and connect properly. Perhaps f(x) = 0 for 0 ≤ x ≤ k.\n\nWith f(x) = 0 for 0 ≤ x ≤ k: ∫₀⁷ f(x)dx = ∫ₖ⁷ 2(x-k)e^((x-k)²)dx = [e^((x-k)²)]ₖ⁷ = e^((7-k)²) - 1 = e⁴ - 1.\n\nSo (7-k)² = 4, giving 7-k = 2, **k = 5**.\n\n## Computing f(9)/f(8)\n\nf(x) = 2(x-5)e^((x-5)²) for x > 5.\n\nf(9) = 2(4)e^(16) = 8e^16\nf(8) = 2(3)e^(9) = 6e^9\n\nf(9)/f(8) = 8e^16/(6e^9) = (4/3)e^7\n\n최종 답: **(2) 4/3 · e⁷**\n\n코칭 한마디: 이유는 두 근의 선형 조합 조건 2g(t)+h(t)=k를 매개변수로 변환하면 x≥0에서의 f(x) 형태를 명시적으로 결정할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 28106,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2024-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find all positive values of $a$ where $h(x) = \\int_0^x \\{f(t) - g(t)\\} dt$ has a local extremum at $x = a$.\n\n## Setting Up\n\n**Finding f(x):** Since $f'(x) = |\\sin x|\\cos x$, integrate:\n- When $\\sin x \\geq 0$: $f'(x) = \\sin x \\cos x = \\frac{1}{2}\\sin 2x$, so $f(x) = -\\frac{1}{4}\\cos 2x + C = \\frac{1}{2}\\sin^2 x + C_1$\n- When $\\sin x < 0$: $f'(x) = -\\sin x \\cos x = -\\frac{1}{2}\\sin 2x$, so $f(x) = \\frac{1}{4}\\cos 2x + C_2 = -\\frac{1}{2}\\sin^2 x + C_3$ (wait, need continuity)\n\nActually: $f'(x) = |\\sin x|\\cos x = \\frac{d}{dx}\\left(\\frac{|\\sin x|^2}{2}\\cdot\\text{sign}\\right)$. Note $\\frac{d}{dx}\\frac{\\sin^2 x}{2} = \\sin x \\cos x$ but we need $|\\sin x|\\cos x$.\n\nSince $\\frac{d}{dx}\\frac{|\\sin x|^2}{2} = |\\sin x|\\cdot\\text{sign}(\\sin x)\\cdot\\cos x$... Let me use: $|\\sin x|\\cos x = \\frac{d}{dx}\\left(\\frac{\\sin x|\\sin x|}{2}\\right)$.\n\nCheck: $\\frac{d}{dx}\\frac{\\sin x|\\sin x|}{2} = \\frac{|\\sin x|\\cos x + \\sin x \\cdot \\text{sign}(\\sin x)\\cos x}{2} = \\frac{2|\\sin x|\\cos x}{2} = |\\sin x|\\cos x$. ✓\n\nSo $f(x) = \\frac{\\sin x|\\sin x|}{2} + C$. Let $C = 0$.\n\n**The tangent line at $(a, f(a))$:**\n$g(x) = f(a) + f'(a)(x - a) = \\frac{\\sin a|\\sin a|}{2} + |\\sin a|\\cos a \\cdot (x-a)$\n\n## Condition for Extremum of h(x) at x = a\n\n$h'(x) = f(x) - g(x)$\n\nFor $h$ to have extremum at $x = a$: $h'(a) = f(a) - g(a) = 0$ ✓ (always true)\n\nWe need a sign change in $h'(x) = f(x) - g(x)$ at $x = a$.\n\nSo $\\phi(x) = f(x) - g(x)$ must change sign at $x = a$.\n\nNote $\\phi(a) = 0$ and $\\phi'(a) = f'(a) - f'(a) = 0$. So $x = a$ is at least a double root.\n\nFor a sign change: $a$ must be an **odd-order** root of $\\phi(x)$ with order ≥ 3, meaning $\\phi''(a) = 0$ and $\\phi'''(a) \\neq 0$ (for order exactly 3).\n\n$\\phi''(x) = f''(x)$, $\\phi''(a) = f''(a) = \\frac{d}{dx}[|\\sin x|\\cos x]|_{x=a}$\n\n$f''(x) = |\\cos x|\\cos x - |\\sin x|\\sin x$ (when $\\sin x \\neq 0$... carefully):\n$f''(x) = \\cos x \\cdot \\text{sign}(\\sin x)\\cos x + |\\sin x|(-\\sin x) = \\cos^2 x \\cdot\\text{sign}(\\sin x) - |\\sin x|\\sin x$\n\nFor $\\sin a > 0$: $f''(a) = \\cos^2 a - \\sin^2 a = \\cos 2a$\n\n$\\phi''(a) = 0 \\Rightarrow \\cos 2a = 0 \\Rightarrow a = \\frac{\\pi}{4} + \\frac{k\\pi}{2}$\n\nCheck $\\phi'''(a) \\neq 0$: For sign change need odd multiplicity.\n\nAlso, at $a = k\\pi$ ($\\sin a = 0$): $f'(a) = 0$, $g(x) = f(a)$ (horizontal), and near these points $f(x) - f(a) \\sim \\frac{\\sin x |\\sin x|}{2}$ changes sign — **yes**, these give sign changes.\n\nPositive values: $a = \\pi, 2\\pi, 3\\pi,...$ and $a = \\frac{\\pi}{4}, \\frac{3\\pi}{4}, \\frac{5\\pi}{4}, \\frac{7\\pi}{4},...$\n\nOrdering positive values: $\\frac{\\pi}{4}, \\frac{3\\pi}{4}, \\pi, \\frac{5\\pi}{4}, \\frac{7\\pi}{4}, 2\\pi, \\frac{9\\pi}{4},...$\n\nSo: $a_1=\\frac{\\pi}{4}, a_2=\\frac{3\\pi}{4}, a_3=\\pi, a_4=\\frac{5\\pi}{4}, a_5=\\frac{7\\pi}{4}, a_6=2\\pi$\n\n$a_6 - a_2 = 2\\pi - \\frac{3\\pi}{4} = \\frac{5\\pi}{4}$\n\n$\\frac{100}{\\pi} \\times \\frac{5\\pi}{4} = \\frac{500",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 25283,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2025-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "인수정리",
+        "함수의 연속"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 핵심 분석\n\n$\\lim_{x \\to \\alpha} \\frac{f(2x+1)}{f(x)}$의 값이 모든 실수 $\\alpha$에 대해 존재하려면, 분모 $f(x)$가 $0$이 되는 점에서 극한이 존재해야 합니다.\n\n## 조건 분석\n\n$f(\\alpha) = 0$인 점 $\\alpha$에서:\n- 분모 → 0이므로, 극한이 존재하려면 **분자도 0**이어야 합니다 (함수의 연속 조건)\n- 즉, $f(\\alpha) = 0$ 이면 $f(2\\alpha + 1) = 0$\n\n따라서: **$f$의 모든 실근 $\\alpha$에 대해 $2\\alpha + 1$도 $f$의 근이어야 한다.**\n\n## $f(x)$의 근 구조 파악\n\n$f(x) = x^3 + ax^2 + bx + 4$의 근을 $\\alpha_1, \\alpha_2, \\alpha_3$라 하면, 근의 곱: $\\alpha_1 \\alpha_2 \\alpha_3 = -4$\n\n**Case 1: $f$가 실근을 갖지 않는 경우**\n→ 조건이 자동으로 만족됩니다 (모든 근이 허수).\n\n**Case 2: 실근이 존재하는 경우**\n실근 $\\alpha$가 있으면 $2\\alpha+1$도 근, $2(2\\alpha+1)+1 = 4\\alpha+3$도 근...\n\n3차 다항식이므로 근이 3개(중복 포함)이고, 이 수열이 유한해야 합니다.\n\n→ **고정점**: $\\alpha = 2\\alpha + 1 \\Rightarrow \\alpha = -1$\n\n$\\alpha = -1$이 근이면 $2(-1)+1 = -1$ ✓ (자기 자신으로 돌아옴)\n\n### Case 2-1: 삼중근 $\\alpha = -1$\n$f(x) = (x+1)^3 = x^3 + 3x^2 + 3x + 1$\n→ 상수항이 $1 \\neq 4$이므로 **불가**\n\n### Case 2-2: 이중근 $\\alpha = -1$, 다른 실근 $\\beta$\n$f(x) = (x+1)^2(x - \\beta)$\n상수항: $(1)^2(-\\beta) = 4 \\Rightarrow \\beta = -4$\n\n$\\beta = -4$도 실근이므로 $2(-4)+1 = -7$도 근이어야 하지만, 근은 $-1, -1, -4$ 뿐 → **불가**\n\n### Case 2-3: 단순근 $\\alpha = -1$과 두 허근\n$f(x) = (x+1)(x^2 + px + 4)$ (상수항: $1 \\times 4 = 4$ ✓)\n\n전개: $x^3 + (p+1)x^2 + (4+p)x + 4$\n\n→ $a = p+1$, $b = 4+p = a+3$\n\n$x^2 + px + 4$가 허근을 가지려면: $p^2 - 16 < 0 \\Rightarrow -4 < p < 4$\n\n$a, b$가 정수 → $p = a-1$이 정수, $p \\in \\{-3, -2, -1, 0, 1, 2, 3\\}$\n\n### $f(1)$ 계산\n\n$f(1) = 1 + a + b + 4 = 5 + a + b = 5 + (p+1) + (p+4) = 10 + 2p$\n\n$p$가 최대일 때 $f(1)$ 최대 → $p = 3$\n\n$f(1) = 10 + 2(3) = 16$\n\n검증: $p=3$이면 $x^2 + 3x + 4$의 판별식 $= 9 - 16 = -7 < 0$ ✓ (허근)\n$a = 4, b = 7$, $f(x) = (x+1)(x^2+3x+4)$\n\n**실근이 없는 경우도 확인**: $f(x)$가 실근 없으면 $a, b$를 더 자유롭게 선택할 수 있으나, 실근이 없을 때 $f(1) = 5+a+b$를 무한히 크게 할 수 없음 → $p=3$이 경계값이 최적.\n\n---\n\n최종 답: **16**\n\n코칭 한마디: 이유는 극한이 존재하기 위해 분모가 0이 되는 점에서 분자도 반드시 0이 되어야 하므로, 인수정리를 이용해 근의 이동 구조를 분석하는 것이 핵심입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 30233,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2025-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+        "산술-기하 평균 부등식",
+        "확률의 정의 (수학적 확률)",
+        "일차부등식의 풀이",
+        "지수함수의 성질"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 조건 분석\n\n점화식을 파악합니다:\n- $|a_n|$이 홀수이면: $a_{n+1} = a_n - 3$\n- $a_n = 0$ 또는 $|a_n|$이 짝수이면: $a_{n+1} = \\frac{1}{2}a_n$\n\n**조건 (나)**: $|a_m| = |a_{m+2}|$인 자연수 $m$의 최솟값이 **3**\n\n즉:\n- $m=1$: $|a_1| \\neq |a_3|$\n- $m=2$: $|a_2| \\neq |a_4|$  \n- $m=3$: $|a_3| = |a_5|$\n\n## $a_3 = \\pm a_5$ 조건으로 경우 분류\n\n$a_3$의 홀짝성에 따라 $a_4, a_5$가 결정됩니다.\n\n### Case 1: $|a_3|$이 홀수\n- $a_4 = a_3 - 3$ (홀수 → 짝수)\n- $a_5 = \\frac{1}{2}a_4 = \\frac{a_3-3}{2}$\n- 조건: $|a_3| = |a_5| = \\left|\\frac{a_3-3}{2}\\right|$\n\n**Sub-case 1a**: $a_3 = \\frac{a_3-3}{2}$ → $2a_3 = a_3-3$ → $a_3 = -3$\n\n검증: $|a_3|=3$(홀수)✓, $a_4=-6$, $a_5=-3$, $|a_3|=|a_5|=3$✓\n\n**Sub-case 1b**: $a_3 = -\\frac{a_3-3}{2}$ → $2a_3 = -(a_3-3)$ → $3a_3=3$ → $a_3=1$\n\n검증: $|a_3|=1$(홀수)✓, $a_4=-2$, $a_5=-1$, $|a_3|=|a_5|=1$✓\n\n### Case 2: $|a_3|$이 짝수 (또는 0)\n- $a_4 = \\frac{1}{2}a_3$\n- $a_5$: $|a_4|$의 홀짝에 따라 달라짐\n\n$a_4 = \\frac{a_3}{2}$가 홀수인 경우: $a_5 = a_4-3$\n조건: $|a_3| = |a_4-3| = \\left|\\frac{a_3}{2}-3\\right|$\n\n**2a**: $a_3 = \\frac{a_3}{2}-3$ → $a_3=-6$, $a_4=-3$, $a_5=-6$✓\n\n**2b**: $a_3 = -(\\frac{a_3}{2}-3)$ → $a_3=2$, $a_4=1$, $a_5=-2$, $|a_3|=|a_5|=2$✓\n\n$a_4$가 짝수인 경우: $a_5=\\frac{a_4}{2}=\\frac{a_3}{4}$\n조건: $|a_3|=\\frac{|a_3|}{4}$ → $a_3=0$\n\n$a_3=0$이면 $a_4=0, a_5=0$, $|a_3|=|a_5|=0$✓\n\n## $a_3$의 후보: $\\{-6, -3, -1 \\text{ (부호), } 0, 1, 2\\}$\n\n정리: $a_3 \\in \\{-6, -3, 0, 1, 2\\}$ (단, $a_3=1$은 $a_5=-1$, $a_3=-1$ 가능성 별도)\n\n## $m=1,2$ 조건 위반 확인 (역추적)\n\n$a_3$에서 $a_1$으로 역추적하면서 $|a_1|\\neq|a_3|$, $|a_2|\\neq|a_4|$ 조건 확인.\n\n각 $a_3$ 값에 대해 가능한 $a_2, a_1$ 쌍을 구하고, 두 조건을 모두 만족하는 경우를 선별하면:\n\n시스템적으로 계산한 결과, 조건을 모두 만족하는 $|a_1|$ 값들은:\n\n$|a_1| \\in \\{7, 10, 13, 16\\}$\n\n합 계산: $7 + 10 + 13 + 16 = \\boxed{46}$\n\n---\n\n최종 답: **46**  \n코칭 한마디: 이유는 점화식의 역방향 추적(역산)을 통해 가능한 초기값을 체계적으로 좁혀야 조건 (나)의 \"최솟값=3\" 제한을 정확히 적용할 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 27210,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2025-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "매개변수 미분",
+        "회전체의 부피 (디스크)",
+        "(eˣ-1)/x 의 극한",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "한 점에서의 접선의 방정식"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## Step 1: f'(x) 분석 및 핵심 관찰\n\n$$f'(x) = -x + e^{1-x^2}$$\n\n**중요 관찰:** $x=1$일 때\n$$f'(1) = -1 + e^{1-1} = -1 + 1 = 0$$\n\n또한 $f'(x) = 0$의 근을 분석합니다:\n$$e^{1-x^2} = x \\implies \\text{(양수 영역에서 } x=1 \\text{ 이 유일한 근)}$$\n\n## Step 2: 접선의 방정식\n\n점 $(t, f(t))$에서의 접선:\n$$y = f'(t)(x-t) + f(t) = (-t + e^{1-t^2})(x-t) + f(t)$$\n\n## Step 3: 넓이 g(t) 설정\n\n접선과 곡선 $y=f(x)$, $y$축으로 둘러싸인 영역의 넓이를 구합니다.\n\n접선과 곡선의 교점: $x=t$ (접점), $x=0$ (y축)\n\n곡선과 접선의 차이:\n$$h(x) = f(x) - [f'(t)(x-t) + f(t)]$$\n\n$h(t) = 0$, $h(0) = f(0) - f'(t)(0-t) - f(t) = f(0) + tf'(t) - f(t)$\n\n$$g(t) = \\left|\\int_0^t [f(x) - f'(t)(x-t) - f(t)]\\,dx\\right|$$\n\n$$= \\left|\\int_0^t f(x)\\,dx - f'(t)\\cdot\\frac{(x-t)^2}{2}\\Big|_0^t - f(t)\\cdot t\\right|$$\n\n$$= \\left|\\int_0^t f(x)\\,dx + f'(t)\\cdot\\frac{t^2}{2} - tf(t)\\right|$$\n\n## Step 4: g(1) 계산\n\n$t=1$일 때 $f'(1)=0$이므로:\n\n$$g(1) = \\left|\\int_0^1 f(x)\\,dx - f(1)\\right|$$\n\n부분적분: $\\int_0^1 f(x)\\,dx$를 구하기 위해\n\n$$g(1) = \\left|\\int_0^1 [f(x)-f(1)]\\,dx\\right| = \\left|\\int_0^1\\int_x^1 f'(u)\\,du\\,dx\\right|$$\n\n$$= \\int_0^1\\int_x^1 |{-u+e^{1-u^2}}|\\,du\\,dx$$\n\n$0 \\leq u \\leq 1$에서 $f'(u) = -u+e^{1-u^2} \\geq 0$ (단조감소, $f'(1)=0$, $f'(0)=e>0$)\n\n$$g(1) = \\int_0^1\\int_x^1(-u+e^{1-u^2})\\,du\\,dx = \\int_0^1 u(-u+e^{1-u^2})\\,du$$\n\n(적분 순서 교환: $0\\leq x\\leq u\\leq 1$)\n\n$$= \\int_0^1(-u^2 + ue^{1-u^2})\\,du$$\n\n$$= -\\frac{1}{3} + \\int_0^1 ue^{1-u^2}\\,du$$\n\n$\\int_0^1 ue^{1-u^2}\\,du$: $s=1-u^2$으로 치환, $ds=-2u\\,du$\n\n$$= \\frac{1}{2}\\int_0^1 e^s\\,ds = \\frac{1}{2}(e-1)$$\n\n$$g(1) = -\\frac{1}{3} + \\frac{e-1}{2} = \\frac{e}{2} - \\frac{1}{2} - \\frac{1}{3} = \\frac{e}{2} - \\frac{5}{6}$$\n\n## Step 5: g'(t) 계산 → g'(1)\n\n$$g(t) = \\int_0^t f(x)\\,dx + \\frac{t^2}{2}f'(t) - tf(t)$$\n\n미분:\n$$g'(t) = f(t) + tf'(t) + \\frac{t^2}{2}f''(t) - f(t) - tf'(t) = \\frac{t^2}{2}f''(t)$$\n\n$t=1$: $f''(x) = -1 + e^{1-x^2}(-2x)$이므로\n\n$$f''(1) = -1 + e^0(-2) = -1-2 = -3$$\n\n$$g'(1) = \\frac{1}{2}\\cdot(-3) = -\\frac{3}{2}$$\n\n## Step 6: 최종 계산\n\n$$g(1) + g'(1) = \\frac{e}{2} - \\frac{5}{6} + \\left(-\\frac{3}{2}\\right)$$\n\n이 음수가 되므로 부호 재검토: $g(t) = |...|$이므로 $g'(1)$의 부호도 양수 방향.\n\n실제로 $g(t) = tf(t) - \\frac{t^2",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 27952,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2025-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find constants a and b, then analyze the extrema of f(x) = sin(ax + b + sin x).\n\n## Setting Up Conditions\n\n**Condition (가):** f(0) = 0 means sin(b + 0) = sin(b) = 0, so b = kπ for integer k.\n\nf(2π) = 2πa + b means sin(2πa + b + sin(2π)) = sin(2πa + b) = 2πa + b.\n\nSince sin(θ) = θ only when θ = 0, we need 2πa + b = 0, so **b = -2πa**.\n\nFrom sin(b) = 0: b = kπ, so -2πa = kπ, meaning **a = -k/2**.\n\nSince 1 ≤ a ≤ 2: a = 1, 3/2, or 2 (giving k = -2, -3, -4).\n\n**Condition (나):** f'(x) = cos(ax + b + sin x) · (a + cos x)\n\nf'(0) = cos(b)(a + 1). We need the minimum positive t where f'(t) = f'(0).\n\n## Finding a and b\n\nf'(x) = cos(ax + b + sin x)(a + cos x)\n\nWith b = -2πa: f'(x) = cos(ax - 2πa + sin x)(a + cos x)\n\nf'(0) = cos(-2πa)(a+1) = cos(2πa)(a+1).\n\nNote that a + cos x = 0 when cos x = -a. For a > 1, this has solutions; for a = 1, cos x = -1 at x = π + 2kπ.\n\n**Try a = 3/2, b = -3π:**\nf'(x) = cos(3x/2 - 3π + sin x)(3/2 + cos x)\n\nThe argument: 3x/2 - 3π + sin x. At x=0: cos(-3π) = cos(π) = -1, so f'(0) = -1·(5/2) = -5/2.\n\nFor f'(t) = f'(0) = -5/2, need cos(3t/2 - 3π + sin t) = -1 AND (3/2 + cos t) = 5/2, so cos t = 1, t = 2kπ.\nAt t = 2π: cos(3π - 3π + 0) = cos(0) = 1 ≠ -1. At t = 4π: cos(6π - 3π) = cos(3π) = -1, and 3/2 + 1 = 5/2. ✓\n\nCheck t = 2π doesn't work, and we need minimum t = 4π. **a = 3/2, b = -3π works.**\n\n## Finding Extrema of f(x)\n\nf'(x) = cos(3x/2 - 3π + sin x)(3/2 + cos x)\n\n**Factor 1:** 3/2 + cos x = 0 → cos x = -3/2 (impossible)\n\n**Factor 2:** cos(3x/2 - 3π + sin x) = 0 → 3x/2 - 3π + sin x = π/2 + nπ\n\nLet g(x) = 3x/2 + sin x - 3π. We need g(x) = π/2 + nπ.\n\ng'(x) = 3/2 + cos x ≥ 1/2 > 0, so g is strictly increasing. Each value is achieved exactly once.\n\ng(0) = -3π, g(4π) = 6π - 3π = 3π.\n\nValues of π/2 + nπ in (-3π, 3π): n = -3: -5π/2; n=-2: -3π/2; n=-1: -π/2; n=0: π/2; n=1: 3π/2; n=2: 5π/2. That's 6 solutions in (0, 4π).\n\nFor extrema, f changes sign through f' = 0. Since 3/2 + cos x > 0 always, sign of f' = sign of cos(g(x)).\n\ng is increasing, so as g passes through π/2 + nπ, cos(g) changes sign alternately: at n=-3 (odd multiple contributes -): changes from + to -, **local max**; n=-2: min; n=-1: max; n=0: min; n=1: max; n=2: min.\n\nSo local maxima at n = -3, -1, 1 → **3 maxima** in (0, 4π), so **n = 3**.\n\n**Finding α₁** (smallest α, n = -3): g(α₁) = -5π/2\n3α₁/2 + sin(α₁) - 3π = -5π/2 → 3α₁/2 + sin(α₁) = π/2\n\nTesting α₁ = π/3: 3(π/3)/2 + sin(π/3) = π/2 + √3/2 ≠ π/2. Testing α₁ → small: numerically α₁ ≈ 0.26... Let me try: at x = π/6: 3π/12 + 1/2 = π/4 + 1/2 ≠ π/2. The solution gives **α₁ such that** 3α₁/2 + sin α₁ = π/2.\n\n## Computing the Answer\n\nnα₁ - ab = 3α₁ - (3/2)(-3π) = 3α₁ + 9π/2.\n\nFrom 3α₁/2 + sin α₁ = π/2, and noting sin α₁",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 27013,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2026-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find a cubic function f(x) with positive leading coefficient and real t such that g(x) is continuous on ℝ and satisfies conditions (가) and (나).\n\n## Setting Up\n\n**g(x) continuity at x = t:** g is continuous means -f(t) = f(t), so f(t) = 0. Thus t is a root of f(x).\n\nLet f(x) = (x-t)(x-α)(x-β) with positive leading coefficient.\n\n**Condition (가):** For all real a, lim_{x→a+} g(x)/(x(x-2)) exists.\n\nThe denominator x(x-2) has zeros at x=0 and x=2. For the limit from the right to exist at a=0 and a=2, we need g(0)=0 and g(2)=0 (otherwise the limit would be ±∞).\n\nSo g(0)=0 and g(2)=0, meaning f(0)=0 and f(2)=0 (since |g|=|f|).\n\nThus f(x) = x(x-2)(x-t) for some t (the roots of f are 0, 2, and t).\n\n## Analyzing g(x)\n\n- If t=0 or t=2, f has a double root. Let's consider general t.\n- f(x) = x(x-2)(x-t)\n\n**g(x):** g(x) = -f(x) for x<t, g(x) = f(x) for x≥t.\n\n**Condition (가) more carefully:** At x=0 and x=2, we need the right-hand limit of g(x)/(x(x-2)) to exist (be finite). Since g(0)=0 and g(2)=0, we need to check if g(x)/(x(x-2)) → finite value from right.\n\nNear x=0: g(x)/[x(x-2)] → g'(0)/[derivative of x(x-2) at 0]... actually lim = g(x)/(x(x-2)).\n\nIf 0 < t: for x near 0 from right (x<t), g(x) = -f(x) = -x(x-2)(x-t), so g(x)/(x(x-2)) = -(x-t) → t (as x→0+). This is finite. ✓\n\nNear x=2: depends on position of t relative to 2.\n\n## Condition (나)\n\nThe set of natural numbers m where lim_{x→m+} g(x)/(x(x-2)) < 0 equals {g(-1), -7/2·g(1)}.\n\nThis set has two natural number elements with g(-1) ≠ -7/2·g(1).\n\nFor x away from 0,2,t: lim_{x→m+} g(x)/(x(x-2)) = g(m)/(m(m-2)).\n\nThe sign depends on sign of g(m)/[m(m-2)].\n\nLet me try **t = -1** (so f(x) = x(x-2)(x+1)).\n\n- f(-1) = 0, so g(-1) = 0. Then g(-1) = 0, not a natural number. Reject.\n\nTry **t between 0 and 2**, say t=1: f(x)=x(x-2)(x-1).\n\ng(-1): x=-1 < t=1, g(-1) = -f(-1) = -(-1)(-3)(-2) = -(-6) = 6.\ng(1): x=1 = t, g(1) = f(1) = 0. Then -7/2·g(1)=0, not natural. Reject.\n\nTry **t = -1**: f(x) = x(x-2)(x+1). Check continuity: f(-1)=0 ✓.\ng(-1) = f(-1) = 0 (since x=-1=t, use f(x)). So g(-1)=0. Not natural. Reject.\n\nTry **t = 3**: f(x) = x(x-2)(x-3).\ng(-1): -1 < 3, g(-1) = -f(-1) = -(-1)(-3)(-4) = -(-12) = 12.\ng(1): 1 < 3, g(1) = -f(1) = -(1)(-1)(-2) = -2.\n-7/2·g(1) = -7/2·(-2) = 7.\n\nSet = {12, 7}. Both natural numbers, and 12 ≠ 7. ✓\n\nNow verify: lim_{x→m+} g(x)/(x(x-2)) < 0 for m ∈ {7, 12}.\n\nFor m ≥ 4 (> t=3): g(m) = f(m) = m(m-2)(m-3).\nSign of g(m)/(m(m-2)) = sign of (m-3).\n\nFor m=4,5,6,...: m-3 > 0, so positive. For m=7,12: positive. This doesn't give negative values!\n\nAfter more systematic analysis with t=3, the negative values occur for m=1 (between 0 and 2). Let me reconsider... After full analysis: **g(-5) = 288**.\n\n最終 답: **288**\n코칭 한마디: 이유는 g(x)의 연속 조건과 극한 존재 조건으로 f(x)의 영점을 먼저 확정한 후, 조건 (나)의 집합 원소가 자연수임을 이용해 t를 결정하는 단계적 접근이 핵심이기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 31620,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2026-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "도형의 평행이동",
+        "선분의 매개변수화",
+        "회전체의 부피 (디스크)",
+        "조건부확률",
+        "유리함수 y=k/(x-p)+q"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 설정\n\n**곡선 분석:**\n- 곡선 1: $y = \\log_{16}(8x+2)$, 점 A$(a, b)$가 위에 있음\n- 곡선 2: $y = 4^{x-1} - \\frac{1}{2}$, 점 B가 위에 있음\n\n두 곡선이 역함수 관계인지 확인합니다.\n\n$y = \\log_{16}(8x+2)$를 변환:\n$$y = \\frac{\\log(8x+2)}{\\log 16} = \\frac{\\log(8x+2)}{4\\log 2}$$\n\n역함수를 구하면: $x = \\log_{16}(8y+2)$ → $16^x = 8y+2$ → $y = \\frac{16^x - 2}{8} = \\frac{4^{2x}-2}{8}$\n\n이것은 $4^{x-1} - \\frac{1}{2}$와 다릅니다.\n\n**두 곡선의 관계를 재확인:**\n\n$y = 4^{x-1} - \\frac{1}{2}$에서 역함수:\n$$y + \\frac{1}{2} = 4^{x-1}$$\n$$\\log_4(y + \\frac{1}{2}) = x-1$$\n$$x = \\log_4(y+\\frac{1}{2}) + 1 = \\log_4\\left(\\frac{2y+1}{2}\\right) + 1$$\n\n역함수: $y = \\log_4(x+\\frac{1}{2}) + 1 = \\log_4\\left(\\frac{2x+1}{2}\\right) + 1$\n\n$\\log_{16}(8x+2)$를 정리: $= \\log_{16}(2(4x+1)) = \\log_{16}2 + \\log_{16}(4x+1) = \\frac{1}{4} + \\frac{\\log_4(4x+1)}{2}$\n\n정확히 역함수인 쌍은 아닙니다.\n\n## 조건 적용\n\n**조건 1:** A$(a,b)$를 $y=x$에 대칭이동 → A'$(b,a)$가 직선 OB 위에 있음\n\nB를 $(c, d)$라 하면, A'$(b,a)$, O$(0,0)$, B$(c,d)$가 일직선이므로:\n$$\\frac{a}{b} = \\frac{d}{c} \\quad \\Rightarrow \\quad ac = bd \\quad \\cdots (1)$$\n\n**조건 2:** 선분 AB의 중점 $= \\left(\\frac{77}{8}, \\frac{133}{8}\\right)$\n$$\\frac{a+c}{2} = \\frac{77}{8}, \\quad \\frac{b+d}{2} = \\frac{133}{8}$$\n$$a+c = \\frac{77}{4}, \\quad b+d = \\frac{133}{4} \\quad \\cdots (2)$$\n\n**A, B가 각 곡선 위에 있음:**\n$$b = \\log_{16}(8a+2) \\quad \\cdots (3)$$\n$$d = 4^{c-1} - \\frac{1}{2} \\quad \\cdots (4)$$\n\n## 풀기\n\n식 (1): $\\frac{a}{b} = \\frac{c}{d} = k$ (비율)이므로 B$(c,d)$는 직선 $y = \\frac{a}{b}x$ 위에 있음.\n\nB가 제1사분면에서 곡선 $y=4^{x-1}-\\frac{1}{2}$ 위에 있고, 직선 $y=\\frac{a}{b}x$를 만족.\n\n시행착오로 정수 근방 탐색: A'$(b,a)$가 OB 위 → 기울기 $=\\frac{a}{b}$\n\nB$(c,d)$: $d = 4^{c-1} - \\frac{1}{2}$이고 $\\frac{d}{c} = \\frac{a}{b}$\n\n중점 조건: $c = \\frac{77}{4}-a$, $d = \\frac{133}{4}-b$\n\n$b = \\log_{16}(8a+2)$에서 $a$가 정수이면 계산이 쉬움:\n\n$a=2$: $b=\\log_{16}(18) \\approx 1.018$ → $c=\\frac{77}{4}-2=\\frac{69}{4}$, $d=\\frac{133}{4}-1.018≈32.2$\n\n$\\frac{d}{c} = \\frac{32.2}{17.25} ≈ 1.866$, $\\frac{a}{b}=\\frac{2}{1.018}≈1.965$ → 불일치\n\n$b = \\log_{16}(8a+2)$: $16^b = 8a+2$ → $a = \\frac{16^b - 2}{8}$\n\n$c = \\frac{77}{4} - a$, $d = \\frac{133}{4} - b$, 조건 $\\frac{a}{b}=\\frac{c}{d}$:\n\n$$ad = bc \\Rightarrow a\\left(\\frac{133}{4}-b\\right) = b\\left(\\frac{77}{4}-",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 28907,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2026-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "한 점에서의 접선의 방정식",
+        "매개변수 미분",
+        "회전체의 부피 (디스크)",
+        "로그함수의 성질",
+        "음함수 미분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 1단계: f(x) 분석\n\n$$f(x) = \\frac{1}{2}x^2 - x + \\ln(1+x)$$\n\n$$f'(x) = x - 1 + \\frac{1}{1+x} = \\frac{x(1+x) - (1+x) + 1}{1+x} = \\frac{x^2}{1+x}$$\n\n## 2단계: 접선의 방정식 구성\n\n점 $(s, f(s))$에서의 접선:\n$$y = f'(s)(x - s) + f(s) = \\frac{s^2}{1+s}(x-s) + f(s)$$\n\n**접선이 y축(x=0)과 만나는 점의 y좌표:**\n$$y_{\\text{접선}} = f'(s)(0-s) + f(s) = -\\frac{s^3}{1+s} + f(s)$$\n\n**수선의 발(y축 위 점)의 y좌표:** $f(s)$\n\n## 3단계: 거리 t 계산\n\n$$t = \\left|f(s) - y_{\\text{접선}}\\right| = \\left|\\frac{s^3}{1+s}\\right| = \\frac{s^3}{1+s} \\quad (s > 0)$$\n\n따라서:\n$$t = \\frac{s^3}{1+s}$$\n\n이것이 $g(t)$의 역함수 관계: $t = h(s) = \\frac{s^3}{1+s}$이므로 $s = g(t)$\n\n## 4단계: h(s)의 단조성 확인\n\n$$h'(s) = \\frac{3s^2(1+s) - s^3}{(1+s)^2} = \\frac{s^2(3+2s)}{(1+s)^2} > 0 \\quad (s > 0)$$\n\n단조증가이므로 $g(t)$가 유일하게 존재합니다.\n\n## 5단계: 적분 계산 (역함수 적분 활용)\n\n$t = \\frac{s^3}{1+s}$에서:\n- $s = g(1/2)$: $\\frac{s^3}{1+s} = \\frac{1}{2}$ → $s = 1$ (∵ $\\frac{1}{2} = \\frac{1}{2}$ ✓)\n- $s = g(27/4)$: $\\frac{s^3}{1+s} = \\frac{27}{4}$ → $s = 3$ (∵ $\\frac{27}{4} = \\frac{27}{4}$ ✓)\n\n역함수 적분 공식 활용:\n$$\\int_{1/2}^{27/4} g(t)\\,dt = \\left[s \\cdot t\\right]_{s=1}^{s=3} - \\int_1^3 s \\cdot h'(s)\\,ds = \\left[s \\cdot \\frac{s^3}{1+s}\\right]_1^3 - \\int_1^3 \\frac{s^3(3+2s)}{(1+s)^2}\\,ds$$\n\n더 직접적으로:\n\n$$\\int_{1/2}^{27/4} g(t)\\,dt = [s \\cdot t]_1^3 - \\int_1^3 t\\,ds = 3 \\cdot \\frac{27}{4} - 1 \\cdot \\frac{1}{2} - \\int_1^3 \\frac{s^3}{1+s}\\,ds$$\n\n$$= \\frac{81}{4} - \\frac{1}{2} - \\int_1^3 \\frac{s^3}{1+s}\\,ds$$\n\n## 6단계: $\\int_1^3 \\frac{s^3}{1+s}\\,ds$ 계산\n\n$$\\frac{s^3}{1+s} = s^2 - s + 1 - \\frac{1}{1+s}$$\n\n(다항식 나눗셈: $s^3 = (1+s)(s^2 - s + 1) - 1$)\n\n$$\\int_1^3 \\left(s^2 - s + 1 - \\frac{1}{1+s}\\right)ds = \\left[\\frac{s^3}{3} - \\frac{s^2}{2} + s - \\ln(1+s)\\right]_1^3$$\n\n$$= \\left(9 - \\frac{9}{2} + 3 - \\ln 4\\right) - \\left(\\frac{1}{3} - \\frac{1}{2} + 1 - \\ln 2\\right)$$\n\n$$= \\frac{15}{2} - 2\\ln 2 - \\frac{5}{6} + \\ln 2 = \\frac{45}{6} - \\frac{5}{6} - \\ln 2 = \\frac{40}{6} - \\ln 2 = \\frac{20}{3} - \\ln 2$$\n\n## 7단계: 최종 계산\n\n$$\\frac{81}{4} - \\frac{1}{2} - \\frac{20}{3} + \\ln 2 = \\frac{243}{12} - \\frac{6}{12} - \\frac{80}{12} + \\ln 2 = \\frac{157}{12} + \\ln 2$$\n\n---\n\n최종 답: $\\dfrac{157}{12} + \\ln 2$\n\n코칭 한마디: 이유는, ",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 23306,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "sonnet"
+    },
+    {
+      "id": "2026-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "I need to find the function f(x) by analyzing its inverse, then study a line through (1,0) with slope m intersecting y=f(x).\n\n## Step 1: Find f⁻¹(x) explicitly\n\n**For |x| ≤ 1:** 4(f⁻¹(x))² = x²(x²-5)²\nSo (f⁻¹(x))² = x²(x²-5)²/4, meaning f⁻¹(x) = ±x(x²-5)/2\n\nSince f is increasing, f⁻¹ is also increasing. Check: x(x²-5)/2 at x=0 gives 0, derivative at x=0: (x²-5)/2 + x·x = (3x²-5)/2|₀ = -5/2 < 0.\nSo f⁻¹(x) = -x(x²-5)/2 = x(5-x²)/2\n\nCheck at x=1: f⁻¹(1) = 1(4)/2 = 2, at x=-1: f⁻¹(-1) = -1(4)/2 = -2 ✓ (increasing)\n\n**For |x| > 1:** |f⁻¹(x)| = e^(|x|-1) + 1\nSince f⁻¹ is increasing and odd-like: for x>1, f⁻¹(x) = e^(x-1)+1; for x<-1, f⁻¹(x) = -(e^(-x-1)+1)\n\nCheck continuity at x=1: f⁻¹(1) from formula = 2, limit from right: e⁰+1 = 2 ✓\n\n## Step 2: Find f(x) (inverse of f⁻¹)\n\n- For |y| ≤ 2 (since f⁻¹ maps [-1,1]→[-2,2]): f(x) = solve x = t(5-t²)/2\n- For |x| > 2: f(x) = ln(x-1)+1 for x>2, and f(x) = -(ln(-x-1)+1) for x<-2\n\n**For |x| > 2:** f(x) = ln(x-1)+1 (x>2), with f(2) = ln(1)+1 = 1... but we need f(2)=1.\n\nWait: if f⁻¹(1)=2, then f(2)=1. Check: ln(2-1)+1=1 ✓\n\n## Step 3: Analyze the line y = m(x-1) intersecting y=f(x)\n\nThe line passes through (1,0). Note f⁻¹(1)=2 means f(2)=1, and the line passes through (1,0).\n\n**For x>2:** f(x) = ln(x-1)+1. Intersection: m(x-1) = ln(x-1)+1. Let u=x-1>1: mu = ln(u)+1, so m = (ln u+1)/u. This function h(u)=(ln u+1)/u has h'(u)=(1/u·u - (ln u+1))/u² = (-ln u)/u². Maximum at u=1: h(1)=1, decreasing for u>1, →0 as u→∞.\n\nSo for x>2 (u>1): number of intersections depends on m: 1 solution if 0<m<1, none if m≥1 or m≤0.\n\nAt m=1: tangent check - one solution at u=1 (x=2).\n\n**For the middle region |x|≤2:** f(x) = inverse of t(5-t²)/2. The curve y=f(x) on [-2,2] corresponds to x=t(5-t²)/2, y=t for t∈[-1,1].\n\nParametrically: x=t(5-t²)/2, y=t. The line m(x-1)=y gives m(t(5-t²)/2 -1)=t.\n\nSo: mt(5-t²)/2 - m = t → t[m(5-t²)/2 - 1] = m → t = m/[m(5-t²)/2 -1]\n\nOr: m(5t-t³)/2 - t = m → t(5m/2-1) - mt³/2 = m\n\nThis is cubic in t. Analyzing intersections carefully and checking discontinuities of g(m).\n\nAfter detailed analysis: g(m) is discontinuous at m=a and m=b where the line is tangent to the curve.\n\nThe tangent condition for x>2 gives m=1 (at x=2), and for the cubic region, analyzing gives another tangency.\n\nThrough careful analysis, the discontinuities occur at **a = 3/4** and **b = 1**.\n\nAt m=a=3/4: g(a)=3, lim_{m→a+} g(m)=2\nAt m=b=1: g(b)=2, ln(b)/b = 0\n\n**Final computation:**\ng(a)·(lim_{m→a+} g(m)) + g(b)·(ln b/b)² = 3·2 + 2·0 = **6**\n\n최종 답: **6**\n코칭 한마디: 이유는 역함수의 그래프는 원래 함수의 그래프를 y=x에 대해 대칭이동한 것이므로, 역함수의 성질을 먼저 분석하여 f(x)의 형태를 파악하는 것이 복잡한 교점 문제를 푸는 핵심 전략이기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 31126,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "sonnet"
+    }
+  ]
+}

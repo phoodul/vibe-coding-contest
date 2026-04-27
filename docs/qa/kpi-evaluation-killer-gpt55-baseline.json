@@ -1,0 +1,973 @@
+{
+  "mode": "full",
+  "run_at": "2026-04-27T19:25:26.823Z",
+  "summary": {
+    "total": 26,
+    "retriever_hit_rate_top3": 0,
+    "retriever_hit_rate_top5": 0,
+    "reasoner_accuracy": 0.8461538461538461,
+    "reasoner_accuracy_hard": 0.8461538461538461,
+    "why_inclusion_rate": 1,
+    "manager_classify_rate": 0.5384615384615384,
+    "pass": {
+      "retriever": false,
+      "accuracy": true,
+      "why": true
+    },
+    "chain": {
+      "enabled": false,
+      "executed_count": 0,
+      "avg_depth": 0,
+      "termination_dist": {
+        "reached_conditions": 0,
+        "max_depth": 0,
+        "dead_end": 0,
+        "cycle": 0
+      },
+      "success_rate": 0
+    }
+  },
+  "results": [
+    {
+      "id": "2017-가형-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "증가하는 연속함수 \\(f(x)\\)에 대해\n\n\\[\n\\int_0^1 f(x)\\,dx=2,\\qquad \\int_0^1 |f(x)|\\,dx=2\\sqrt2\n\\]\n\n입니다.\n\n\\(f\\)의 음수 부분의 넓이를 \\(A\\), 양수 부분의 넓이를 \\(B\\)라 하면\n\n\\[\nB-A=2,\\qquad B+A=2\\sqrt2\n\\]\n\n이므로\n\n\\[\nA=\\sqrt2-1,\\qquad B=\\sqrt2+1\n\\]\n\n입니다.\n\n또한 \\(f\\)가 증가함수이므로 음수인 구간이 먼저 나오고, 그 뒤에 양수인 구간이 나옵니다.  \n\\(F(x)=\\int_0^x |f(t)|dt\\) 이므로\n\n\\[\nF'(x)=|f(x)|\n\\]\n\n입니다.\n\n음수 구간에서는 \\(f(x)=-|f(x)|=-F'(x)\\), 양수 구간에서는 \\(f(x)=|f(x)|=F'(x)\\)입니다.\n\n음수 부분이 끝나는 지점을 \\(c\\)라 하면\n\n\\[\nF(c)=A=\\sqrt2-1,\\qquad F(1)=2\\sqrt2\n\\]\n\n입니다.\n\n따라서\n\n\\[\n\\int_0^1 f(x)F(x)\\,dx\n=\n\\int_0^c -F'(x)F(x)\\,dx+\\int_c^1 F'(x)F(x)\\,dx\n\\]\n\n\\[\n=\n-\\frac12 F(c)^2+\\frac12\\{F(1)^2-F(c)^2\\}\n\\]\n\n\\[\n=\n\\frac12(2\\sqrt2)^2-(\\sqrt2-1)^2\n\\]\n\n\\[\n=4-(3-2\\sqrt2)\n\\]\n\n\\[\n=1+2\\sqrt2\n\\]\n\n최종 답: \\(1+2\\sqrt2\\)  \n코칭 한마디: 왜냐하면 \\(F'(x)=|f(x)|\\)이고 증가함수는 부호가 한 번만 바뀌므로, 적분을 \\(F\\)에 대한 제곱 꼴로 바꿀 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 22556,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2017-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "쌍곡선의 표준형을\n\n\\[\n\\frac{x^2}{a^2}-\\frac{y^2}{b^2}=1\n\\]\n\n이라고 하자. 초점이 \\((\\pm c,0)\\)이므로\n\n\\[\nc^2=a^2+b^2\n\\]\n\n이다.\n\n점근선이\n\n\\[\ny=\\pm \\frac{4}{3}x\n\\]\n\n이므로\n\n\\[\n\\frac{b}{a}=\\frac{4}{3}\n\\]\n\n따라서\n\n\\[\nb=\\frac{4}{3}a\n\\]\n\n이고,\n\n\\[\nc^2=a^2+\\left(\\frac{4}{3}a\\right)^2\n=\\frac{25}{9}a^2\n\\]\n\n이므로\n\n\\[\nc=\\frac{5}{3}a\n\\]\n\n이다.\n\n쌍곡선 위의 점 P에 대해 두 초점까지의 거리의 차는 항상 주축의 길이와 같으므로\n\n\\[\n|\\overline{PF'}-\\overline{PF}|=2a\n\\]\n\n이다.\n\n조건에서\n\n\\[\n\\overline{PF'}=30,\\qquad 16\\le \\overline{PF}\\le 20\n\\]\n\n이므로\n\n\\[\n2a=30-\\overline{PF}\n\\]\n\n따라서\n\n\\[\n10\\le 2a\\le 14\n\\]\n\n이다.\n\n이제 양의 꼭짓점 \\(A=(a,0)\\), 초점 \\(F=(c,0)\\)이므로\n\n\\[\nAF=c-a\n\\]\n\n이고,\n\n\\[\nc-a=\\frac{5}{3}a-a=\\frac{2}{3}a\n\\]\n\n이다. 조건 (나)에 의해\n\n\\[\n\\frac{2}{3}a\n\\]\n\n가 자연수이다.\n\n또한\n\n\\[\n10\\le 2a\\le 14\n\\]\n\n이므로\n\n\\[\n\\frac{10}{3}\\le \\frac{2a}{3}\\le \\frac{14}{3}\n\\]\n\n이다. 이 범위 안의 자연수는 오직\n\n\\[\n4\n\\]\n\n뿐이므로\n\n\\[\n\\frac{2a}{3}=4\n\\]\n\n따라서\n\n\\[\n2a=12\n\\]\n\n이다.\n\n최종 답: 12  \n코칭 한마디: 왜냐하면 쌍곡선에서는 두 초점까지의 거리의 차가 항상 주축의 길이 \\(2a\\)가 되기 때문에 주어진 거리 조건을 바로 \\(2a\\)의 범위로 바꿀 수 있습니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 30703,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2017-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "유리함수 y=k/(x-p)+q",
+        "무리함수 y=√(ax+b)+c",
+        "벡터의 내적",
+        "명제의 대우",
+        "직육면체·정육면체의 대각선"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "정사면체의 대칭성을 이용해 좌표를 잡겠습니다.\n\n삼각형 \\(ABC\\)의 무게중심 \\(O\\)를 원점으로 두고,\n\n\\[\nA=\\left(\\frac4{\\sqrt3},0,0\\right),\\quad\nB=\\left(-\\frac2{\\sqrt3},2,0\\right),\\quad\nC=\\left(-\\frac2{\\sqrt3},-2,0\\right)\n\\]\n\n로 잡습니다. 정사면체의 높이는\n\n\\[\nh=\\sqrt{4^2-\\left(\\frac4{\\sqrt3}\\right)^2}\n=\\sqrt{16-\\frac{16}{3}}\n=4\\sqrt{\\frac23}\n\\]\n\n이므로\n\n\\[\nD=\\left(0,0,4\\sqrt{\\frac23}\\right)\n\\]\n\n입니다.\n\n\\(P\\)는 \\(AD\\)의 중점이므로\n\n\\[\nP=\\left(\\frac2{\\sqrt3},0,2\\sqrt{\\frac23}\\right)\n\\]\n\n입니다.\n\n이제 \\(Q\\)가 면 \\(BCD\\) 위에 있으므로\n\n\\[\nQ=uB+vC+wD,\\quad u+v+w=1,\\quad u,v,w\\ge 0\n\\]\n\n라고 둡니다.\n\n조건 \\(\\overrightarrow{OQ}\\perp \\overrightarrow{OP}\\)는\n\n\\[\nQ\\cdot P=0\n\\]\n\n입니다.\n\n각 꼭짓점과 \\(P\\)의 내적을 계산하면\n\n\\[\nB\\cdot P=C\\cdot P=-\\frac43,\\quad D\\cdot P=\\frac{16}{3}\n\\]\n\n따라서\n\n\\[\n-\\frac43(u+v)+\\frac{16}{3}w=0\n\\]\n\n이고, \\(u+v=1-w\\)이므로\n\n\\[\n-\\frac43(1-w)+\\frac{16}{3}w=0\n\\]\n\n\\[\n-4+20w=0\n\\]\n\n\\[\nw=\\frac15\n\\]\n\n즉 \\(Q\\)는 면 \\(BCD\\) 위에서 \\(D\\)의 비율이 \\(\\frac15\\)인 선분 위에 있습니다.\n\n이때 \\(u+v=\\frac45\\)이고,\n\n\\[\nQ=uB+vC+\\frac15D\n\\]\n\n입니다. 좌표를 보면\n\n\\[\nx=-\\frac{8}{5\\sqrt3},\\quad z=\\frac45\\sqrt{\\frac23}\n\\]\n\n는 고정이고, \\(y=2u-2v\\)만 변합니다. \\(|Q|\\)가 최대가 되려면 \\(|y|\\)가 최대이면 되므로 선분의 끝점에서 최대입니다.\n\n즉 \\((u,v)=\\left(\\frac45,0\\right)\\) 또는 \\(\\left(0,\\frac45\\right)\\)일 때,\n\n\\[\ny=\\pm\\frac85\n\\]\n\n따라서\n\n\\[\n|Q|^2=\\left(-\\frac{8}{5\\sqrt3}\\right)^2+\\left(\\frac85\\right)^2+\\left(\\frac45\\sqrt{\\frac23}\\right)^2\n\\]\n\n\\[\n=\\frac{64}{75}+\\frac{64}{25}+\\frac{32}{75}\n=\\frac{288}{75}\n=\\frac{96}{25}\n\\]\n\n또한 \\(P\\cdot Q=0\\)이므로\n\n\\[\n|PQ|^2=|P|^2+|Q|^2\n\\]\n\n이고,\n\n\\[\n|P|^2=\\left(\\frac2{\\sqrt3}\\right)^2+\\left(2\\sqrt{\\frac23}\\right)^2\n=\\frac43+\\frac83=4\n\\]\n\n따라서\n\n\\[\n|PQ|^2=4+\\frac{96}{25}\n=\\frac{196}{25}\n\\]\n\n\\[\n|PQ|=\\frac{14}{5}\n\\]\n\n그러므로\n\n\\[\n\\frac{q}{p}=\\frac{14}{5}\n\\]\n\n이므로\n\n\\[\np+q=5+14=19\n\\]\n\n최종 답: 19  \n코칭 한마디: 왜냐하면 수직 조건은 벡터의 내적을 0으로 만들어 주고, 이 덕분에 공간도형의 조건을 좌표 계산으로 정확히 처리할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 38825,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2017-가형-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "사잇값 정리 (수학2)",
+        "인수정리",
+        "최적화 (자유 극값)",
+        "확률변수 함수의 기댓값"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "먼저 \\(t=x-a\\,(>0)\\)로 두고  \n\\[\nF(t)=f(a+t),\\qquad G(t)=g(a+t)\n\\]\n라고 하자. 그러면 조건 (가)는\n\\[\ntF(t)=G(t)\n\\]\n이다.\n\n\\(\\alpha,\\beta\\)에 대응하는 값을\n\\[\np=\\alpha-a,\\qquad q=\\beta-a\n\\]\n라고 하면 \\(0<p<q\\), 그리고\n\\[\nq-p=\\beta-\\alpha=6\\sqrt3\n\\]\n이다.\n\n\\(F(t)\\)가 \\(t=p,q\\)에서 같은 극댓값 \\(M\\)을 가지므로\n\\[\nF(p)=F(q)=M,\\qquad F'(p)=F'(q)=0\n\\]\n이다.\n\n이제\n\\[\nG(t)-Mt=t(F(t)-M)\n\\]\n을 보자. \\(t=p,q\\)에서 함수값도 0이고 미분값도 0이므로 \\(p,q\\)는 각각 이중근이다. 또한 \\(G(t)-Mt\\)는 최고차항 계수가 \\(-1\\)인 사차식이므로\n\\[\nG(t)-Mt=-(t-p)^2(t-q)^2\n\\]\n이다. 따라서\n\\[\nF(t)=M-\\frac{(t-p)^2(t-q)^2}{t}.\n\\]\n\n이제 \\(F\\)의 극값 개수를 보자.  \n\\[\nK(t)=(t-p)^2(t-q)^2\n\\]\n라 하면\n\\[\nF(t)=M-\\frac{K(t)}t.\n\\]\n계산하면 \\(F'(t)=0\\)의 양의 해는\n\\[\nt=p,\\quad t=q\n\\]\n와 추가로 하나 더 존재한다. 따라서 \\(f\\)의 극대 또는 극소가 되는 \\(x\\)의 개수는 항상 \\(3\\)개이다.\n\n조건 (다)에 의해 \\(g\\)의 극값 개수는 \\(3\\)보다 작아야 한다.\n\n한편\n\\[\nG(t)=Mt-K(t)\n\\]\n이므로\n\\[\nG'(t)=M-K'(t).\n\\]\n따라서 \\(g\\)의 극값 개수는 직선 \\(y=M\\)과 곡선 \\(y=K'(t)\\)의 교점 개수에 의해 결정된다.\n\n이제\n\\[\nm=\\frac{p+q}{2},\\qquad h=\\frac{q-p}{2}=3\\sqrt3\n\\]\n라고 두고 \\(y=t-m\\)라 하면\n\\[\nK(t)=(y^2-h^2)^2\n\\]\n이고\n\\[\nK'(t)=4y(y^2-h^2).\n\\]\n이 삼차함수의 양의 극댓값은\n\\[\n\\frac{8h^3}{3\\sqrt3}\n\\]\n이다. 여기서 \\(h=3\\sqrt3\\)이므로\n\\[\n\\frac{8(3\\sqrt3)^3}{3\\sqrt3}=216.\n\\]\n\n만약 \\(0<M<216\\)이면 \\(G'(t)=0\\)이 서로 다른 세 실근을 가져 \\(g\\)의 극값 개수가 \\(3\\)개가 되어 조건 (다)에 어긋난다. 따라서\n\\[\nM\\ge 216\n\\]\n이어야 한다.\n\n또 \\(M=216\\)일 때는 \\(G'(t)=0\\)이 접하는 경우가 되어 실제 \\(g\\)의 극값 개수는 \\(1\\)개가 되므로 조건을 만족한다.\n\n최종 답: 216  \n코칭 한마디: 왜냐하면 같은 극댓값 조건은 \\(G(t)-Mt\\)에 이중근을 만들기 때문에 사차식을 \\(-(t-p)^2(t-q)^2\\) 꼴로 고정시켜 극값 개수 비교를 쉽게 할 수 있습니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 98470,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2018-가형-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "조건  \n\\[\n(x-e)\\{g(x)-f(x)\\}\\ge 0\n\\]\n에서 \\(x<e\\)이면 \\(x-e<0\\), \\(x>e\\)이면 \\(x-e>0\\)이므로\n\n\\[\n\\begin{cases}\ng(x)\\le \\ln x & (1\\le x<e)\\\\\ng(x)\\ge \\ln x-t & (x>e)\n\\end{cases}\n\\]\n\n이어야 합니다.\n\n일차함수를 \\(g(x)=mx+b\\)라 하면, 가능한 \\(b\\)가 존재하려면\n\n\\[\n\\sup_{x>e}(\\ln x-t-mx)\\le \\inf_{1\\le x<e}(\\ln x-mx)\n\\]\n\n이어야 합니다.\n\n먼저\n\\[\n\\inf_{1\\le x<e}(\\ln x-mx)=\\min(-m,1-em)\n\\]\n\n이고,\n\n\\[\n\\sup_{x>e}(\\ln x-mx)=\n\\begin{cases}\n-\\ln m-1 & \\left(0<m<\\frac1e\\right)\\\\\n1-em & \\left(m\\ge \\frac1e\\right)\n\\end{cases}\n\\]\n\n입니다.\n\n따라서 필요한 \\(t\\)의 최소값을 \\(T(m)\\)이라 하면\n\n\\[\nT(m)=\n\\begin{cases}\n-\\ln m-1+m & \\left(0<m<\\frac1e\\right)\\\\\n1-(e-1)m & \\left(\\frac1e\\le m<\\frac1{e-1}\\right)\\\\\n0 & \\left(m\\ge \\frac1{e-1}\\right)\n\\end{cases}\n\\]\n\n이고, \\(h(t)\\)는 \\(T(m)=t\\)를 만족하는 최소 \\(m\\)입니다.\n\n이제\n\n\\[\n\\frac1{2e}<\\frac1e\n\\]\n\n이므로 이때는 두 번째 구간을 씁니다.\n\n\\[\nt=1-(e-1)m\n\\]\n\n따라서\n\n\\[\nh'(t)=-\\frac1{e-1}\n\\]\n\n이므로\n\n\\[\nh'\\left(\\frac1{2e}\\right)=-\\frac1{e-1}\n\\]\n\n입니다.\n\n또한\n\n\\[\nh(a)=\\frac1{e+2}<\\frac1e\n\\]\n\n이므로 첫 번째 구간입니다. 이때\n\n\\[\nT'(m)=1-\\frac1m\n\\]\n\n이고 \\(m=\\frac1{e+2}\\)이므로\n\n\\[\nT'\\left(\\frac1{e+2}\\right)=1-(e+2)=-(e+1)\n\\]\n\n따라서 역함수 미분에 의해\n\n\\[\nh'(a)=\\frac1{T'(m)}=-\\frac1{e+1}\n\\]\n\n입니다.\n\n그러므로\n\n\\[\nh'\\left(\\frac1{2e}\\right)h'(a)\n=\n\\left(-\\frac1{e-1}\\right)\\left(-\\frac1{e+1}\\right)\n=\n\\frac1{(e-1)(e+1)}\n\\]\n\n최종 답: \\(\\frac1{(e-1)(e+1)}\\)  \n코칭 한마디: 왜냐하면 직선이 로그그래프의 왼쪽에서는 아래, 오른쪽에서는 위에 있어야 하므로 기울기 \\(m\\)에 대해 가능한 절편의 범위를 비교하는 방식이 가장 직접적입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 45409,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2018-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "유리함수 y=k/(x-p)+q",
+        "무리함수 y=√(ax+b)+c",
+        "공간에서 두 점 사이 거리",
+        "정규분포 N(μ, σ²)",
+        "독립시행의 확률"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "전체 경우의 수부터 구합니다.\n\n음이 아닌 정수 \\(x,y,z\\)가\n\n\\[\nx+y+z=10\n\\]\n\n을 만족하는 경우의 수는 중복조합으로\n\n\\[\n\\binom{10+3-1}{3-1}=\\binom{12}{2}=66\n\\]\n\n입니다.\n\n이제 조건\n\n\\[\n(x-y)(y-z)(z-x)\\neq 0\n\\]\n\n은\n\n\\[\nx\\neq y,\\quad y\\neq z,\\quad z\\neq x\n\\]\n\n즉, 세 수가 모두 서로 달라야 한다는 뜻입니다.\n\n따라서 여사건, 즉 두 수 이상이 같은 경우를 세겠습니다.\n\n- \\(x=y\\)이면  \n  \\[\n  2x+z=10\n  \\]\n  \\(x=0,1,2,3,4,5\\)로 총 \\(6\\)가지입니다.\n\n- \\(y=z\\)도 마찬가지로 \\(6\\)가지입니다.\n- \\(z=x\\)도 마찬가지로 \\(6\\)가지입니다.\n\n세 수가 모두 같은 경우는\n\n\\[\nx=y=z,\\quad 3x=10\n\\]\n\n이 되어 정수해가 없으므로 중복해서 빼거나 더할 경우가 없습니다.\n\n따라서 두 수 이상이 같은 경우는\n\n\\[\n6+6+6=18\n\\]\n\n가지입니다.\n\n그러므로 세 수가 모두 다른 경우는\n\n\\[\n66-18=48\n\\]\n\n가지입니다.\n\n확률은\n\n\\[\n\\frac{48}{66}=\\frac{8}{11}\n\\]\n\n입니다.\n\n문제에서 확률이 \\(\\frac{q}{p}\\)라고 했으므로\n\n\\[\nq=8,\\quad p=11\n\\]\n\n따라서\n\n\\[\np+q=11+8=19\n\\]\n\n최종 답: 19  \n코칭 한마디: 왜냐하면 전체 경우를 먼저 세고 조건을 만족하지 않는 경우를 빼면, “모두 서로 다르다”처럼 직접 세기 번거로운 조건을 훨씬 쉽게 처리할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 18583,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2018-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "일차부등식의 풀이",
+        "타원의 정의와 표준형",
+        "일차함수의 그래프",
+        "구의 부피·겉넓이",
+        "정규분포 N(μ, σ²)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "구의 중심은 \\(O=(0,0,0)\\), 반지름은 \\(\\sqrt6\\)입니다.\n\n평면 \\(x+2z-5=0\\)의 법선벡터는 \\((1,0,2)\\)이고, 원점에서 이 평면에 내린 수선의 발, 즉 원 \\(C\\)의 중심은\n\n\\[\n\\frac{5}{1^2+2^2}(1,0,2)=(1,0,2)\n\\]\n\n입니다. 이를 \\(A=(1,0,2)\\)라 하겠습니다.\n\n구의 중심에서 평면까지의 거리는\n\n\\[\n\\frac{5}{\\sqrt{1^2+2^2}}=\\sqrt5\n\\]\n\n이므로 원 \\(C\\)의 반지름은\n\n\\[\n\\sqrt{6-5}=1\n\\]\n\n입니다.\n\n평면 \\(x+2z-5=0\\)에는 \\(y\\)축 방향 \\((0,1,0)\\)이 포함되어 있으므로, 원 \\(C\\) 위에서 \\(y\\)좌표가 최소인 점은 중심에서 \\(y\\)방향으로 1만큼 내려간 점입니다.\n\n\\[\nP=(1,-1,2)\n\\]\n\n점 \\(P\\)에서 \\(xy\\)평면에 내린 수선의 발은 \\(z=0\\)으로 바꾼 점이므로\n\n\\[\nQ=(1,-1,0)\n\\]\n\n이제 \\(X\\)가 원 \\(C\\) 위를 움직일 때,\n\n\\[\n\\overrightarrow{PX}+\\overrightarrow{QX}\n=(X-P)+(X-Q)=2X-(P+Q)\n\\]\n\n입니다. 따라서\n\n\\[\n\\left|\\overrightarrow{PX}+\\overrightarrow{QX}\\right|^2\n=4\\left|X-\\frac{P+Q}{2}\\right|^2\n\\]\n\n이고,\n\n\\[\nM=\\frac{P+Q}{2}=(1,-1,1)\n\\]\n\n이라 하면 \\(|XM|^2\\)의 최댓값을 구하면 됩니다.\n\n점 \\(M\\)에서 평면 \\(x+2z-5=0\\)까지의 거리는\n\n\\[\n\\frac{|1+2-5|}{\\sqrt5}=\\frac{2}{\\sqrt5}\n\\]\n\n이므로 수직거리의 제곱은\n\n\\[\n\\frac45\n\\]\n\n입니다.\n\n또한 \\(M\\)을 평면에 정사영한 점을 \\(M'\\)이라 하면,\n\n\\[\nM'=M+\\frac25(1,0,2)=\\left(\\frac75,-1,\\frac95\\right)\n\\]\n\n입니다. 원의 중심 \\(A=(1,0,2)\\)와 \\(M'\\) 사이의 거리는\n\n\\[\nAM'=\\sqrt{\\left(\\frac25\\right)^2+(-1)^2+\\left(-\\frac15\\right)^2}\n=\\sqrt{\\frac{30}{25}}\n=\\frac{\\sqrt{30}}5\n\\]\n\n원 \\(C\\)의 반지름이 1이므로, 평면 안에서 \\(M'\\)로부터 원 위 점까지의 최대 거리는\n\n\\[\n1+\\frac{\\sqrt{30}}5\n\\]\n\n따라서\n\n\\[\n|XM|^2_{\\max}\n=\\frac45+\\left(1+\\frac{\\sqrt{30}}5\\right)^2\n\\]\n\n\\[\n=\\frac45+1+\\frac{2\\sqrt{30}}5+\\frac{30}{25}\n=3+\\frac{2\\sqrt{30}}5\n\\]\n\n그러므로\n\n\\[\n\\left|\\overrightarrow{PX}+\\overrightarrow{QX}\\right|^2_{\\max}\n=4\\left(3+\\frac{2\\sqrt{30}}5\\right)\n=12+\\frac85\\sqrt{30}\n\\]\n\n따라서\n\n\\[\na=12,\\qquad b=\\frac85\n\\]\n\n\\[\n10(a+b)=10\\left(12+\\frac85\\right)=136\n\\]\n\n최종 답: 136  \n코칭 한마디: 왜냐하면 공간의 원 위 점까지의 거리 최댓값은 평면에 수직인 성분과 원이 놓인 평면 안의 성분으로 나누면 가장 간단하게 계산되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 31457,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2018-가형-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "회전체의 부피 (디스크)",
+        "매개변수 미분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "\\(y=t-k\\)라 두고, \\(x=k+s\\)로 치환하자. \\(k\\)가 홀수이므로\n\n\\[\n\\cos(\\pi(k+s))=-\\cos(\\pi s)\n\\]\n\n따라서\n\n\\[\ng(t)=G(y)=-\\int_0^8 (1-|s-y|)_+\\cos(\\pi s)\\,ds\n\\]\n\n로 볼 수 있다. 즉 \\(G(y)\\)의 극소 위치를 찾은 뒤, 마지막에 \\(t=k+y\\)로 되돌리면 된다.\n\n삼각형 함수가 구간 \\([0,8]\\) 안에 완전히 들어가는 경우는\n\n\\[\n1\\le y\\le 7\n\\]\n\n이고, 이때는 전체 적분이므로\n\n\\[\nG(y)=-\\frac{4}{\\pi^2}\\cos(\\pi y)\n\\]\n\n이다. 따라서 이 구간에서 음의 극소는\n\n\\[\ny=2,4,6\n\\]\n\n이고 각각\n\n\\[\nG(y)=-\\frac{4}{\\pi^2}\n\\]\n\n이다.\n\n이제 양 끝 부분을 보자.\n\n왼쪽 끝에서 \\(-1\\le y\\le 0\\)이면\n\n\\[\nG(y)=-\\frac{1+\\cos(\\pi y)}{\\pi^2}\n\\]\n\n이고, \\(0\\le y\\le 1\\)이면\n\n\\[\nG(y)=\\frac{1-3\\cos(\\pi y)}{\\pi^2}\n\\]\n\n이다. 따라서 \\(y=0\\)에서 음의 극소가 생기며\n\n\\[\nG(0)=-\\frac{2}{\\pi^2}\n\\]\n\n이다.\n\n오른쪽 끝은 대칭이므로 \\(y=8\\)에서도 음의 극소가 생기고\n\n\\[\nG(8)=-\\frac{2}{\\pi^2}\n\\]\n\n이다.\n\n따라서 음의 극소를 만드는 \\(y\\)값은\n\n\\[\n0,2,4,6,8\n\\]\n\n이고, 대응하는 \\(t\\)값은\n\n\\[\nk,\\ k+2,\\ k+4,\\ k+6,\\ k+8\n\\]\n\n이다. 문제에서 이들의 합이 \\(45\\)라 했으므로\n\n\\[\n(k)+(k+2)+(k+4)+(k+6)+(k+8)=45\n\\]\n\n\\[\n5k+20=45\n\\]\n\n\\[\nk=5\n\\]\n\n또한 극소값들의 합은\n\n\\[\n\\sum g(\\alpha_i)\n=\n-\\frac{2}{\\pi^2}\n-\\frac{4}{\\pi^2}\n-\\frac{4}{\\pi^2}\n-\\frac{4}{\\pi^2}\n-\\frac{2}{\\pi^2}\n=\n-\\frac{16}{\\pi^2}\n\\]\n\n따라서\n\n\\[\nk-\\pi^2\\sum_{i=1}^m g(\\alpha_i)\n=\n5-\\pi^2\\left(-\\frac{16}{\\pi^2}\\right)\n=\n21\n\\]\n\n최종 답: 21  \n코칭 한마디: 왜냐하면 \\(t\\)를 직접 움직이기보다 \\(y=t-k\\)로 평행이동하면 구간의 양끝 효과와 내부의 코사인 적분 구조가 분리되어 극소 위치를 쉽게 찾을 수 있기 때문이다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 57516,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2019-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "역함수",
+        "최적화 (자유 극값)",
+        "치환 적분",
+        "이차방정식 근의 분포",
+        "함수의 극한 (직관적 정의)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "\\(f^2(x)f'(x)\\) 꼴이 보이므로 먼저\n\n\\[\ng(x)=\\{f(x)\\}^3\n\\]\n\n라고 두겠습니다. 그러면\n\n\\[\ng'(x)=3\\{f(x)\\}^2f'(x)\n\\]\n\n이므로 조건 (가)는\n\n\\[\n2g'(x)=g'(2x+1)\n\\]\n\n이 됩니다.\n\n이제 \\(2x+1\\)의 고정점이 \\(-1\\)이므로, \\(-1\\)을 기준으로 평행이동합니다.\n\n\\[\nG(t)=g(t-1)\n\\]\n\n라고 하면 \\(x=t-1\\)일 때 \\(2x+1=2t-1\\)이므로\n\n\\[\nG'(2t)=2G'(t)\n\\]\n\n입니다.\n\n이제\n\n\\[\nG(2t)-4G(t)\n\\]\n\n를 미분하면\n\n\\[\n\\frac{d}{dt}\\{G(2t)-4G(t)\\}\n=2G'(2t)-4G'(t)\n=2\\cdot 2G'(t)-4G'(t)=0\n\\]\n\n따라서 \\(G(2t)-4G(t)\\)는 상수입니다.\n\n\\(t=0\\)을 대입하면\n\n\\[\nG(0)-4G(0)=-3G(0)\n\\]\n\n이므로\n\n\\[\nG(2t)-4G(t)=-3G(0)\n\\]\n\n즉,\n\n\\[\nG(2t)-G(0)=4\\{G(t)-G(0)\\}\n\\]\n\n입니다.\n\n이를 세 번 반복하면\n\n\\[\nG(7)-G(0)=64\\left\\{G\\left(\\frac78\\right)-G(0)\\right\\}\n\\]\n\n입니다.\n\n조건 (나)에서\n\n\\[\nG(7)=g(6)=\\{f(6)\\}^3=8\n\\]\n\n이고\n\n\\[\nG\\left(\\frac78\\right)=g\\left(-\\frac18\\right)=\\left\\{f\\left(-\\frac18\\right)\\right\\}^3=1\n\\]\n\n입니다.\n\n또한\n\n\\[\nG(0)=g(-1)=\\{f(-1)\\}^3\n\\]\n\n라 두면\n\n\\[\n8-G(0)=64\\{1-G(0)\\}\n\\]\n\n\\[\n8-a=64-64a\n\\]\n\n\\[\n63a=56\n\\]\n\n\\[\na=\\frac89\n\\]\n\n따라서\n\n\\[\n\\{f(-1)\\}^3=\\frac89\n\\]\n\n이므로\n\n\\[\nf(-1)=\\sqrt[3]{\\frac89}\n=\\frac{2\\sqrt[3]{3}}{3}\n\\]\n\n입니다.\n\n최종 답: \\(\\frac{2\\sqrt[3]{3}}{3}\\)  \n코칭 한마디: 왜냐하면 \\(f^2f'\\) 꼴은 \\((f^3)'\\)로 바꾸면 복잡한 함수식이 미분계수의 스케일 관계로 단순해지기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 39220,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2019-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "타원  \n\\[\n\\frac{x^2}{49}+\\frac{y^2}{33}=1\n\\]\n에서 장반경은 \\(a=7\\), 초점거리 \\(c\\)는\n\n\\[\nc^2=49-33=16 \\Rightarrow c=4\n\\]\n\n이므로 두 초점은 \\((\\pm 4,0)\\)입니다.\n\n타원의 성질에 의해 타원 위의 점 \\(Q\\)에 대하여\n\n\\[\n\\overline{FQ}+\\overline{F'Q}=2a=14\n\\]\n\n입니다.\n\n또한 점 \\(P\\)는 원\n\n\\[\nx^2+(y-3)^2=4\n\\]\n\n위에 있고, 이 원은 타원 내부에 있습니다. 따라서 직선 \\(F'P\\)가 타원과 만나는 양의 \\(y\\)좌표를 가진 점 \\(Q\\)는 \\(F'\\), \\(P\\), \\(Q\\)가 이 순서로 일직선 위에 놓입니다.\n\n그러므로\n\n\\[\n\\overline{F'Q}=\\overline{F'P}+\\overline{PQ}\n\\]\n\n이고,\n\n\\[\n\\overline{PQ}=\\overline{F'Q}-\\overline{F'P}\n\\]\n\n입니다. 따라서 구하려는 값은\n\n\\[\n\\overline{PQ}+\\overline{FQ}\n=\n\\overline{F'Q}-\\overline{F'P}+\\overline{FQ}\n\\]\n\n\\[\n=(\\overline{F'Q}+\\overline{FQ})-\\overline{F'P}\n\\]\n\n\\[\n=14-\\overline{F'P}\n\\]\n\n입니다.\n\n따라서 이 값을 최대로 하려면 \\(\\overline{F'P}\\)를 최소로 하면 됩니다.\n\n원 \\(x^2+(y-3)^2=4\\)의 중심은 \\((0,3)\\), 반지름은 \\(2\\)입니다. 초점 \\(F'\\)에서 원의 중심까지의 거리는\n\n\\[\n\\sqrt{4^2+3^2}=5\n\\]\n\n이므로, 초점 \\(F'\\)에서 원 위의 점 \\(P\\)까지의 최소 거리는\n\n\\[\n5-2=3\n\\]\n\n입니다.\n\n따라서 최댓값은\n\n\\[\n14-3=11\n\\]\n\n입니다.\n\n최종 답: \\(11\\)  \n코칭 한마디: 왜냐하면 타원에서는 두 초점까지의 거리의 합이 항상 일정하므로, 복잡한 \\(\\overline{PQ}+\\overline{FQ}\\)를 단순히 \\(\\overline{F'P}\\)의 최소 문제로 바꿀 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 34725,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2019-가형-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 90685,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2020-가형-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "접선의 방정식부터 구하겠습니다.\n\n곡선 \\(y=e^x\\) 위의 점 \\((t,e^t)\\) 에서의 접선은 기울기가 \\(e^t\\) 이므로\n\n\\[\ny-e^t=e^t(x-t)\n\\]\n\n따라서\n\n\\[\nf(x)=e^t(x-t+1)\n\\]\n\n입니다.\n\n이제\n\n\\[\ny=\\left|f(x)+k-\\ln x\\right|\n\\]\n\n가 \\(x>0\\) 전체에서 미분가능해야 합니다.\n\n\\[\nF(x)=f(x)+k-\\ln x\n=e^t(x-t+1)+k-\\ln x\n\\]\n\n라고 두면, \\(|F(x)|\\) 가 미분가능하지 않을 수 있는 지점은 \\(F(x)=0\\) 인 곳입니다.  \n\\(|F(x)|\\) 가 그 점에서도 미분가능하려면 \\(F'(x)=0\\) 이어야 합니다.\n\n먼저\n\n\\[\n\\phi(x)=e^t(x-t+1)-\\ln x\n\\]\n\n라 두면\n\n\\[\n\\phi'(x)=e^t-\\frac1x\n\\]\n\n이고,\n\n\\[\n\\phi'(x)=0 \\Rightarrow x=e^{-t}\n\\]\n\n입니다. 또한\n\n\\[\n\\phi''(x)=\\frac1{x^2}>0\n\\]\n\n이므로 \\(x=e^{-t}\\) 에서 최솟값을 가집니다.\n\n그 최솟값은\n\n\\[\n\\phi(e^{-t})\n=e^t(e^{-t}-t+1)-\\ln(e^{-t})\n\\]\n\n\\[\n=1+(1-t)e^t+t\n\\]\n\n입니다.\n\n따라서 \\(F(x)=\\phi(x)+k\\) 가 \\(0\\)보다 항상 크거나, 최솟값에서만 \\(0\\)이 되어야 하므로\n\n\\[\nk\\ge -\\{1+t+(1-t)e^t\\}\n\\]\n\n입니다.\n\n따라서 최솟값\n\n\\[\ng(t)=(t-1)e^t-t-1\n\\]\n\n입니다.\n\n---\n\n### ㄱ 판단\n\n\\[\ng(0)=(-1)e^0-0-1=-2<0\n\\]\n\n이므로 \\(g(t)<0\\) 인 구간이 존재합니다.  \n따라서 그 구간 안에서 \\(a<b\\) 를 잡으면\n\n\\[\n\\int_a^b g(t)\\,dt<0\n\\]\n\n가 가능합니다.\n\n따라서 ㄱ은 참입니다.\n\n---\n\n### ㄴ 판단\n\n\\[\ng(t)=0\n\\]\n\n이면\n\n\\[\n(t-1)e^t=t+1\n\\]\n\n입니다.\n\n양의 해를 \\(r\\) 라 하면\n\n\\[\n(r-1)e^r=r+1\n\\]\n\n입니다.\n\n이때 \\(-r\\) 에 대해 확인하면\n\n\\[\ng(-r)=(-r-1)e^{-r}+r-1\n\\]\n\n인데,\n\n\\[\n(r-1)e^r=r+1\n\\]\n\n은\n\n\\[\nr-1=(r+1)e^{-r}\n\\]\n\n와 같으므로\n\n\\[\ng(-r)=-(r+1)e^{-r}+r-1=0\n\\]\n\n입니다.\n\n즉 \\(g(c)=0\\) 이면 \\(g(-c)=0\\) 입니다.\n\n따라서 ㄴ은 참입니다.\n\n---\n\n### ㄷ 판단\n\n\\(g(t)=0\\) 의 두 해를\n\n\\[\n\\alpha<\\beta\n\\]\n\n라 하면 ㄴ에 의해\n\n\\[\n\\alpha=-\\beta\n\\]\n\n입니다.\n\n또한 \\(g(0)<0\\) 이고 양끝에서는 \\(g(t)>0\\) 이므로, \\(\\int_a^b g(t)\\,dt\\) 가 최소가 되려면 \\(g(t)<0\\) 인 구간 전체를 잡아야 합니다.  \n따라서\n\n\\[\na=\\alpha,\\quad b=\\beta\n\\]\n\n입니다.\n\n이제\n\n\\[\ng(t)=(t-1)e^t-t-1\n\\]\n\n이므로\n\n\\[\ng'(t)=te^t-1\n\\]\n\n따라서\n\n\\[\n1+g'(t)=te^t\n\\]\n\n입니다.\n\n그러므로\n\n\\[\n\\frac{1+g'(\\beta)}{1+g'(\\alpha)}\n=\\frac{\\beta e^\\beta}{\\alpha e^\\alpha}\n\\]\n\n이고, \\(\\alpha=-\\beta\\) 이므로\n\n\\[\n\\frac{\\beta e^\\beta}{-\\beta e^{-\\beta}}\n=-e^{2\\beta}\n\\]\n\n입니다.\n\n양의 해 \\(\\beta\\) 는 \\(1\\)보다 크므로\n\n\\[\n-e^{2\\beta}<-e^2\n\\]\n\n입니다.\n\n따라서 ㄷ도 참입니다.\n\n---\n\n따라서 옳은 것은\n\n\\[\n\\boxed{\\text{ㄱ, ㄴ, ㄷ}}\n\\]\n\n입니다.\n\n최종 답: (5) ㄱ, ㄴ, ㄷ  \n코칭 한마디: 왜냐하면 절댓값 함수의 미분가능성은 내부 함수가 0이 되는 지점에서의 기울기까지 확인해야 하므로, 내부 함수의 최솟값을 기준으로 \\(k\\)를 정하는 것이 핵심입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 55365,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2020-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "중복순열·중복조합·같은 것 포함",
+        "중복조합 nHr",
+        "정의역·치역",
+        "중복순열 nΠr",
+        "로피탈 정리"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "조건에 맞게 선택된 숫자의 개수를 생각해 봅시다.\n\n홀수는 \\(1,3,5\\) 총 3개이고, 각각 **0번 또는 1번** 선택됩니다.  \n짝수는 \\(2,4,6\\) 총 3개이고, 각각 **0번 또는 2번** 선택됩니다.\n\n다섯 개를 선택해야 하므로,\n\n\\[\n\\text{홀수 개수} + 2 \\times \\text{선택한 짝수 종류 수} = 5\n\\]\n\n가능한 경우를 나누면 다음과 같습니다.\n\n---\n\n### 경우 1: 홀수 3개, 짝수 1종류를 2번 선택\n\n홀수 \\(1,3,5\\)는 모두 선택해야 합니다.\n\n짝수는 \\(2,4,6\\) 중 1종류를 고르면 되므로\n\n\\[\n\\binom{3}{1}=3\n\\]\n\n각 경우마다 숫자 5개 중 같은 숫자 2개가 있으므로 배열 수는\n\n\\[\n\\frac{5!}{2!}=60\n\\]\n\n따라서\n\n\\[\n3 \\times 60 = 180\n\\]\n\n---\n\n### 경우 2: 홀수 1개, 짝수 2종류를 각각 2번 선택\n\n홀수는 \\(1,3,5\\) 중 1개 선택:\n\n\\[\n\\binom{3}{1}=3\n\\]\n\n짝수는 \\(2,4,6\\) 중 2종류 선택:\n\n\\[\n\\binom{3}{2}=3\n\\]\n\n각 경우마다 숫자 5개 중 같은 숫자가 2개씩 두 쌍 있으므로 배열 수는\n\n\\[\n\\frac{5!}{2!2!}=30\n\\]\n\n따라서\n\n\\[\n3 \\times 3 \\times 30 = 270\n\\]\n\n---\n\n전체 개수는\n\n\\[\n180+270=450\n\\]\n\n최종 답: 450  \n코칭 한마디: 왜냐하면 같은 숫자가 반복되어 나오는 배열이므로, 먼저 가능한 선택 경우를 나눈 뒤 같은 것 포함 순열로 배열해야 중복 계산을 피할 수 있습니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 18943,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2020-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "두 평면이 이루는 각",
+        "평면의 방정식 (법선벡터형)",
+        "두 점 사이의 거리",
+        "일차함수의 그래프",
+        "점과 평면 사이의 거리"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "먼저 선분 \\(AB\\)의 방향벡터를 구하면\n\n\\[\n\\overrightarrow{AB}=(-2-3,\\;7-(-3),\\;-2-3)=(-5,10,-5)\n\\]\n\n따라서\n\n\\[\n|AB|=\\sqrt{25+100+25}=5\\sqrt6\n\\]\n\n입니다.\n\n원점 \\(O\\)에서 직선 \\(AB\\)에 내린 수선의 발을 \\(P\\)라 하겠습니다.  \n\\(P=A+t\\overrightarrow{AB}\\)라 두고 \\(\\overrightarrow{OP}\\perp \\overrightarrow{AB}\\)를 이용하면\n\n\\[\n(A+t\\overrightarrow{AB})\\cdot \\overrightarrow{AB}=0\n\\]\n\n\\[\n(3,-3,3)\\cdot(-5,10,-5)+150t=0\n\\]\n\n\\[\n-60+150t=0\n\\]\n\n\\[\nt=\\frac25\n\\]\n\n따라서\n\n\\[\nP=(3,-3,3)+\\frac25(-5,10,-5)=(1,1,1)\n\\]\n\n이고\n\n\\[\nOP=\\sqrt{1^2+1^2+1^2}=\\sqrt3\n\\]\n\n입니다.\n\n이제 \\(AB\\)에 수직이고 \\(O,P\\)를 포함하는 평면으로 단면을 자르면, 구는 반지름 \\(1\\)인 원으로 보이고, 두 접평면은 점 \\(P\\)에서 이 원에 그은 두 접선으로 보입니다. 접점이 \\(C,D\\)입니다.\n\n직각삼각형 \\(OPC\\)에서\n\n\\[\nOP=\\sqrt3,\\quad OC=1\n\\]\n\n이므로\n\n\\[\nPC=\\sqrt{OP^2-OC^2}=\\sqrt{3-1}=\\sqrt2\n\\]\n\n입니다.\n\n또한 \\(\\angle CPO=\\theta\\)라 하면\n\n\\[\n\\sin\\theta=\\frac{OC}{OP}=\\frac1{\\sqrt3},\\qquad \n\\cos\\theta=\\frac{PC}{OP}=\\frac{\\sqrt2}{\\sqrt3}\n\\]\n\n따라서\n\n\\[\n\\sin 2\\theta=2\\sin\\theta\\cos\\theta\n=2\\cdot \\frac1{\\sqrt3}\\cdot \\frac{\\sqrt2}{\\sqrt3}\n=\\frac{2\\sqrt2}{3}\n\\]\n\n삼각형 \\(PCD\\)의 넓이는\n\n\\[\n[PCD]=\\frac12\\cdot PC\\cdot PD\\cdot \\sin 2\\theta\n\\]\n\n\\[\n=\\frac12\\cdot \\sqrt2\\cdot \\sqrt2\\cdot \\frac{2\\sqrt2}{3}\n=\\frac{2\\sqrt2}{3}\n\\]\n\n입니다.\n\n점 \\(P\\)가 선분 \\(AB\\) 위에 있고, \\(AB\\perp\\) 단면평면이므로 사면체 \\(ABCD\\)의 부피는\n\n\\[\nV=\\frac13\\cdot [PCD]\\cdot |AB|\n\\]\n\n\\[\n=\\frac13\\cdot \\frac{2\\sqrt2}{3}\\cdot 5\\sqrt6\n=\\frac{10\\sqrt{12}}{9}\n=\\frac{20\\sqrt3}{9}\n\\]\n\n입니다.\n\n즉\n\n\\[\n\\frac{q}{p}\\sqrt3=\\frac{20}{9}\\sqrt3\n\\]\n\n이므로\n\n\\[\np=9,\\quad q=20\n\\]\n\n따라서\n\n\\[\np+q=29\n\\]\n\n최종 답: 29  \n코칭 한마디: 왜냐하면 접평면을 \\(AB\\)에 수직인 단면으로 자르면 3차원 문제가 원에 그은 두 접선의 평면기하 문제로 바뀌어 길이와 넓이를 쉽게 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 91378,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2020-가형-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "매개변수 미분",
+        "로그함수의 성질",
+        "위치·속도·가속도",
+        "로그미분법",
+        "닫힌구간 최댓·최솟값 (다항함수)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "두 곡선의 교점을 살펴보겠습니다.\n\n\\[\ny=t^3\\ln(x-t),\\qquad y=2e^{x-a}\n\\]\n\n교점에서는\n\n\\[\nt^3\\ln(x-t)=2e^{x-a}\n\\]\n\n입니다. 여기서\n\n\\[\nu=x-t \\quad (u>0)\n\\]\n\n로 두면\n\n\\[\nt^3\\ln u=2e^{u+t-a}\n\\]\n\n이고, 오른쪽은 항상 양수이므로\n\n\\[\n\\ln u>0 \\Rightarrow u>1\n\\]\n\n입니다.\n\n양변을 정리하면\n\n\\[\ne^a=\\frac{2e^{u+t}}{t^3\\ln u}\n\\]\n\n따라서\n\n\\[\na=\\ln 2+u+t-3\\ln t-\\ln(\\ln u)\n\\]\n\n입니다. 즉 고정된 \\(t\\)에 대해 교점의 개수는 함수\n\n\\[\ng(u)=u-\\ln(\\ln u)\\qquad (u>1)\n\\]\n\n의 값과 관련됩니다.\n\n이제 \\(g(u)\\)의 최솟값을 보겠습니다.\n\n\\[\ng'(u)=1-\\frac{1}{u\\ln u}\n\\]\n\n따라서\n\n\\[\ng'(u)=0 \\Longleftrightarrow u\\ln u=1\n\\]\n\n입니다. 또한 \\(u>1\\)에서 \\(g(u)\\)는 한 번 감소했다가 증가하므로, 이 점에서 최소가 됩니다.\n\n곡선이 오직 한 점에서 만나려면 이 최소점에서 만나야 하므로\n\n\\[\nf(t)=\\ln 2+t-3\\ln t+C\n\\]\n\n꼴입니다. 여기서 \\(C\\)는 \\(u\\ln u=1\\)을 만족하는 \\(u\\)에서의 상수값이므로 \\(t\\)와 무관합니다.\n\n따라서\n\n\\[\nf'(t)=1-\\frac{3}{t}\n\\]\n\n이고,\n\n\\[\nf'\\left(\\frac13\\right)=1-\\frac{3}{1/3}=1-9=-8\n\\]\n\n따라서\n\n\\[\n\\left\\{f'\\left(\\frac13\\right)\\right\\}^2=64\n\\]\n\n최종 답: 64  \n코칭 한마디: 왜냐하면 교점의 개수를 직접 세기 어렵기 때문에 \\(u=x-t\\)로 치환해 한 변수 함수의 최솟값 조건으로 바꾸면 “오직 한 점”이라는 조건을 명확히 처리할 수 있습니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 24961,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2021-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+        "산술-기하 평균 부등식",
+        "이항정리",
+        "테일러 전개 (기초 — 다항 근사)",
+        "부분분수 전개와 중간소거 (telescoping)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이의 핵심은 먼저 \\(a_2\\)를 하나의 문자로 두는 것입니다.\n\n\\(a_2=x\\)라 두면, 조건 (가)에 \\(n=1\\)을 대입하여\n\n\\[\na_2=a_2a_1+1\n\\]\n\n이므로\n\n\\[\nx=xa_1+1\n\\]\n\n\\[\nx(1-a_1)=1\n\\]\n\n입니다.\n\n또한 \\(0<a_1<1\\)이므로 \\(x=a_2>1\\)입니다.\n\n이제 \\(a_8, a_{15}\\)를 \\(x\\)와 \\(a_1\\)로 나타냅니다.\n\n\\[\na_4=a_2a_2+1=x^2+1\n\\]\n\n\\[\na_8=a_2a_4+1=x(x^2+1)+1=x^3+x+1\n\\]\n\n한편,\n\n\\[\na_3=a_2a_1-2=xa_1-2\n\\]\n\n\\[\na_7=a_2a_3-2=x(xa_1-2)-2=x^2a_1-2x-2\n\\]\n\n\\[\na_{15}=a_2a_7-2=x(x^2a_1-2x-2)-2=x^3a_1-2x^2-2x-2\n\\]\n\n따라서\n\n\\[\na_8-a_{15}\n=(x^3+x+1)-(x^3a_1-2x^2-2x-2)\n\\]\n\n\\[\n=x^3(1-a_1)+2x^2+3x+3\n\\]\n\n그런데 \\(x(1-a_1)=1\\)이므로\n\n\\[\nx^3(1-a_1)=x^2\n\\]\n\n따라서\n\n\\[\na_8-a_{15}=3x^2+3x+3\n\\]\n\n문제에서 \\(a_8-a_{15}=63\\)이므로\n\n\\[\n3x^2+3x+3=63\n\\]\n\n\\[\nx^2+x+1=21\n\\]\n\n\\[\nx^2+x-20=0\n\\]\n\n\\[\n(x-4)(x+5)=0\n\\]\n\n\\(x>1\\)이므로\n\n\\[\nx=4\n\\]\n\n즉,\n\n\\[\na_2=4\n\\]\n\n또한\n\n\\[\nx(1-a_1)=1\n\\]\n\n이므로\n\n\\[\n4(1-a_1)=1\n\\]\n\n\\[\na_1=\\frac34\n\\]\n\n그리고\n\n\\[\na_8=x^3+x+1=4^3+4+1=69\n\\]\n\n따라서\n\n\\[\n\\frac{a_8}{a_1}=\\frac{69}{\\frac34}=69\\cdot \\frac43=92\n\\]\n\n최종 답: 92  \n코칭 한마디: 왜냐하면 이 문제는 일반적인 \\(n+1\\) 점화식이 아니라 짝수·홀수 인덱스로 내려가는 구조이므로, \\(a_2=x\\)로 두고 필요한 항만 직접 추적하는 것이 가장 빠릅니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 22613,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2021-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "\\(g(x)=x^3+x+1\\)은\n\n\\[\ng'(x)=3x^2+1>0\n\\]\n\n이므로 실수 전체에서 일대일 대응이고 역함수 \\(g^{-1}\\)이 존재합니다.\n\n\\(h(x)=f(g^{-1}(x))\\)이므로, \\(t=g^{-1}(x)\\)라 두면\n\n\\[\nh(x)=f(t)\n\\]\n\n입니다.\n\n---\n\n### 1. 조건 (가) 분석\n\n\\[\nf(x)=(x-a)(x-b)^2 \\quad (a<b)\n\\]\n\n에서 \\(x=a\\)는 홀수 중근, 즉 단순근이고 \\(x=b\\)는 짝수 중근입니다.\n\n따라서 \\(f(x)\\)는 \\(x=a\\)에서 부호가 바뀌고, \\(x=b\\)에서는 부호가 바뀌지 않습니다.\n\n합성함수 \\(h(x)=f(g^{-1}(x))\\)도 \\(x=g(a)\\)에서 부호가 바뀌므로 \\(|h(x)|\\)는 보통 \\(x=g(a)\\)에서 미분가능하지 않습니다.\n\n그런데 \\((x-1)|h(x)|\\)가 모든 실수에서 미분가능하려면 그 미분불가능점이 \\(x=1\\)에서 상쇄되어야 합니다.\n\n따라서\n\n\\[\ng(a)=1\n\\]\n\n이어야 합니다.\n\n\\[\ng(a)=a^3+a+1=1\n\\]\n\n\\[\na^3+a=0\n\\]\n\n\\[\na(a^2+1)=0\n\\]\n\n실수 \\(a\\)에 대해\n\n\\[\na=0\n\\]\n\n입니다.\n\n---\n\n### 2. 조건 (나) 분석\n\n\\[\nh'(x)=f'(g^{-1}(x))\\cdot (g^{-1})'(x)\n\\]\n\n이고,\n\n\\[\n(g^{-1})'(x)=\\frac1{g'(g^{-1}(x))}\n\\]\n\n입니다.\n\n먼저 \\(g^{-1}(3)\\)을 구합니다.\n\n\\[\ng(t)=3\n\\]\n\n\\[\nt^3+t+1=3\n\\]\n\n\\[\nt^3+t-2=0\n\\]\n\n\\[\nt=1\n\\]\n\n따라서\n\n\\[\ng^{-1}(3)=1\n\\]\n\n입니다.\n\n그러므로\n\n\\[\nh'(3)=\\frac{f'(1)}{g'(1)}\n\\]\n\n이고,\n\n\\[\ng'(1)=3\\cdot 1^2+1=4\n\\]\n\n조건 \\(h'(3)=2\\)에 의해\n\n\\[\n\\frac{f'(1)}4=2\n\\]\n\n\\[\nf'(1)=8\n\\]\n\n---\n\n### 3. \\(b\\) 구하기\n\n\\(a=0\\)이므로\n\n\\[\nf(x)=x(x-b)^2\n\\]\n\n입니다.\n\n미분하면\n\n\\[\nf'(x)=(x-b)^2+2x(x-b)\n\\]\n\n\\[\nf'(x)=(x-b)(3x-b)\n\\]\n\n따라서\n\n\\[\nf'(1)=(1-b)(3-b)=8\n\\]\n\n\\[\nb^2-4b+3=8\n\\]\n\n\\[\nb^2-4b-5=0\n\\]\n\n\\[\n(b-5)(b+1)=0\n\\]\n\n\\[\nb=5 \\text{ 또는 } b=-1\n\\]\n\n그런데 \\(a<b\\)이고 \\(a=0\\)이므로\n\n\\[\nb>0\n\\]\n\n따라서\n\n\\[\nb=5\n\\]\n\n입니다.\n\n---\n\n### 4. \\(f(8)\\) 계산\n\n\\[\nf(x)=x(x-5)^2\n\\]\n\n\\[\nf(8)=8(8-5)^2\n\\]\n\n\\[\nf(8)=8\\cdot 9=72\n\\]\n\n최종 답: 72  \n코칭 한마디: 왜냐하면 절댓값이 들어간 함수의 미분가능성은 부호가 바뀌는 근에서 깨지므로, 그 위치를 먼저 찾아야 조건 (가)를 정확히 해석할 수 있습니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 30470,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2021-가형-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 89371,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2022-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "산술-기하 평균 부등식",
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+        "이항정리",
+        "중복순열·중복조합·같은 것 포함",
+        "수학적 귀납법"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "조건 (가), (나)에서 각 항의 절댓값은\n\n\\[\n|a_1|=2,\\quad |a_2|=4,\\quad |a_3|=8,\\quad \\cdots\n\\]\n\n이므로\n\n\\[\n|a_n|=2^n\n\\]\n\n입니다. 따라서 각 항은\n\n\\[\na_n=\\pm 2^n\n\\]\n\n꼴입니다.\n\n이제 전체 합 조건을 이용합니다.\n\n\\[\n\\sum_{n=1}^{10} a_n=-14\n\\]\n\n양수로 선택된 항들의 절댓값의 합을 \\(P\\), 음수로 선택된 항들의 절댓값의 합을 \\(N\\)이라 하면,\n\n\\[\nP-N=-14\n\\]\n\n또한 전체 절댓값의 합은\n\n\\[\n2+4+8+\\cdots+1024=2(1+2+\\cdots+512)=2(1023)=2046\n\\]\n\n이므로\n\n\\[\nP+N=2046\n\\]\n\n두 식을 더하면\n\n\\[\n2P=2032\n\\]\n\n따라서\n\n\\[\nP=1016\n\\]\n\n즉 양수인 항들의 절댓값 합이 \\(1016\\)이어야 합니다.\n\n\\[\n1016=512+256+128+64+32+16+8\n\\]\n\n따라서 양수인 항은\n\n\\[\na_3,a_4,a_5,a_6,a_7,a_8,a_9\n\\]\n\n이고, 음수인 항은\n\n\\[\na_1,a_2,a_{10}\n\\]\n\n입니다.\n\n그러므로\n\n\\[\na_1=-2,\\quad a_3=8,\\quad a_5=32,\\quad a_7=128,\\quad a_9=512\n\\]\n\n따라서\n\n\\[\na_1+a_3+a_5+a_7+a_9\n=-2+8+32+128+512\n=678\n\\]\n\n최종 답: 678  \n코칭 한마디: 왜냐하면 각 항의 절댓값이 \\(2,4,8,\\dots\\)처럼 2의 거듭제곱이므로, 전체 합 조건을 양수로 선택된 항들의 합으로 바꾸면 부호가 한 번에 결정되기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 22622,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2022-공통-22",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "삼차함수 \\(f(x)\\)의 최고차항 계수가 \\(\\frac12\\)이므로  \n\\(f'(x)\\)는 최고차항 계수가 \\(\\frac32\\)인 이차함수입니다.\n\n\\(g(t)=2\\)가 되는 경우가 있으므로 \\(f'(x)=0\\)은 서로 다른 두 실근을 가져야 합니다.  \n그 두 근을 \\(\\alpha<\\beta\\)라 하겠습니다.\n\n---\n\n### 1. 조건 (가)로부터 두 근 사이의 거리 구하기\n\n\\(g(t)\\)는 구간 \\([t,t+2]\\) 안에 \\(\\alpha,\\beta\\)가 몇 개 들어있는지를 세는 함수입니다.\n\n근 \\(\\alpha\\)가 포함되려면\n\n\\[\nt\\le \\alpha \\le t+2\n\\]\n\n이므로\n\n\\[\nt\\in[\\alpha-2,\\alpha]\n\\]\n\n마찬가지로 근 \\(\\beta\\)가 포함되려면\n\n\\[\nt\\in[\\beta-2,\\beta]\n\\]\n\n입니다.\n\n따라서 \\(g(t)=2\\)가 되려면 두 구간\n\n\\[\n[\\alpha-2,\\alpha],\\quad [\\beta-2,\\beta]\n\\]\n\n이 겹쳐야 합니다.\n\n조건 (가)는 모든 \\(a\\)에 대하여\n\n\\[\n\\lim_{t\\to a+}g(t)+\\lim_{t\\to a-}g(t)\\le 2\n\\]\n\n라고 했습니다. 만약 두 구간이 길이를 가지고 겹치면 그 내부에서는 양쪽 극한이 모두 \\(2\\)가 되어 합이 \\(4\\)가 되므로 불가능합니다.\n\n따라서 두 구간은 한 점에서만 만나야 합니다.\n\n\\[\n\\alpha=\\beta-2\n\\]\n\n즉,\n\n\\[\n\\beta-\\alpha=2\n\\]\n\n입니다.\n\n이제 두 근을\n\n\\[\ns,\\ s+2\n\\]\n\n라고 두겠습니다.\n\n그러면\n\n\\[\ng(t)=2\n\\]\n\n가 되는 것은 오직\n\n\\[\nt=s\n\\]\n\n일 때뿐입니다.\n\n---\n\n### 2. 조건 (나) 적용\n\n조건에서\n\n\\[\ng(f(1))=g(f(4))=2\n\\]\n\n이므로\n\n\\[\nf(1)=f(4)=s\n\\]\n\n입니다.\n\n또한\n\n\\[\nf'(x)=\\frac32(x-s)(x-s-2)\n\\]\n\n이므로\n\n\\[\nf(x)=\\frac12x^3-\\frac32(s+1)x^2+\\frac32s(s+2)x+C\n\\]\n\n입니다.\n\n이제 \\(f(1)=f(4)\\)를 이용합니다.\n\n\\[\nf(4)-f(1)=\\int_1^4 f'(x)\\,dx\n\\]\n\n\\[\n=\\int_1^4 \\frac32(x-s)(x-s-2)\\,dx\n\\]\n\n계산하면\n\n\\[\nf(4)-f(1)=\\frac92(s-1)(s-2)\n\\]\n\n이고, \\(f(4)=f(1)\\)이므로\n\n\\[\n\\frac92(s-1)(s-2)=0\n\\]\n\n따라서\n\n\\[\ns=1 \\quad \\text{또는} \\quad s=2\n\\]\n\n입니다.\n\n---\n\n### 3. \\(g(f(0))=1\\) 조건으로 걸러내기\n\n#### 경우 1: \\(s=1\\)\n\n\\[\nf'(x)=\\frac32(x-1)(x-3)\n\\]\n\n\\[\nf(x)=\\frac12x^3-3x^2+\\frac92x+C\n\\]\n\n\\(f(1)=1\\)이므로\n\n\\[\n\\frac12-3+\\frac92+C=1\n\\]\n\n\\[\n2+C=1\n\\]\n\n\\[\nC=-1\n\\]\n\n따라서\n\n\\[\nf(0)=-1\n\\]\n\n이때 근은 \\(1,3\\)이고, \\([t,t+2]\\)가 한 근만 포함하는 \\(t\\)의 범위는 \\([-1,3]\\)에서 \\(t=1\\)을 제외한 부분입니다.  \n\\(f(0)=-1\\)이면 실제로 \\(g(f(0))=g(-1)=1\\)이므로 가능입니다.\n\n#### 경우 2: \\(s=2\\)\n\n이 경우 계산하면 \\(f(0)=-6\\)이 되고, 근은 \\(2,4\\)입니다.  \n\\(t=-6\\)일 때 구간 \\([-6,-4]\\)에는 근이 없으므로\n\n\\[\ng(f(0))=0\n\\]\n\n이 되어 조건에 맞지 않습니다.\n\n따라서\n\n\\[\ns=1\n\\]\n\n입니다.\n\n---\n\n### 4. \\(f(5)\\) 계산\n\n가능한 함수는\n\n\\[\nf(x)=\\frac12x^3-3x^2+\\frac92x-1\n\\]\n\n입니다.\n\n따라서\n\n\\[\nf(5)=\\frac12\\cdot125-3\\cdot25+\\frac92\\cdot5-1\n\\]\n\n\\[\n=\\frac{125}{2}-75+\\frac{45}{2}-1\n\\]\n\n\\[\n=85-76=9\n\\]\n\n최종 답: 9  \n코칭 한마디: 왜냐하면 \\(g(t)\\)는 도함수의 두 근이 길이 2인 구간 안에 들어오는지를 세는 함수이므로, 먼저 두 근 사이의 거리를 파악하는 것이 핵심입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 47795,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2022-미적분-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "\\(t=f(x)=6\\pi(x-1)^2\\)라 두면, \\(0<x<2\\)에서\n\n\\[\n0\\le t<6\\pi\n\\]\n\n이고,\n\n\\[\ng(x)=3t+4\\cos t\n\\]\n\n입니다.\n\n\\[\ng'(x)=f'(x)(3-4\\sin f(x))\n\\]\n\n이므로 극값 후보는\n\n1. \\(x=1\\)\n2. \\(\\sin f(x)=\\frac34\\)\n\n입니다.\n\n먼저 \\(x=1\\)에서는 \\(f(x)\\ge 0\\)이고 \\(f(1)=0\\)입니다.  \n또 \\(3t+4\\cos t\\)는 \\(t=0\\) 근처에서 증가하므로 \\(x=1\\)은 극소입니다.\n\n이제 \\(\\sin t=\\frac34\\)인 경우를 봅니다.\n\n\\[\nh(t)=3t+4\\cos t\n\\]\n\n라 하면\n\n\\[\nh'(t)=3-4\\sin t,\\qquad h''(t)=-4\\cos t\n\\]\n\n극소가 되려면\n\n\\[\nh''(t)>0 \\Rightarrow \\cos t<0\n\\]\n\n이어야 합니다.  \n따라서 \\(\\sin t=\\frac34\\) 중 제2사분면 해만 극소입니다.\n\n\\[\nt=\\pi-\\alpha+2k\\pi \\quad \\left(\\alpha=\\arcsin\\frac34\\right)\n\\]\n\n이고, \\(0\\le t<6\\pi\\)에서 가능한 것은\n\n\\[\nk=0,1,2\n\\]\n\n총 3개입니다.\n\n각 \\(t>0\\)에 대해\n\n\\[\n6\\pi(x-1)^2=t\n\\]\n\n는 \\(x=1\\)의 양쪽에 2개씩 해를 가지므로\n\n\\[\n3\\times 2=6\n\\]\n\n개입니다.\n\n여기에 \\(x=1\\)에서의 극소 1개를 더하면\n\n\\[\n6+1=7\n\\]\n\n입니다.\n\n최종 답: 7  \n코칭 한마디: 왜냐하면 \\(f(x)\\)가 \\((x-1)^2\\) 꼴이라 안쪽 변수 \\(t=f(x)\\)로 바꾸면 극소가 되는 \\(t\\)를 센 뒤 양쪽 대칭 해의 개수만 곱하면 되기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 27299,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2022-미적분-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "치환 적분",
+        "이차방정식 근의 분포",
+        "적분방정식 — f 결정 (정적분 상수 활용)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "조건  \n\\[\ng(2x)=2f(x)\\quad (x\\ge 1)\n\\]\n에서 \\(g\\)는 \\(f\\)의 역함수입니다.\n\n### 1. 주요 함수값 구하기\n\n\\[\nf(1)=1\n\\]\n이고 \\(x=1\\)을 대입하면\n\n\\[\ng(2)=2f(1)=2\n\\]\n\n즉,\n\n\\[\ng(2)=2 \\Rightarrow f(2)=2\n\\]\n\n또 \\(x=2\\)를 대입하면\n\n\\[\ng(4)=2f(2)=4 \\Rightarrow f(4)=4\n\\]\n\n\\(x=4\\)를 대입하면\n\n\\[\ng(8)=2f(4)=8 \\Rightarrow f(8)=8\n\\]\n\n따라서\n\n\\[\nf(1)=1,\\quad f(2)=2,\\quad f(4)=4,\\quad f(8)=8\n\\]\n\n---\n\n### 2. 역함수 정적분 관계 사용\n\n역함수 관계에서\n\n\\[\n\\int_a^b f(x)\\,dx+\\int_{f(a)}^{f(b)}g(x)\\,dx=bf(b)-af(a)\n\\]\n\n입니다.\n\n또한 주어진 식에서 \\(y=2x\\)로 두면\n\n\\[\n\\int_{2a}^{2b} g(y)\\,dy\n=\n\\int_a^b g(2x)\\cdot 2\\,dx\n=\n\\int_a^b 2f(x)\\cdot 2\\,dx\n=\n4\\int_a^b f(x)\\,dx\n\\]\n\n---\n\n### 3. \\(\\int_2^4 f(x)\\,dx\\) 구하기\n\n먼저\n\n\\[\n\\int_2^4 g(x)\\,dx\n=\n4\\int_1^2 f(x)\\,dx\n=\n4\\cdot \\frac54=5\n\\]\n\n역함수 정적분 관계를 \\([2,4]\\)에서 쓰면\n\n\\[\n\\int_2^4 f(x)\\,dx+\\int_2^4 g(x)\\,dx\n=\n4^2-2^2=12\n\\]\n\n따라서\n\n\\[\n\\int_2^4 f(x)\\,dx=12-5=7\n\\]\n\n---\n\n### 4. \\(\\int_4^8 f(x)\\,dx\\) 구하기\n\n\\[\n\\int_4^8 g(x)\\,dx\n=\n4\\int_2^4 f(x)\\,dx\n=\n4\\cdot 7=28\n\\]\n\n역함수 정적분 관계를 \\([4,8]\\)에서 쓰면\n\n\\[\n\\int_4^8 f(x)\\,dx+\\int_4^8 g(x)\\,dx\n=\n8^2-4^2=48\n\\]\n\n따라서\n\n\\[\n\\int_4^8 f(x)\\,dx=48-28=20\n\\]\n\n그러므로\n\n\\[\n\\int_1^8 f(x)\\,dx\n=\n\\frac54+7+20\n=\n\\frac{113}{4}\n\\]\n\n---\n\n### 5. 부분적분\n\n\\[\n\\int_1^8 x f'(x)\\,dx\n=\n[xf(x)]_1^8-\\int_1^8 f(x)\\,dx\n\\]\n\n\\[\n=\n8f(8)-1f(1)-\\frac{113}{4}\n\\]\n\n\\[\n=\n64-1-\\frac{113}{4}\n=\n63-\\frac{113}{4}\n=\n\\frac{139}{4}\n\\]\n\n따라서\n\n\\[\n\\frac{q}{p}=\\frac{139}{4}\n\\]\n\n이므로\n\n\\[\np+q=4+139=143\n\\]\n\n최종 답: 143  \n코칭 한마디: 왜냐하면 역함수 조건은 함수값을 직접 구하기보다 원함수와 역함수의 정적분 넓이 관계로 바꾸면 구간별 적분값이 순차적으로 연결되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 62530,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2023-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "\\(x<0\\)에서 \\(u=3^{x+2}\\)라 두면  \n\\(x<0 \\Rightarrow 0<u<9\\)이고, \\(u\\)는 \\(x\\)에 대해 일대일 대응입니다.\n\n따라서 왼쪽 구간의 해의 개수는\n\n\\[\n|u-n|=t \\quad (0<u<9)\n\\]\n\n의 해의 개수와 같습니다.  \n\\(t>0\\)일 때 해는\n\n\\[\nu=n-t,\\quad u=n+t\n\\]\n\n이고, 두 해가 모두 \\(0<u<9\\) 안에 있어야 왼쪽에서 해가 2개입니다.\n\n즉\n\n\\[\n0<n-t<9,\\quad 0<n+t<9\n\\]\n\n가 동시에 성립해야 하므로, 특히 \\(n<9\\)이고 적당한 양수 \\(t\\)가 존재해야 합니다.\n\n---\n\n또 \\(x\\ge 0\\)에서 \\(v=\\log_2(x+4)\\)라 두면\n\n\\[\nx\\ge 0 \\Rightarrow v\\ge 2\n\\]\n\n이고 역시 일대일 대응입니다.  \n오른쪽 구간의 해의 개수는\n\n\\[\n|v-n|=t \\quad (v\\ge 2)\n\\]\n\n의 해의 개수와 같습니다.\n\n\\(t>0\\)일 때 해는\n\n\\[\nv=n-t,\\quad v=n+t\n\\]\n\n이고, 두 해가 모두 \\(v\\ge 2\\)이어야 오른쪽에서 해가 2개입니다.\n\n\\[\nn-t\\ge 2\n\\]\n\n인 양수 \\(t\\)가 존재해야 하므로\n\n\\[\nn>2\n\\]\n\n이어야 합니다.\n\n---\n\n전체 해의 개수 \\(g(t)\\)의 최댓값이 4가 되려면, 어떤 \\(t>0\\)에 대해 왼쪽에서 2개, 오른쪽에서 2개가 동시에 나와야 합니다.\n\n따라서 조건은\n\n\\[\nn<9,\\quad n>2\n\\]\n\n이므로\n\n\\[\nn=3,4,5,6,7,8\n\\]\n\n입니다.\n\n이들의 합은\n\n\\[\n3+4+5+6+7+8=33\n\\]\n\n입니다.\n\n최종 답: 33  \n코칭 한마디: 왜냐하면 복잡한 절댓값 방정식도 내부 함수를 새 변수로 바꾸면 “가능한 범위 안에서 \\(n\\pm t\\)가 몇 개 들어가는가”만 세면 되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 41365,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2023-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "이차방정식 근의 분포",
+        "사잇값 정리 (수학2)",
+        "치환 적분",
+        "최적화 (자유 극값)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 85411,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2023-미적분-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "좌표를 잡겠습니다.  \n반원의 중심을 \\(O(0,0)\\), \\(A(-1,0)\\), \\(B(1,0)\\), \\(C(0,1)\\)로 둡니다.\n\n\\[\n\\angle PAB=\\theta\n\\]\n\n이므로 원주각 관계에 의해\n\n\\[\n\\angle POB=2\\theta\n\\]\n\n따라서\n\n\\[\nP=(\\cos 2\\theta,\\sin 2\\theta)\n\\]\n\n또한 \\(\\overline{PB}=\\overline{QC}\\)이므로 호의 중심각도 같아서\n\n\\[\nQ=(-\\sin 2\\theta,\\cos 2\\theta)\n\\]\n\n입니다.\n\n이제\n\n\\[\nu=\\tan\\theta\n\\]\n\n라고 두겠습니다.\n\n삼각형 \\(POB\\)의 넓이는\n\n\\[\nf(\\theta)=\\frac12\\sin 2\\theta\n\\]\n\n이고,\n\n\\[\n\\sin 2\\theta=\\frac{2u}{1+u^2}\n\\]\n\n이므로\n\n\\[\nf(\\theta)=\\frac{u}{1+u^2}\n\\]\n\n입니다.\n\n한편 직선 \\(AP\\)의 기울기는\n\n\\[\n\\frac{\\sin 2\\theta}{1+\\cos 2\\theta}=\\tan\\theta=u\n\\]\n\n이므로\n\n\\[\nAP:\\ y=u(x+1)\n\\]\n\n입니다. 또한 \\(QC\\)도 \\(AP\\)와 평행합니다.\n\n따라서 사각형 \\(CQRS\\)는 \\(CQ \\parallel RS\\)인 사다리꼴입니다.\n\n각 길이를 구하면\n\n\\[\nCQ=PB=2\\sin\\theta=\\frac{2u}{\\sqrt{1+u^2}}\n\\]\n\n이고, \\(QR\\)은 점 \\(Q\\)에서 직선 \\(AP\\)까지의 거리이므로\n\n\\[\nQR=\\frac{1-u}{\\sqrt{1+u^2}}\n\\]\n\n또한\n\n\\[\nRS=\\frac{u(1+u)}{\\sqrt{1+u^2}}\n\\]\n\n입니다.\n\n따라서\n\n\\[\ng(\\theta)\n=\\frac12(CQ+RS)\\cdot QR\n\\]\n\n\\[\n=\\frac12\\left(\\frac{2u}{\\sqrt{1+u^2}}+\\frac{u(1+u)}{\\sqrt{1+u^2}}\\right)\\frac{1-u}{\\sqrt{1+u^2}}\n\\]\n\n\\[\n=\\frac{3u-2u^2-u^3}{2(1+u^2)}\n\\]\n\n이제\n\n\\[\n3f(\\theta)-2g(\\theta)\n=\n\\frac{3u}{1+u^2}\n-\n\\frac{3u-2u^2-u^3}{1+u^2}\n\\]\n\n\\[\n=\\frac{2u^2+u^3}{1+u^2}\n\\]\n\n따라서\n\n\\[\n\\lim_{\\theta\\to0+}\\frac{3f(\\theta)-2g(\\theta)}{\\theta^2}\n=\n\\lim_{\\theta\\to0+}\n\\frac{u^2(2+u)}{(1+u^2)\\theta^2}\n\\]\n\n\\[\n=\n\\lim_{\\theta\\to0+}\n\\left(\\frac{\\tan\\theta}{\\theta}\\right)^2\n\\frac{2+\\tan\\theta}{1+\\tan^2\\theta}\n=2\n\\]\n\n최종 답: 2  \n코칭 한마디: 왜냐하면 \\(\\theta\\to0\\)에서 1차항이 서로 소거되므로, 좌표와 \\(u=\\tan\\theta\\)를 써서 넓이를 정확히 식으로 만든 뒤 2차항을 보는 것이 가장 안전합니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 75551,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2023-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이의 핵심은 \\(h(x)=g(f(x))\\)의 극대 조건으로부터 \\(f'(0)=0\\)을 끌어내고, 이후 \\((0,3)\\)에서 \\(f\\)가 단조감소함을 이용해 방정식의 근의 개수를 세는 것입니다.\n\n먼저\n\\[\ng(x)=e^{\\sin \\pi x}-1\n\\]\n이므로\n\\[\nh(x)=0 \\iff \\sin(\\pi f(x))=0 \\iff f(x)\\in \\mathbb Z\n\\]\n\n조건 (가)에 의해 \\(h(x)\\)는 \\(x=0\\)에서 극댓값 \\(0\\)을 가지므로\n\\[\nf(0)=n \\quad (n\\in \\mathbb Z)\n\\]\n입니다.\n\n만약 \\(f'(0)\\neq 0\\)이면 \\(x=0\\) 근처에서 \\(f(x)-n\\)의 부호가 바뀌어 \\(h(x)\\)가 한쪽에서는 양수가 되므로, \\(h(x)\\le 0\\)인 극대 조건에 모순입니다. 따라서\n\\[\nf'(0)=0\n\\]\n\n또 \\(f'(3)=0\\)이고 \\(f\\)는 최고차항의 계수가 양수인 삼차함수이므로\n\\[\nf'(x)=a x(x-3) \\quad (a>0)\n\\]\n\n적분하면\n\\[\nf(x)=a\\left(\\frac{x^3}{3}-\\frac{3x^2}{2}\\right)+C\n\\]\n이고 \\(f(0)=n\\)이므로 \\(C=n\\)입니다.\n\n또 \\(f(3)=\\frac12\\)이므로\n\\[\n\\frac12=n+a\\left(9-\\frac{27}{2}\\right)\n\\]\n\\[\n\\frac12=n-\\frac{9a}{2}\n\\]\n따라서\n\\[\na=\\frac{2n-1}{9}\n\\]\n\n한편 \\(a>0\\)이므로 \\(n>\\frac12\\)이고, \\(x=0\\)에서 \\(f\\)는 국소최대입니다. \\(h\\)가 \\(0\\)을 극댓값으로 가지려면 \\(n\\)은 짝수여야 합니다.\n\n이제 \\((0,3)\\)에서\n\\[\nf'(x)=a x(x-3)<0\n\\]\n이므로 \\(f\\)는 단조감소합니다. 따라서 \\(x\\in(0,3)\\)에서 \\(f(x)\\)의 값의 범위는\n\\[\n\\left(\\frac12,n\\right)\n\\]\n입니다.\n\n조건 (나)를 봅니다.\n\\[\nh(x)=1\n\\]\n\\[\ne^{\\sin \\pi f(x)}-1=1\n\\]\n\\[\n\\sin \\pi f(x)=\\ln 2\n\\]\n\n\\[\n\\alpha=\\frac{1}{\\pi}\\arcsin(\\ln 2)\n\\]\n라 하면\n\\[\n0<\\alpha<\\frac12\n\\]\n이고, 해가 되는 \\(f(x)\\)의 값들은\n\\[\nm+\\alpha,\\quad m+1-\\alpha \\quad (m\\in\\mathbb Z)\n\\]\n꼴입니다.\n\n구간 \\(\\left(\\frac12,n\\right)\\) 안에 있는 이러한 값의 개수를 세면,\n\n- \\(m=0\\)일 때 \\(\\alpha<\\frac12\\)이므로 제외, \\(1-\\alpha\\)만 포함\n- \\(m=1,2,\\dots,n-1\\)일 때는 각각 두 개씩 포함\n\n따라서 개수는\n\\[\n1+2(n-1)=2n-1\n\\]\n\n조건 (나)에 의해 이 개수가 \\(7\\)이므로\n\\[\n2n-1=7\n\\]\n\\[\nn=4\n\\]\n\n이제\n\\[\nf(2)=n+a\\left(\\frac{8}{3}-6\\right)\n\\]\n\\[\n=4+\\frac{2\\cdot4-1}{9}\\left(-\\frac{10}{3}\\right)\n\\]\n\\[\n=4-\\frac{7}{9}\\cdot\\frac{10}{3}\n\\]\n\\[\n=4-\\frac{70}{27}\n\\]\n\\[\n=\\frac{38}{27}\n\\]\n\n따라서\n\\[\nf(2)=\\frac{q}{p}=\\frac{38}{27}\n\\]\n이므로\n\\[\np=27,\\quad q=38\n\\]\n\\[\np+q=65\n\\]\n\n최종 답: 65  \n코칭 한마디: 왜냐하면 합성함수의 극대 조건은 바깥함수보다 안쪽 함수 \\(f(x)\\)가 정수 근처에서 어떻게 움직이는지를 먼저 결정해 주기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 64140,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2024-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "사잇값 정리 (수학2)",
+        "닫힌구간 최댓·최솟값 (다항함수)",
+        "최적화 (자유 극값)",
+        "적분방정식 — f 결정 (정적분 상수 활용)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이의 핵심은 “구간의 최댓값이 5 이상이 되려면, 그 구간 안에 $f(x)\\ge 5$인 점이 반드시 있어야 한다”는 점입니다.\n\n먼저 $f(x)\\ge 5$가 되는 $x$의 범위를 구합니다.\n\n### 1. 이차함수 구간에서 $f(x)\\ge 5$\n\n$-1\\le x<6$에서\n\n\\[\nf(x)=-x^2+6x\n\\]\n\n이므로\n\n\\[\n-x^2+6x\\ge 5\n\\]\n\n\\[\nx^2-6x+5\\le 0\n\\]\n\n\\[\n(x-1)(x-5)\\le 0\n\\]\n\n따라서\n\n\\[\n1\\le x\\le 5\n\\]\n\n입니다.\n\n즉, 이차함수 부분에서 $f(x)\\ge 5$인 구간은\n\n\\[\n[1,5]\n\\]\n\n입니다.\n\n---\n\n### 2. 로그함수 구간에서 $f(x)\\ge 5$\n\n$x\\ge 6$에서\n\n\\[\nf(x)=a\\log_4(x-5)\n\\]\n\n이므로\n\n\\[\na\\log_4(x-5)\\ge 5\n\\]\n\n양수 $a$에 대해 나누면\n\n\\[\n\\log_4(x-5)\\ge \\frac{5}{a}\n\\]\n\n따라서\n\n\\[\nx-5\\ge 4^{5/a}\n\\]\n\n\\[\nx\\ge 5+4^{5/a}\n\\]\n\n입니다.\n\n즉, 로그함수 부분에서 $f(x)\\ge 5$인 구간은\n\n\\[\n[5+4^{5/a},\\infty)\n\\]\n\n입니다.\n\n---\n\n### 3. $f(x)\\ge 5$인 전체 구간\n\n따라서\n\n\\[\nf(x)\\ge 5\n\\]\n\n인 구간은\n\n\\[\n[1,5]\\cup [5+4^{5/a},\\infty)\n\\]\n\n입니다.\n\n이제 길이가 2인 구간\n\n\\[\n[t-1,t+1]\n\\]\n\n이 항상 위의 구간과 만나야 $g(t)\\ge 5$가 됩니다.\n\n문제가 원하는 것은 $g(t)$의 최솟값이 5가 되는 것이므로, 모든 $t\\ge 0$에 대해\n\n\\[\ng(t)\\ge 5\n\\]\n\n이어야 합니다.\n\n---\n\n### 4. 빈틈이 길이 2보다 크면 안 된다\n\n$f(x)\\ge 5$인 구간 사이의 빈틈은\n\n\\[\n(5,\\;5+4^{5/a})\n\\]\n\n입니다.\n\n이 빈틈 안에 길이 2짜리 닫힌구간이 들어갈 수 있으면, 그 구간에서는 항상 $f(x)<5$가 되어 $g(t)<5$가 됩니다.\n\n따라서 빈틈의 길이는 2 이하이어야 합니다.\n\n빈틈의 길이는\n\n\\[\n(5+4^{5/a})-5=4^{5/a}\n\\]\n\n이므로\n\n\\[\n4^{5/a}\\le 2\n\\]\n\n이어야 합니다.\n\n양변을 밑이 4인 로그로 바꾸면\n\n\\[\n\\frac{5}{a}\\le \\frac12\n\\]\n\n따라서\n\n\\[\na\\ge 10\n\\]\n\n입니다.\n\n---\n\n### 5. 최솟값 확인\n\n$a=10$이면\n\n\\[\n5+4^{5/10}=5+4^{1/2}=5+2=7\n\\]\n\n이므로\n\n\\[\nf(x)\\ge 5\n\\]\n\n인 구간은\n\n\\[\n[1,5]\\cup[7,\\infty)\n\\]\n\n입니다.\n\n빈틈 $(5,7)$의 길이가 정확히 2이므로 길이 2짜리 닫힌구간이 완전히 들어갈 수는 없습니다. 따라서 모든 $t\\ge 0$에 대해 $g(t)\\ge 5$입니다.\n\n또한 $t=0$일 때 구간은\n\n\\[\n[-1,1]\n\\]\n\n이고, 이 구간에서 최댓값은\n\n\\[\nf(1)=5\n\\]\n\n이므로\n\n\\[\ng(0)=5\n\\]\n\n입니다.\n\n따라서 $g(t)$의 최솟값은 5가 됩니다.\n\n최종 답: 10  \n코칭 한마디: 왜냐하면 구간의 최댓값 조건은 결국 그 구간이 $f(x)\\ge 5$인 영역과 반드시 만나야 한다는 “레벨셋의 빈틈 길이” 문제로 바꿀 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 46835,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2024-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "샌드위치 정리 (조임)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 107283,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2024-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "샌드위치 정리 (조임)",
+        "적분방정식 — f 결정 (정적분 상수 활용)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "음수 구간에서  \n\\[\nf(x)=-4xe^{4x^2}\\quad (x<0)\n\\]\n입니다.\n\n### 1. 음수 쪽 근의 성질\n\n\\[\nf'(x)=-4e^{4x^2}(1+8x^2)<0\n\\]\n이므로 \\(x<0\\)에서 \\(f\\)는 감소함수입니다.\n\n또한\n\\[\n\\lim_{x\\to -\\infty}f(x)=\\infty,\\qquad \\lim_{x\\to 0^-}f(x)=0\n\\]\n이므로 모든 \\(t>0\\)에 대해 음수인 해가 정확히 하나 존재합니다.\n\n따라서 방정식 \\(f(x)=t\\)의 작은 근은 항상 음수이고, 이를\n\\[\ng(t)=a\\quad (a<0)\n\\]\n라고 두면\n\\[\nt=f(a)=-4ae^{4a^2}\n\\]\n입니다.\n\n---\n\n### 2. 조건 \\(2g(t)+h(t)=k\\) 이용\n\n\\[\n2g(t)+h(t)=k\n\\]\n이므로\n\\[\nh(t)=k-2g(t)\n\\]\n입니다.\n\n\\(g(t)=a\\)라 두면\n\\[\nh(t)=k-2a\n\\]\n이고, 이 점에서도 함수값이 \\(t\\)이므로\n\\[\nf(k-2a)=f(a)=-4ae^{4a^2}\n\\]\n\n이제\n\\[\nx=k-2a\n\\]\n라 하면\n\\[\na=\\frac{k-x}{2}\n\\]\n입니다. 따라서 \\(x>k\\)에서\n\\[\nf(x)=-4\\cdot \\frac{k-x}{2}\\cdot e^{4\\left(\\frac{k-x}{2}\\right)^2}\n\\]\n\\[\nf(x)=2(x-k)e^{(x-k)^2}\n\\]\n\n즉,\n\\[\nx>k \\quad \\Rightarrow \\quad f(x)=2(x-k)e^{(x-k)^2}\n\\]\n\n---\n\n### 3. \\(0\\le x\\le k\\)에서의 함수값\n\n모든 \\(t>0\\)에 대해 해가 정확히 2개인데, 음수 쪽에서 이미 1개, \\(x>k\\)에서 1개가 있습니다.\n\n따라서 \\(0\\le x\\le k\\)에서 양수값을 가지면 해가 하나 더 생기므로 안 됩니다.\n\n\\[\nf(x)\\ge 0\n\\]\n이고 양수값을 가질 수 없으므로\n\\[\n0\\le x\\le k \\quad \\Rightarrow \\quad f(x)=0\n\\]\n\n---\n\n### 4. 적분 조건으로 \\(k\\) 결정\n\n\\[\n\\int_0^7 f(x)\\,dx=e^4-1\n\\]\n\n\\(0\\le x\\le k\\)에서는 \\(f(x)=0\\), \\(x>k\\)에서는  \n\\[\nf(x)=2(x-k)e^{(x-k)^2}\n\\]\n이므로\n\n\\[\n\\int_0^7 f(x)\\,dx=\\int_k^7 2(x-k)e^{(x-k)^2}\\,dx\n\\]\n\n치환\n\\[\nu=(x-k)^2\n\\]\n를 쓰면\n\n\\[\n\\int_k^7 2(x-k)e^{(x-k)^2}\\,dx\n=\ne^{(7-k)^2}-1\n\\]\n\n따라서\n\n\\[\ne^{(7-k)^2}-1=e^4-1\n\\]\n\n\\[\n(7-k)^2=4\n\\]\n\n\\[\n7-k=2\n\\]\n\n\\[\nk=5\n\\]\n\n---\n\n### 5. \\(f(9), f(8)\\) 계산\n\n\\(x>5\\)에서\n\n\\[\nf(x)=2(x-5)e^{(x-5)^2}\n\\]\n\n따라서\n\n\\[\nf(9)=2\\cdot 4\\cdot e^{16}=8e^{16}\n\\]\n\n\\[\nf(8)=2\\cdot 3\\cdot e^9=6e^9\n\\]\n\n그러므로\n\n\\[\n\\frac{f(9)}{f(8)}\n=\n\\frac{8e^{16}}{6e^9}\n=\n\\frac{4}{3}e^7\n\\]\n\n최종 답: \\(\\frac{4}{3}e^7\\)  \n코칭 한마디: 왜냐하면 음수 쪽의 근을 매개변수로 두면 조건 \\(2g(t)+h(t)=k\\)가 양수 쪽 함수식을 직접 결정해 주기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 43029,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2024-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "\\(q(x)=f'(x)=|\\sin x|\\cos x\\) 라 두겠습니다.\n\n접선 \\(g(x)\\)는 \\(x=a\\)에서의 접선이므로\n\n\\[\ng(a)=f(a), \\qquad g'(x)=f'(a)\n\\]\n\n입니다.\n\n또\n\n\\[\nh(x)=\\int_0^x \\{f(t)-g(t)\\}\\,dt\n\\]\n\n이므로\n\n\\[\nh'(x)=f(x)-g(x)\n\\]\n\n입니다. 따라서\n\n\\[\nh'(a)=f(a)-g(a)=0\n\\]\n\n이므로 \\(x=a\\)는 항상 정지점입니다. 이제 극대 또는 극소가 되려면 \\(h'(x)\\)의 부호가 \\(x=a\\)를 기준으로 바뀌어야 합니다.\n\n\\[\nh'(x)=f(x)-g(x)\n\\]\n\n라 하면\n\n\\[\n(h')'(x)=f'(x)-g'(x)=f'(x)-f'(a)=q(x)-q(a)\n\\]\n\n입니다.\n\n즉 \\(h'(x)\\)의 부호 변화는 \\(q(x)=f'(x)\\)가 \\(x=a\\)에서 국소 최대 또는 국소 최소가 되는지와 연결됩니다.\n\n따라서 \\(q(x)=|\\sin x|\\cos x\\)의 국소 극값을 찾으면 됩니다.\n\n구간 \\((k\\pi,(k+1)\\pi)\\)에서\n\n\\[\n|\\sin x|=(-1)^k\\sin x\n\\]\n\n이므로\n\n\\[\nq(x)=|\\sin x|\\cos x=\\frac{(-1)^k}{2}\\sin 2x\n\\]\n\n입니다.\n\n따라서 구간 내부에서 극값은\n\n\\[\n\\cos 2x=0\n\\]\n\n일 때, 즉\n\n\\[\nx=\\frac{\\pi}{4},\\frac{3\\pi}{4},\\frac{5\\pi}{4},\\frac{7\\pi}{4},\\cdots\n\\]\n\n에서 생깁니다.\n\n또한 \\(x=k\\pi\\)에서는 \\(|\\sin x|\\) 때문에 뾰족한 형태가 생기며, 실제로\n\n\\[\nq(x)\\approx (-1)^k|x-k\\pi|\n\\]\n\n이므로 \\(k\\pi\\)에서도 국소 최대 또는 국소 최소가 됩니다.\n\n따라서 양수 \\(a\\)들을 작은 순서대로 나열하면\n\n\\[\n\\frac{\\pi}{4},\\ \\frac{3\\pi}{4},\\ \\pi,\\ \\frac{5\\pi}{4},\\ \\frac{7\\pi}{4},\\ 2\\pi,\\cdots\n\\]\n\n입니다.\n\n따라서\n\n\\[\na_2=\\frac{3\\pi}{4},\\qquad a_6=2\\pi\n\\]\n\n이므로\n\n\\[\na_6-a_2=2\\pi-\\frac{3\\pi}{4}=\\frac{5\\pi}{4}\n\\]\n\n입니다.\n\n따라서\n\n\\[\n\\frac{100}{\\pi}(a_6-a_2)\n=\n\\frac{100}{\\pi}\\cdot \\frac{5\\pi}{4}\n=125\n\\]\n\n최종 답: 125  \n코칭 한마디: 왜냐하면 \\(h\\)의 극값 여부는 \\(h'\\)의 부호 변화로 판단하고, 여기서 \\(h'=f-g\\)는 접선과 원함수의 차이이므로 \\(f'\\)의 국소 극값을 찾는 문제로 바뀌기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 59421,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2025-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "정적분의 정의 (FTC)",
+        "샌드위치 정리 (조임)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "조건에서 문제가 되는 곳은 분모 \\(f(x)\\)가 \\(0\\)이 되는 실수 \\(x=\\alpha\\)입니다.\n\n\\[\nf(x)=x^3+ax^2+bx+4\n\\]\n\n는 실계수 3차식이므로 실근을 적어도 하나 가집니다.\n\n어떤 실근을 \\(r\\)이라고 하면, \\(x\\to r\\)에서\n\n\\[\n\\frac{f(2x+1)}{f(x)}\n\\]\n\n의 극한값이 존재하려면 분모가 \\(0\\)이 되는 만큼 분자도 \\(0\\)이 되어야 합니다. 따라서\n\n\\[\nf(r)=0 \\implies f(2r+1)=0\n\\]\n\n이어야 합니다.\n\n즉 실근 \\(r\\)이 있으면\n\n\\[\nr,\\quad 2r+1,\\quad 2(2r+1)+1,\\quad \\cdots\n\\]\n\n도 모두 실근이어야 합니다.\n\n그런데\n\n\\[\nT(x)=2x+1\n\\]\n\n의 반복값은 \\(r=-1\\)일 때만 계속 \\(-1\\)로 유지됩니다. \\(r\\neq -1\\)이면 서로 다른 실근이 무한히 생기므로 3차식이라는 사실과 모순입니다.\n\n따라서 \\(f(x)\\)의 실근은 오직 \\(-1\\)뿐이어야 합니다.\n\n먼저\n\n\\[\nf(-1)=0\n\\]\n\n이므로\n\n\\[\n-1+a-b+4=0\n\\]\n\n\\[\na-b+3=0\n\\]\n\n\\[\nb=a+3\n\\]\n\n입니다.\n\n이때\n\n\\[\nf(x)=x^3+ax^2+(a+3)x+4\n\\]\n\n이고, \\(x+1\\)로 나누면\n\n\\[\nf(x)=(x+1)\\{x^2+(a-1)x+4\\}\n\\]\n\n입니다.\n\n실근이 \\(-1\\)뿐이어야 하므로 이차식\n\n\\[\nx^2+(a-1)x+4\n\\]\n\n는 실근을 가지면 안 됩니다.\n\n따라서 판별식이 음수여야 합니다.\n\n\\[\n(a-1)^2-16<0\n\\]\n\n\\[\n(a-1)^2<16\n\\]\n\n\\[\n-4<a-1<4\n\\]\n\n\\[\n-3<a<5\n\\]\n\n\\(a\\)는 정수이므로\n\n\\[\na=-2,-1,0,1,2,3,4\n\\]\n\n입니다.\n\n또한\n\n\\[\nb=a+3\n\\]\n\n이고,\n\n\\[\nf(1)=1+a+b+4=a+b+5\n\\]\n\n\\[\n= a+(a+3)+5=2a+8\n\\]\n\n입니다.\n\n이를 최대로 하려면 \\(a=4\\)이면 됩니다.\n\n\\[\nf(1)=2\\cdot 4+8=16\n\\]\n\n최종 답: 16  \n코칭 한마디: 왜냐하면 분모가 0이 되는 점에서 극한이 존재하려면 분자도 함께 0이 되어야 하므로, 실근이 \\(x\\mapsto 2x+1\\)에 의해 어떻게 이동하는지를 추적하는 것이 핵심 도구입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 51411,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2025-공통-22",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "수열은 첫항 \\(a_1\\)이 정해지면 하나로 결정됩니다.  \n함수\n\n\\[\nf(x)=\n\\begin{cases}\nx-3 & (|x|\\text{가 홀수})\\\\\n\\dfrac{x}{2} & (x=0\\text{ 또는 }|x|\\text{가 짝수})\n\\end{cases}\n\\]\n\n라고 두면\n\n\\[\na_{n+1}=f(a_n)\n\\]\n\n입니다.\n\n조건 \\(|a_m|=|a_{m+2}|\\)은\n\n\\[\n|x|=|f^2(x)|\n\\]\n\n를 만족하는 \\(x=a_m\\)을 찾는 문제입니다.\n\n---\n\n먼저 \\(|x|=|f^2(x)|\\)를 만족하는 정수 \\(x\\)를 구합니다.\n\n### 1) \\(x\\)가 홀수인 경우\n\n\\[\nf(x)=x-3,\\qquad f^2(x)=\\frac{x-3}{2}\n\\]\n\n따라서\n\n\\[\n\\left|\\frac{x-3}{2}\\right|=|x|\n\\]\n\n이므로\n\n\\[\nx=-3,\\ 1\n\\]\n\n---\n\n### 2) \\(x\\equiv 0 \\pmod 4\\)인 경우\n\n\\[\nf^2(x)=\\frac{x}{4}\n\\]\n\n따라서\n\n\\[\n\\left|\\frac{x}{4}\\right|=|x|\n\\]\n\n이므로\n\n\\[\nx=0\n\\]\n\n---\n\n### 3) \\(x\\equiv 2 \\pmod 4\\)인 경우\n\n\\[\nf(x)=\\frac{x}{2}\\quad\\text{는 홀수}\n\\]\n\n이므로\n\n\\[\nf^2(x)=\\frac{x}{2}-3=\\frac{x-6}{2}\n\\]\n\n따라서\n\n\\[\n\\left|\\frac{x-6}{2}\\right|=|x|\n\\]\n\n이므로\n\n\\[\nx=-6,\\ 2\n\\]\n\n따라서\n\n\\[\n|x|=|f^2(x)|\n\\]\n\n를 만족하는 정수의 집합은\n\n\\[\nS=\\{-6,-3,0,1,2\\}\n\\]\n\n입니다.\n\n---\n\n조건에서 그런 \\(m\\)의 최솟값이 \\(3\\)이므로\n\n\\[\na_3\\in S\n\\]\n\n이어야 하고,\n\n\\[\na_1\\notin S,\\qquad a_2\\notin S\n\\]\n\n이어야 합니다.\n\n즉,\n\n\\[\nf^2(a_1)\\in S\n\\]\n\n인 \\(a_1\\)을 먼저 찾고, 그중 \\(a_1,a_2\\notin S\\)인 것만 남깁니다.\n\n---\n\n\\(f^2(a_1)\\in S\\)가 되는 \\(a_1\\) 후보를 구하면\n\n\\[\na_1\\in \\{-24,-12,-9,-6,-3,0,3,4,5,6,7,8,10\\}\n\\]\n\n입니다.\n\n이제 \\(a_1\\notin S\\), \\(a_2=f(a_1)\\notin S\\)를 확인하면 남는 값은\n\n\\[\na_1=-24,-9,6,7,8,10\n\\]\n\n입니다.\n\n따라서 가능한 \\(|a_1|\\)의 합은\n\n\\[\n24+9+6+7+8+10=64\n\\]\n\n입니다.\n\n최종 답: 64  \n코칭 한마디: 왜냐하면 두 칸 뒤와 절댓값이 같아지는지를 보려면 \\(f^2\\)를 한 번에 분석하는 것이 가장 빠르게 반복 구조를 잡아내는 도구이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 54780,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2025-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "회전체의 부피 (디스크)",
+        "매개변수 미분",
+        "한 점에서의 접선의 방정식",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "회전체 부피 (껍질법)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "접선의 방정식은  \n\\[\ny=f(t)+f'(t)(x-t)\n\\]\n입니다.\n\n또한\n\\[\nf''(x)=-1-2xe^{1-x^2}\n\\]\n이므로 \\(x\\ge 0\\)에서 \\(f''(x)<0\\), 즉 곡선은 위로 볼록하지 않고 아래로 오목합니다. 따라서 \\(0\\le x\\le t\\)에서 접선이 곡선 위에 있습니다.\n\n따라서 넓이\n\\[\ng(t)=\\int_0^t \\{f(t)+f'(t)(x-t)-f(x)\\}\\,dx\n\\]\n\n이제 \\(t=1\\)에서\n\\[\nf'(1)=-1+e^0=0\n\\]\n이므로 접선은 수평선 \\(y=f(1)\\)입니다.\n\n\\[\ng(1)=\\int_0^1 \\{f(1)-f(x)\\}\\,dx\n\\]\n\n\\[\nf(1)-f(x)=\\int_x^1 f'(u)\\,du\n\\]\n이므로\n\\[\ng(1)=\\int_0^1 u f'(u)\\,du\n\\]\n\n\\[\n=\\int_0^1 u(-u+e^{1-u^2})\\,du\n\\]\n\n\\[\n=-\\int_0^1 u^2\\,du+\\int_0^1 ue^{1-u^2}\\,du\n\\]\n\n\\[\n=-\\frac13+\\frac12(e-1)\n\\]\n\n\\[\ng(1)=\\frac12e-\\frac56\n\\]\n\n이제 \\(g'(t)\\)를 구하면,\n\\[\ng'(t)=\\int_0^t f''(t)(x-t)\\,dx\n\\]\n\n\\[\n=f''(t)\\left[\\frac{x^2}{2}-tx\\right]_0^t\n=-\\frac{t^2}{2}f''(t)\n\\]\n\n\\[\nf''(1)=-1-2=-3\n\\]\n따라서\n\\[\ng'(1)=-\\frac12(-3)=\\frac32\n\\]\n\n그러므로\n\\[\ng(1)+g'(1)=\\left(\\frac12e-\\frac56\\right)+\\frac32\n=\\frac12e+\\frac23\n\\]\n\n최종 답: \\((2)\\ \\frac12e+\\frac23\\)  \n코칭 한마디: 왜냐하면 접선과 곡선이 만드는 넓이는 “접선식 − 함수식”을 적분하면 되고, \\(g'(t)\\)는 적분식 자체를 미분하면 빠르게 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 31621,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2025-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "먼저 조건 (가)를 이용해 \\(a,b\\)를 결정하겠습니다.\n\n\\[\nf(x)=\\sin(ax+b+\\sin x)\n\\]\n\n### 1. 조건 (가) 해석\n\n\\[\nf(0)=\\sin b=0\n\\]\n\n따라서\n\n\\[\nb=k\\pi \\quad (k\\in\\mathbb Z)\n\\]\n\n또한\n\n\\[\nf(2\\pi)=\\sin(2\\pi a+b)=2\\pi a+b\n\\]\n\n그런데 \\(\\sin y=y\\)를 만족하는 실수 \\(y\\)는 \\(y=0\\)뿐이므로\n\n\\[\n2\\pi a+b=0\n\\]\n\n즉,\n\n\\[\nb=-2\\pi a\n\\]\n\n이때 \\(b=k\\pi\\)이므로\n\n\\[\n-2a=k\n\\]\n\n이고, \\(1\\le a\\le 2\\)에서 가능한 값은\n\n\\[\na=1,\\frac32,2\n\\]\n\n입니다.\n\n---\n\n### 2. 조건 (나)로 \\(a\\) 결정\n\n\\[\nf'(x)=\\cos(ax+b+\\sin x)(a+\\cos x)\n\\]\n\n각 후보를 확인합니다.\n\n#### \\(a=1\\) 또는 \\(a=2\\)\n\n이 경우 \\(f'(x)\\)는 주기가 \\(2\\pi\\)이므로\n\n\\[\nf'(0)=f'(2\\pi)\n\\]\n\n입니다. 따라서 양수 \\(t\\)의 최솟값이 \\(4\\pi\\)가 될 수 없습니다.\n\n따라서\n\n\\[\na=\\frac32\n\\]\n\n이고,\n\n\\[\nb=-2\\pi a=-3\\pi\n\\]\n\n입니다.\n\n---\n\n### 3. 극대 조건 구하기\n\n이제\n\n\\[\nf(x)=\\sin\\left(\\frac32x-3\\pi+\\sin x\\right)\n\\]\n\n라 두고,\n\n\\[\ng(x)=\\frac32x-3\\pi+\\sin x\n\\]\n\n라 하면\n\n\\[\ng'(x)=\\frac32+\\cos x>0\n\\]\n\n입니다. 따라서 \\(g(x)\\)는 증가함수입니다.\n\n\\[\nf(x)=\\sin g(x)\n\\]\n\n가 극대가 되려면\n\n\\[\ng(x)=\\frac{\\pi}{2}+2k\\pi\n\\]\n\n이어야 합니다.\n\n즉,\n\n\\[\n\\frac32x-3\\pi+\\sin x=\\frac{\\pi}{2}+2k\\pi\n\\]\n\n\\[\n\\frac32x+\\sin x=\\frac{7\\pi}{2}+2k\\pi\n\\]\n\n입니다.\n\n---\n\n### 4. \\((0,4\\pi)\\)에서 해의 개수\n\n\\[\nF(x)=\\frac32x+\\sin x\n\\]\n\n라 하면 \\(F'(x)=\\frac32+\\cos x>0\\)이므로 \\(F\\)는 증가함수입니다.\n\n또한\n\n\\[\nF(0)=0,\\qquad F(4\\pi)=6\\pi\n\\]\n\n따라서\n\n\\[\n0<\\frac{7\\pi}{2}+2k\\pi<6\\pi\n\\]\n\n를 만족하는 정수 \\(k\\)를 찾으면 됩니다.\n\n가능한 값은\n\n\\[\nk=-1,0,1\n\\]\n\n총 3개입니다. 따라서\n\n\\[\nn=3\n\\]\n\n입니다.\n\n---\n\n### 5. 가장 작은 극대점 \\(\\alpha_1\\)\n\n가장 작은 값은 \\(k=-1\\)일 때입니다.\n\n\\[\n\\frac32x+\\sin x=\\frac{3\\pi}{2}\n\\]\n\n여기서\n\n\\[\nx=\\pi\n\\]\n\n를 대입하면\n\n\\[\n\\frac32\\pi+\\sin\\pi=\\frac{3\\pi}{2}\n\\]\n\n이므로\n\n\\[\n\\alpha_1=\\pi\n\\]\n\n입니다.\n\n---\n\n### 6. 값 계산\n\n\\[\nn\\alpha_1-ab\n\\]\n\n에서\n\n\\[\nn=3,\\quad \\alpha_1=\\pi,\\quad a=\\frac32,\\quad b=-3\\pi\n\\]\n\n이므로\n\n\\[\nn\\alpha_1-ab=3\\pi-\\frac32(-3\\pi)\n\\]\n\n\\[\n=3\\pi+\\frac{9\\pi}{2}\n\\]\n\n\\[\n=\\frac{15\\pi}{2}\n\\]\n\n따라서\n\n\\[\n\\frac{q}{p}\\pi=\\frac{15}{2}\\pi\n\\]\n\n이므로\n\n\\[\np=2,\\quad q=15\n\\]\n\n\\[\np+q=17\n\\]\n\n최종 답: 17  \n코칭 한마디: 왜냐하면 \\(g'(x)>0\\)이면 \\(\\sin g(x)\\)의 극대 위치를 \\(g(x)=\\frac{\\pi}{2}+2k\\pi\\)로 바로 바꿔 셀 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 44129,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2026-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "샌드위치 정리 (조임)",
+        "닫힌구간 최댓·최솟값 (다항함수)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 105263,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2026-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "도형의 평행이동",
+        "선분의 매개변수화",
+        "사잇값 정리 (수학2)",
+        "조건부확률",
+        "회전체의 부피 (디스크)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 97077,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2026-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "회전체의 부피 (디스크)",
+        "매개변수 미분",
+        "이차방정식 근의 분포",
+        "사잇값 정리 (수학2)",
+        "ln(1+x)/x 의 극한"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "접선의 \\(y\\)절편을 이용해 \\(t\\)와 \\(s\\)의 관계를 먼저 구하겠습니다.\n\n\\[\nf(x)=\\frac12x^2-x+\\ln(1+x)\n\\]\n\n\\[\nf'(x)=x-1+\\frac1{1+x}\n=\\frac{x^2}{1+x}\n\\]\n\n점 \\((s,f(s))\\)에서의 접선은\n\n\\[\ny=f'(s)(x-s)+f(s)\n\\]\n\n이므로 \\(y\\)축과 만나는 점의 \\(y\\)좌표는\n\n\\[\nf(s)-sf'(s)\n\\]\n\n한편 점 \\((s,f(s))\\)에서 \\(y\\)축에 내린 수선의 발은\n\n\\[\n(0,f(s))\n\\]\n\n따라서 두 점 사이의 거리는\n\n\\[\nf(s)-\\{f(s)-sf'(s)\\}=sf'(s)\n\\]\n\n이고, \\(s>0\\)에서 \\(f'(s)>0\\)이므로\n\n\\[\nt=sf'(s)=s\\cdot \\frac{s^2}{1+s}\n=\\frac{s^3}{1+s}\n\\]\n\n즉,\n\n\\[\nt=\\frac{s^3}{1+s}\n\\]\n\n이고 \\(s=g(t)\\)입니다.\n\n이제\n\n\\[\n\\int_{\\frac12}^{\\frac{27}{4}} g(t)\\,dt\n\\]\n\n에서 \\(t=\\dfrac{s^3}{1+s}\\)로 치환합니다.\n\n끝값을 구하면\n\n\\[\ns=1 \\Rightarrow t=\\frac{1}{2}\n\\]\n\n\\[\ns=3 \\Rightarrow t=\\frac{27}{4}\n\\]\n\n따라서\n\n\\[\n\\int_{\\frac12}^{\\frac{27}{4}} g(t)\\,dt\n=\n\\int_1^3 s\\frac{dt}{ds}\\,ds\n\\]\n\n부분적분 형태로 계산하면\n\n\\[\n\\int_1^3 s\\frac{dt}{ds}\\,ds\n=\n\\left[st\\right]_1^3-\\int_1^3 t\\,ds\n\\]\n\n\\[\n=\n\\left[\\frac{s^4}{1+s}\\right]_1^3\n-\n\\int_1^3 \\frac{s^3}{1+s}\\,ds\n\\]\n\n먼저\n\n\\[\n\\left[\\frac{s^4}{1+s}\\right]_1^3\n=\n\\frac{81}{4}-\\frac12\n=\n\\frac{79}{4}\n\\]\n\n또,\n\n\\[\n\\frac{s^3}{1+s}=s^2-s+1-\\frac1{s+1}\n\\]\n\n이므로\n\n\\[\n\\int_1^3 \\frac{s^3}{1+s}\\,ds\n=\n\\int_1^3 \\left(s^2-s+1-\\frac1{s+1}\\right)ds\n\\]\n\n\\[\n=\n\\left[\\frac{s^3}{3}-\\frac{s^2}{2}+s-\\ln(s+1)\\right]_1^3\n\\]\n\n\\[\n=\n\\frac{20}{3}-\\ln 2\n\\]\n\n따라서\n\n\\[\n\\int_{\\frac12}^{\\frac{27}{4}} g(t)\\,dt\n=\n\\frac{79}{4}-\\left(\\frac{20}{3}-\\ln2\\right)\n\\]\n\n\\[\n=\n\\frac{157}{12}+\\ln2\n\\]\n\n최종 답: \\(\\frac{157}{12}+\\ln 2\\)\n\n코칭 한마디: 이유는 \\(g(t)\\)가 역함수 형태로 직접 구하기 어렵기 때문에, \\(t=\\frac{s^3}{1+s}\\)로 치환해 적분 변수를 \\(s\\)로 바꾸는 것이 가장 효율적입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 34239,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    },
+    {
+      "id": "2026-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 100168,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "gpt55"
+    }
+  ]
+}

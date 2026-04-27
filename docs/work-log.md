@@ -1,5 +1,46 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-27 ~ 28 (8차 night 세션 — Phase G-05 KPI 85% 게이트 통과 ⭐)
+
+### 진행 요약
+사용자 통찰 ("진짜 multi-turn agentic + 매 turn 마다 원문제 컨텍스트 주입") 을 그대로 구현해 G-04 의 결함(prompt-inject 가짜 multi-turn) 을 정정. 5 모델 × 2 모드 (baseline + agentic) = 10 측정 night mode 자율 진행.
+
+### 핵심 결과
+| 모델 | baseline | **agentic** | 게이트 |
+|---|---|---|---|
+| Sonnet 4.6 | 39.5% | 81.6% | ❌ |
+| Opus 4.7 | 78.9% | 81.6% | ❌ |
+| GPT-5.1 | 28.9% | 42.1% | ❌ |
+| **GPT-5.5** | 57.9% | **86.8%** | ✅ |
+| **Gemini 3.1 Pro** | 47.4% | **89.5%** ⭐ | ✅ |
+
+**상용화 가능 입증**: 사용자 KPI 85% 게이트 통과 모델 2개 발견. Gemini 3.1 Pro agentic 이 비용·정답률·안정성 모두 1위 (parse_err 0, 월 ~$540).
+
+### 영역별 우위
+- 가형(2017~2021 21+28+29+30): Sonnet 4.6 agentic **100%** (18/18)
+- 공통(2022~2026 21+22): Gemini 3.1 Pro agentic **90%**
+- 미적분(2022~2026 28+30): Opus 4.7 baseline **100%** + GPT-5.5 agentic **100%**
+
+### night mode 자율 진행 시퀀스
+1. 1단계 background `be27i0ai4` — Sonnet agentic + GPT-5.1 baseline + GPT-5.1 agentic
+2. wrapper `bjbt29owz` 파일 감지 실패 → 직접 stage 2 시작 `b5n9wspr1`
+3. 2단계 sequential: Opus baseline+agentic → GPT-5.5 baseline+agentic → Gemini baseline+agentic
+4. monitoring 1시간 간격 wakeup × 5회
+5. 종합 보고서 자동 작성
+
+### 산출물
+- `docs/qa/kpi-killer-g05-report.md` — 종합 보고
+- `docs/qa/kpi-evaluation-killer-{model}-{mode}.json` × 10 — 원본
+- 비용 실측: 약 $65 (1단계 $15 + 2단계 $50)
+
+### 다음 세션 권장 (G-06)
+1. Production 모델 격상 — Sonnet 4.5 → Sonnet 4.6 또는 Gemini 3.1 Pro 통합
+2. agentic 모드 라이브 배포 — 난이도 5+ 만
+3. 영역별 라우팅 — 미적분 Opus baseline / 공통·가형 Gemini agentic
+4. KPI 95% 도전 — 영역별 듀얼 모델 + sympy/wolfram 강제
+
+---
+
 ## 2026-04-27 (8차 세션 — G-04 killer 정답률 85% 도전 + 4채널 trigger 시스템)
 
 ### 진행 요약

@@ -24,7 +24,8 @@
 | Phase G-02 (6차 세션) | ✅ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 4/4 |
 | 중학교 시드 분할 (6차 세션) | ✅ middle → middle1/middle2/middle3 (8/8/19 도구) | 2/2 |
 | Phase G-03 (7차 세션) | ✅ chain miss 인프라 + Trigger 1.07→1.90 + KPI A/B 측정 | 3/3 |
-| Phase G-04 (8차 세션) | 🔄 killer 정답률 85% 게이트 — 1차 측정: 20~30% (KPI 미달, alternating·RAG 효과 없음). 4채널 trigger 시스템 가동 완료 | 9/9 (방향 결정 대기) |
+| Phase G-04 (8차 세션) | ✅ killer 정답률 측정 인프라 + 4채널 trigger 시스템 가동 (단 chain prompt-inject 한계로 30% 천장) | 9/9 |
+| Phase G-05 (8차 night) | ✅ **KPI 85% 게이트 압도적 통과 — Gemini 3.1 Pro agentic 89.5% / GPT-5.5 agentic 86.8%**. 진짜 multi-turn agentic (원문제 매 turn 주입) + 5 모델 × 2 모드 측정 | 5/5 |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -115,7 +116,31 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 | G04-6 | c52fe49 | eval-kpi inline alternating + similar RAG (4-way A/B 측정 인프라). 4-way (baseline/chain_only/chain_rag/full) 측정 진행 중 |
 | G04-8 | 59265c2 | trigger 직접 입력 채널 (3) — POST /api/admin/math-tools/[id]/triggers + /admin/math-tools/[toolId]/triggers/new + contributor 권한 토글 (admin 전용) + source 추적 |
 | G04-9 | c2f9268 | 자체 학습 trigger mining 채널 (4) — candidate_triggers 마이그레이션 + trigger-miner.ts + cron 매일 03:30 KST + 검수 큐 UI/API |
-| G04-7 | (보고) | docs/qa/kpi-killer-ab-report.md — 1차 측정 결과: baseline 30% / chain_only 30% / chain_rag 20% (full 측정 진행 중). KPI 85% 게이트 한참 미달. Manager 실패율 60%, alternating loop 효과 없음, RAG 오히려 해로움. SOTA 단발 한계와 일치. 향후 4가지 방향 옵션 제시 |
+| G04-7 | 3829e6b | docs/qa/kpi-killer-ab-report.md — 1차 측정 결과: 20~30% (KPI 미달). 향후 4 옵션 제시 (D=multi-turn agentic 권장) |
+
+### 8차 세션 (2026-04-27 ~ 28 night) — Phase G-05 KPI 85% 게이트 통과 ⭐
+
+> 사용자 통찰 적용: math_process.md 의 진짜 multi-turn agentic + 원문제 매 turn 주입.
+> 평가셋 재구성: 21+22(공통) + 28+30(미적분) + 가형 21+28+29+30 = 38문항.
+> 5 모델 × 2 모드 = 10 측정.
+
+| 단계 | 커밋 | 내용 |
+|---|---|---|
+| G05-1 | 25d57d0 | 평가셋 재구성 + agentic chain inline + adapt area_label + parse_err 모수 제외 |
+| G05-2 | 6b04fd8 | 모델 추상화 — Opus 4.7 / GPT-5.5 / Gemini 3.1 Pro 통합 (callModel 5분기). max_tokens 5000 상향 |
+| G05-3 | (측정) | 1단계 실측: sonnet baseline+agentic / GPT-5.1 baseline+agentic |
+| G05-4 | (측정) | 2단계 실측: Opus / GPT-5.5 / Gemini baseline+agentic (night mode 자율) |
+| G05-5 | (보고) | docs/qa/kpi-killer-g05-report.md — 종합 보고서 + 영역별 통계 + 추천 모델 |
+
+**KPI 게이트 통과 모델 2개**:
+- ⭐⭐⭐ **Gemini 3.1 Pro agentic = 89.5% (34/38)** — parse_err 0, 전 영역 균일, 가장 저렴 (월 $540)
+- ⭐⭐ **GPT-5.5 agentic = 86.8% (33/38)** — 미적분 100%
+
+**핵심 부가 발견**:
+- Sonnet 4.6 agentic 가형 100% — 학계 천장 돌파
+- Opus 4.7 baseline 미적분 100% (10/10) — 단발 만으로 압도적
+- agentic 효과는 baseline 약한 모델에서 극대화 (Sonnet/Gemini +42pp)
+- multi-turn 의 핵심은 "원문제 매 turn 주입" 사용자 통찰
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|

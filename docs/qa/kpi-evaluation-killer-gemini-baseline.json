@@ -1,0 +1,948 @@
+{
+  "mode": "full",
+  "run_at": "2026-04-27T20:58:42.076Z",
+  "summary": {
+    "total": 22,
+    "retriever_hit_rate_top3": 0,
+    "retriever_hit_rate_top5": 0,
+    "reasoner_accuracy": 0.8181818181818182,
+    "reasoner_accuracy_hard": 0.8181818181818182,
+    "why_inclusion_rate": 0.5454545454545454,
+    "manager_classify_rate": 0.45454545454545453,
+    "pass": {
+      "retriever": false,
+      "accuracy": true,
+      "why": false
+    },
+    "chain": {
+      "enabled": false,
+      "executed_count": 0,
+      "avg_depth": 0,
+      "termination_dist": {
+        "reached_conditions": 0,
+        "max_depth": 0,
+        "dead_end": 0,
+        "cycle": 0
+      },
+      "success_rate": 0
+    }
+  },
+  "results": [
+    {
+      "id": "2017-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "역함수",
+        "사잇값 정리 (수학2)",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "부정적분의 정의",
+        "회전체의 부피 (디스크)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 단계별로 해결해 봅시다.\n\n**1단계: $f(x)$의 부호 변화 파악하기**\n함수 $f(x)$는 닫힌 구간 $[0,1]$에서 증가하는 연속함수입니다. \n만약 $f(x)$가 항상 0 이상이라면 $\\int_{0}^{1} f(x) dx = \\int_{0}^{1} |f(x)| dx$가 성립해야 하지만, 문제에서 $2 \\neq 2\\sqrt{2}$이므로 $f(x)$는 구간 내에서 음수에서 양수로 부호가 바뀝니다.\n사잇값 정리에 의해 $f(c)=0$을 만족하는 $c \\in (0, 1)$가 존재하며, \n- $0 \\le x \\le c$ 일 때 $f(x) \\le 0$\n- $c \\le x \\le 1$ 일 때 $f(x) \\ge 0$\n이 됩니다.\n\n**2단계: 구간별 정적분 값 구하기**\n주어진 두 정적분 조건을 구간 $[0, c]$와 $[c, 1]$로 나누어 써봅시다.\n$$ \\int_{0}^{c} f(x) dx + \\int_{c}^{1} f(x) dx = 2 $$\n$$ -\\int_{0}^{c} f(x) dx + \\int_{c}^{1} f(x) dx = 2\\sqrt{2} $$\n이 두 식을 연립하여 더하고 빼면 다음을 얻을 수 있습니다.\n$$ \\int_{c}^{1} f(x) dx = 1 + \\sqrt{2} $$\n$$ \\int_{0}^{c} f(x) dx = 1 - \\sqrt{2} $$\n\n**3단계: $F(x)$의 성질과 미분 활용하기**\n$F(x) = \\int_{0}^{x} |f(t)| dt$의 양변을 $x$에 대해 미분하면, 미적분학의 기본정리에 의해 $F'(x) = |f(x)|$가 됩니다.\n또한, $F(0) = 0$이며, $F(c)$와 $F(1)$의 값은 다음과 같습니다.\n$$ F(c) = \\int_{0}^{c} |f(t)| dt = -\\int_{0}^{c} f(t) dt = -(1 - \\sqrt{2}) = \\sqrt{2} - 1 $$\n$$ F(1) = \\int_{0}^{1} |f(t)| dt = 2\\sqrt{2} $$\n\n**4단계: 구하고자 하는 정적분 계산하기**\n이제 $\\int_{0}^{1} f(x) F(x) dx$를 구간을 나누어 계산합니다.\n$$ \\int_{0}^{1} f(x) F(x) dx = \\int_{0}^{c} f(x) F(x) dx + \\int_{c}^{1} f(x) F(x) dx $$\n- $0 \\le x \\le c$에서는 $f(x) \\le 0$이므로 $f(x) = -|f(x)| = -F'(x)$\n- $c \\le x \\le 1$에서는 $f(x) \\ge 0$이므로 $f(x) = |f(x)| = F'(x)$\n\n이를 대입하면,\n$$ \\int_{0}^{c} (-F'(x)) F(x) dx + \\int_{c}^{1} F'(x) F(x) dx $$\n$$ = \\left[ -\\frac{1}{2} \\{F(x)\\}^2 \\right]_{0}^{c} + \\left[ \\frac{1}{2} \\{F(x)\\}^2 \\right]_{c}^{1} $$\n$$ = -\\frac{1}{2} \\{F(c)\\}^2 + \\frac{1}{2} \\{F(0)\\}^2 + \\frac{1}{2} \\{F(1)\\}^2 - \\frac{1}{2} \\{F(c)\\}^2 $$\n$$ = \\frac{1}{2} \\{F(1)\\}^2 - \\{F(c)\\}^2 $$\n\n앞서 구한 $F(1) = 2\\sqrt{2}$와 $F(c) = \\sqrt{2} - 1$을 대입합니다.\n$$ \\frac{1}{2} (2\\sqrt{2})^2 - (\\sqrt{2} - 1)^2 $$\n$$ = \\frac{1}{2} (8) - (2 - 2\\sqrt{2} + 1) $$\n$$ = 4 - (3 - 2\\sqrt{2}) = 1 + 2\\sqrt{2} $$\n\n최종 답: (4)\n코칭 한마디: 왜냐하면 절댓값이 포함된 정적분 함수 $F(x)$를 미분하면 $F'(x)=|f(x)|$가 되어, $f(x)$의 부호에 따라 $f(x)$를 $\\pm F'(x)$로 표현함으로써 복잡한 적분을 간단한 다항식의 적분으로 바꿀 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 31158,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2017-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "한 점에서의 접선의 방정식",
+        "회전체의 부피 (디스크)",
+        "음함수 미분",
+        "그래프의 오목·볼록과 변곡점",
+        "사잇값 정리 (수학2)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "안녕하세요! 오일러 튜터입니다. 주어진 쌍곡선 문제를 단계별로 차근차근 풀어보겠습니다.\n\n**1단계: 점근선의 방정식을 이용해 $a, b, c$의 비율 설정하기**\n초점이 $x$축 위에 있으므로 쌍곡선의 방정식을 $\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1$ ($a>0, b>0$)로 둘 수 있습니다.\n점근선의 방정식이 $y = \\pm\\frac{b}{a}x$ 이고, 문제에서 $y = \\pm\\frac{4}{3}x$ 라고 주어졌으므로 $\\frac{b}{a} = \\frac{4}{3}$ 입니다.\n따라서 비례상수 $k(k>0)$를 도입하여 $a = 3k$, $b = 4k$로 둘 수 있습니다.\n초점의 좌표 $c$는 $c^2 = a^2 + b^2$ 이므로, $c^2 = (3k)^2 + (4k)^2 = 25k^2$ 에서 $c = 5k$ 가 됩니다.\n\n**2단계: 조건 (가)와 쌍곡선의 정의를 이용하여 $a$의 범위 구하기**\n쌍곡선의 정의에 의해, 쌍곡선 위의 점 $\\mathrm{P}$에서 두 초점까지의 거리의 차는 주축의 길이인 $2a$와 같습니다.\n즉, $|\\overline{\\mathrm{PF}^{\\prime}} - \\overline{\\mathrm{PF}}| = 2a$ 입니다.\n문제에서 $\\overline{\\mathrm{PF}^{\\prime}} = 30$ 이고 $16 \\leq \\overline{\\mathrm{PF}} \\leq 20$ 이므로, $\\overline{\\mathrm{PF}^{\\prime}} > \\overline{\\mathrm{PF}}$ 임을 알 수 있습니다.\n따라서 $30 - \\overline{\\mathrm{PF}} = 2a$ 가 성립하며, 이를 정리하면 $\\overline{\\mathrm{PF}} = 30 - 2a$ 입니다.\n이 값을 조건 (가)의 부등식에 대입하면:\n$16 \\leq 30 - 2a \\leq 20$\n$-14 \\leq -2a \\leq -10$\n$5 \\leq a \\leq 7$\n$a = 3k$ 이므로, $5 \\leq 3k \\leq 7$ 즉, $\\frac{5}{3} \\leq k \\leq \\frac{7}{3}$ 이 됩니다.\n\n**3단계: 조건 (나)를 이용하여 $k$값 확정하기**\n$x$좌표가 양수인 꼭짓점 $\\mathrm{A}$의 좌표는 $(a, 0)$ 이고, 초점 $\\mathrm{F}$의 좌표는 $(c, 0)$ 입니다.\n선분 $\\mathrm{AF}$의 길이는 $c - a$ 가 됩니다.\n앞서 구한 $k$에 대한 식을 대입하면 $\\overline{\\mathrm{AF}} = 5k - 3k = 2k$ 입니다.\n조건 (나)에서 이 길이가 '자연수'라고 했으므로, $2k$는 자연수입니다.\n2단계에서 구한 $k$의 범위 $\\frac{5}{3} \\leq k \\leq \\frac{7}{3}$ 의 각 변에 2를 곱해주면:\n$\\frac{10}{3} \\leq 2k \\leq \\frac{14}{3}$\n$3.33... \\leq 2k \\leq 4.66...$\n이 범위 안에 있는 자연수 $2k$는 오직 **$4$** 뿐입니다.\n따라서 $2k = 4$ 이고, $k = 2$ 입니다.\n\n**4단계: 주축의 길이 구하기**\n우리가 구해야 하는 것은 쌍곡선의 주축의 길이인 $2a$ 입니다.\n$a = 3k$ 이고 $k = 2$ 이므로 $a = 6$ 입니다.\n따라서 주축의 길이는 $2a = 12$ 가 됩니다.\n\n최종 답: 12\n코칭 한마디: 왜냐하면 쌍곡선 위의 점에서 두 초점까지의 거리의 차가 주축의 길이로 일정하다는 '쌍곡선의 정의'를 써야만, 주어진 선분의 길이 조건으로부터 미지수의 범위를 정확하게 좁혀낼 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 29675,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2017-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "유리함수 y=k/(x-p)+q",
+        "무리함수 y=√(ax+b)+c",
+        "벡터의 내적",
+        "명제의 대우",
+        "직육면체·정육면체의 대각선"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "정사면체 문제를 해결하기 위해 좌표공간을 도입하여 각 꼭짓점의 좌표를 설정해 보겠습니다.\n\n정사면체 ABCD의 한 모서리의 길이가 4이므로, 밑면 BCD의 무게중심을 원점 $H(0,0,0)$으로 두고 B, C, D를 $xy$평면 위에 배치합니다.\n점 D를 $x$축 위에 두면, 각 꼭짓점의 좌표는 다음과 같습니다.\n$D = \\left( \\frac{4\\sqrt{3}}{3}, 0, 0 \\right)$\n$B = \\left( -\\frac{2\\sqrt{3}}{3}, 2, 0 \\right)$\n$C = \\left( -\\frac{2\\sqrt{3}}{3}, -2, 0 \\right)$\n정사면체의 높이는 $\\frac{4\\sqrt{6}}{3}$이므로",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 43307,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2017-가형-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "$a$ is a constant. But we don't know its value.\n    *   Wait, does the value of $M$ depend on $A$?\n    *   The condition $M \\ge \\frac{8d^3}{3\\sqrt{3}}$ does not depend on $A$.\n    *   But wait, is there any relationship between $M$ and $A$?\n    *   Let's check if $g(x)$ having the form $-(x-\\alpha)^2(x-\\beta)^2 + M(x-a)$ imposes any restrictions.\n    *   No, $g(x)$ is just defined this way.\n    *   Wait, the problem says \"최고차항의 계수가 -1인 사차함수 $g(x)$\".\n    *   If $g(x) = -(x-\\alpha)^2(x-\\beta)^2 + M(x-",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 40591,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2018-가형-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "$1$.\n    So $N(x)$ is strictly decreasing for $x \\geq e$.\n    We need to find the maximum of $F(x)$ on $[e, \\infty)$.\n    Since $N(x)$ is decreasing, $F'(x)$ can change sign at most once, from positive to negative.\n    Case 1: $N(e) \\leq 0$.\n    $N(e) = 1 - \\frac{1}{e} - 1 + t = t - \\frac{1}{e}$.\n    If $t \\leq \\frac{1}{e}$, then $N(e) \\leq 0$.\n    Since $N(x)$ is decreasing, $N(x) < 0$ for all $x > e$.\n    Thus $F'(x) < 0$ for all $x > e$.\n    This means $F(x)$",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 42881,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2018-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "유리함수 y=k/(x-p)+q",
+        "무리함수 y=√(ax+b)+c",
+        "독립시행의 확률",
+        "음함수 미분법",
+        "복소수의 절댓값과 켤레"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "**1. 전체 경우의 수 구하기**\n방정식 $x+y+z=10$ 을 만족시키는 음이 아닌 정수 $x, y, z$ 의 순서쌍의 개수는 중복조합을 이용하여 구할 수 있습니다.\n전체 경우의 수 $N$은 다음과 같습니다.\n$$N = {}_{3}H_{10} = \\binom{3+10-1}{10} = \\binom{12}{10} = \\binom{12}{2} = \\frac{12 \\times 11}{2} = 66$$\n\n**2. 조건을 만족하는 경우의 수 구하기**\n조건 $(x-y)(y-z)(z-x) \\neq 0$ 은 $x \\neq y$ 이고 $y \\neq z$ 이고 $z \\neq x$, 즉 **$x, y, z$ 가 모두 서로 다르다**는 것을 의미합니다.\n이 조건을 직접 구하는 것보다 **여사건(적어도 두 수가 같은 경우)**을 이용하여 전체에서 빼는 방법이 더 편리합니다.\n\n여사건의 경우의 수를 구해봅시다.\n*   **$x=y$ 인 경우:**\n    $2x + z = 10$ 이 되며, 이를 만족하는 음이 아닌 정수 $x$는 $0, 1, 2, 3, 4, 5$ 로 총 6가지입니다.\n*   **$y=z$ 인 경우:**\n    $x + 2y = 10$ 이 되며, 마찬가지로 $y$는 $0, 1, 2, 3, 4, 5$ 로 총 6가지입니다.\n*   **$z=x$ 인 경우:**\n    $2x + y = 10$ 이 되며, $x$는 $0, 1, 2, 3, 4, 5$ 로 총 6가지입니다.\n\n이때, 세 수가 모두 같은 경우($x=y=z$)가 중복해서 세어졌는지 확인해야 합니다. $x=y=z$ 이면 $3x = 10$ 이 되는데, 이를 만족하는 정수 $x$는 존재하지 않으므로 중복되는 경우는 없습니다.\n따라서 여사건의 총 경우의 수는 $6 + 6 + 6 = 18$가지입니다.\n\n그러므로 세 수가 모두 다른 경우의 수는 전체에서 여사건을 뺀 값입니다.\n$$66 - 18 = 48$$\n\n**3. 확률 및 최종 정답 계산**\n구하고자 하는 확률은 다음과 같습니다.\n$$\\frac{q}{p} = \\frac{48}{66} = \\frac{8}{11}$$\n따라서 $p = 11$, $q = 8$ 이며, 두 수는 서로소인 자연수입니다.\n$$p + q = 11 + 8 = 19$$\n\n최종 답: 19\n코칭 한마디: 왜냐하면 $(x-y)(y-z)(z-x) \\neq 0$ 은 세 수가 모두 다르다는 뜻이므로, 중복조합 전체 경우에서 두 수가 같은 여사건을 빼는 것이 계산을 단순화하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 27226,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2018-가형-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "**1단계: 원 $C$의 중심과 반지름 구하기**\n구 $x^2+y^2+z^2=6$의 중심은 $O(0,0,0)$이고 반지름은 $R=\\sqrt{6}$입니다.\n평면 $\\alpha: x+2z-5=0$과 원점 $O$ 사이의 거리 $d$를 구하면,\n$$d = \\frac{|0+0-5|}{\\sqrt{1^2+0^2+2^2}} = \\frac{5}{\\sqrt{5}} = \\sqrt{5}$$\n따라서 원 $C$의 반지름 $r$은 피타고라스 정리에 의해 $r = \\sqrt{R^2 - d^2} = \\sqrt{6-5} = 1$입니다.\n원 $C$의 중심 $C_0$는 원점에서 평면 $\\alpha$에 내",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 38513,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2018-가형-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": ") = 0$ at $s = -1, 0, 1$.\n    $s=0 \\implies t=k+8$ is local min. $s=\\pm 1 \\implies t=k+7, k+9$ are local max.\n\n    So the set of $\\alpha_i$ is exactly $\\{k, k+2, k+4, k+6, k+8\\}$.\n    The number of such points is $m = 5$.\n\n6.  **Use the condition $\\sum_{i=1}^m \\alpha_i = 45$:**\n    $\\sum_{i=1}^5 \\alpha_i = k + (k+2) + (k+4) + (k+6) + (k+8) = 5k + 20$.\n    We are given $5k + 20 = 45",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 41967,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2019-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "최적화 (자유 극값)",
+        "몫의 미분법",
+        "곱의 미분법",
+        "한 점에서의 접선의 방정식",
+        "치환 적분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 단계별로 해결해 봅시다.\n\n**1단계: 조건 (가)의 양변을 적분하기**\n조건 (가)에서 주어진 식은 다음과 같습니다.\n$$2\\{f(x)\\}^{2} f^{\\prime}(x)=\\{f(2 x+1)\\}^{2} f^{\\prime}(2 x+1)$$\n\n이 식의 양변을 $x$에 대하여 부정적분합니다. 이때 합성함수의 미분법의 역과정인 **치환적분법**을 사용합니다.\n- 좌변 적분: $\\int 2\\{f(x)\\}^{2} f^{\\prime}(x) dx = \\frac{2}{3}\\{f(x)\\}^{3} + C_1$\n- 우변 적분: $\\int \\{f(2 x+1)\\}^{2} f^{\\prime}(2 x+1) dx = \\frac{1}{6}\\{f(2 x+1)\\}^{3} + C_2$\n\n따라서 적분상수를 하나로 묶어 $C$라 하면 다음과 같은 관계식을 얻을 수 있습니다.\n$$\\frac{2}{3}\\{f(x)\\}^{3} = \\frac{1}{6}\\{f(2 x+1)\\}^{3} + C$$\n양변에 6을 곱하여 식을 간단히 정리합니다. ($6C = C'$으로 둡니다.)\n$$4\\{f(x)\\}^{3} = \\{f(2 x+1)\\}^{3} + C' \\quad \\cdots \\text{ (ㄱ)}$$\n\n**2단계: 조건 (나)를 이용하여 적분상수 $C'$ 구하기**\n조건 (나)에서 $f\\left(-\\frac{1}{8}\\right)=1$ 이고 $f(6)=2$ 입니다. \n식 (ㄱ)의 $x$에 값을 대입하여 $-\\frac{1}{8}$부터 $6$까지 연결해 봅니다.\n\n① $x = -\\frac{1}{8}$ 대입 ($2x+1 = \\frac{3}{4}$):\n$$4\\left\\{f\\left(-\\frac{1}{8}\\right)\\right\\}^{3} = \\left\\{f\\left(\\frac{3}{4}\\right)\\right\\}^{3} + C' \\implies 4 = \\left\\{f\\left(\\frac{3}{4}\\right)\\right\\}^{3} + C'$$\n\n② $x = \\frac{3}{4}$ 대입 ($2x+1 = \\frac{5}{2}$):\n$$4\\left\\{f\\left(\\frac{3}{4}\\right)\\right\\}^{3} = \\left\\{f\\left(\\frac{5}{2}\\right)\\right\\}^{3} + C'$$\n\n③ $x = \\frac{5}{2}$ 대입 ($2x+1 = 6$):\n$$4\\left\\{f\\left(\\frac{5}{2}\\right)\\right\\}^{3} = \\{f(6)\\}^{3} + C' \\implies 4\\left\\{f\\left(\\frac{5}{2}\\right)\\right\\}^{3} = 8 + C'$$\n\n계산의 편의를 위해 $A = \\left\\{f\\left(\\frac{3}{4}\\right)\\right\\}^{3}$, $B = \\left\\{f\\left(\\frac{5}{2}\\right)\\right\\}^{3}$라 하면,\n1) $4 = A + C' \\implies A = 4 - C'$\n2) $4A = B + C'$\n3) $4B = 8 + C'$\n\n1)의 $A$를 2)에 대입:\n$$4(4 - C') = B + C' \\implies 16 - 4C' = B + C' \\implies B = 16 - 5C'$$\n이 $B$를 3)에 대입:\n$$4(16 - 5C') = 8 + C' \\implies 64 - 20C' = 8 + C'$$\n$$21C' = 56 \\implies C' = \\frac{56}{21} = \\frac{8}{3}$$\n\n**3단계: $f(-1)$의 값 구하기**\n이제 식 (ㄱ)에 $x = -1$을 대입합니다. ($2x+1 = -1$이 됩니다.)\n$$4\\{f(-1)\\}^{3} = \\{f(-1)\\}^{3} + \\frac{8}{3}$$\n$$3\\{f(-1)\\}^{3} = \\frac{8}{3}$$\n$$\\{f(-1)\\}^{3} = \\frac{8}{9}$$\n$$f(-1) = \\sqrt[3]{\\frac{8}{9}} = \\frac{2}{\\sqrt[3]{9}} = \\frac{2\\sqrt[3]{3}}{\\sqrt[3]{27}} = \\frac{2\\sqrt[3]{3}}{3}$$\n\n최종 답: (4)\n코칭 한마디: 왜냐하면 주어진 조건식의 양변이 함수와 그 도함수가 곱해진 형태를 띠고 있어, 치환적분을 통해 $f(x)$에 대한 대수적 관계식을 이끌어낼 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 27230,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2019-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "안녕하세요! 오일러 튜터입니다. 기하 문제 중에서도 '타원의 정의'와 '원 밖의 점에서 원에 이르는 거리의 최대/최소' 개념을 결합한 아주 훌륭한 문제입니다. 차근차근 단계별로 같이 풀어봅시다.\n\n**1단계: 타원의 초점과 장축의 길이 구하기**\n주어진 타원의 방정식 $\\frac{x^2}{49} + \\frac{y^2}{33} = 1$에서\n*   $a^2 = 49 \\implies a = 7$ (장축의 길이는 $2a = 14$)\n*   $b^2 = 33$\n*   초점의 좌표를 구하기 위해 $c^2 = a^2 - b^2 = 49 - 33 = 16 \\implies c = 4$\n따라서 두 초점은 $\\mathrm{F}(4, 0)$, $\\mathrm{F}^{\\prime}(-4, 0)$ 입니다.\n\n**2단계: 원의 중심과 반지름 파악하기**\n원 $x^2 + (y-3)^2 = 4$는 중심이 $\\mathrm{C}(0, 3)$이고 반지름이 $r = 2$인 원입니다.\n\n**3단계: 타원의 정의를 활용하여 식 변형하기**\n점 $\\mathrm{Q}$는 타원 위의 점이므로 타원의 정의에 의해 두 초점까지의 거리의 합은 장축의 길이와 같습니다.\n*   $\\overline{\\mathrm{F}^{\\prime}\\mathrm{Q}} + \\overline{\\mathrm{FQ}} = 2a = 14$\n*   따라서 $\\overline{\\mathrm{FQ}} = 14 - \\overline{\\mathrm{F}^{\\prime}\\mathrm{Q}}$ 입니다.\n\n**4단계: 세 점 $\\mathrm{F}^{\\prime}, \\mathrm{P}, \\mathrm{Q}$의 위치 관계 파악하기**\n문제에서 점 $\\mathrm{Q}$는 직선 $\\mathrm{F}^{\\prime}\\mathrm{P}$가 타원과 만나는 점 중 $y$좌표가 양수인 점입니다. \n초점 $\\mathrm{F}^{\\prime}(-4, 0)$에서 출발하여 원 위의 점 $\\mathrm{P}$를 지나는 반직선이 타원과 만나는 점이 $\\mathrm{Q}$가 됩니다. (원은 타원 내부에 위치하므로 점 $\\mathrm{P}$는 선분 $\\mathrm{F}^{\\prime}\\mathrm{Q}$ 위에 존재합니다.)\n*   따라서 $\\overline{\\mathrm{F}^{\\prime}\\mathrm{Q}} = \\overline{\\mathrm{F}^{\\prime}\\mathrm{P}} + \\overline{\\mathrm{PQ}}$ 가 성립합니다.\n*   이를 $\\overline{\\mathrm{PQ}}$에 대해 정리하면 $\\overline{\\mathrm{PQ}} = \\overline{\\mathrm{F}^{\\prime}\\mathrm{Q}} - \\overline{\\mathrm{F}^{\\prime}\\mathrm{P}}$ 입니다.\n\n**5단계: 구하고자 하는 식의 최댓값 찾기**\n우리가 구해야 하는 값은 $\\overline{\\mathrm{PQ}} + \\overline{\\mathrm{FQ}}$ 입니다. 앞서 구한 식들을 대입해 봅시다.\n*   $\\overline{\\mathrm{PQ}} + \\overline{\\mathrm{FQ}} = (\\overline{\\mathrm{F}^{\\prime}\\mathrm{Q}} - \\overline{\\mathrm{F}^{\\prime}\\mathrm{P}}) + (14 - \\overline{\\mathrm{F}^{\\prime}\\mathrm{Q}})$\n*   $= 14 - \\overline{\\mathrm{F}^{\\prime}\\mathrm{P}}$\n\n이 값이 **최대**가 되려면, 빼주는 값인 $\\overline{\\mathrm{F}^{\\prime}\\mathrm{P}}$의 길이가 **최소**가 되어야 합니다.\n\n**6단계: $\\overline{\\mathrm{F}^{\\prime}\\mathrm{P}}$의 최솟값 구하기**\n점 $\\mathrm{F}^{\\prime}(-4, 0)$에서 원 $x^2 + (y-3)^2 = 4$ 위의 점 $\\mathrm{P}$까지의 거리의 최솟값은, $\\mathrm{F}^{\\prime}$와 원의 중심 $\\mathrm{C}(0, 3)$ 사이의 거리에서 반지름 $r$을 뺀 값입니다.\n*   $\\overline{\\mathrm{F}^{\\prime}\\mathrm{C}} = \\sqrt{(0 - (-4))^2 + (3 - 0)^2} = \\sqrt{16 + 9} = 5$\n*   $\\overline{\\mathrm{F}^{\\prime}\\mathrm{P}}$의 최솟값 $= 5 - 2 = 3$\n\n따라서 $\\overline{\\mathrm{PQ}} + \\overline{\\mathrm{FQ}}$의 최댓값은 $14 - 3 = 11$이 됩니다.\n\n최종 답: 11\n코칭 한마디: 왜냐하면 타원 위의 점과 초점을 연결하는 선분이 등장할 때는 항상 '거리의 합이 장축의 길이로 일정하다'는 타원의 정의를 떠올려야 복잡한 꺾인 선분의 합을 단순한 직선 거리의 최솟값 문제로 바꿀 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 40999,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2019-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "29번과 30번 문제에 대한 단계적 풀이입니다.\n\n---\n\n### **[29번 문제 풀이]**\n\n**1. 벡터 방정식의 해석**\n주어진 조건 $\\overrightarrow{\\mathrm{AX}} = \\frac{1}{4}(\\overrightarrow{\\mathrm{AP}} + \\overrightarrow{\\mathrm{AR}}) + \\frac{1}{2}\\overrightarrow{\\mathrm{AQ}}$ 에서, 점 P, Q, R은 각각 선분 AB, BC, CA 위의 점입니다.\n$\\overrightarrow{\\mathrm{AB}} = \\vec{b}$, $\\overrightarrow{\\mathrm{AC}} = \\vec{c}$ 라 하면, 각 벡터는 다음과 같이 매개변수로 표현할 수 있습니다.\n*   $\\overrightarrow{\\mathrm{AP}} = p_1 \\vec{b} \\quad (0 \\le p_1 \\le 1)$\n*   $\\overrightarrow{\\mathrm{AR}} = r_1",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Retriever: Cannot read properties of undefined (reading 'filter')"
+      ],
+      "duration_ms": 41075,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2020-가형-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "**1. 접선의 방정식 $f(x)$ 구하기**\n곡선 $y = e^x$ 위의 점 $(t, e^t)$에서의 접선의 기울기는 $e^t$입니다.\n따라서 접선의 방정식은 다음과 같습니다.\n$f(x) = e^t(x - t) + e^t = e^t x + e^t(1 - t)$\n\n**2. 함수가 미분가능할 조건 분석**\n주어진 함수 $y = |f(x) + k - \\ln x|$가 양의 실수 전체에서 미분가능하려면, 절댓값 안의 함수를 $h(x) = f(x) + k - \\ln x$라 할 때, $x > 0$에서 $h(x) \\ge 0$ 이거나 $h(x) \\le 0$이어야 합니다. (또는 $h(x)=",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 43842,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2020-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "중복순열·중복조합·같은 것 포함",
+        "순열·조합 기본",
+        "중복순열 nΠr",
+        "중복조합 nHr",
+        "기본 경우의 수 (합·곱의 법칙)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "안녕하세요! 오일러 튜터입니다. 주어진 확률과 통계 문제를 함께 단계별로 차근차근 해결해 봅시다.\n\n문제의 핵심은 **조건에 맞게 숫자를 먼저 '선택(조합)'하고, 그 후에 '나열(순열)'하는 두 단계로 나누어 생각하는 것**입니다.\n\n**1단계: 홀수와 짝수의 선택 조건 분석하기**\n*   사용 가능한 홀수: $1, 3, 5$ (총 3개)\n*   사용 가능한 짝수: $2, 4, 6$ (총 3개)\n*   조건 (가)에 의해 홀수는 $0$번 또는 $1$번만 선택할 수 있습니다.\n*   조건 (나)에 의해 짝수는 $0$번 또는 $2$번만 선택할 수 있습니다.\n*   우리는 총 5개의 숫자를 뽑아야 합니다.\n\n**2단계: 5개의 숫자를 구성하는 경우의 수 나누기**\n총 5개의 자리를 채워야 하므로, 홀수의 개수와 짝수의 개수의 합이 5가 되어야 합니다. 짝수는 무조건 2개씩 짝지어 뽑히므로, 짝수의 총 개수는 0개, 2개, 4개, 6개... 중 하나여야 합니다.\n따라서 합이 5가 되는 구성은 다음 두 가지 경우밖에 없습니다.\n*   **Case 1:** 홀수 1개 + 짝수 4개 (짝수 2종류를 각각 2번씩)\n*   **Case 2:** 홀수 3개 + 짝수 2개 (짝수 1종류를 2번)\n\n**3단계: 각 Case별 경우의 수 계산하기**\n\n**[Case 1] 홀수 1개, 짝수 4개(2종류)를 뽑는 경우**\n1.  **숫자 선택:**\n    *   홀수 3개 중 1개 선택: $\\binom{3}{1} = 3$가지\n    *   짝수 3개 중 2종류 선택 (각각 2번씩 쓰임): $\\binom{3}{2} = 3$가지\n    *   선택하는 경우의 수 = $3 \\times 3 = 9$가지\n    *   (예: $1, 2, 2, 4, 4$)\n2.  **숫자 나열 (같은 것이 있는 순열):**\n    *   5개의 숫자를 나열하는데, 같은 짝수가 2개씩 2쌍 있습니다.\n    *   나열하는 경우의 수 = $\\frac{5!}{2! \\times 2!} = \\frac{120}{4} = 30$가지\n3.  **Case 1의 총 경우의 수:** $9 \\times 30 = 270$가지\n\n**[Case 2] 홀수 3개, 짝수 2개(1종류)를 뽑는 경우**\n1.  **숫자 선택:**\n    *   홀수 3개 중 3개 모두 선택: $\\binom{3}{3} = 1$가지\n    *   짝수 3개 중 1종류 선택 (2번 쓰임): $\\binom{3}{1} = 3$가지\n    *   선택하는 경우의 수 = $1 \\times 3 = 3$가지\n    *   (예: $1, 3, 5, 2, 2$)\n2.  **숫자 나열 (같은 것이 있는 순열):**\n    *   5개의 숫자를 나열하는데, 같은 짝수가 2개인 1쌍이 있습니다.\n    *   나열하는 경우의 수 = $\\frac{5!}{2!} = \\frac{120}{2} = 60$가지\n3.  **Case 2의 총 경우의 수:** $3 \\times 60 = 180$가지\n\n**4단계: 최종 계산**\n두 Case는 동시에 일어날 수 없는 배반사건이므로 합의 법칙을 적용합니다.\n$270 + 180 = 450$\n\n최종 답: 450\n코칭 한마디: 왜냐하면 조건에 의해 뽑힌 짝수들은 반드시 2개씩 중복되어 나타나므로, 일렬로 나열할 때 자리바꿈으로 인한 중복 카운팅을 막기 위해 '같은 것이 있는 순열' 도구를 사용해야 하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 28724,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2020-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "두 평면이 이루는 각",
+        "평면의 방정식 (법선벡터형)",
+        "두 점 사이의 거리",
+        "일차함수의 그래프",
+        "점과 평면 사이의 거리"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 해결하기 위해 다음 단계를 따라 사면체 $\\mathrm{ABCD}$의 부피를 구해봅시다.\n\n**1. 직선 $\\mathrm{AB}$의 방정식과 원점에서의 수선의 발 $\\mathrm{H}$ 구하기**\n두 점 $\\mathrm{A}(3, -3, 3)$과 $\\mathrm{B}(-2, 7, -2)$를 지나는 직선의 방향벡터 $\\vec{d}$는 다음과 같습니다.\n$$ \\vec{d} = \\vec{\\mathrm{B}} - \\vec{\\mathrm{A}} = (-5, 10, -5) $$\n계산을 간단히 하기 위해 방향벡터를 $\\vec{u} = (1, -2, 1)$로 둡니다.\n직선 $\\mathrm{AB}$ 위의 임의의 점 $\\mathrm{H}$의 좌표를 매개변수 $t$를 이용하여 나타내면 $\\",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 48084,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2020-가형-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "매개변수 미분",
+        "로그함수의 성질",
+        "사잇값 정리 (수학2)",
+        "로그미분법",
+        "닫힌구간 최댓·최솟값 (다항함수)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "두 곡선 $y=t^{3} \\ln (x-t)$ 와 $y=2 e^{x-a}$ 가 오직 한 점에서 만나려면, 두 곡선은 그 점에서 접해야 합니다. (위로 볼록한 로그함수와 아래로 볼록한 지수함수가 한 점에서 만나기 위한 조건은 접하는 것뿐입니다.)\n\n접점의 $x$ 좌표를 $k$ 라고 하면, 접점에서 두 함수의 함숫값과 미분계수가 각각 같아야 하므로 다음 두 식이 성립합니다.\n1) 함숫값이 같다: $t^{3} \\ln (k-t) = 2 e^{k-a}$\n2) 미분계수가 같다: $\\frac{t^{3}}{k-t} = 2 e^{k-a}$\n\n이 두 식의 우변이 같으므로 좌변끼리 같다고 놓으면,\n$$t^{3} \\ln (k-t) = \\frac{t^{3}}{k-t}$$\n양의 실수 $t$ 에 대하여 $t^3 > 0$ 이므로 양변을 $t^3$ 으로 나누면,\n$$\\ln (k-t) = \\frac{1}{k-t}$$\n이 방정식을 만족하는 $k-t$ 의 값은 상수입니다. 이 상수를 $\\alpha$ 라고 합시다. (즉, $\\ln \\alpha = \\frac{1}{\\alpha}$)\n그러면 $k-t = \\alpha$ 에서 $k = t + \\alpha$ 가 됩니다.\n\n이제 이 결과를 미분계수가 같다는 식에 대입하여 $a$ 에 대해 정리해 봅시다.\n$$\\frac{t^{3}}{\\alpha} = 2 e^{t+\\alpha-a}$$\n양변에 자연로그를 취하면,\n$$\\ln \\left( \\frac{t^{3}}{\\alpha} \\right) = \\ln 2 + t + \\alpha - a$$\n$$3 \\ln t - \\ln \\alpha = \\ln 2 + t + \\alpha - a$$\n이때 실수 $a$ 의 값이 $f(t)$ 이므로, $a$ 에 대해 식을 정리하면 다음과 같습니다.\n$$f(t) = t - 3 \\ln t + \\alpha + \\ln 2 + \\ln \\alpha$$\n\n우리가 구해야 하는 것은 $f'(t)$ 에 $t=\\frac{1}{3}$ 을 대입한 값입니다. $\\alpha$ 는 상수이므로 미분하면 0이 됩니다.\n$$f'(t) = 1 - \\frac{3}{t}$$\n여기에 $t = \\frac{1}{3}$ 을 대입하면,\n$$f'\\left(\\frac{1}{3}\\right) = 1 - \\frac{3}{\\frac{1}{3}} = 1 - 9 = -8$$\n\n따라서 구하고자 하는 값은 다음과 같습니다.\n$$\\left\\{f'\\left(\\frac{1}{3}\\right)\\right\\}^{2} = (-8)^{2} = 64$$\n\n최종 답: 64\n코칭 한마디: 왜냐하면 두 곡선이 오직 한 점에서 만난다는 것은 두 곡선이 접한다는 의미이므로, 함숫값과 미분계수가 같다는 조건을 연립하여 $a$를 $t$에 대한 함수로 표현할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 28764,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2021-가형-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "반갑습니다! 오일러 튜터입니다. 짝수와 홀수 번째 항의 규칙이 다르게 주어진 수열 문제군요. 복잡해 보이지만, 차근차근 인덱스를 줄여나가면 충분히 해결할 수 있습니다. 함께 단계별로 풀어봅시다.\n\n---\n\n**[단계별 풀이]**\n\n**1단계: $n=1$을 대입하여 $a_1$과 $a_2$의 관계 파악하기**\n조건 (가) $a_{2n} = a_2 \\times a_n + 1$ 에 $n=1$을 대입해 봅니다.\n$a_2 = a_2 \\times a_1 + 1$\n이를 $a_2$에 대해 묶어 정리하면,\n$a_2 - a_2 a_1 = 1 \\implies a_2(1 - a_1) = 1 \\implies a_2 = \\frac{1}{1 - a_1}$ 입니다.\n문제에서 $0 < a_1 < 1$ 이라고 했으므로, $1 - a_1 > 0$ 이 되어 **$a_2 > 0$** 임을 알 수 있습니다.\n(계산의 편의를 위해 지금부터 $a_2 = r$ 이라는 문자로 치환하여 풀겠습니다. 즉, $r = \\frac{1}{1-a_1}$ 이고 $1-a_1 = \\frac{1}{r}$ 입니다.)\n\n**2단계: $a_8$을 $r$에 대한 식으로 나타내기**\n조건 (가)를 이용해 짝수 항들을 차례로 내려갑니다.\n$a_8 = a_{2 \\times 4} = r \\times a_4 + 1$\n$a_4 = a_{2 \\times 2} = r \\times a_2 + 1 = r \\times r + 1 = r^2 + 1$\n따라서, $a_8 = r(r^2 + 1) + 1 = r^3 + r + 1$ 입니다.\n\n**3단계: $a_{15}$를 $r$과 $a_1$에 대한 식으로 나타내기**\n조건 (나) $a_{2n+1} = a_2 \\times a_n - 2$ 를 이용해 홀수 항들을 내려갑니다.\n$a_{15} = a_{2 \\times 7 + 1} = r \\times a_7 - 2$\n$a_7 = a_{2 \\times 3 + 1} = r \\times a_3 - 2$\n$a_3 = a_{2 \\times 1 + 1} = r \\times a_1 - 2$\n이를 역순으로 대입하여 전개합니다.\n$a_7 = r(r a_1 - 2) - 2 = r^2 a_1 - 2r - 2$\n$a_{15} = r(r^2 a_1 - 2r - 2) - 2 = r^3 a_1 - 2r^2 - 2r - 2$\n\n**4단계: 주어진 조건 $a_8 - a_{15} = 63$ 을 이용해 방정식 세우기**\n구해둔 $a_8$과 $a_{15}$를 뺍니다.\n$a_8 - a_{15} = (r^3 + r + 1) - (r^3 a_1 - 2r^2 - 2r - 2) = 63$\n$r^3 - r^3 a_1 + 2r^2 + 3r + 3 = 63$\n$r^3(1 - a_1) + 2r^2 + 3r + 3 = 63$\n\n**5단계: $r$ 값 구하기**\n1단계에서 찾은 $1 - a_1 = \\frac{1}{r}$ 을 위 식에 대입합니다.\n$r^3 \\times \\left(\\frac{1}{r}\\right) + 2r^2 + 3r + 3 = 63$\n$r^2 + 2r^2 + 3r + 3 = 63$\n$3r^2 + 3r - 60 = 0$\n양변을 3으로 나누면,\n$r^2 + r - 20 = 0$\n$(r + 5)(r - 4) = 0$\n$r = -5$ 또는 $r = 4$ 입니다.\n1단계에서 $r > 0$ 임을 확인했으므로, **$r = a_2 = 4$** 입니다.\n\n**6단계: $a_1$과 $a_8$ 구하여 최종 답 계산하기**\n$r = 4$ 이므로, $1 - a_1 = \\frac{1}{4} \\implies a_1 = \\frac{3}{4}$ 입니다.\n$a_8 = r^3 + r + 1 = 4^3 + 4 + 1 = 64 + 4 + 1 = 69$ 입니다.\n따라서 구하고자 하는 값은 다음과 같습니다.\n$\\frac{a_8}{a_1} = \\frac{69}{\\frac{3}{4}} = 69 \\times \\frac{4}{3} = 23 \\times 4 = 92$\n\n---\n\n최종 답: 92\n코칭 한마디: 이유는 짝수와 홀수 항으로 나뉜 점화식에서는 공통으로 곱해지는 $a_2$를 하나의 문자(상수)로 치환하여 식을 전개해야 복잡한 차수 계산을 단순한 다항방정식으로 바꿀 수 있기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 29222,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2021-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "안녕하세요! 오일러 튜터입니다. 주어진 문제를 단계별로 차근차근 풀어보겠습니다.\n\n**1단계: 함수 $g(x)$와 역함수 $g^{-1}(x)$의 성질 파악하기**\n주어진 함수 $g(x) = x^3 + x + 1$을 미분하면 $g'(x) = 3x^2 + 1 > 0$입니다. \n도함수가 항상 양수이므로 $g(x)$는 실수 전체에서 증가하는 함수이며, 역함수 $g^{-1}(x)$가 존재하고 미분 가능합니다.\n또한, $g(0) = 1$이므로 $g^{-1}(1) = 0$이고, $g(1) = 3$이므로 $g^{-1}(3) = 1$임을 미리 체크해 둡니다.\n\n**2단계: 조건 (가)를 이용하여 상수 $a$ 구하기**\n합성함수 $h(x) = f(g^{-1}(x))$를 전개해 보면 다음과 같습니다.\n$h(x) = (g^{-1}(x) - a)(g^{-1}(x) - b)^2$\n\n이때 $|h(x)|$가 미분 불가능할 수 있는 후보점은 $h(x)=0$이 되는 곳, 즉 $g^{-1}(x) = a$ 또는 $g^{-1}(x) = b$일 때입니다.\n- $x = g(b)$일 때는 $(g^{-1}(x) - b)^2$처럼 완전제곱 형태를 가지므로, 절댓값을 씌워도 부호 변화가 없어 미분 가능합니다.\n- $x = g(a)$일 때는 $(g^{-1}(x) - a)$의 지수가 1이므로, 이 점에서 $h(x)$의 부호가 바뀌어 $|h(x)|$는 뾰족점(첨점)을 가지며 미분 불가능해집니다.\n\n그런데 조건 (가)에서 $(x-1)|h(x)|$가 실수 전체에서 미분 가능하다고 했습니다. \n$|h(x)|$가 $x = g(a)$에서 미분 불가능하더라도, 앞에 곱해진 $(x-1)$이 $x = g(a)$에서 0이 되어준다면 전체 함수는 미분 가능해집니다.\n따라서 $g(a) = 1$이어야 합니다.\n앞서 $g(0) = 1$임을 확인했으므로, **$a = 0$**이 됩니다.\n이제 $f(x) = x(x-b)^2$ 임을 알 수 있습니다.\n\n**3단계: 조건 (나)를 이용하여 상수 $b$ 구하기**\n조건 (나)에서 $h'(3) = 2$라고 했습니다. 합성함수 미분법을 사용해 봅시다.\n$h'(x) = f'(g^{-1}(x)) \\cdot (g^{-1})'(x)$\n$h'(3) = f'(g^{-1}(3)) \\cdot (g^{-1})'(3)$\n\n앞서 $g(1) = 3$이므로 $g^{-1}(3) = 1$입니다.\n역함수의 미분법에 의해 $(g^{-1})'(3) = \\frac{1}{g'(1)}$ 입니다.\n$g'(x) = 3x^2 + 1$이므로 $g'(1) = 4$가 되고, 따라서 $(g^{-1})'(3) = \\frac{1}{4}$입니다.\n\n이를 $h'(3)$ 식에 대입하면:\n$h'(3) = f'(1) \\cdot \\frac{1}{4} = 2$\n즉, **$f'(1) = 8$**이 됩니다.\n\n이제 $f(x) = x(x-b)^2$을 미분하여 $b$를 구해봅시다.\n$f'(x) = 1 \\cdot (x-b)^2 + x \\cdot 2(x-b) = (x-b)(x-b+2x) = (x-b)(3x-b)$\n$f'(1) = (1-b)(3-b) = 8$\n$b^2 - 4b + 3 = 8$\n$b^2 - 4b - 5 = 0$\n$(b-5)(b+1) = 0$\n따라서 $b = 5$ 또는 $b = -1$입니다.\n문제의 조건에서 $a < b$라고 했고 $a=0$이므로, $b > 0$이어야 합니다.\n따라서 **$b = 5$**입니다.\n\n**4단계: $f(8)$의 값 구하기**\n함수 $f(x)$가 완벽하게 구해졌습니다.\n$f(x) = x(x-5)^2$\n구하고자 하는 $f(8)$의 값은 다음과 같습니다.\n$f(8) = 8 \\cdot (8-5)^2 = 8 \\cdot 3^2 = 8 \\cdot 9 = 72$\n\n최종 답: 72\n코칭 한마디: 왜냐하면 절댓값 기호 안의 함수가 단일 실근을 가져 미분 불가능한 첨점이 생기더라도, 그 점에서 함숫값이 0이 되는 인수를 곱해주면 전체 함수가 미분 가능해진다는 다항함수의 핵심 성질을 이용해야 미지수를 빠르게 확정할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 32553,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2021-가형-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "$ is $1/2$, and the minimum is $0$.\n        *   We already know the local maxima of $g(x)$ are $f(\\alpha)$ and $f(1)$. Since these are the highest points, the maximum of $g(x)$ is $f(\\alpha) = f(1) = 1/2$.\n        *   The minimum of $g(x)$ must be $0$. The minimum of $f(t)$ on $[0, 1]$ can occur at $t=0$ or $t=\\beta$.\n        *   Let's check if $f(0) = 0$ or $f(\\beta) = 0$.\n        *   Wait, $f(x)$ is a cubic with leading coefficient 1.\n        *   $f(x) - 1/2 = (x - \\alpha)^2 (x - \\gamma)$ where",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 38658,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2022-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+        "이항정리",
+        "인수분해 기본 패턴",
+        "테일러 전개 (기초 — 다항 근사)",
+        "사잇값 정리 (수학2)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "안녕하세요! 오일러 튜터입니다. 주어진 수열 문제를 함께 단계별로 해결해 봅시다.\n\n**1단계: 수열의 절댓값 규칙 파악하기**\n조건 (가)와 (나)에 의해 수열 $\\{|a_n|\\}$은 첫째항이 2이고 공비가 2인 등비수열입니다.\n따라서 $|a_n| = 2^n$ 이며, 수열의 각 항은 $a_n = 2^n$ 또는 $a_n = -2^n$ 의 값을 가집니다.\n\n**2단계: 절댓값의 합과 실제 합을 이용해 양수 항의 합 구하기**\n1항부터 10항까지 절댓값의 총합을 $S_{abs}$라고 하면, 등비수열의 합 공식에 의해 다음과 같습니다.\n$S_{abs} = \\sum_{n=1}^{10} |a_n| = \\frac{2(2^{10}-1)}{2-1} = 2(1024-1) = 2046$\n\n수열에서 양수인 항들의 합을 $P$, 음수인 항들의 절댓값의 합을 $N$이라고 합시다.\n조건 (다)에서 전체 합이 -14이므로 다음 연립방정식을 세울 수 있습니다.\n$P + N = 2046$ (절댓값의 총합)\n$P - N = -14$ (실제 총합)\n두 식을 더하면 $2P = 2032$가 되어, 양수인 항들의 합은 $P = 1016$임을 알 수 있습니다.\n\n**3단계: 양수인 항 찾아내기**\n우리는 $2^1, 2^2, 2^3, \\dots, 2^{10}$ 중에서 몇 개를 골라 합이 1016이 되도록 만들어야 합니다.\n1016을 2의 거듭제곱의 합(이진법 전개 원리)으로 나타내어 봅시다.\n$1016 = 512 + 256 + 128 + 64 + 32 + 16 + 8$\n$1016 = 2^9 + 2^8 + 2^7 + 2^6 + 2^5 + 2^4 + 2^3$\n따라서 양수인 항은 $a_3, a_4, a_5, a_6, a_7, a_8, a_9$ 이고, 나머지 $a_1, a_2, a_{10}$은 음수임을 알 수 있습니다.\n\n**4단계: 구하고자 하는 값 계산하기**\n문제에서 요구한 $a_1 + a_3 + a_5 + a_7 + a_9$ 의 값을 계산합니다.\n$a_1 = -2^1 = -2$\n$a_3 = 2^3 = 8$\n$a_5 = 2^5 = 32$\n$a_7 = 2^7 = 128$\n$a_9 = 2^9 = 512$\n\n합계 = $-2 + 8 + 32 + 128 + 512 = 678$\n\n최종 답: 678\n코칭 한마디: 왜냐하면 각 항의 부호를 결정해야 하는 2의 거듭제곱 수열 문제에서는, 절댓값의 총합과 실제 총합을 연립하여 양수 항들의 합을 구한 뒤 이를 이진법처럼 분해하는 것이 경우의 수를 나누는 것보다 훨씬 빠르고 정확한 논리적 도구이기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 41861,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2022-공통-22",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "반갑습니다! 오일러 튜터입니다. 주어진 조건을 하나씩 분석하며 단계별로 문제를 해결해 봅시다.\n\n---\n\n### 1단계: $f'(x)=0$의 실근과 $g(t)$의 의미 파악하기\n$f(x)$는 최고차항의 계수가 $\\frac{1}{2}$인 삼차함수이므로, $f'(x)$는 최고차항의 계수가 $\\frac{3}{2}$인 이차함수입니다.\n조건 (나)에서 $g(t)=2$인 경우가 존재하므로, 구간 $[t, t+2]$ 안에 $f'(x)=0$의 실근이 2개 들어가야 합니다. 즉, $f'(x)=0$은 서로 다른 두 실근을 가져야 합니다.\n이 두 실근을 $\\alpha, \\beta$ ($\\alpha < \\beta$)라고 합시다.",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 44293,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2022-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "회전체의 부피 (디스크)",
+        "이차방정식 근의 분포",
+        "sin x / x 의 극한"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "함수 $f(x) = 6\\pi(x-1)^2$ 와 $g(x) = 3f(x) + 4\\cos f(x)$ 에 대하여, $g(x)$ 가 극소가 되는 $x$ 의 개수를 구하기 위해 도함수 $g'(x)$ 를 분석해 봅시다.\n\n**1단계: $g'(x)$ 구하기**\n합성함수의 미분법에 의해 $g'(x)$ 는 다음과 같습니다.\n$$g'(x) = 3f'(x) - 4\\sin(f(x)) \\cdot f'(x) = f'(x) [3 - 4\\sin(f(x))]$$\n$g(x)$ 가 극값을 가지려면 $g'(x) = 0$ 이어야 하므로, $f'(x) = 0$ 이거나 $\\sin(f(x",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 39779,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2022-미적분-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "최적화 (자유 극값)",
+        "사잇값 정리 (수학2)",
+        "샌드위치 정리 (조임)",
+        "이차방정식 근의 분포",
+        "치환 적분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 해결하기 위해 부분적분, 치환적분, 그리고 역함수의 정적분 성질을 단계별로 활용해 보겠습니다.\n\n**1단계: 구하고자 하는 적분식을 부분적분으로 변형하기**\n구해야 하는 값은 $\\int_{1}^{8} x f^{\\prime}(x) d x$ 입니다. 이를 부분적분하면 다음과 같습니다.\n$$ \\int_{1}^{8} x f^{\\prime}(x) d x = \\left[ x f(x) \\right]_{1}^{8} - \\int_{1}^{8} f(x) d x = 8f(8) - f(1) - \\int_{1}^{8} f(x) d x $$\n\n**2단계: $f(2), f(4), f(8)$의 값 구하기**\n조건 (나)에서 $g(2x) = 2f(x)$ 이고, $g(x)$는 $f(x)$의 역함수이므로 $f(g(x)) = x$ 입니다.\n조건 (가)에서 $f(1)=1$ 이므로, $x=1$을 대입하면:\n$$ g(2) = 2f(1) = 2 \\implies f(2) = 2 $$\n$x=2$를 대입하면:\n$$ g(4) = 2f(2) = 4 \\implies f(4) = 4 $$\n$x=4$를 대입하면:\n$$ g(8) = 2f(4) = 8 \\implies f(8) = 8 $$\n따라서 구하고자 하는 식은 $8(8) - 1 - \\int_{1}^{8} f(x) d x = 63 - \\int_{1}^{8} f(x) d x$ 가 됩니다.\n\n**3단계: 구간별로 $\\int f(x) dx$ 구하기**\n$\\int_{1}^{8} f(x) d x = \\int_{1}^{2} f(x) d x + \\int_{2}^{4} f(x) d x + \\int_{4}^{8} f(x) d x$ 로 나누어 계산합니다.\n조건 (가)에 의해 $\\int_{1}^{2} f(x) d x = \\frac{5}{4}$ 입니다.\n\n조건 (나)의 양변을 $1$부터 $2$까지 적분하면:\n$$ \\int_{1}^{2} g(2x) d x = \\int_{1}^{2} 2f(x) d x = 2 \\times \\frac{5}{4} = \\frac{5}{2} $$\n좌변에 $2x = t$ 로 치환적분($2dx = dt$)을 적용하면:\n$$ \\int_{1}^{2} g(2x) d x = \\frac{1}{2} \\int_{2}^{4} g(t) dt = \\frac{5}{2} \\implies \\int_{2}^{4} g(x) d x = 5 $$\n역함수의 정적분 성질 $\\int_{a}^{b} f(x) d x + \\int_{f(a)}^{f(b)} g(x) d x = bf(b) - af(a)$ 를 이용하면:\n$$ \\int_{2}^{4} f(x) d x + \\int_{2}^{4} g(x) d x = 4f(4) - 2f(2) = 16 - 4 = 12 $$\n$$ \\int_{2}^{4} f(x) d x + 5 = 12 \\implies \\int_{2}^{4} f(x) d x = 7 $$\n\n같은 방법으로 조건 (나)의 양변을 $2$부터 $4$까지 적분하면:\n$$ \\int_{2}^{4} g(2x) d x = \\int_{2}^{4} 2f(x) d x = 2 \\times 7 = 14 $$\n좌변을 치환적분하면:\n$$ \\frac{1}{2} \\int_{4}^{8} g(x) d x = 14 \\implies \\int_{4}^{8} g(x) d x = 28 $$\n다시 역함수의 정적분 성질을 이용하면:\n$$",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 45858,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2023-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "반갑습니다! 오일러 튜터입니다. 주어진 문제는 절댓값이 포함된 지수함수와 로그함수의 그래프 개형을 파악하고, 직선 $y=t$와의 교점의 개수를 추론하는 훌륭한 문제입니다. 단계별로 차근차근 풀어보겠습니다.\n\n### 1단계: 문제의 목표 파악하기\n방정식 $f(x)=t$의 서로 다른 실근의 개수 $g(t)$는 함수 $y=f(x)$의 그래프와 직선 $y=t$가 만나는 교점의 개수와 같습니다. \n$g(t)$의 최댓값이 4가 되려면, $x<0$인 구간과 $x \\ge 0$인 구간에서 각각 교점이 **최대 2개씩** 발생해야 하며, 이 두 구간에서 동시에 교점이 2개가 되는 $t$",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 50149,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2023-공통-22",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "이 문제는 평균값 정리의 형태를 띤 식의 의미를 파악하고, 이차함수(도함수)와 합성함수의 관계를 통해 삼차함수의 식을 결정하는 고난도 문항입니다. 단계별로 차근차근 풀어보겠습니다.\n\n**1단계: 조건 (가)의 식 해석하기**\n조건 (가)의 식 $f(x) = f(1) + (x-1)f'(g(x))$ 를 $x \\neq 1$ 일 때 나누어 정리하면 다음과 같습니다.\n$$ \\frac{f(x) - f(1)}{x - 1} = f'(g(x)) $$\n이는 구간 $[1, x]$ (또는 $[x, 1]$)에서의 $f(x)$의 평균변화율이 $x=g(x)$에서의 순간변화율과 같다는 것을 의미합니다.\n\n",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 45513,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2023-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "삼각함수 기본항등식",
+        "배각 공식",
+        "삼각함수의 합성 (a sin + b cos)",
+        "원의 방정식",
+        "치환적분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": " 0$ 이므로 $2\\sin\\theta$로 나눔:\n  $\\cos\\theta (x_R + 2\\sin\\theta\\cos\\theta) + \\sin\\theta (y_R - \\cos(2\\theta)) = 0$.\n- $y_R = \\tan\\theta x_R + \\tan\\theta$.\n- $\\cos\\theta x_R + 2\\sin\\theta\\cos^2\\theta + \\sin\\theta \\tan\\theta x_R + \\sin\\theta \\tan\\theta - \\sin\\theta \\cos(2\\theta) = 0$.\n- $x_R (\\cos\\theta + \\frac{\\sin^2\\theta}{\\cos\\theta}) = -2\\sin\\theta\\cos^2\\theta - \\frac{\\sin^2\\theta}{\\cos\\theta} + \\sin\\theta (2\\",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 41950,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2023-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 단계별로 분석하여 해결해 봅시다.\n\n**1. 조건 (가) 분석: $h(x)$의 $x=0$에서의 극댓값**\n함수 $h(x) = g(f(x)) = e^{\\sin \\pi f(x)} - 1$ 입니다.\n$x=0$에서 극댓값 0을 가지므로 $h(0) = 0$이어야 합니다.\n$e^{\\sin \\pi f(0)} - 1 = 0 \\implies \\sin \\pi f(0) = 0$\n따라서 $f(0) = n$ ($n$은 정수)입니다.\n\n또한 $x=0$에서 극값을 가지므로 $h'(0) = 0$입니다.\n$h'(x) = g'(f(x))f'(x) = \\pi \\cos(\\pi f(x",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 41365,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2024-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "반갑습니다! 오일러 튜터입니다. 주어진 함수 $f(x)$와 새롭게 정의된 최댓값 함수 $g(t)$의 관계를 파악하는 아주 훌륭한 문제입니다. 단계별로 차근차근 분석해 봅시다.\n\n---\n\n### 1단계: 함수 $f(x)$의 그래프 개형 파악하기\n먼저 구간에 따른 $f(x)$의 형태를 분석해 봅시다.\n*   **$-1 \\leq x < 6$ 일 때:**\n    $f(x) = -x^2 + 6x = -(x-3)^2 + 9$\n    위로 볼록한 이차함수이며, 꼭짓점은 $(3, 9)$입니다.\n    주요 함숫값을 확인해보면 $f(-1) = -7$, $f(1) = 5$, $f(3) = 9$, $f(5) = 5$, $f(6) = 0$ (극한값) 입니다.\n*   **$x \\geq 6$ 일 때:**\n    $f(x) = a \\log_4(x-5)$\n    $a > 0$이므로 밑이 4인 증가하는 로그함수입니다.\n    $f(6) = a \\log_4(1) = 0$이므로, $f(x)$는 $x=6$에서 연속입니다.\n\n### 2단계: 함수 $g(t)$의 의미와 $t=0$일 때의 값 확인\n$g(t)$는 구간 길이가 2인 닫힌구간 $[t-1, t+1]$에서 $f(x)$의 최댓값입니다.\n문제에서 $g(t)$의 최솟값이 5가 되어야 한다고 했습니다.\n먼저 $t=0$일 때를 확인해 볼까요?\n*   $t=0$이면 구간은 $[-1, 1]$입니다.\n*   이 구간에서 $f(x)$는 계속 증가하므로 최댓값은 오른쪽 끝점인 $x=1$에서 가집니다.\n*   $g(0) = f(1) = 5$\n이미 $g(0)=5$이므로, 조건(최솟값이 5)을 만족하려면 **모든 $t \\geq 0$에 대하여 $g(t) \\geq 5$**여야 합니다.\n\n### 3단계: $t$가 증가",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 48173,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2024-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "사잇값 정리 (수학2)",
+        "샌드위치 정리 (조임)",
+        "역함수 미분법"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "x)$가 연속된 두 정수에서 0이 되는 경우만 고려했는데, 다른 경우는 없는가?\n예를 들어, $f(x)$가 정수 근을 하나만 가지고, 부호가 바뀌지 않는 정수점들이 있는 경우.\n$a_n$의 부호가 $..., -, -, -, +, +, +, ...$ 인 경우.\n이 경우 $a_n < 0$ for $n \\le 0$, $a_n > 0$ for $n \\ge 1$.\n이때 $a_0 < 0, a_1 > 0$이다.\n$k=0$일 때 $a_{-1} a_1 < 0$이 되므로 모순이다.\n$k=1$일 때 $a_0 a_2 < 0$이 되므로 모순이다.\n따라서 부호가 바뀔 때는 반드시 0을 거",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 44859,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2024-미적분-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 단계별로 해결해 봅시다.\n\n**1단계: $x < 0$ 구간에서 $f(x)$의 개형과 $g(t)$의 의미 파악**\n$x < 0$일 때, $f(x) = -4x e^{4x^2}$ 입니다.\n이 함수의 도함수를 구해보면,\n$f'(x) = -4 e^{4x^2} - 4x \\cdot 8x e^{4x^2} = -4e^{4x^2}(1 + 8x^2) < 0$\n따라서 $f(x)$는 $x < 0$ 구간에서 단조 감소하며, $\\lim_{x \\to 0^-} f(x) = 0$, $\\lim_{x \\to -\\infty} f(x) = \\infty$ 입니다.\n$f(x)$는 실수 전체에서 연속이고 $f(x) \\geq 0$이므로 $f(0) = 0$입니다.\n양수 $t$에 대해 $f(x) = t$의 실근이 2개이고, 작은 근이 $g(t)$, 큰 근이 $h(t)$이므로, $g(t)$는 음수 구간에 존재하는 유일한 근입니다. 즉, $g(t) < 0 < h(t)$가 성립합니다.\n\n**2단계: $x > 0$ 구간에서 $f(x)$의 식 구하기**\n주어진 조건에서 $2g(t) + h(t) = k$ 이므로, $h(t) = k - 2g(t)$ 입니다.\n$t \\to 0^+$일 때 $g(t) \\to 0^-$이므로, $h(t) \\to k^+$가 됩니다.\n$f(x)$가 연속함수이므로 $f(k) = \\lim_{t \\to 0^+} f(h(t)) = \\lim_{t \\to 0^+} t = 0$ 입니다.\n$h(t)$가 양수 구간의 유일한 근이므로, $0 \\leq x \\leq k$ 구간에서는 $f(x) = 0$이어야 합니다.\n\n이제 $x > k$인 구간에서 $f(x)$의 식을 구해봅시다.\n$x = h(t)$라 하면, $x = k - 2g(t)$에서 $g(t) = \\frac{k - x}{2}$ 입니다.\n$f(h(t)) = t$ 이고 $f(g(t)) = t$ 이므로, $f(x) = f\\left(\\frac{k - x}{2}\\right)$ 가 성립합니다.\n$x > k$일 때 $\\frac{k - x}{2} < 0$이므로, $x < 0$일 때의 $f(x)$ 식을 대입할 수 있습니다.\n$f(x) = -4\\left(\\frac{k - x}{2}\\right) e^{4\\left(\\frac{k - x}{2}\\right)^2} = 2(x - k) e^{(x - k)^2}$\n\n**3단계: 정적분 조건을 이용하여 상수 $k$ 구하기**\n주어진 정적분 조건 $\\int_{0}^{7} f(x) dx = e^4 - 1$ 을 이용합니다.\n$0 \\leq x \\leq k$에서 $f(x) = 0$이므로, 적분 구간은 $k$부터 7까지가 됩니다. (단, $k < 7$)\n$\\int_{k}^{7} 2(x - k) e^{(x - k)^2} dx = e^4 - 1$\n$(x - k)^2 = u$ 로 치환적분하면, $2(x - k) dx = du$ 이고,\n$x = k$일 때 $u = 0$, $x = 7$일 때 $u = (7 - k)^2$ 입니다.\n$\\int_{0}^{(7 - k)^2} e^u du = \\left[ e^u \\right]_{0}^{(7 - k)^2} = e^{(7 - k)^2} - 1$\n이 값이 $e^4 - 1$과 같으므로, $(7 - k)^2 = 4$ 입니다.\n$k < 7$이어야 하므로 $7 - k = 2$, 즉 $k = 5$ 입니다.\n\n**4단계: $\\frac{f(9)}{f(8)}$의 값 계산하기**\n$k = 5$이므로 $x > 5$에서 $f(x) = 2(x - 5) e^{(x - 5)^2}$ 입니다.\n$f(9) = 2(9 - 5) e^{(9 - 5)^2} = 8 e^{16}$\n$f(8) = 2(8 - 5) e^{(8 - 5)^2} = 6 e^9$\n따라서 구하고자 하는 값은 다음과 같습니다.\n$\\frac{f(9)}{f(8)} = \\frac{8 e^{16}}{6 e^9} = \\frac{4}{3} e^7$\n\n최종 답: (2) 또는 \\frac{4}{3} e^7\n코칭 한마디: 왜냐하면 방정식의 두 근의 관계식 $h(t) = k - 2g(t)$를 이용하면, 우리가 이미 알고 있는 음수 구간의 함수식을 통해 미지의 양수 구간 함수식을 완벽하게 유도해낼 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 34883,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2024-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "0, \\pi)$, $f'(x) = \\frac{1}{2} \\sin 2x$.\n    Derivative is $\\cos 2x$.\n    $\\cos 2x = 0 \\implies 2x = \\pi/2, 3\\pi/2 \\implies x = \\pi/4, 3\\pi/4$.\n    At $x = \\pi/4$, $f'(\\pi/4) = 1/2$.\n    At $x = 3\\pi/4$, $f'(3\\pi/4) = -1/2$.\n    These are definitely extrema.\n\n    Let's double check $x = \\pi$.\n    $f'(\\pi) = 0$.\n    For $x \\in (3\\pi/4, \\pi)$, $f'(x) = \\frac{1}{2} \\sin 2x < ",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 44536,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2025-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "반갑습니다! 오일러 튜터입니다. 주어진 극한 조건을 해석하여 다항함수의 성질을 파악하는 아주 훌륭한 문제입니다. 차근차근 단계별로 분석해 봅시다.\n\n---\n\n### [단계별 풀이]\n\n**1단계: 극한값이 존재할 조건 해석하기**\n주어진 조건에서 모든 실수 $\\alpha$에 대하여 $\\lim _{x \\rightarrow \\alpha} \\frac{f(2 x+1)}{f(x)}$ 의 값이 존재한다고 했습니다.\n만약 $f(\\alpha) = 0$이라면 분모가 0으로 가므로, 극한값이 존재하기 위해서는 분자도 0으로 가야 합니다. \n즉, **$f(\\alpha) = 0$이면 반드시 $f(2\\alpha + 1) = 0$**이어야 합니다.\n\n**2단계: 함수 $f(x)$의 실수인 근 추론하기**\n$f(x)$는 3차 함수이므로 적어도 하나의 실근을 가집니다. 그 실근을 $\\alpha$라고 해봅시다.\n1단계의 논리에 의해 $\\alpha$가 근이면 $2\\alpha + 1$도 근이고, $2(2\\alpha + 1) + 1 = 4\\alpha + 3$도 근이 됩니다.\n이런 식으로 근이 무한히 생성될 수 있는데, 3차 방정식의 근은 많아야 3개뿐입니다.\n따라서 이 수열이 무한히 다른 값을 가지지 않고 일정한 값에 머물러야 합니다.\n즉, $\\alpha = 2\\alpha + 1$ 이어야만 모순이 생기지 않습니다.\n이를 풀면 **$\\alpha = -1$**이 됩니다. \n결론적으로 $f(x)$가 가질 수 있는 유일한 실근은 $x = -1$뿐입니다. (만약 다른 실근이 존재한다면 무한히 많은 실근이 파생되어 3차 함수라는 조건에 위배됩니다.)\n\n**3단계: $a$와 $b$의 관계식 찾기**\n$f(-1) = 0$이므로 함수식에 대입해 봅니다.\n$f(-1) = -1 + a - b + 4 = 0$\n$a - b + 3 = 0 \\implies \\boldsymbol{b = a + 3}$\n\n**4단계: $f(x)$ 인수분해 및 판별식 적용**\n$b = a + 3$을 대입하여 $f(x)$를 조립제법 등으로 인수분해합니다.\n$f(x) = x^3 + ax^2 + (a+3)x + 4 = (x+1)(x^2 + (a-1)x + 4)$\n여기서 $x = -1$ 이외의 다른 실근이 존재하면 안 되므로, 이차방정식 $x^2 + (a-1)x + 4 = 0$은 실근을 갖지 않아야 합니다. (중근으로 $x=-1$을 갖는 경우도 확인해 보면 $a=6$이 되어 $x=-4$라는 또 다른 실근이 생기므로 불가능합니다.)\n따라서 이차방정식의 판별식 $D < 0$ 이어야 합니다.\n$D = (a-1)^2 - 16 < 0$\n$(a-1)^2 < 16$\n$-4 < a - 1 < 4$\n$\\boldsymbol{-3 < a < 5}$\n\n**5단계: $f(1)$의 최댓값 구하기**\n문제에서 $a, b$는 정수라고 했으므로, 조건 $-3 < a < 5$를 만족하는 정수 $a$는 $-2, -1, 0, 1, 2, 3, 4$ 입니다.\n우리가 구해야 하는 $f(1)$의 값을 $a$에 대한 식으로 나타내 봅시다.\n$f(1) = 1 + a + b + 4 = a + (a+3) + 5 = \\boldsymbol{2a + 8}$\n$f(1)$이 최대가 되려면 $a$가 최대여야 하므로, 가능한 $a$의 최댓값인 **$4$**를 대입합니다.\n최댓값 = $2(4) + 8 = 16$\n\n---\n\n최종 답: 16\n코칭 한마디: 왜냐하면 분수 형태의 극한이 모든 실수에서 존재하려면 분모가 0이 되는 지점에서 분자도 반드시 0이 되어야 하며, 이 원리를 이용해 다항함수가 가질 수 있는 근의 위치와 개수를 강력하게 제한할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 44546,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2025-공통-22",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "반갑습니다! 오일러 튜터입니다. 주어진 수열의 귀납적 정의(점화식)와 조건을 분석하여 차근차근 $a_1$의 값들을 추적해 봅시다.\n\n---\n\n### [단계별 풀이]\n\n**1단계: 조건 (나)의 정확한 의미 파악하기**\n조건 (나)에서 $|a_m| = |a_{m+2}|$를 만족하는 자연수 $m$의 최솟값이 3이라고 했습니다.\n이 말은 다음 두 가지 정보를 줍니다.\n1) **$m=3$일 때 성립:** $|a_3| = |a_5|$\n2) **$m=1, 2$일 때는 불성립:** $|a_1| \\neq |a_3|$ 이고, $|a_2| \\neq |a_4|$ 이다.\n\n**2단계: $a_3$의 가능한 값 구하기**\n$|a_3| = |a_5|$를 이용하여 $a_3$의 값을 먼저 확정해 봅시다. $a_3 = k$라고 두겠습니다.\n점화식 (가)에 따라 $k$의 홀짝성에 따라 경우를 나눕니다.\n\n*   **Case 1: $k=0$인 경우**\n    $a_4 = \\frac{0}{2} = 0 \\implies a_5 = \\frac{0}{2} = 0$\n    $|a_3| = |a_5| = 0$이므로 성립합니다. **($a_3 = 0$)**\n\n*   **Case 2: $|k|$가 짝수 ($k \\neq 0$)인 경우**\n    $a_4 = \\frac{k}{2}$ 입니다.\n    *   만약 $|\\frac{k}{2}|$가 짝수라면, $a_5 = \\frac{k}{4}$가 됩니다. $|k| = |\\frac{k}{4}|$를 만족하는 값은 $k=0$뿐이므로 모순입니다.\n    *   만약 $|\\frac{k}{2}|$가 홀수라면, $a_5 = \\frac{k}{2} - 3$이 됩니다.\n        $|k| = |\\frac{k}{2} - 3|$을 풀어보면,\n        $k = \\frac{k}{2} - 3 \\implies k = -6$ (이때 $a_4 = -3$으로 홀수 맞음)\n        $k = -\\frac{k}{2} + 3 \\implies k = 2$ (이때 $a_4 = 1$로 홀수 맞음)\n        따라서 **$a_3 = -6, 2$** 가 가능합니다.\n\n*   **Case 3: $|k|$가 홀수인 경우**\n    $a_4 = k - 3$ 입니다. 홀수에서 3을 뺐으므로 $a_4$는 무조건 짝수(또는 0)가 됩니다.\n    따라서 $a_5 = \\frac{k-3}{2}$ 입니다.\n    $|k| = |\\frac{k-3}{2}|$를 풀어보면,\n    $k = \\frac{k-3}{2} \\implies k = -3$ (이때 $a_4 = -6$으로",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 44969,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2025-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "한 점에서의 접선의 방정식",
+        "매개변수 미분",
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "회전체의 부피 (디스크)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "주어진 문제를 단계별로 해결해 보겠습니다.\n\n**1. 접선의 방정식과 넓이 함수 $g(t)$ 세우기**\n곡선 $y=f(x)$ 위의 점 $(t, f(t))$에서의 접선의 방정식은 다음과 같습니다.\n$$y = f'(t)(x - t) + f(t)$$\n\n$f''(x)$를 구하여 곡선의 요철을 확인해 봅시다.\n$$f'(x) = -x + e^{1-x^2}$$\n$$f''(x) = -1 - 2x e^{1-x^2}$$\n$x \\ge 0$일 때 $f''(x) < 0$이므로, 곡선 $y=f(x)$는 위로 볼록합니다. 따라서 접선이 곡선보다 항상 위쪽에 위치합니다.\n접선과 곡선, 그리고 $y$축($x=0$)으로 둘러싸인 부분의 넓이 $g(t)$는 다음과 같이 정적분으로 나타낼 수 있습니다.\n$$g(t) = \\int_0^t \\left\\{ f'(t)(x - t) + f(t) - f(x) \\right\\} dx$$\n\n**2. $g(t)$ 식 정리 및 부분적분 활용**\n위의 적분식을 전개하여 계산합니다.\n$$g(t) = f'(t) \\left[ \\frac{1}{2}x^2 - tx \\right]_0^t + \\left[ f(t)x \\right]_0^t - \\int_0^t f(x) dx$$\n$$g(t) = -\\frac{1}{2}t^2 f'(t) + t f(t) - \\int_0^t f(x) dx$$\n\n여기서 $\\int_0^t f(x) dx$에 부분적분법을 적용합니다.\n$$\\int_0^t 1 \\cdot f(x) dx = \\left[ x f(x) \\right]_0^t - \\int_0^t x f'(x) dx = t f(t) - \\int_0^t x f'(x) dx$$\n\n이를 $g(t)$ 식에 대입하면 $f(t)$ 항이 소거되어 매우 간단해집니다.\n$$g(t) = -\\frac{1}{2}t^2 f'(t) + t f(t) - \\left( t f(t) - \\int_0^t x f'(x) dx \\right)$$\n$$g(t) = -\\frac{1}{2}t^2 f'(t) + \\int_0^t x f'(x) dx$$\n\n**3. $g'(t)$ 구하기**\n위에서 구한 $g(t)$의 양변을 $t$에 대하여 미분합니다. (미적분학의 기본정리 및 곱의 미분법 적용)\n$$g'(t) = -\\frac{1}{2} \\left( 2t f'(t) + t^2 f''(t) \\right) + t f'(t)$$\n$$g'(t) = -t f'(t) - \\frac{1}{2}t^2 f''(t) + t f'(t) = -\\frac{1}{2}t^2 f''(t)$$\n\n**4. $g(1)$과 $g'(1)$ 계산하기**\n이제 $t=1$일 때의 값들을 구하기 위해 $f'(1)$과 $f''(1)$을 계산합니다.\n$$f'(1) = -1 + e^0 = 0$$\n$$f''(1) = -1 - 2(1)e^0 = -3$$\n\n$g(1)$을 계산합니다.\n$$g(1) = -\\frac{1}{2}(1)^2 f'(1) + \\int_0^1 x f'(x) dx = 0 + \\int_0^1 x(-x + e^{1-x^2}) dx$$\n$$= \\int_0^1 -x^2 dx + \\int_0^1 x e^{1-x^2} dx$$\n첫 번째 적분: $\\left[ -\\frac{1}{3}x^3 \\right]_0^1 = -\\frac{1}{3}$\n두 번째 적분: $1-x^2 = u$로 치환하면 $-2x dx = du$이므로,\n$$\\int_0^1 x e^{1-x^2} dx = \\int_1^0 e^u \\left(-\\frac{1}{2}\\right) du = \\frac{1}{2} \\int_0^1 e^u du = \\frac{1}{2}(e - 1)$$\n따라서, $g(1) = -\\frac{1}{3} + \\frac{1}{2}e - \\frac{1}{2} = \\frac{1}{2}e - \\frac{5}{6}$ 입니다.\n\n$g'(1)$을 계산합니다.\n$$g'(1) = -\\frac{1}{2}(1)^2 f''(1) = -\\frac{1}{2}(-3) = \\frac{3}{2}$$\n\n**5. 최종 값 구하기**\n$$g(1) + g'(1) = \\left( \\frac{1}{2}e - \\frac{5}{6} \\right) + \\frac{3}{2} = \\frac{1}{2}e - \\frac{5}{6} + \\frac{9}{6} = \\frac{1}{2}e + \\frac{2}{3}$$\n\n최종 답: (2)\n코칭 한마디: 이유는 접선의 방정식과 정적분을 이용해 넓이 함수를 세운 뒤, 부분적분법과 미적분학의 기본정리를",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 44321,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2025-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "**1단계: 조건 (가)를 이용한 $a, b$의 관계식 도출**\n조건 (가)에서 $f(0) = 0$ 이므로\n$f(0) = \\sin(b) = 0$\n따라서 $b = k\\pi$ ($k$는 정수) 입니다.\n\n또한 $f(2\\pi) = 2\\pi a + b$ 이므로\n$f(2\\pi) = \\sin(2\\pi a + b + \\sin 2\\pi) = \\sin(2\\pi a + b) = 2\\pi a + b$\n방정식 $\\sin X = X$의 실수 해는 $X = 0$ 뿐이므로, $2\\pi a + b = 0$ 즉, $b = -2\\pi a$ 가 성립합니다.\n$b = k\\pi$ 이",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 45005,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2026-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "3}) = \\frac{1}{14} > 0$.\n                *   So the set of natural numbers $m$ where $L(m) < 0$ is indeed $\\{2, 3\\}$.\n                *   $g(-1) = -f(-1) = -\\frac{3}{14}(-1)(-3)(-1 - \\frac{11}{3}) = \\frac{9}{14}(-\\frac{14}{3}) = -(-3) = 3$.\n                *   $g(1) = -f(1) = -\\frac{3}{14}(1)(-1)(1 - \\frac{11}{3}) = \\frac{3}{14}(-\\frac{8}{3}) = -\\frac{4}{7}$.\n                *   $-\\frac{7}{2} g(1) = -\\frac{7}{2} (-\\frac{4}{7})",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 39568,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2026-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "로그함수의 성질",
+        "회전체의 부피 (디스크)",
+        "선분의 매개변수화",
+        "음함수 미분",
+        "한 점에서의 접선의 방정식"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "문제에서 주어진 두 곡선의 방정식을 살펴보고, 점 $\\mathrm{A}(a, b)$ 와 점 $\\mathrm{B}$ 의 관계를 파악해 봅시다.\n\n점 $\\mathrm{A}(a, b)$ 는 곡선 $y = \\log_{16}(8x+2)$ 위의 점이므로 다음이 성립합니다.\n$b = \\log_{16}(8a+2)$\n$16^b = 8a+2$\n$4^{2b} = 8a+2$\n양변을 4로 나누고 이항하면 다음과 같이 정리할 수 있습니다.\n$2a = \\frac{4^{2b}}{4} - \\frac{2}{4}$\n$2a = 4^{2b-1} - \\frac{1}{2}$\n\n이 식의 형태를 곡선 $y = 4^{x-1} - \\frac",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 41138,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2026-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "매개변수 미분",
+        "회전체의 부피 (디스크)",
+        "한 점에서의 접선의 방정식",
+        "사잇값 정리 (수학2)",
+        "로그함수의 성질"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "**1. 도함수 및 접선의 방정식 구하기**\n주어진 함수 $f(x) = \\frac{1}{2}x^2 - x + \\ln(1+x)$ 의 도함수를 구하면 다음과 같습니다.\n$$f'(x) = x - 1 + \\frac{1}{1+x} = \\frac{(x-1)(x+1)+1}{1+x} = \\frac{x^2}{1+x}$$\n\n곡선 $y=f(x)$ 위의 점 $(s, f(s))$ 에서의 접선의 방정식은\n$$y - f(s) = f'(s)(x - s)$$\n이 접선이 $y$축과 만나는 점을 $Y$라 하면, $x=0$을 대입하여 $Y$의 $y$좌표를 구할 수 있습니다.\n$$y = f(s) - s f",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 44204,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": true,
+      "model_used": "gemini"
+    },
+    {
+      "id": "2026-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "최종 답: 10\n코칭 한마디: 역함수의 교점 문제는 원래 함수 대신 $y=x$ 대칭을 이용해 $y=f^{-1}(x)$와 직선의 역함수 사이의 교점으로 바꾸어 생각하면 훨씬 직관적으로 풀 수 있습니다.",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 42088,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "gemini"
+    }
+  ]
+}

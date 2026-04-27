@@ -1,0 +1,983 @@
+{
+  "mode": "full",
+  "run_at": "2026-04-27T18:02:13.930Z",
+  "summary": {
+    "total": 33,
+    "retriever_hit_rate_top3": 0,
+    "retriever_hit_rate_top5": 0,
+    "reasoner_accuracy": 0.9090909090909091,
+    "reasoner_accuracy_hard": 0.9090909090909091,
+    "why_inclusion_rate": 0.7878787878787878,
+    "manager_classify_rate": 0.6363636363636364,
+    "pass": {
+      "retriever": false,
+      "accuracy": true,
+      "why": false
+    },
+    "chain": {
+      "enabled": false,
+      "executed_count": 0,
+      "avg_depth": 0,
+      "termination_dist": {
+        "reached_conditions": 0,
+        "max_depth": 0,
+        "dead_end": 0,
+        "cycle": 0
+      },
+      "success_rate": 0
+    }
+  },
+  "results": [
+    {
+      "id": "2017-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "최적화 (자유 극값)",
+        "회전체의 부피 (디스크)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 1단계: f(x)의 부호 분석\n\nf(x)는 연속이고 증가함수입니다. \n\n만약 f(x) ≥ 0 이면 ∫|f| = ∫f = 2 가 되어야 하는데 2√2 ≠ 2 이므로 모순.\n만약 f(x) ≤ 0 이면 ∫f = -2√2 ≠ 2 이므로 모순.\n\n따라서 f(x)는 음수에서 양수로 바뀝니다. 어떤 c ∈ (0,1)에서 f(c) = 0.\n\n## 2단계: 두 조건식 세우기\n\n- $\\int_0^c f \\, dt = -A$ (A > 0), $\\int_c^1 f \\, dt = B$ (B > 0)\n- $\\int_0^1 f = B - A = 2$\n- $\\int_0^1 |f| = A + B = 2\\sqrt{2}$\n\n따라서 $B = \\sqrt{2}+1$, $A = \\sqrt{2}-1$.\n\n## 3단계: F(x) 정의 분석\n\n$$F(x) = \\int_0^x |f(t)|\\,dt$$\n\n- $0 \\le x \\le c$: $|f| = -f$ 이므로 $F(x) = -\\int_0^x f\\,dt$\n- $c \\le x \\le 1$: $F(x) = A + \\int_c^x f\\,dt$\n\n## 4단계: 적분 분할\n\n$$I = \\int_0^1 f(x)F(x)\\,dx = \\int_0^c f F\\,dx + \\int_c^1 f F\\,dx$$\n\n**구간 [0,c]:** F'(x) = -f(x), 즉 f = -F'.\n$$\\int_0^c fF\\,dx = \\int_0^c (-F')F\\,dx = -\\frac{1}{2}[F^2]_0^c = -\\frac{1}{2}A^2$$\n\n**구간 [c,1]:** F'(x) = f(x), 즉 f = F'.\n$$\\int_c^1 fF\\,dx = \\frac{1}{2}[F^2]_c^1 = \\frac{1}{2}(F(1)^2 - F(c)^2)$$\n\n여기서 $F(c) = A$, $F(1) = A + B = 2\\sqrt{2}$.\n\n## 5단계: 계산\n\n$$I = -\\frac{1}{2}A^2 + \\frac{1}{2}((2\\sqrt{2})^2 - A^2) = -A^2 + 4$$\n\n$A = \\sqrt{2}-1$ 이므로 $A^2 = 3 - 2\\sqrt{2}$.\n\n$$I = 4 - (3 - 2\\sqrt{2}) = 1 + 2\\sqrt{2}$$\n\n## 검증\n답은 (4) $1 + 2\\sqrt{2}$.\n\n최종 답: $1+2\\sqrt{2}$\n코칭 한마디: 왜냐하면 $F'=|f|$ 이고 구간별로 $f=\\pm F'$ 이 되므로, $fF$ 의 적분은 $\\frac{1}{2}F^2$ 의 부호 처리만으로 깔끔히 계산되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 21372,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2017-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "회전체의 부피 (디스크)",
+        "한 점에서의 접선의 방정식",
+        "사잇값 정리 (수학2)",
+        "로그함수의 성질",
+        "리만합과 정적분의 변환"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 풀이\n\n**쌍곡선 설정**\n\n점근선이 $y = \\pm \\frac{4}{3}x$이므로 쌍곡선을 $\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1$로 놓으면 $\\frac{b}{a} = \\frac{4}{3}$.\n\n따라서 $a = 3k$, $b = 4k$ ($k > 0$)로 두면 $c = 5k$.\n\n**조건 (가) 분석**\n\n쌍곡선의 정의에 의해 $|\\overline{PF'} - \\overline{PF}| = 2a = 6k$.\n\n$\\overline{PF'} = 30$이므로 $\\overline{PF} = 30 \\pm 6k$.\n\n- $16 \\leq 30 - 6k \\leq 20 \\Rightarrow \\frac{10}{6} \\leq k \\leq \\frac{14}{6}$, 즉 $\\frac{5}{3} \\leq k \\leq \\frac{7}{3}$\n- $16 \\leq 30 + 6k \\leq 20 \\Rightarrow$ 음수 해, 불가능\n\n또한 점 P가 쌍곡선 위에 존재하려면 초점거리 조건:\n- $\\overline{PF'} \\geq c + a = 8k$ (왼쪽 가지) 또는 $\\overline{PF'} \\geq c - a = 2k$, $\\overline{PF} \\geq c-a = 2k$\n\n$\\overline{PF} = 30 - 6k \\geq c - a = 2k \\Rightarrow k \\leq \\frac{30}{8} = 3.75$ ✓\n\n$\\overline{PF'} = 30 \\geq c + a = 8k \\Rightarrow k \\leq \\frac{30}{8} = 3.75$ ✓\n\n따라서 $\\frac{5}{3} \\leq k \\leq \\frac{7}{3}$.\n\n**조건 (나) 분석**\n\n꼭짓점 A는 $(a, 0) = (3k, 0)$, 초점 F는 $(5k, 0)$.\n\n$\\overline{AF} = c - a = 5k - 3k = 2k$.\n\n$2k$가 자연수이고 $\\frac{5}{3} \\leq k \\leq \\frac{7}{3}$, 즉 $\\frac{10}{3} \\leq 2k \\leq \\frac{14}{3}$.\n\n$3.33\\ldots \\leq 2k \\leq 4.66\\ldots$이므로 $2k = 4$, 즉 $k = 2$.\n\n**주축의 길이**\n\n$2a = 6k = 12$.\n\n최종 답: 12\n코칭 한마디: 왜냐하면 쌍곡선의 정의(두 초점까지 거리의 차 = 2a)와 점근선 기울기로부터 a:b:c 비율을 잡으면, 조건의 부등식과 자연수 조건을 동시에 만족하는 매개변수를 좁혀낼 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 20478,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2017-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "유리함수 y=k/(x-p)+q",
+        "이항분포 B(n,p)",
+        "무리함수 y=√(ax+b)+c",
+        "벡터의 내적",
+        "확률의 정의 (수학적 확률)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "좌표를 설정합니다.\n\n**좌표 설정:**\n정삼각형 BCD를 바닥에 놓고, A를 위에 배치합니다.\n\nBCD의 무게중심을 G라 하면, 정사면체에서 AG ⊥ 평면 BCD.\n- 한 변의 길이 4인 정삼각형의 무게중심에서 꼭짓점까지 거리: 4/√3\n- 높이: AG = √(16 - 16/3) = √(32/3) = 4√6/3\n\n좌표:\n- G = (0, 0, 0)\n- B = (4/√3, 0, 0) ... 등으로 잡되, 계산 편의상 다시 설정\n\n다음과 같이 잡습니다:\n- B = (2, 0, 0)... 대신 무게중심 기준으로:\n- B = (4/√3, 0, 0)\n- C = (-2/√3, 2, 0)\n- D = (-2/√3, -2, 0)\n- A = (0, 0, 4√6/3)\n\n**O와 P 좌표:**\nO = △ABC의 무게중심 = (A+B+C)/3\n- O = ((0 + 4/√3 - 2/√3)/3, (0+0+2)/3, (4√6/3)/3)\n- O = (2/(3√3), 2/3, 4√6/9)\n\nP = AD의 중점 = (A+D)/2\n- P = ((0 - 2/√3)/2, (0-2)/2, (4√6/3)/2)\n- P = (-1/√3, -1, 2√6/3)\n\n**벡터 OP:**\nOP = P - O = (-1/√3 - 2/(3√3), -1 - 2/3, 2√6/3 - 4√6/9)\n- x: -3/(3√3) - 2/(3√3) = -5/(3√3) = -5√3/9\n- y: -5/3\n- z: 6√6/9 - 4√6/9 = 2√6/9\n\n|OP|² = 75/81 + 25/9 + 24/81 = 75/81 + 225/81 + 24/81 = 324/81 = 4\n|OP| = 2 ✓ (정사면체에서 무게중심-중점 거리는 한 모서리의 절반)\n\n**평면 BCD 위의 점 Q:**\nQ = (x, y, 0), 단 △BCD 내부/경계.\n\n**조건 OQ · OP = 0:**\nOQ = Q - O = (x - 2/(3√3), y - 2/3, -4√6/9)\n\nOQ · OP = (x - 2/(3√3))(-5√3/9) + (y - 2/3)(-5/3) + (-4√6/9)(2√6/9)\n\n상수항 계산:\n- (-2/(3√3))(-5√3/9) = 10/(27) = 10/27\n- (-2/3)(-5/3) = 10/9 = 30/27\n- (-4√6/9)(2√6/9) = -48/81 = -16/27\n\n합: 10/27 + 30/27 - 16/27 = 24/27 = 8/9\n\n따라서: -5√3/9 · x - 5/3 · y + 8/9 = 0\n양변 ×9: -5√3 x - 15y + 8 = 0\n즉, **5√3 x + 15y = 8**, 또는 **√3 x + 3y = 8/5**\n\n이는 평면 BCD(z=0) 위의 직선입니다.\n\n**|PQ|² 최대화:**\nPQ² = (x + 1/√3)² + (y+1)² + (2√6/3)²\n= (x + √3/3)² + (y+1)² + 24/9\n\n직선 √3 x + 3y = 8/5 위에서, 점 (-√3/3, -1)에서 가장 먼 점을 △BCD 영역 내에서 찾습니다.\n\n**직선과 삼각형 BCD의 교점 찾기:**\n\n삼각형 BCD의 변:\n- BC: B(4/√3, 0)에서 C(-2/√3, 2). 매개변수 또는 방정식\n- BD: B(4/√3, 0)에서 D(-2/√3, -2)\n- CD: x = -2/√3\n\n직선 √3 x + 3y = 8/5와 각 변의 교점:\n\n**CD와의 교점 (x = -2/√3):**\n√3(-2/√3) + 3y = 8/5 → -2 + 3y = 8/5 → 3y = 18/5 → y = 6/5\n점: (-2/√3, 6/5). CD는 y ∈ [-2, 2]이므로 OK.\n\n**BC와의 교점:**\nBC 직선: B(4/√3, 0), C(-2/√3, 2). 방향 (-6/√3, 2) = (-2√3, 2)\n방정식: (y-0)/(x - 4/√3) = 2/(-2√3) = -1/√3\ny = -(x - 4/√3)/√3 = -x/√3 + 4/3\n즉 x/√3 + y = 4/3, 또는 x + √3 y = 4√3/3\n\n직선과 연립: √3 x + 3y = 8/5, x + √3 y = 4√3/3\n두 번째 식 ×√3: √3 x + 3y = 4. 하지만 8/5 ≠ 4이므로 두 직선은 평행!\n\n확인: √3 x + 3y = 8/5 의 기울기는 -√3/3. BC의 기울기도 -1/√3 = -√3/3. 평행 확인.\n\n**BD와의 교점:**\nBD: B(4/√3, 0), D(-2/√3, -2). 기울기 = -2/(-6/√3) = √3/3\ny = (√3/3)(x - 4/√3) = √3 x/3 - 4/3\n즉 -√3 x/3 + y = -4/3, 또는 -√3 x + 3y = -4\n\n연립: √3 x + 3y = 8/5, -√3 x + 3y = -4\n더하면: 6y = 8/5 - 4 = -12/5, y = -2/5\n빼면: 2√3 x = 8/5 + 4 = 28/5, x = 14/(5√3) = 14√3/15\n\n점: (14√3/15, -2/5)\n\n**확인:** BD 위에 있는지. B = (4/√3, 0) = (4√3/3, 0) ≈ (2.31, 0), D ≈ (-1.15, -2)\n14√3/15 ≈ 1.617, y = -0.4. B와 D 사이에 있음 ✓\n\n**Q의 범위:** 직선이 △BCD를 자르는 선분의 양 끝점:\n- Q₁ = (-2/√3, 6/5) = (-2√3/3, 6/5) (CD 위)\n- Q₂ = (14√3/15, -2/5) (BD 위)\n\n**P의 평면 BCD로의 정사영:** P = (-1/√3, -1, 2√6/3), 정사영 P' = (-1/√3, -1, 0) = (-√3/3, -1, 0)\n\n|PQ|² = |P'Q|² + (2√6/3)² = |P'Q|² + 8/3\n\nP'에서 직선까지의 거리, 그리고 양 끝점까지 거리 중 최대를 찾습니다.\n\n|P'Q₁|² = (-2√3/3 + √3/3)² + (6/5 + 1)² = (-√3/3)² + (11/5)² = 1/3 + 121/25\n= 25/75 + 363/75 = 388/75\n\n|P'Q₂|² = (14√3/15 + √3/3)² + (-2/5 + 1)²\n14√3/15 + 5√3/15 = 19√3/15\n= (19√3/15)² + (3/5)²\n= 1083/225 + 9/25 = 1083/225 + 81/225 = 1164/225 = 388/75\n\n오! 두 거리가 같습니다. 즉 P'에서 직선에 내린 수선의 발이 선분의 중점입니다. 따라서 양 끝점에서 최댓값.\n\n|PQ|²_max = 388/75 + 8/3 = 388/75 + 200/75 = 588/75 = 196/25\n\n|PQ|_max = 14/5\n\n**결과:** q/p = 14/5, p = 5, q = 14, p+q = **19**\n\n최종 답: 19\n코칭 한마디: 왜냐하면 수직 조건은 내적=0으로 직선 방정식을 만들고, 거리의 제곱은 평면 정사영을 분리해 처리하면 영역 위 최댓값을 끝점 비교로 깔끔히 구할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 40144,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2017-가형-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me analyze. g(x) is quartic with leading coefficient -1. (x-a)f(x) = g(x) for x>a, so f(x) = g(x)/(x-a). For f to be defined nicely... actually f is just defined on x>a.\n\nSince g is quartic with leading -1, f(x) = g(x)/(x-a) behaves like -x³ for large x.\n\nf has two equal local maxima at α, β with M>0. f could be a cubic-like function (if (x-a) divides g) or have a pole at x=a (but domain is x>a so it's fine).\n\nCase 1: (x-a) divides g(x). Then f is a cubic with leading coefficient -1. A cubic can have at most one local max and one local min. So can't have two local maxima. So this case fails.\n\nCase 2: (x-a) doesn't divide g(x). Then f(x) = g(x)/(x-a) on x>a, with g(a) ≠ 0. As x→a+, f(x) → g(a)/0.\n\nLet g(x) = -(x-a)·h(x) + c... hmm. Write g(x) = (x-a)f(x) where f is defined for x>a only. So f doesn't need to be polynomial.\n\nf(x) = g(x)/(x-a). Let's compute f'(x) = [g'(x)(x-a) - g(x)]/(x-a)².\n\nf' = 0 when g'(x)(x-a) = g(x), i.e., g'(x)(x-a) - g(x) = 0.\n\nLet p(x) = g'(x)(x-a) - g(x). Then p'(x) = g''(x)(x-a) + g'(x) - g'(x) = g''(x)(x-a).\n\nSo p'(x) = g''(x)(x-a). g'' is quadratic with leading -12... wait g leading -1, so g'' leading -12. Hmm, g(x) = -x⁴+..., g''(x) = -12x²+....\n\np(x) is degree 4 (since g'(x)(x-a) is degree 4 with leading -4, minus g of leading -1, total leading -3). So p has leading -3x⁴.\n\nf has critical points where p(x) = 0 (x>a).\n\nCondition (나): f has two local maxima with equal value M.\n\nFor f to have two local maxima, it needs at least... in terms of critical points: max-min-max pattern needs 3 critical points, or max-max with discontinuity, etc.\n\nSince x>a, and as x→a+, f(x) = g(x)/(x-a) → ±∞ depending on sign of g(a).\n\nIf g(a) < 0, f → -∞ as x→a+. As x→∞, f → -∞. So f could have shape: -∞, up to max, down to min, up to max, down to -∞. That's max-min-max, 3 critical points: max, min, max. Two equal maxima possible!\n\nIf g(a) > 0, f → +∞ as x→a+. Then shape from +∞ down... could be +∞→min→max→min→-∞? But then only one max.\n\nIf g(a) = 0, then (x-a)|g(x), back to case 1.\n\nSo g(a) < 0. Then p(x) has 3 roots in (a,∞) corresponding to max, min, max.\n\np is quartic with leading -3, so p→-∞ at both ends. p has 3 roots in (a,∞) means one root either ≤a or p has 4 roots total (counted with sign).\n\np(a) = g'(a)(0) - g(a) = -g(a) > 0 (since g(a)<0). Good, so p(a)>0 and p has roots... p(a)>0, then p crosses to negative, back to positive, back to negative as x→∞? That gives roots: 3 roots in (a,∞). Need check p might have a 4th root in (-∞,a).\n\nAs x→-∞, p→-∞. p(a)>0. So there's a root in (-∞,a). Total 4 roots, 3 in (a,∞).\n\nOK so let's denote critical points of f at α<γ<β (max at α, min at γ, max at β).\n\nf(α) = f(β) = M.\n\nCondition (다): #{critical points of f} > #{critical points of g}.\n\nf has 3 critical points (in domain x>a). g is quartic with leading -1. g'(x) is cubic with leading -4. g' has 1 or 3 real roots.\n\nActually g has either 1 critical point (one max) or 3 critical points (max-min-max for leading -1: actually -x⁴ goes to -∞ at both ends, so shape is -∞→max→min→max→-∞ with 3 critical points, OR just one max).\n\nSo g has 1 or 3 critical points. f has 3. So we need g to have fewer than 3, i.e., g has exactly 1 critical point.\n\nSo g'(x) = -4(x-r)((x-s)² + t²) for some r and t≠0, or g'(x) = -4(x-r)³.\n\nLet's set up coordinates. Let me try g(x) = -(x-a)(x-b)³ + c or similar... actually let's think.\n\nSince f(α) = f(β) = M:\ng(α)/(α-a) = M, g(β)/(β-a) = M.\n\nAlso since these are critical points: g'(α)(α-a) = g(α), so g'(α) = g(α)/(α-a) = M. Similarly g'(β) = M.\n\nSo g'(α) = g'(β) = M.\n\ng'(x) - M is a cubic (leading -4) with roots at α and β. Let γ' be third root: g'(x) - M = -4(x-α)(x-β)(x-γ').\n\nHmm interesting. But also g should have only 1 critical point: g'(x) = 0 has one real root.\n\ng'(x) = -4(x-α)(x-β)(x-γ') + M.\n\nHmm let's use symmetry. Let me set midpoint α,β at 0: α = -3√3, β = 3√3.\n\ng'(x) = -4(x²-27)(x-γ') + M.\n\nNow g'(x) has 1 real root means cubic crosses zero once.\n\nAlso need: at x=α and x=β, f has local max. And γ (critical point of f, the min) satisfies g'(γ) = g(γ)/(γ-a) = f(γ).\n\nHmm, let me also use: p(x) = g'(x)(x-a) - g(x), p has roots α, γ, β in (a,∞).\n\np'(x) = g''(x)(x-a). So p' = 0 when x=a or g''(x)=0.\n\nBetween α and β, p has roots at α, γ, β. By Rolle, p' has roots in (α,γ) and (γ,β). p'(x) = g''(x)(x-a). For x>a, p'=0 iff g''(x)=0. So g''(x) has 2 roots in (α,β).\n\ng'' is quadratic with leading -12. g''(x) = -12x² + ... \n\nHmm. Let me use that g has only one critical point. g'(x) = 0 has one real root.\n\nLet's try a specific form. Consider symmetry about x=0 (midpoint of α,β).\n\nIf g'(x) - M = -4(x-α)(x-β)(x-γ'), and we want g' = 0 to have one real root.\n\ng'(x) = -4(x²-27)(x-γ') + M.\n\nExpand: g'(x) = -4(x³ - γ'x² - 27x + 27γ') + M = -4x³ + 4γ'x² + 108x - 108γ' + M.\n\nFor g'=0 to have one real root, discriminant condition. Let's think simpler: maybe γ' = 0 and use symmetry.\n\nIf γ' = 0: g'(x) = -4x³ + 108x + M.\ng'(x) = 0: -4x³ + 108x + M = 0, i.e., 4x³ - 108x - M = 0, x³ - 27x = M/4.\n\nThe function x³ - 27x has critical points at x=±3, with values ∓54. So x³-27x ranges over local max 54 at x=-3, local min -54 at x=3.\n\nFor one real root: M/4 > 54 or M/4 < -54, i.e., |M|>216. Since M>0, M>216.\n\nBut wait, we also need to verify f has two local maxima here. Let me also integrate to find g.\n\ng(x) = -x⁴ + (4γ'/3)x³ + 54x² + (-108γ' + M)x + C.\n\nWith γ'=0: g(x) = -x⁴ + 54x² + Mx + C.\n\nNow need: f(α) = M where α = -3√3.\nf(α) = g(α)/(α - a) = M.\ng(-3√3) = -(81·9) + 54·27 + M(-3√3) + C = -729 + 1458 - 3√3 M + C = 729 - 3√3 M + C.\n\nSo (729 - 3√3 M + C)/(-3√3 - a) = M.\n729 - 3√3 M + C = M(-3√3 - a) = -3√3 M - aM.\n729 + C = -aM.\nC = -aM - 729.\n\nSimilarly f(β)=M: g(3√3) = -729 + 1458 + 3√3 M + C = 729 + 3√3 M + C.\n(729 + 3√3 M + C)/(3√3 - a) = M.\n729 + 3√3 M + C = M(3√3-a) = 3√3 M - aM.\n729 + C = -aM. Same equation.\n\nGood. So C = -aM - 729.\n\nWe also need p(x) = g'(x)(x-a) - g(x) to have its roots structure correct, and γ (the min critical point of f) lies in (α, β).\n\nBy symmetry (g is even-ish: g(x) = -x⁴+54x²+Mx+C, not symmetric due to Mx term).\n\nHmm wait, with γ'=0, the cubic g'-M has roots ±3√3 and 0, so symmetric. But then g'(x) = -4x³+108x+M, and adding constant M breaks symmetry of g'.\n\nLet's just find critical points of f. p(x) = g'(x)(x-a) - g(x).\n\nActually we know α, β are roots of p. The third root γ in (α,β).\n\np(x) = (-4x³+108x+M)(x-a) - (-x⁴+54x²+Mx+C)\n= -4x⁴ + 4ax³ + 108x² - 108ax + Mx - Ma + x⁴ - 54x² - Mx - C\n= -3x⁴ + 4ax³ + 54x² - 108ax - Ma - C\n\nWith C = -aM - 729:\np(x) = -3x⁴ + 4ax³ + 54x² - 108ax - Ma + aM + 729\n= -3x⁴ + 4ax³ + 54x² - 108ax + 729.\n\np has roots α=-3√3, β=3√3.\np(3√3) = -3·729 + 4a·81√3 + 54·27 - 108a·3√3 + 729\n= -2187 + 324√3 a + 1458 - 324√3 a + 729 = 0. ✓\np(-3√3) = -3·729 - 4a·81√3 + 1458 + 324√3 a + 729 = -2187 + 1458 + 729 + (-324√3 + 324√3)a = 0. ✓\n\nGood, doesn't depend on a (as expected since α,β symmetric and g'-M symmetric).\n\np(x) = -3x⁴ + 4ax³ + 54x² - 108ax + 729.\n\nFactor out (x²-27): p(x) = (x²-27)·Q(x) + remainder.\n\nDivide -3x⁴ + 4ax³ + 54x² - 108ax + 729 by x²-27:\n-3x⁴ / x² = -3x². -3x²·(x²-27) = -3x⁴+81x².\nRemainder: 4ax³ + (54-81)x² - 108ax + 729 = 4ax³ - 27x² - 108ax + 729.\n4ax³/x² = 4ax. 4ax(x²-27) = 4ax³ - 108ax.\nRemainder: -27x² + 729 = -27(x²-27).\nSo p(x) = (x²-27)(-3x² + 4ax - 27).\n\nSo other roots from -3x²+4ax-27 = 0, i.e., 3x² - 4ax + 27 = 0.\nx = [4a ± √(16a² - 324)]/6 = [2a ± √(4a²-81)]/3.\n\nFor real roots: 4a² ≥ 81, |a| ≥ 9/2.\n\nThe roots are γ and another root δ. We need γ ∈ (-3√3, 3√3) and the 4th root of p is δ. p has 4 roots: ±3√3, γ, δ.\n\nAlso need a < α = -3√3 (since domain x>a includes α).\n\na ≤ -9/2? -9/2 = -4.5, -3√3 ≈ -5.196. So a < -3√3 means a < -5.196. Since |a|≥4.5, a ≤ -4.5 isn't enough. Need a < -3√3.\n\nHmm actually a < -3√3 ≈ -5.196 implies a < -4.5, so 4a²>81 holds (a² > 27 > 81/4).\n\nThe two roots of 3x²-4ax+27=0: product = 27/3 = 9 > 0, sum = 4a/3 < 0 (since a<0).\nSo both roots negative. γ ∈ (-3√3, 3√3) means γ ∈ (-3√3, 0). The other root δ also negative.\n\nBoth roots negative, product 9. If both in (-3√3, 0), product < 27, OK 9<27. Sum > -6√3, so 4a/3 > -6√3, a > -9√3/2 ≈ -7.79.\n\nHmm but we need only one root in (-3√3, 3√3) and another root somewhere (could be < a, but then not in domain... wait, p's roots need to be analyzed for f's critical points).\n\nActually f's critical points are roots of p in domain x>a. We want exactly 3: α, γ, β. The 4th root δ must be in (-∞, a] (i.e., δ ≤ a, not in domain).\n\nBoth roots of 3x²-4ax+27=0 are γ, δ, both negative.\n\nWe want γ ∈ (-3√3, 3√3) (specifically the min between α and β), and δ ≤ a < -3√3.\n\nSum γ+δ = 4a/3, product γδ = 9.\n\nIf δ ≤ a and γ > -3√3, and γδ = 9, δ < 0, γ < 0:\nδ = 9/γ. δ ≤ a means 9/γ ≤ a (γ<0, so dividing flips: 9 ≥ aγ, i.e., aγ ≤ 9).\n\nHmm let me think differently. Let's parametrize by γ ∈ (-3√3, 0). Then δ = 9/γ. Both negative.\n\na = 3(γ+δ)/4 = 3(γ + 9/γ)/4.\n\nCondition δ ≤ a:\n9/γ ≤ 3(γ + 9/γ",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 69356,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "opus"
+    },
+    {
+      "id": "2018-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "매개변수 미분",
+        "사잇값 정리 (수학2)",
+        "ln(1+x)/x 의 극한",
+        "(eˣ-1)/x 의 극한"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 1. 조건 분석\n\n조건 $(x-e)\\{g(x)-f(x)\\} \\geq 0$ 은:\n- $1 \\le x < e$ 일 때: $x - e < 0$ 이므로 $g(x) \\le f(x) = \\ln x$\n- $x = e$ 일 때: 자동 성립\n- $x > e$ 일 때: $g(x) \\ge f(x) = \\ln x - t$\n\n즉, 직선 $y = g(x)$ 는 구간 $[1, e)$ 에서 $\\ln x$ **아래**, 구간 $(e, \\infty)$ 에서 $\\ln x - t$ **위**에 있어야 합니다.\n\n## 2. 점 $(e, 1)$ 와 $(e, 1-t)$ 와의 관계\n\n$x \\to e^-$ 에서 $g(e) \\le 1$, $x \\to e^+$ 에서 $g(e) \\ge 1-t$. 즉 $1-t \\le g(e) \\le 1$.\n\n직선의 기울기를 최소화하려면, 직선이 두 곡선 사이를 \"비집고\" 통과해야 합니다.\n\n## 3. 경우 나누기\n\n**기울기 $m$ 이 작을수록** 좋으므로, 직선을 가능한 한 \"눕히고\" 싶습니다.\n\n### 직선이 점 $(e, 1)$ 을 지나는 경우 (좌측 곡선 $\\ln x$ 의 끝점)\n\n$g(x) = m(x-e) + 1$. \n\n- 좌측조건 $1 \\le x < e$: $\\ln x \\ge m(x-e)+1$. $x=e$에서 등호. 좌극한에서 $\\ln x$ 의 접선 기울기 $1/e$ 와 비교. 직선이 $\\ln x$ 아래에 있으려면 $m \\ge 1/e$ (접선 기울기 이상이어야 $x<e$ 에서 위로 안 나옴)... \n\n잠시, $\\ln x$ 는 오목함수(위로 볼록). $x=e$ 에서의 접선은 $y = (x-e)/e + 1$. 오목함수는 접선 아래에 있으므로 $\\ln x \\le (x-e)/e + 1$. 따라서 직선이 $\\ln x$ 아래에 있으려면 $m(x-e)+1 \\le \\ln x$ for $x<e$, 즉 $x-e<0$ 일 때 $m(x-e) \\le \\ln x - 1$. $\\ln x -1 \\le (x-e)/e$ 이므로 $m \\ge 1/e$ 일 때 성립 가능... \n\n실제로 $(e,1)$ 을 지나고 기울기 $1/e$ 인 직선이 $\\ln x$ 의 접선이며, 좌측 조건을 만족하는 **최소 기울기**입니다 ($m \\ge 1/e$).\n\n- 우측조건 $x \\ge e$: $m(x-e)+1 \\ge \\ln x - t$, 즉 $t \\ge \\ln x - m(x-e) - 1$. 우변의 최댓값을 구하면 $x = 1/m$ 에서 $-\\ln m -1 - 1 + me = me - \\ln m - 2$. 따라서 $t \\ge me - \\ln m - 2$ 필요.\n\n기울기 $m = 1/e$ 일 때: $t \\ge 1 - \\ln(1/e) - 2 = 1+1-2 = 0$. 항상 가능.\n\n따라서 이 경우 $m = 1/e$ 가능. **하지만** 이것은 $\\ln x$ 의 접선이고, $x \\ge e$ 에서 $\\ln x - t \\le \\ln x - 0$... 우측에서 직선이 $\\ln x$ 의 접선이므로 $\\ln x \\le$ 직선, 그래서 $\\ln x - t \\le$ 직선, 즉 $t \\ge 0$ 이면 항상 됨. ✓\n\n### 직선이 점 $(e, 1-t)$ 를 지나는 경우 (우측 곡선의 시작점)\n\n$g(x) = m(x-e) + 1 - t$.\n\n- 우측조건: $\\ln x - t \\le m(x-e) + 1 - t$, 즉 $\\ln x \\le m(x-e)+1$. $\\ln x$의 $x=e$접선이 $(x-e)/e+1$이고 이게 상한이므로 $m \\le 1/e$ 일 때... 실제로는 $m \\ge 1/e$이면 우측에서 직선이 접선보다 위(x>e에서)이므로 $\\ln x$위에 있음. 음 다시:\n\n$x>e$, $\\ln x \\le (x-e)/e + 1$ (오목성). $m(x-e)+1 \\ge (x-e)/e+1$ 이려면 $m \\ge 1/e$. 따라서 $m \\ge 1/e$.\n\n- 좌측조건 $1 \\le x < e$: $m(x-e)+1-t \\le \\ln x$, 즉 $t \\ge m(x-e) + 1 - \\ln x$. 우변 최댓값: 미분 $m - 1/x = 0$, $x = 1/m$. $1/m \\in [1,e)$ 이려면 $m \\in (1/e, 1]$.\n\n  - $m \\in (1/e, 1]$: 최댓값 $= m(1/m - e) + 1 - \\ln(1/m) = 1 - me + 1 + \\ln m = 2 - me + \\ln m$.\n    조건: $t \\ge 2 - me + \\ln m$, 즉 $me - \\ln m \\ge 2 - t$.\n  - $m \\ge 1$: 최댓값은 $x=1$에서 $m(1-e)+1$. 조건 $t \\ge m(1-e)+1$, $m \\ge 1$ 이면 $m(1-e)+1 \\le 1+(1-e) = 2-e < 0 < t$. 자동 성립.\n\n## 4. $h(t)$ 결정\n\n**핵심 통찰**: $(e,1)$ 을 지나는 직선의 최소 기울기는 $1/e$ 로 고정. 그러나 더 작은 기울기를 원하면 직선이 $(e,1)$ 보다 아래로 내려가서 $(e, 1-t)$ 에 가까워져야 함.\n\n일반적으로 직선이 $g(e) = c$, $1-t \\le c \\le 1$ 을 지난다 가정. 좌측에서 $\\ln x \\ge g(x)$, 우측에서 $\\ln x - t \\le g(x)$.\n\n좌측: $\\ln x - m(x-e) - c \\ge 0$ for $x \\in [1,e)$. \n우측: $m(x-e) + c - \\ln x + t \\ge 0$ for $x \\ge e$.\n\n**좌측 분석**: $\\phi(x) = \\ln x - m(x-e) - c$. $\\phi(e) = 1 - c \\ge 0$. $\\phi'(x) = 1/x - m$.\n\n$m \\le 1/e$ 이면 $\\phi' > 0$ on $[1,e)$, 그래서 $\\phi$ 증가, 최솟값은 $x=1$: $0 - m(1-e) - c = m(e-1) - c \\ge 0$, 즉 $c \\le m(e-1)$.\n\n$m > 1/e$ 이면 $x = 1/m \\in [1,e)$ 에서 최소. $\\phi(1/m) = -\\ln m - 1 + me - c \\ge 0$, 즉 $c \\le me - \\ln m - 1$.\n\n**우측 분석**: $\\psi(x) = m(x-e) + c - \\ln x + t$. $\\psi(e) = c - 1 + t \\ge 0$ 이려면 $c \\ge 1-t$. $\\psi'(x) = m - 1/x$.\n\n$m \\ge 1/e$ 이면 $\\psi' > 0$ on $[e,\\infty)$, $\\psi$ 증가, 최솟값 $\\psi(e) = c-1+t \\ge 0$, 즉 $c \\ge 1-t$.\n\n$m < 1/e$ 이면 $x=1/m > e$ 에서 최소. $\\psi(1/m) = 1 - me + c + \\ln m + t \\ge 0$, 즉 $c \\ge me - \\ln m - 1 - t$.\n\n**기울기 최소화**: 작은 $m$ 일수록 좌측조건 $c \\le m(e-1)$ 과 우측조건 $c \\ge me - \\ln m - 1 - t$ 가 양립해야:\n\n$$me - \\ln m - 1 - t \\le m(e-1)$$\n$$m - \\ln m - 1 \\le t$$\n$$m - \\ln m \\le t + 1$$\n\n함수 $u(m) = m - \\ln m$ 는 $m=1$ 에서 최솟값 1, $m \\to 0^+$ 에서 $\\infty$, $m \\to \\infty$ 에서 $\\infty$.\n\n$m < 1/e$ 영역에서 $u$ 는 감소함수. $u(1/e) = 1/e + 1$. $u(m) = t+1$ 이 $m < 1/e$ 에서 해를 가지려면 $t + 1 > 1/e + 1$, 즉 $t > 1/e$.\n\n### Case A: $t \\le 1/e$\n\n$m \\ge 1/e$ 영역에서 작업. $c \\le me - \\ln m - 1$ 이고 $c \\ge 1-t$. 양립:\n$$me - \\ln m - 1 \\ge 1 - t \\Rightarrow me - \\ln m \\ge 2 - t$$\n\n$v(m) = me - \\ln m$, $v'(m) = e - 1/m = 0 \\Rightarrow m = 1/e$, 최솟값 $v(1/e) = 1 + 1 = 2$. $m > 1/e$ 에서 $v$ 증가.\n\n$2 - t \\le 2$ 이므로 $v(m) \\ge 2 - t$ 는 $m \\ge 1/e$ 에서 항상... 아니, $m=1/e$ 에서 $v = 2 \\ge 2-t$ ✓. 따라서 최소 $m = 1/e$.\n\n음, 그러면 $h(t) = 1/e$ for $t \\le 1/e$? 확인: $t$ 작을 때 직선 기울기 $1/e$ 가능.\n\n### Case B: $t > 1/e$\n\n$m < 1/e$ 가능. 조건 $m - \\ln m \\le t+1$. $m < 1/e$ 에서 $u(m) = m - \\ln m$ 감소. $u(m) = t+1$ 의 해를 $m^*$ 라 하면 $m \\ge m^*$. 최소 $m = m^*$, 즉:\n\n$$m^* - \\ln m^* = t + 1$$\n\n이때 $h(t) = m^*$.\n\n## 5. $h'(t)$ 계산\n\n$t \\le 1/e$: $h(t) = 1/e$ (상수), $h'(t) = 0$.\n\n음, 그러면 $h'(1/(2e)) = 0$ 이 되어 답이 0... 문제 오류? 다시 검토.\n\n**재검토**: $t$ 가 작으면 $\\ln x - t$ 가 $\\ln x$ 와 가깝고, 두 곡선 사이에 직선을 끼우기 더 어려워야 합니다. $t = 0$ 이면 $f(x) = \\ln x$ 이고 직선이 곡선 위와 아래를 동시에 만족? 즉 $x<e$ 에서 직선 $\\le \\ln x$, $x>e$ 에서 직선 $\\ge \\ln x$. 이는 정확히 $x=e$ 에서의 접선 $y = (x-e)/e + 1$ 만 가능 (오목함수). 따라서 $h(0) = 1/e$. ✓\n\n$t$ 작을 때 $h(t) = 1/e$ 일 수도 있지만, 미분가능성 조건이 있으므로 연결점에서 매끄러워야.\n\n**$h$ 가 미분가능**하다고 했으므로, $t = 1/e$ 에서 좌극한 $h' = 0$, 우극한도 0이어야 함. \n\nCase B에서 $m^* - \\ln m^* = t+1$, 미분: $(1 - 1/m^*) (m^*)' = 1$, $(m^*)' = m^*/(m^*-1)$.\n\n$t = 1/e$ 에서 $m^* = 1/e$, $(m^*)' = (1/e)/(1/e - 1) = 1/(1-e) < 0$. 0이 아님!\n\n따라서 Case A에서 $h(t) = 1/e$ 가정이 틀렸을 가능성. 다시 봅시다.\n\n**재재검토**: Case A에서 $m \\ge 1/e$ 만 봤는데, $t > 0$ 이면 $m < 1/e$ 일 때 무엇이 일어나나? \n\n$t \\le 1/e$ 이고 $m < 1/e$ 시도: 조건 $u(m) \\le t+1$ 인데 $u(m) > u(1/e) = 1+1/e \\ge 1+t$. 부등호 반대: $u(m) > 1+t$ 이므로 $u(m) \\le t+1$ 불가. 즉 $m < 1/e$ 안 됨. ✓\n\n**다른 시나리오**: $m$ 이 매우 클 때? $m$ 큰 건 최소 아니므로 무시.\n\n미분가능성으로부터, 정의역이 $t > 0$ 이고 어쩌면 case A 가 다르게 분석되어야:\n\n$t \\le 1/e$ 에서 $m \\ge 1/e$ 만으로 항상 가능하지만, **최소 m 이 $1/e$ 보다 작을 수도** 있는지... 위에서 안 됨 보였음.\n\n**미분가능 조건**: 문제에 \"미분가능한 함수 $h(t)$ 에 대하여\" — 미분가능한 정의역 부분 제한 의미일 수도. $h$ 자체가 모든 곳에서 미분가능 아니라, 해당 점에서. 또는 $h$ 가 미분가능한 곳에서.\n\n실제 $h(t) = 1/e$ for $t \\le 1/e$, 그리고 case B 식 따름. $t = 1/e$ 에서 좌도함수 0, 우도함수 $1/(1-e) \\ne 0$. **불연속** 도함수.\n\n따라서 case 구분이 다른가? 다시 봅시다. ",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 70486,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "opus"
+    },
+    {
+      "id": "2018-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "유리함수 y=k/(x-p)+q",
+        "무리함수 y=√(ax+b)+c",
+        "복소수의 절댓값과 켤레",
+        "독립시행의 확률",
+        "로피탈 정리"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 1단계: 전체 순서쌍의 개수\n\n$x+y+z=10$ (음이 아닌 정수해)의 개수는 중복조합:\n$$\\binom{10+2}{2} = \\binom{12}{2} = 66$$\n\n## 2단계: $(x-y)(y-z)(z-x)=0$ 인 경우 (적어도 두 개가 같은 경우)\n\n**(i) $x=y$ 인 경우:** $2x+z=10$, $x=0,1,\\dots,5$ → 6개\n**(ii) $y=z$ 인 경우:** 마찬가지 6개\n**(iii) $z=x$ 인 경우:** 마찬가지 6개\n\n**중복 제외 (포함배제):** $x=y=z$ 인 경우는 $3x=10$ → 정수해 없음, 0개\n\n따라서 적어도 두 개가 같은 경우: $6+6+6 - 3\\cdot 0 = 18$개\n\n## 3단계: 조건을 만족하는 경우와 확률\n\n$(x-y)(y-z)(z-x) \\neq 0$ 인 경우: $66 - 18 = 48$개\n\n확률:\n$$\\frac{48}{66} = \\frac{8}{11}$$\n\n## 4단계: $p+q$ 계산\n\n$p=11, q=8$ 이므로 $p+q = 19$\n\n최종 답: $19$\n코칭 한마디: 왜냐하면 \"적어도 두 변수가 같다\"는 여집합 조건이 직접 세기보다 훨씬 단순해서 여사건 + 포함배제 원리를 쓰는 것이 효율적이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 14772,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2018-가형-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\n구 $x^2+y^2+z^2=6$, 평면 $x+2z=5$.\n\n평면과 원점 거리: $5/\\sqrt{5} = \\sqrt{5}$. 원 반지름: $\\sqrt{6-5}=1$.\n\n원 중심: 원점에서 평면으로 수선의 발. 법선 방향 $(1,0,2)/\\sqrt5$. 중심 $= \\sqrt5 \\cdot (1,0,2)/\\sqrt5 = (1,0,2)$.\n\n원 C: 중심 $(1,0,2)$, 반지름 1, 평면 $x+2z=5$ 위.\n\n원 위의 점 매개화: 평면의 두 직교 단위벡터 필요. 법선 $(1,0,2)/\\sqrt5$.\n- $u_1 = (0,1,0)$ (법선에 수직)\n- $u_2 = $ 법선 $\\times u_1 = (1,0,2)/\\sqrt5 \\times (0,1,0) = (-2/\\sqrt5, 0, 1/\\sqrt5)$\n\n원 위 점: $(1,0,2) + \\cos\\theta (0,1,0) + \\sin\\theta(-2/\\sqrt5, 0, 1/\\sqrt5)$\n$= (1 - 2\\sin\\theta/\\sqrt5, \\cos\\theta, 2 + \\sin\\theta/\\sqrt5)$\n\ny좌표 최소: $\\cos\\theta = -1$, $\\theta = \\pi$. 그때 $\\sin\\theta=0$.\nP $= (1, -1, 2)$.\n\nQ: xy평면 수선의 발 = $(1, -1, 0)$.\n\nX: 원 위 점 $= (1 - 2s/\\sqrt5, c, 2+s/\\sqrt5)$ where $c=\\cos\\theta, s=\\sin\\theta$.\n\n$\\vec{PX} = X - P = (-2s/\\sqrt5, c+1, s/\\sqrt5)$\n$\\vec{QX} = X - Q = (-2s/\\sqrt5, c+1, 2+s/\\sqrt5)$\n\n합: $(-4s/\\sqrt5, 2(c+1), 2+2s/\\sqrt5)$\n\n크기 제곱: $16s^2/5 + 4(c+1)^2 + (2+2s/\\sqrt5)^2$\n$= 16s^2/5 + 4(c+1)^2 + 4 + 8s/\\sqrt5 + 4s^2/5$\n$= 20s^2/5 + 4(c+1)^2 + 4 + 8s/\\sqrt5$\n$= 4s^2 + 4(c^2+2c+1) + 4 + 8s/\\sqrt5$\n$= 4s^2 + 4c^2 + 8c + 4 + 4 + 8s/\\sqrt5$\n$= 4 + 8c + 8 + 8s/\\sqrt5$\n$= 12 + 8c + 8s/\\sqrt5$\n\n최대화: $8c + 8s/\\sqrt5$의 최대 = $\\sqrt{64 + 64/5} = 8\\sqrt{6/5} = 8\\sqrt{30}/5$.\n\n최댓값 $= 12 + 8\\sqrt{30}/5$.\n\n$a = 12, b = 8/5$. $a+b = 12 + 8/5 = 68/5$. $10(a+b) = 136$.\n</think>\n\n## 풀이\n\n**1) 원 C의 정보**\n\n구의 중심 $O(0,0,0)$에서 평면 $x+2z-5=0$까지 거리: $\\dfrac{5}{\\sqrt{5}}=\\sqrt{5}$\n\n원 반지름 $r=\\sqrt{6-5}=1$, 원의 중심은 $(1,0,2)$.\n\n**2) 매개화**\n\n평면의 법선 $\\vec n=\\frac{1}{\\sqrt5}(1,0,2)$. 평면 위 직교 단위벡터:\n$u_1=(0,1,0), \\quad u_2=\\frac{1}{\\sqrt5}(-2,0,1)$\n\n$X=\\Big(1-\\tfrac{2\\sin\\theta}{\\sqrt5},\\ \\cos\\theta,\\ 2+\\tfrac{\\sin\\theta}{\\sqrt5}\\Big)$\n\n**3) P, Q 좌표**\n\n$y$좌표 최소 ⟹ $\\cos\\theta=-1$ ⟹ $P=(1,-1,2)$, $Q=(1,-1,0)$.\n\n**4) 벡터 계산**\n\n$\\vec{PX}=\\Big(-\\tfrac{2s}{\\sqrt5},\\ c+1,\\ \\tfrac{s}{\\sqrt5}\\Big),\\quad \\vec{QX}=\\Big(-\\tfrac{2s}{\\sqrt5},\\ c+1,\\ 2+\\tfrac{s}{\\sqrt5}\\Big)$\n\n합: $\\Big(-\\tfrac{4s}{\\sqrt5},\\ 2(c+1),\\ 2+\\tfrac{2s}{\\sqrt5}\\Big)$\n\n**5) 제곱 크기**\n\n$$|\\vec{PX}+\\vec{QX}|^2 = \\tfrac{16s^2}{5}+4(c+1)^2+\\Big(2+\\tfrac{2s}{\\sqrt5}\\Big)^2$$\n\n전개하면 $4s^2+4c^2+8c+4+4+\\tfrac{8s}{\\sqrt5}=12+8c+\\tfrac{8s}{\\sqrt5}$\n\n**6) 최댓값**\n\n$8c+\\dfrac{8s}{\\sqrt5}$의 최댓값 $=\\sqrt{64+\\tfrac{64}{5}}=\\dfrac{8\\sqrt{30}}{5}$\n\n따라서 최댓값 $=12+\\dfrac{8\\sqrt{30}}{5}$, 즉 $a=12,\\ b=\\dfrac{8}{5}$.\n\n$10(a+b)=10\\Big(12+\\tfrac{8}{5}\\Big)=120+16=136$\n\n최종 답: 136\n코칭 한마디: 왜냐하면 평면과 만나는 원은 평면의 두 직교 단위벡터로 매개화하면 거리·내적 계산이 한 변수의 삼각함수 식으로 깔끔하게 정리되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 28129,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2018-가형-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nWe have f(x) is a triangular bump centered at t with width 2, height 1. Then g(t) = ∫_k^{k+8} f(x)cos(πx)dx.\n\nIf the bump [t-1,t+1] is entirely inside [k,k+8], then g(t) = ∫_{t-1}^{t+1}(1-|x-t|)cos(πx)dx.\n\nLet u=x-t: ∫_{-1}^{1}(1-|u|)cos(π(u+t))du = cos(πt)∫_{-1}^1(1-|u|)cos(πu)du - sin(πt)∫_{-1}^1(1-|u|)sin(πu)du.\n\nThe sin integral is 0 (odd). The cos integral: 2∫_0^1(1-u)cos(πu)du.\n∫_0^1(1-u)cos(πu)du. Let me compute: ∫cos(πu)du from 0 to 1 = 0. ∫u cos(πu)du from 0 to 1 = [u sin(πu)/π]_0^1 - ∫sin(πu)/π du = 0 - [-cos(πu)/π²]_0^1 = -(-(-1)/π² - (-1/π²)) wait.\n\n∫_0^1 u cos(πu)du = [u sin(πu)/π]₀¹ - ∫₀¹ sin(πu)/π du = 0 - (1/π)·[-cos(πu)/π]₀¹ = -(1/π²)(-cos(π)+cos(0))·(-1)... let me redo.\n\n∫₀¹ sin(πu)du = [-cos(πu)/π]₀¹ = -(-1)/π - (-1/π) = 1/π + 1/π = 2/π.\n\nSo ∫₀¹ u cos(πu)du = 0 - (1/π)(2/π) = -2/π².\n\nTherefore ∫₀¹(1-u)cos(πu)du = 0 - (-2/π²) = 2/π².\n\nSo 2·(2/π²) = 4/π².\n\nSo when bump fully inside: g(t) = (4/π²)cos(πt).\n\nNow boundary effects when bump intersects edges k or k+8. Since k is odd, cos(πk) = -1, cos(π(k+8))=-1.\n\nFor t such that bump is fully inside (k+1 ≤ t ≤ k+7), g(t) = (4/π²)cos(πt).\n\nIn this range, local minima of cos(πt) occur at t = odd integers. Since k is odd, t = k+1 (even, max), k+2 (odd, but cos(π·odd)=-1, min), k+3 (even, max=1), k+4 (odd, min=-1), k+5 max, k+6 min, k+7 max.\n\nWait, k odd means k+2 odd, k+4 odd, k+6 odd. So minima at t = k+2, k+4, k+6 with g = -4/π².\n\nThese are local minima with g(α) < 0. Their sum: (k+2)+(k+4)+(k+6) = 3k+12.\n\nAlso we need to consider boundary regions: when t < k+1 or t > k+7, the bump partially overlaps.\n\nWhen t-1 < k (i.e., t < k+1), the integral becomes ∫_k^{t+1} f(x)cos(πx)dx (assuming t+1 ≤ k+8, i.e., t ≤ k+7). And we need t+1 ≥ k for nonzero, i.e., t ≥ k-1.\n\nSimilarly at right end.\n\nAlso possibly t outside [k-1, k+9] gives g=0 (no overlap). Let's think about what happens for t in [k-1, k+1] (left boundary partial overlap).\n\nFor t in [k-1, k+1]: bump [t-1,t+1], integration domain starts at k. Need to be careful.\n\nCase A: t ∈ [k-1, k]: then t-1 ∈ [k-2, k-1] (outside left), t+1 ∈ [k, k+1]. So integral is from k to t+1 of (1-|x-t|)cos(πx)dx. For x ∈ [k, t+1], x ≥ k ≥ t (since t ≤ k), so |x-t| = x-t, and f = 1-(x-t).\n\ng(t) = ∫_k^{t+1}(1-(x-t))cos(πx)dx.\n\nCase B: t ∈ [k, k+1]: bump [t-1,t+1], left part [t-1, k] is outside. Integral from k to t+1.\nFor x ∈ [k,t]: |x-t|=t-x, f=1-(t-x). For x∈[t,t+1]: f=1-(x-t).\ng(t) = ∫_k^t (1-(t-x))cos(πx)dx + ∫_t^{t+1}(1-(x-t))cos(πx)dx.\n\nHmm, this is getting complex. Let me think about g(t) more cleverly.\n\nLet h(x) = cos(πx) (on [k,k+8], or extend by 0 outside). Then g(t) = (f_t * something)... Actually g(t) = ∫ f(x-... hmm.\n\nNote f(x) depends on x-t. So g(t) = ∫_k^{k+8} φ(x-t)cos(πx)dx where φ(u) = max(0, 1-|u|) is the triangle.\n\nThis is a convolution. Equivalently g(t) = (φ * (cos(πx)·1_{[k,k+8]}))(t) up to sign... Let me re-examine.\n\ng(t) = ∫_{k}^{k+8} φ(x-t) cos(πx)dx. Let y = x-t: g(t) = ∫_{k-t}^{k+8-t} φ(y) cos(π(y+t)) dy.\n\nActually g'(t) might be useful. By Leibniz, since φ is continuous (triangle), g'(t) = -∫ φ'(x-t) cos(πx) dx (where φ' exists).\n\nHmm, let me just think of it as: φ = triangle of width 2. φ = (1_{[-1/2,1/2]} * 1_{[-1/2,1/2]})... actually the triangle of base [-1,1] is 1_{[-1/2,1/2]} * 1_{[-1/2,1/2]}? Let's check: convolution of two indicators of [-1/2,1/2] gives triangle of base [-1,1] with peak 1 at 0. Yes!\n\nSo f(x) = ∫ 1_{[t-1/2,t+1/2]}(s) 1_{[s-1/2, s+1/2]}(x) ds... not sure if useful.\n\nLet's just compute g(t) for boundary cases.\n\nLet me define G(a,b,t) = ∫_a^b (1-|x-t|) cos(πx) dx for relevant ranges.\n\nFor the left boundary (t near k), full bump support [t-1,t+1] gets clipped to [max(k,t-1), min(k+8,t+1)].\n\nLet me consider t ∈ [k-1, k+1] (left boundary region):\n\nSub-case t ∈ [k-1, k]: integration [k, t+1]. On this interval x ≥ k ≥ t so x-t ≥ 0, |x-t|=x-t.\ng(t) = ∫_k^{t+1}(1-x+t)cos(πx)dx.\n\nLet me substitute u = x-t, du=dx, when x=k, u=k-t; when x=t+1, u=1.\ng(t) = ∫_{k-t}^1 (1-u) cos(π(u+t))du.\n\nLet s = k-t, so s ∈ [0,1] when t ∈ [k-1, k].\ng(t) = ∫_s^1 (1-u)[cos(πu)cos(πt) - sin(πu)sin(πt)]du.\n\nHmm complicated. Let me think about special points.\n\nAt t = k: s=0. g(k) = ∫_0^1(1-u)cos(π(u+k))du. cos(π(u+k))=cos(πu)cos(πk)-sin(πu)sin(πk)=cos(πu)(-1)^k - 0 = -cos(πu) (k odd).\ng(k) = -∫_0^1(1-u)cos(πu)du = -2/π².\n\nAt t = k-1: s=1, integral from 1 to 1 = 0. g(k-1) = 0.\n\nFor t ∈ [k, k+1]:\ng(t) = ∫_k^{t+1}(1-|x-t|)cos(πx)dx.\nSplit at x=t: ∫_k^t(1-(t-x))cos(πx)dx + ∫_t^{t+1}(1-(x-t))cos(πx)dx.\n\nLet me use u = x-t:\nFirst integral: u ∈ [k-t, 0], (1+u)cos(π(u+t))\nSecond: u ∈ [0,1], (1-u)cos(π(u+t))\n\nCombined: ∫_{k-t}^1 (1-|u|)cos(π(u+t))du, where k-t ∈ [-1, 0].\n\nGenerally, for t ∈ [k-1, k+1], let s = k-t ∈ [-1,1]. Then\ng(t) = ∫_s^1 φ(u) cos(π(u+t))du where φ(u)=1-|u| for |u|≤1, where s ranges [-1,1].\n\nWait when t ∈ [k-1,k], s=k-t ∈ [0,1] and we integrate from s to 1 with u ≥ 0, |u|=u.\nWhen t ∈ [k, k+1], s = k-t ∈ [-1,0] and integrate from s to 1.\n\ng(t) = ∫_{k-t}^1 (1-|u|)[cos(πu)cos(πt) - sin(πu)sin(πt)]du\n\n= cos(πt) A(s) - sin(πt) B(s), where s = k-t.\n\nA(s) = ∫_s^1 (1-|u|)cos(πu)du\nB(s) = ∫_s^1 (1-|u|)sin(πu)du\n\nFor s ∈ [0,1]: A(s) = ∫_s^1(1-u)cos(πu)du.\nLet me compute: ∫(1-u)cos(πu)du. Integration by parts: = (1-u)sin(πu)/π + ∫sin(πu)/π du = (1-u)sin(πu)/π - cos(πu)/π².\nAt u=1: 0 - cos(π)/π² = 1/π².\nAt u=s: (1-s)sin(πs)/π - cos(πs)/π².\nSo A(s) = 1/π² - (1-s)sin(πs)/π + cos(πs)/π² for s ∈ [0,1].\n\nB(s) = ∫_s^1(1-u)sin(πu)du. ∫(1-u)sin(πu)du = -(1-u)cos(πu)/π - ∫cos(πu)/π du = -(1-u)cos(πu)/π - sin(πu)/π².\nAt u=1: 0 - 0 = 0. At u=s: -(1-s)cos(πs)/π - sin(πs)/π².\nB(s) = 0 - [-(1-s)cos(πs)/π - sin(πs)/π²] = (1-s)cos(πs)/π + sin(πs)/π².\n\nFor s ∈ [-1,0]: A(s) = ∫_s^0 (1+u)cos(πu)du + ∫_0^1(1-u)cos(πu)du. The second is 2/π². \n∫(1+u)cos(πu)du = (1+u)sin(πu)/π - ∫sin(πu)/π du = (1+u)sin(πu)/π + cos(πu)/π².\nAt u=0: 0 + 1/π². At u=s: (1+s)sin(πs)/π + cos(πs)/π².\n∫_s^0 = 1/π² - (1+s)sin(πs)/π - cos(πs)/π².\nA(s) = 2/π² + 1/π² - (1+s)sin(πs)/π - cos(πs)/π².\n\nThis is getting messy. Let me think more systematically.\n\nNote by symmetry, the right boundary (t near k+8) will have similar behavior. Since k+8 is also odd, we expect symmetry. Specifically, g should have similar values mirrored.\n\nLet me think about local minima of g(t) with g(α) < 0.\n\nInterior minima at t = k+2, k+4, k+6 give g = -4/π² (each).\n\nNow for boundary minima:\nAt t = k, we computed g(k) = -2/π². This might be a local min!\nAt t = k+8, by similar argument g(k+8) might also be -2/π².\n\nLet me check derivative at t=k. For t ∈ [k-1,k]:\ng(t) = cos(πt)A(s) - sin(πt)B(s), s = k-t.\n\nAt t = k: cos(πk)=-1, sin(πk)=0, s=0.\nA(0) = 1/π² - 0 + 1/π² = 2/π². ✓ g(k) = -1·(2/π²) - 0 = -2/π². ✓\n\nFor t > k (just above): need new formula.\n\nActually let's just compute g(t) for t ∈ [k-1, k+1] using s formula.\n\nFor s ∈ [0,1] (i.e., t ∈ [k-1,k]):\nA(s) = (1+cos(πs))/π² - (1-s)sin(πs)/π\nB(s) = (1-s)cos(πs)/π + sin(πs)/π²\n\nFor s ∈ [-1, 0] (t ∈ [k, k+1]):\nA(s) = 3/π² - cos(πs)/π² - (1+s)sin(πs)/π = (3 - cos(πs))/π² - (1+s)sin(πs)/π\n\nHmm wait, let me redo. For s ∈ [-1,0]:\nA(s) = ∫_s^1 (1-|u|)cos(πu)du = ∫_s^0(1+u)cos(πu)du + ∫_0^1(1-u)cos(πu)du\n= [1/π² - (1+s)sin(πs)/π - cos(πs)/π²] + 2/π²\n= (3 - cos(πs))/π² - (1+s)sin(πs)/π\n\nB(s) = ∫_s^0(1+u)sin(πu)du + ∫_0^1(1-u)sin(πu)du\n∫(1+u)sin(πu)du = -(1+u)cos(πu)/π + ∫cos(πu)/π du = -(1+u)cos(πu)/π + sin(πu)/π²\nAt 0: -1/π + 0. At s: -(1+s)cos(πs)/π + sin(πs)/π².\n∫_s^0 = -1/π + (1+s)cos(πs)/π - sin(πs)/π².\n∫_0^1(1-u)sin(πu)du: B(0) = 1/π + 0 = 1/π (using s=0 in",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 62485,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "opus"
+    },
+    {
+      "id": "2019-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "역함수",
+        "최적화 (자유 극값)",
+        "몫의 미분법",
+        "함수의 연속",
+        "한 점에서의 접선의 방정식"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 단계 1: 조건 (가) 변형\n\n$2\\{f(x)\\}^2 f'(x) = \\{f(2x+1)\\}^2 f'(2x+1)$\n\n좌변은 $\\frac{d}{dx}\\left[\\frac{2}{3}\\{f(x)\\}^3\\right]$이고, 우변에서 $\\{f(2x+1)\\}^2 f'(2x+1) = \\frac{1}{2} \\cdot \\frac{d}{dx}\\left[\\frac{1}{3}\\{f(2x+1)\\}^3\\right] \\cdot ... $\n\n좀 더 직접적으로: $g(x) = \\{f(x)\\}^3$로 두면 $g'(x) = 3\\{f(x)\\}^2 f'(x)$.\n\n- 좌변: $2\\{f(x)\\}^2 f'(x) = \\frac{2}{3}g'(x)$\n- 우변: $\\{f(2x+1)\\}^2 f'(2x+1) = \\frac{1}{3}g'(2x+1)$\n\n그런데 $\\frac{d}{dx}g(2x+1) = 2g'(2x+1)$이므로 $g'(2x+1) = \\frac{1}{2}\\frac{d}{dx}g(2x+1)$.\n\n양변을 $x$에 대해 적분합니다:\n$$\\frac{2}{3}g(x) = \\frac{1}{3} \\cdot \\frac{1}{2} g(2x+1) + C$$\n\n즉, $\\frac{2}{3}g(x) = \\frac{1}{6}g(2x+1) + C$\n\n$$4g(x) = g(2x+1) + C'$$\n\n## 단계 2: 상수 결정\n\n$g(x) = \\{f(x)\\}^3$이므로 $4\\{f(x)\\}^3 = \\{f(2x+1)\\}^3 + C'$.\n\n$x = -\\frac{1}{8}$ 대입: $2x+1 = \\frac{3}{4}$\n$x = ?$로 $2x+1 = -\\frac{1}{8}$ → $x = -\\frac{9}{16}$\n$x = ?$로 $2x+1 = 6$ → $x = \\frac{5}{2}$\n\n조건만으로는 부족하니 다른 접근. **$x$에 특정값 대입해서 점화식 만들기**:\n\n$x_0 = -1$일 때 $2x_0+1 = -1$ (고정점!). 따라서:\n$4\\{f(-1)\\}^3 = \\{f(-1)\\}^3 + C'$\n$\\Rightarrow C' = 3\\{f(-1)\\}^3$\n\n또 다른 고정점: $2x+1 = x \\Rightarrow x = -1$만 존재.\n\n## 단계 3: 수열로 추적\n\n$a = f(-1)$이라 두고 $C' = 3a^3$.\n\n$\\{f(2x+1)\\}^3 = 4\\{f(x)\\}^3 - 3a^3$\n\n$x = -\\frac{1}{8}$: $f(3/4)^3 = 4(1)^3 - 3a^3 = 4 - 3a^3$\n$x = 3/4$: $2x+1 = 5/2$, $f(5/2)^3 = 4(4-3a^3) - 3a^3 = 16 - 15a^3$\n$x = 5/2$: $2x+1 = 6$, $f(6)^3 = 4(16-15a^3) - 3a^3 = 64 - 63a^3$\n\n$f(6) = 2$이므로 $f(6)^3 = 8$:\n$$64 - 63a^3 = 8 \\Rightarrow 63a^3 = 56 \\Rightarrow a^3 = \\frac{8}{9}$$\n\n$$a = \\frac{2}{\\sqrt[3]{9}} = \\frac{2\\sqrt[3]{81}}{9} = \\frac{2 \\cdot 3\\sqrt[3]{3}}{9} = \\frac{2\\sqrt[3]{3}}{3}$$\n\n## 검증\n$a^3 = \\frac{8 \\cdot 3}{27} = \\frac{24}{27} = \\frac{8}{9}$ ✓\n\n최종 답: $\\dfrac{2\\sqrt[3]{3}}{3}$ (정답 ④)\n코칭 한마디: 왜냐하면 함수방정식에서 $2x+1$의 **고정점($x=-1$)**을 잡으면 미지의 적분상수를 구할 수 있고, 주어진 함숫값 $-1/8 \\to 3/4 \\to 5/2 \\to 6$의 사슬을 따라 점화식을 반복 적용하면 미지수 한 개의 방정식으로 귀결되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 26237,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2019-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\n타원: a²=49, b²=33, c²=16, c=4. 초점 F'=(-4,0), F=(4,0).\n\n원 중심 C=(0,3), 반지름 2.\n\nPQ + FQ. Q는 타원 위, F'Q + FQ = 2a = 14, so FQ = 14 - F'Q.\n\nPQ + FQ = PQ + 14 - F'Q.\n\nP가 직선 F'Q 위, P와 Q의 위치 관계: F'에서 직선이 P 거쳐 Q로 가는지, 아니면 P가 F'와 Q 사이? \n\nPQ = |F'Q - F'P| 또는 F'Q + F'P 가능. 그림상 F'에서 출발해 P를 지나 Q로 가는 형태일 듯. 그러면 F'P + PQ = F'Q, so PQ = F'Q - F'P.\n\n따라서 PQ + FQ = F'Q - F'P + 14 - F'Q = 14 - F'P.\n\n최댓값을 위해 F'P 최솟값. F'=(-4,0), C=(0,3), F'C = 5, 최소 F'P = 5-2 = 3.\n\n답: 14 - 3 = 11.\n\n근데 P가 F' 반대편(Q 너머)일 수도 있음. 그림 봐야 하지만 일반적 문제 설정에서 F'-P-Q 순서.\n\n확인: P가 원 위에 있고, 직선 F'P가 타원과 만나는 점 중 y>0인 점이 Q. 원은 y=1~5 범위, F'=(-4,0). 직선 F'P를 연장하면 타원과 두 점에서 만남, y>0인 것 선택.\n\n원이 타원 내부에 있나? (0,3): 0/49 + 9/33 < 1, yes 내부. 그래서 F'에서 P로 가는 직선을 양쪽 연장하면 타원과 두 점. P는 F'와 Q 사이에 있을 수 있음 (만약 Q가 P 너머에 있다면).\n\nF' 통과하는 직선이 원과 만나면 그 두 교점 모두 F'와 같은 쪽 (원이 F' 포함 안하면). F'=(-4,0)에서 원 중심까지 5, 반지름 2이므로 F'은 원 밖. 따라서 직선이 원과 두 점에서 만남, 둘 다 F'에서 같은 방향.\n\n그래서 직선 F'P를 연장하여 타원과 만나는 두 점 중 y>0인 것이 Q. P는 F'와 그 너머 타원 교점 사이일 수 있음.\n\n만약 P가 F'-Q 사이라면 PQ = F'Q - F'P, 답 11.\n\nP가 F'에서 보면 Q와 다른 방향? F'은 원 밖이므로 F'에서 P로의 방향이 정해지면 그 직선의 다른 쪽 타원 교점은 반대 방향. y>0 조건으로 어느 쪽 Q인지 결정.\n\nP가 원 위 점이고 직선 F'P. 이 직선의 타원 교점 두 개: 하나는 F'에서 P 방향(P 너머), 다른 하나는 반대 방향. y>0인 것을 Q로.\n\n원이 y>0 영역에 있으므로 P는 y>0. F'=(-4,0)에서 P(y>0) 방향으로 가는 타원 교점은 y>0. 반대 방향 교점은 y<0일 것.\n\n따라서 Q는 P와 같은 방향, F'-P-Q 순서. PQ = F'Q - F'P. \n\n답 = 11.\n</think>\n\n풀이:\n\n**1단계: 타원 정보 정리**\n- $a^2=49,\\ b^2=33$ 이므로 $c^2=16,\\ c=4$\n- 초점: $F'(-4,0),\\ F(4,0)$, 장축 길이 $2a=14$\n\n**2단계: 타원의 정의 활용**\n점 Q는 타원 위 점이므로\n$$\\overline{F'Q}+\\overline{FQ}=14 \\;\\Rightarrow\\; \\overline{FQ}=14-\\overline{F'Q}$$\n\n**3단계: 직선 위 점들의 관계**\nF'은 원 밖에 있고($\\overline{F'C}=5>2$), 원은 타원 내부에 있다. 또한 원이 $y>0$ 영역에 있으므로 P는 $y>0$, 직선 F'P 위에서 **F' — P — Q** 순서로 놓이고\n$$\\overline{PQ}=\\overline{F'Q}-\\overline{F'P}$$\n\n**4단계: 식 정리**\n$$\\overline{PQ}+\\overline{FQ}=(\\overline{F'Q}-\\overline{F'P})+(14-\\overline{F'Q})=14-\\overline{F'P}$$\n\n**5단계: $\\overline{F'P}$의 최솟값**\n원의 중심 $C(0,3)$, 반지름 $2$. $\\overline{F'C}=\\sqrt{16+9}=5$ 이므로\n$$\\overline{F'P}_{\\min}=5-2=3$$\n\n**6단계: 최댓값**\n$$\\overline{PQ}+\\overline{FQ}=14-3=11$$\n\n최종 답: 11  \n코칭 한마디: 왜냐하면 타원의 정의($\\overline{F'Q}+\\overline{FQ}=2a$)로 두 거리의 합을 한 변수($\\overline{F'P}$)에 대한 식으로 환원하면, 문제가 \"원 위의 점에서 정점까지 거리의 최솟값\"이라는 단순한 형태로 바뀌기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 34670,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2019-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nWe have two problems. Let me solve both.\n\n**Problem 29:**\nTriangle ABC with area 9. P on AB, Q on BC, R on CA.\nAX = (1/4)(AP + AR) + (1/2)AQ.\n\nLet AP = p·AB where p ∈ [0,1], AR = r·AC where r ∈ [0,1].\nQ on BC: AQ = AB + s(AC - AB) = (1-s)AB + s·AC, s ∈ [0,1].\n\nAX = (1/4)(p·AB + r·AC) + (1/2)((1-s)AB + s·AC)\n   = [p/4 + (1-s)/2] AB + [r/4 + s/2] AC\n\nLet u = p/4 + (1-s)/2, v = r/4 + s/2.\np ∈ [0,1]: p/4 ∈ [0, 1/4]\nr ∈ [0,1]: r/4 ∈ [0, 1/4]\ns ∈ [0,1]: (1-s)/2 ∈ [0, 1/2], s/2 ∈ [0, 1/2]\n\nFor fixed s, u ∈ [(1-s)/2, (1-s)/2 + 1/4], v ∈ [s/2, s/2 + 1/4].\n\nSo for each s, region is a square of side 1/4 in (u,v) space, with corner at ((1-s)/2, s/2).\n\nAs s varies from 0 to 1, the corner moves from (1/2, 0) to (0, 1/2) along line u+v = 1/2.\n\nThe region is the union of squares [a, a+1/4] × [(1/2-a) - ... wait let me redo.\n\nCorner (u_min, v_min) = ((1-s)/2, s/2). As s ∈ [0,1], u_min + v_min = 1/2, with u_min from 1/2 to 0.\n\nSo union of squares of side 1/4 whose lower-left corner traces segment from (1/2, 0) to (0, 1/2).\n\nThe region in (u,v): Let's parametrize. A point (u,v) is in the region iff there exists s ∈ [0,1] with u - (1-s)/2 ∈ [0, 1/4] and v - s/2 ∈ [0, 1/4].\n\ni.e., (1-s)/2 ≤ u ≤ (1-s)/2 + 1/4 and s/2 ≤ v ≤ s/2 + 1/4.\n\nFrom first: 1 - 2u - 1/2 ≤ s ≤ 1 - 2u, i.e., s ∈ [1/2 - 2u + ... wait\n(1-s)/2 ≤ u → 1-s ≤ 2u → s ≥ 1 - 2u\n(1-s)/2 + 1/4 ≥ u → 1-s ≥ 2u - 1/2 → s ≤ 3/2 - 2u\n\nFrom second: s ∈ [2v - 1/2, 2v].\n\nSo need intersection of [max(1-2u, 2v-1/2), min(3/2-2u, 2v)] ∩ [0,1] nonempty.\n\nThis is getting complex. Let me think geometrically.\n\nRegion = {((1-s)/2 + a, s/2 + b) : s,a,b ∈ [0,1] respectively for s, a∈[0,1/4], b∈[0,1/4]}\n\n= segment from (1/2,0) to (0,1/2) + square [0,1/4]² (Minkowski sum).\n\nThe segment has length √2/2, and the square is 1/4 × 1/4.\n\nMinkowski sum of a segment and a square: it's a hexagonal region.\n\nArea = area of square + length of segment × width perpendicular... actually Minkowski sum of convex sets: Area(A+B) = Area(A) + Area(B) + 2·mixed.\n\nFor segment of length L in direction d̂ and square of side w:\nArea = w² + L · (projection width of square perpendicular to segment direction)... \n\nActually, Minkowski sum of segment (length L, direction (-1,1)/√2) and square [0,1/4]²:\nThe result is the union of translates of the square along the segment.\n\nArea = area swept = Area(square) + L × w_perp where w_perp is width perpendicular to motion.\n\nThe square [0,1/4]² has support width perpendicular to direction (-1,1)/√2... The width of the square projected on direction (1,1)/√2 (perpendicular to motion): vertices project to 0, 1/(4√2), 1/(4√2), 1/(2√2). So width = 1/(2√2) · √2 = 1/4... wait. The width = max projection - min projection = 1/(2√2) - 0 = 1/(2√2). Hmm, but this is along (1,1)/√2.\n\nActually for Minkowski sum: Area(A ⊕ B) where A is segment, B is square:\n= Area(B) + L · h, where h is the width of B perpendicular to A's direction.\n\nA's direction: (-1,1)/√2. Perpendicular: (1,1)/√2.\nWidth of square [0,1/4]² along (1,1)/√2: max (x+y)/√2 - min (x+y)/√2 = (1/2)/√2 - 0 = 1/(2√2).\n\nSo Area in (u,v) = (1/4)² + (√2/2) · (1/(2√2)) = 1/16 + 1/4 = 5/16.\n\nWait, let me reconsider. L = length of segment = √((1/2)² + (1/2)²) = √2/2. h = 1/(2√2) = √2/4.\n\nL · h = (√2/2)(√2/4) = 2/8 = 1/4.\n\nArea = 1/16 + 1/4 = 5/16. ✓\n\nNow this is area in (u,v) coordinates where X = u·AB + v·AC. The Jacobian to actual area: |AB × AC| = 2·Area(ABC) = 18.\n\nSo actual area = (5/16) · 18 = 90/16 = 45/8.\n\nSo q/p = 45/8, p=8, q=45, gcd=1. p+q = 53.\n\n**Problem 30:**\nf(x) cubic with leading coeff 6π. g(x) = 1/(2+sin(f(x))).\n\ng'(x) = -cos(f(x))·f'(x) / (2+sin(f(x)))².\n\ng'(x) = 0 when cos(f(x))·f'(x) = 0, i.e., f'(x) = 0 or f(x) = π/2 + kπ.\n\nFor extrema of g, sign change is needed.\n\nCondition (가): α₁ = 0, g(0) = 2/5, so 2 + sin(f(0)) = 5/2, sin(f(0)) = 1/2, and 0 < f(0) < π/2 means f(0) = π/6.\n\nSince α₁ = 0 is the smallest non-negative critical point, and there's an extremum at x=0.\n\nFor x=0 to be extremum: either f'(0)=0 or f(0) = π/2 + kπ. Since f(0) = π/6, must have f'(0) = 0.\n\nLet me set f(x) = 6π x³ + bx² + cx + π/6. f'(0) = c = 0.\nSo f(x) = 6π x³ + bx² + π/6, f'(x) = 18π x² + 2bx = 2x(9πx + b).\n\nf'(x) = 0 at x = 0 and x = -b/(9π).\n\nThe critical points α come from f'(x) = 0 and f(x) = π/2 + kπ.\n\nα₁ = 0. Then α₂, α₃, ... are next ones in order.\n\nLet's denote x* = -b/(9π) as the other critical point of f. For extremum points of g with α ≥ 0, we need x ≥ 0.\n\nIf b < 0, x* > 0.\nIf b > 0, x* < 0, no positive critical point of f. Then α_i for i≥2 are solutions of f(x) = π/2 + kπ with x > 0.\n\nHmm, we need to figure out the structure. Since leading coeff 6π > 0, f(x) → ∞ as x → ∞.\n\nf(0) = π/6. f'(0) = 0 (local min or max or inflection at 0).\n\nf''(x) = 36πx + 2b. f''(0) = 2b.\n- If b > 0: x=0 local min of f, f(0)=π/6, f increases for x > 0.\n- If b < 0: x=0 local max, x* = -b/(9π) > 0 local min.\n- If b = 0: inflection point.\n\nCase b > 0: f increases on x > 0 from π/6. The values where f(x) = π/2 + kπ: k=0 gives π/2, k=1 gives 3π/2, etc. Each gives one solution x > 0. These are α₂, α₃, ...\n\ng(α) = 1/(2 + sin(π/2 + kπ)) = 1/(2 + (-1)^k).\nk=0: 1/3, k=1: 1, k=2: 1/3, k=3: 1, ...\n\nSo 1/g(α₂) = 3, 1/g(α₃) = 1, 1/g(α₄) = 3, 1/g(α₅) = 1.\n1/g(α₅) = 1/g(α₂) + 1/2 → 1 = 3 + 1/2? No.\n\nCase b < 0: x=0 local max of f, value π/6. x* > 0 local min of f, value f(x*) = 6π(x*)³ + b(x*)² + π/6.\nWith x* = -b/(9π), so b = -9π x*.\nf(x*) = 6π(x*)³ - 9π(x*)·(x*)² + π/6 = 6π(x*)³ - 9π(x*)³ + π/6 = -3π(x*)³ + π/6.\n\nNow critical points of g for x ≥ 0:\n- x = 0: f(0) = π/6, f'(0) = 0.\n- x = x*: f(x*) = -3π(x*)³ + π/6, f'(x*) = 0.\n- Solutions of f(x) = π/2 + kπ for x ≥ 0.\n\nFor x = 0 to be α₁, fine.\n\nf decreases on (0, x*) from π/6 to f(x*), then increases.\n\nIf f(x*) < π/6 (which is true since b<0, decreasing), we may cross levels π/2 + kπ:\n- For k = -1: -π/2. Cross if f(x*) < -π/2 < π/6.\n- For k = -2: -3π/2. Cross if f(x*) < -3π/2.\n- etc.\n\nOn the decreasing part (0, x*), f goes from π/6 down to f(x*). Crosses each level in (f(x*), π/6) once.\n\nOn the increasing part (x*, ∞), f goes from f(x*) to ∞. Crosses each level above f(x*) once.\n\nLevels π/2 + kπ for k = 0, ±1, ±2, ...: ..., -3π/2, -π/2, π/2, 3π/2, 5π/2, ...\n\nIn (f(x*), π/6) values negative: -π/2, -3π/2 etc. depending on f(x*).\n\nLet's count: α₁ = 0. α₂, α₃, α₄, α₅ are next in order.\n\nThis is getting complex. Let me think about specific structure.\n\nSuppose the negative levels in (f(x*), π/6) are -π/2 only (so f(x*) ∈ (-3π/2, -π/2)).\n\nThen on (0, x*): one crossing at level -π/2 (call it β₁).\nThen x* itself.\nThen on (x*, ∞): crossings at -π/2, π/2, 3π/2, ... .\n\nOrder: 0 < β₁ < x* < γ₀ < γ₁ < ... where γ_k satisfies f(γ_k) = π/2 + kπ on increasing part, but starting from value -π/2 at the lowest.\n\nWait f(x*) ∈ (-3π/2, -π/2). On (x*, ∞), f goes from f(x*) up to ∞. It crosses -π/2, π/2, 3π/2, ...\n\nSo increasing crossings: γ_{-1} where f=-π/2, γ_0 where f=π/2, γ_1 where f=3π/2, etc.\n\nOrder: 0, β₁ (f=-π/2 on decreasing), x*, γ_{-1} (f=-π/2 on increasing), γ_0 (f=π/2), γ_1, ...\n\nSo α₁=0, α₂=β₁, α₃=x*, α₄=γ_{-1}, α₅=γ_0.\n\ng values:\n- α₁ = 0: f=π/6, sin(π/6)=1/2, g=2/5, 1/g=5/2. ✓\n- α₂: f=-π/2, sin=-1, g=1/(2-1)=1, 1/g=1.\n- α₃: f=f(x*), 1/g = 2+sin(f(x*)).\n- α₄: f=-π/2, 1/g=1.\n- α₅: f=π/2, sin=1, g=1/3, 1/g=3.\n\nCheck (나): 1/g(α₅) = 1/g(α₂) + 1/2 → 3 = 1 + 1/2? No, false.\n\nTry different scenario. Suppose f(x*) ∈ (-π/2, π/6). Then no crossings of level π/2+kπ on decreasing part except... wait π/6 ≈ 0.52, -π/2 ≈ -1.57. If f(x*) ∈ (-π/2, π/6), then on decreasing part from π/6 to f(x*), no crossings of π/2+kπ since π/2 > π/6 and -π/2 < f(x*).\n\nHmm but actually we need crossings, so this gives no β.\n\nOrder: 0, x*, then crossings on increasing.\nOn (x*, ∞): f goes from f(x*) ∈ (-π/2, π/6) up to ∞. Crosses π/2, 3π/2, 5π/2, ... \n\nα₁=0, α₂=x*, α₃=γ₀ (f=π/2), α₄=γ₁ (f=3π/2), α₅=γ₂ (f=5π/2).\n\ng values:\n- α₂: 1/g = 2+sin(f(x*)).\n- α₃: f=π/2, 1/g=3.\n- α₄: f=3π/2, 1/g=1.\n- α₅: f=5π/2, 1/g=3.\n\n(나): 3 = (2 + sin(f(x*))) + 1/2 → sin(f(x*)) = 1/2. With f(x*) ∈ (-π/2, π/6), so f(x*) = ... sin = 1/2 means f(x*) = π/6 or 5π/6 etc., but f(x*) must be < π/6 strictly (since x=0 is local max with value π/6 and x* is local min, must be less). So sin(f(x*))=1/2 with f(x*) < π/6: impossible in this range (-π/2, π/6).\n\nHmm.\n\nTry f(x*) ∈ (",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Retriever: Cannot read properties of undefined (reading 'filter')"
+      ],
+      "duration_ms": 63153,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": true,
+      "model_used": "opus"
+    },
+    {
+      "id": "2020-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "ln(1+x)/x 의 극한",
+        "(eˣ-1)/x 의 극한",
+        "로피탈의 정리",
+        "1계 도함수 부호변화로 극값 판정",
+        "정적분의 정의 (FTC)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "문제를 단계별로 분석하겠습니다.\n\n## 1단계: 접선 f(x) 구하기\n\n곡선 $y=e^x$ 위 점 $(t, e^t)$ 에서의 접선:\n$$f(x) = e^t(x-t) + e^t = e^t \\cdot x + e^t(1-t)$$\n\n## 2단계: 미분가능 조건 분석\n\n$h(x) = f(x) + k - \\ln x = e^t x + e^t(1-t) + k - \\ln x$\n\n$y = |h(x)|$ 가 양의 실수에서 미분가능하려면, $h(x) = 0$ 인 점에서 $h'(x) = 0$ 이어야 합니다 (즉, $h$ 가 그 점에서 접해야 함). 또는 $h(x)$ 가 부호변화 없이 항상 같은 부호여야 합니다.\n\n$h'(x) = e^t - \\frac{1}{x} = 0 \\Rightarrow x = e^{-t}$\n\n$h$ 의 최솟값: $h(e^{-t}) = e^t \\cdot e^{-t} + e^t(1-t) + k - \\ln(e^{-t}) = 1 + e^t(1-t) + k + t$\n\n**경우 1**: 최솟값 $\\geq 0$ 이면 미분가능. 즉 $k \\geq -1 - e^t(1-t) - t$\n**경우 2**: 최솟값 $= 0$ 이면 접하므로 미분가능 (이는 경우 1의 경계).\n\n또한 $h$ 가 항상 양수일 때도 미분가능하므로, **최솟값이 0 이상**이면 됩니다.\n\n따라서 $k$ 의 최솟값:\n$$g(t) = -1 - t - e^t(1-t) = -1 - t + (t-1)e^t$$\n\n## 3단계: g(t) 분석\n\n$g'(t) = -1 + e^t + (t-1)e^t = -1 + t e^t$\n\n$g'(t) = 0 \\Leftrightarrow te^t = 1$\n\n- $g(0) = -1 - 0 + (-1)(1) = -2 < 0$\n- $g'(0) = -1 < 0$, $g'(1) = e - 1 > 0$\n- $t \\to -\\infty$: $g(t) \\to \\infty$ (∵ $-t \\to \\infty$, $(t-1)e^t \\to 0$)\n- $t \\to \\infty$: $g(t) \\to \\infty$\n\n$te^t = 1$ 의 해를 $t_0$ (Lambert W, $0 < t_0 < 1$) 이라 하면 여기서 $g$ 최소.\n\n## 4단계: 보기 검토\n\n**ㄱ.** $g(0) = -2 < 0$. $g$ 가 음수인 구간이 있으므로 적절한 $a, b$ 로 $m < 0$ 가능. **참**\n\n**ㄴ.** $g(c) = 0$ 이면 $g(-c) = 0$?\n$g(t) = 0$: $-1 - t + (t-1)e^t = 0$\n- $t = ?$: 수치적으로 큰 양수 해 하나, 큰 음수 해 하나 존재\n- $t \\to -\\infty$ 에서 $g \\approx -1 - t$, 즉 $t = -1$ 근처? $g(-1) = -1+1+(-2)e^{-1} = -2/e \\approx -0.736 < 0$\n- $g(-2) = -1+2+(-3)e^{-2} = 1 - 3/e^2 \\approx 0.594 > 0$. 그래서 $-2 < c_1 < -1$ 에 영점.\n- 양수쪽: $g(2) = -3 + e^2 \\approx 4.39 > 0$, $g(1) = -2 < 0$. 영점 $1 < c_2 < 2$.\n\n$c_1 \\approx -1.5$ 와 $c_2 \\approx 1.x$. 이들이 부호 반대 관계가 아님. 예: $c_2$ 가 영점일 때 $-c_2$ 는 약 $-1.x$ 인데, 영점은 $-1.5$ 근처 특정값. 일반적으로 일치 안함.\n\n검증: $g(c)=0$ 이고 $g(-c)=0$ 이면 두 식 빼서: $g(c) - g(-c) = -2c + (c-1)e^c - (-c-1)e^{-c} = 0$\n$g(c) + g(-c) = -2 + (c-1)e^c + (-c-1)e^{-c} = 0$ 이어야 함.\n이 두 조건이 동시에 성립하는 $c$ 는 일반적으로 없음. **거짓**\n\n**ㄷ.** $\\int_a^b g(t)dt$ 최소 $\\Leftrightarrow$ $g(\\alpha) = g(\\beta) = 0$ 이고 그 사이 $g < 0$. \n즉 $\\alpha = c_1$ (음의 영점), $\\beta = c_2$ (양의 영점).\n\n$g'(t) = -1 + te^t$\n- $\\alpha$ 에서: $\\alpha \\approx -1.5$, $g'(\\alpha) = -1 + \\alpha e^\\alpha \\approx -1 + (-1.5)(0.223) \\approx -1.33$\n- $\\beta$ 에서: $\\beta \\approx 1.x$. $g(\\beta)=0$: $(\\beta-1)e^\\beta = 1+\\beta$, 즉 $e^\\beta = \\frac{1+\\beta}{\\beta-1}$\n  - $g'(\\beta) = -1 + \\beta e^\\beta = -1 + \\frac{\\beta(1+\\beta)}{\\beta-1}$\n\n$\\alpha$ 에서: $g(\\alpha)=0$: $(\\alpha-1)e^\\alpha = 1+\\alpha$, 같은 식!\n- $g'(\\alpha) = -1 + \\frac{\\alpha(1+\\alpha)}{\\alpha-1}$\n\n따라서 $\\alpha, \\beta$ 모두 $(t-1)e^t = 1+t$ 의 해.\n\n$1 + g'(t) = \\frac{t(1+t)}{t-1}$\n\n$$\\frac{1+g'(\\beta)}{1+g'(\\alpha)} = \\frac{\\beta(1+\\beta)/(\\beta-1)}{\\alpha(1+\\alpha)/(\\alpha-1)}$$\n\n또한 $e^\\beta / e^\\alpha = e^{\\beta-\\alpha} = \\frac{(1+\\beta)/(\\beta-1)}{(1+\\alpha)/(\\alpha-1)} = \\frac{(1+\\beta)(\\alpha-1)}{(1+\\alpha)(\\beta-1)}$\n\n$$\\frac{1+g'(\\beta)}{1+g'(\\alpha)} = \\frac{\\beta}{\\alpha} \\cdot \\frac{(1+\\beta)(\\alpha-1)}{(1+\\alpha)(\\beta-1)} = \\frac{\\beta}{\\alpha} \\cdot e^{\\beta-\\alpha}$$\n\n수치: $\\alpha \\approx -1.279$ (재계산), $\\beta \\approx 1.5$ 근처 확인.\n\n더 정확히: $g(-1.3) = -1+1.3+(-2.3)e^{-1.3} = 0.3 - 2.3(0.2725) = 0.3 - 0.627 = -0.327$\n$g(-1.5) = 0.5 - 2.5(0.223) = 0.5 - 0.558 = -0.058$\n$g(-1.55) = 0.55 - 2.55(0.212) = 0.55 - 0.541 = 0.009$. 그래서 $\\alpha \\approx -1.54$\n\n$g(1.5) = -2.5 + 0.5 e^{1.5} = -2.5 + 2.241 = -0.259$\n$g(1.6) = -2.6 + 0.6 e^{1.6} = -2.6 + 2.973 = 0.373$\n$\\beta \\approx 1.54$\n\n흥미롭게도 $\\beta \\approx -\\alpha$. 정확히는 같지 않음.\n\n$\\frac{\\beta}{\\alpha} \\approx \\frac{1.54}{-1.54} \\approx -1$, $e^{\\beta-\\alpha} \\approx e^{3.08} \\approx 21.8$\n\n비율 $\\approx -21.8$, $-e^2 \\approx -7.39$\n\n$-21.8 < -7.39$ ? 네! **참**\n\n## 결론\n\nㄱ, ㄷ 옳음.\n\n최종 답: ④ ㄱ, ㄷ\n코칭 한마디: 왜냐하면 절댓값 함수의 미분가능성은 \"내부함수의 영점에서 접함\" 조건으로 환원되고, 이로부터 얻은 $g(t)$ 의 영점들이 같은 방정식 $(t-1)e^t=1+t$ 을 만족한다는 구조를 포착하면 ㄷ의 비율이 깔끔하게 $\\frac{\\beta}{\\alpha}e^{\\beta-\\alpha}$ 로 정리되기 때문이에요.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 47697,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2020-가형-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "중복순열·중복조합·같은 것 포함",
+        "순열·조합 기본",
+        "로피탈 정리",
+        "같은 것이 있는 순열",
+        "중복조합 nHr"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n홀수: 1, 3, 5 (각각 0번 또는 1번 선택)\n짝수: 2, 4, 6 (각각 0번 또는 2번 선택)\n\n총 5개를 선택해야 하므로, 홀수 선택 개수 + 짝수 선택 개수 = 5.\n\n짝수는 0개, 2개, 4개, 6개만 가능하므로 짝수 개수는 0, 2, 4 중 하나.\n\n## 경우 1: 짝수 0개, 홀수 5개\n홀수는 최대 3개만 선택 가능 → 불가능\n\n## 경우 2: 짝수 2개(한 종류 2번), 홀수 3개\n- 짝수 종류 선택: $\\binom{3}{1}=3$\n- 홀수 3개 모두 선택: $\\binom{3}{3}=1$\n- 배열 (같은 짝수 2개 포함): $\\dfrac{5!}{2!} = 60$\n- 합: $3 \\times 1 \\times 60 = 180$\n\n## 경우 3: 짝수 4개(두 종류 각 2번), 홀수 1개\n- 짝수 종류 2개 선택: $\\binom{3}{2}=3$\n- 홀수 1개 선택: $\\binom{3}{1}=3$\n- 배열 (같은 짝수가 두 쌍): $\\dfrac{5!}{2!\\,2!} = 30$\n- 합: $3 \\times 3 \\times 30 = 270$\n\n## 합계\n$180 + 270 = 450$\n\n최종 답: 450\n코칭 한마디: 왜냐하면 \"같은 숫자가 반복되는 나열\"을 셀 때는 같은 것이 있는 순열 공식 $\\dfrac{n!}{p!q!\\cdots}$ 로 중복을 정확히 보정해야 하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 12638,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2020-가형-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "선분의 매개변수화",
+        "두 점 사이의 거리",
+        "두 평면이 이루는 각",
+        "점과 평면 사이의 거리",
+        "인수정리"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "문제를 풀어보겠습니다.\n\n## 풀이\n\n**1단계: 직선 AB와 원점 사이의 거리**\n\nA(3,-3,3), B(-2,7,-2). 방향벡터 $\\vec{AB}=(-5,10,-5)$, 즉 $(-1,2,-1)$ 방향, 크기 $\\sqrt{6}$.\n\n$\\vec{OA}=(3,-3,3)$, $|\\vec{OA}|^2=27$.\n\n$\\vec{OA}\\cdot(-1,2,-1)/\\sqrt{6} = (-3-6-3)/\\sqrt{6}=-12/\\sqrt{6}$\n\n직선과 원점 거리: $d^2 = 27 - 144/6 = 27-24=3$, 따라서 $d=\\sqrt{3}$.\n\n**2단계: 두 접평면의 기하 분석**\n\n원점에서 직선 AB에 내린 수선의 발을 H라 하면 $OH=\\sqrt{3}$.\n\n평면 α, β는 직선 AB를 포함하고 구에 접하므로, 접점 C, D는 H에서 본 접선 방향에 위치. 평면 OH⊥AB 위에서 생각하면, H에서 구로의 접선 길이 $HC=HD=\\sqrt{3-1}=\\sqrt{2}$.\n\nOH=√3, 반지름 1이므로 OC⊥HC. C는 OH를 포함하고 AB에 수직인 평면 위에 있으며, \n- OC=1, HC=√2, OH=√3\n- C에서 OH에 내린 수선의 발까지: OC²=OH·(투영) 즉 C의 OH방향 성분 = $1/\\sqrt{3}$, OH 수직성분 = $\\sqrt{1-1/3}=\\sqrt{2/3}$\n\nCD는 OH에 수직(대칭)이고 CD = $2\\sqrt{2/3} = 2\\sqrt{6}/3$.\n\n**3단계: 사면체 부피**\n\nCD와 AB의 위치관계:\n- AB는 H를 지나고 OH에 수직\n- CD는 OH에 수직이고 OH 위의 한 점(H에서 OH방향으로 H 쪽이 아닌 O쪽 방향)에서 AB와 평행한 평면 위... \n\n좀 더 정확히: C, D는 평면 (OH를 법선의 일부로 하는) AB에 수직인 평면 OHC 위에 있음. AB ⊥ 평면(OCD가 놓인 평면). \n\nH에서 CD의 중점 M까지 거리: M은 OH 위에 있고 OM = $1/\\sqrt{3}$, 따라서 $HM = \\sqrt{3}-1/\\sqrt{3}=2/\\sqrt{3}$.\n\nAB ⊥ 평면 CDH (이 평면이 CD와 H 포함)이므로, 사면체 ABCD를 CD를 밑변으로 보면:\n\n부피 계산: AB와 CD는 꼬인 위치. 공통수직선은 HM (길이 $2/\\sqrt{3}$), AB·CD 사잇각은 90°.\n\n꼬인 두 선분 사면체 부피 공식: $V = \\frac{1}{6}|AB||CD|\\cdot h \\cdot \\sin\\theta$\n\n여기서 $|AB|=5\\sqrt{6}$... 잠깐, $\\vec{AB}=(-5,10,-5)$, $|AB|=\\sqrt{25+100+25}=\\sqrt{150}=5\\sqrt{6}$.\n\n$|CD|=2\\sqrt{6}/3$, $h=2/\\sqrt{3}$, $\\sin\\theta=1$.\n\n$V=\\frac{1}{6}\\cdot 5\\sqrt{6}\\cdot \\frac{2\\sqrt{6}}{3}\\cdot \\frac{2}{\\sqrt{3}} = \\frac{1}{6}\\cdot \\frac{5\\cdot 2\\cdot 6\\cdot 2}{3\\sqrt{3}}=\\frac{120}{18\\sqrt{3}}=\\frac{20}{3\\sqrt{3}}=\\frac{20\\sqrt{3}}{9}$\n\n**4단계: 답**\n\n$V=\\frac{20}{9}\\sqrt{3}$, 따라서 $p=9, q=20$, 서로소.\n\n$p+q = 29$\n\n최종 답: 29\n코칭 한마디: 왜냐하면 직선 AB를 포함하는 두 접평면 문제는 AB에 수직인 단면(평면)에서 보면 \"한 점에서 원에 그은 두 접선\" 평면문제로 환원되어, 점과 평면 사이의 거리(도구 4)와 꼬인 두 선분 부피공식이 자연스럽게 작동하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 31232,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2020-가형-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "매개변수 미분",
+        "로그함수의 성질",
+        "최적화 (자유 극값)",
+        "위치·속도·가속도",
+        "음함수 미분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "두 곡선이 한 점에서 만나려면 접해야 합니다.\n\n**접점 조건 설정**\n\n$y_1 = t^3 \\ln(x-t)$, $y_2 = 2e^{x-a}$\n\n함숫값과 도함수가 같아야 합니다.\n\n$y_1' = \\dfrac{t^3}{x-t}$, $y_2' = 2e^{x-a}$\n\n**접점에서의 방정식**\n\n(1) $t^3 \\ln(x-t) = 2e^{x-a}$\n(2) $\\dfrac{t^3}{x-t} = 2e^{x-a}$\n\n(1)=(2)에서: $t^3 \\ln(x-t) = \\dfrac{t^3}{x-t}$\n\n$t>0$이므로 $\\ln(x-t) = \\dfrac{1}{x-t}$\n\n$u = x-t$로 두면 $u\\ln u = 1$ ... (*)\n\n이 방정식의 해 $u$는 $t$에 무관한 상수입니다. 이를 $u_0$라 합시다.\n\n**$a$ 구하기**\n\n(2)에서 $2e^{x-a} = \\dfrac{t^3}{u_0}$\n\n$\\ln$ 취하면: $\\ln 2 + (x-a) = 3\\ln t - \\ln u_0$\n\n$x = t + u_0$이므로:\n\n$a = t + u_0 + \\ln 2 + \\ln u_0 - 3\\ln t$\n\n즉 $f(t) = t + u_0 + \\ln 2 + \\ln u_0 - 3\\ln t$ (상수항 포함)\n\n**미분**\n\n$f'(t) = 1 - \\dfrac{3}{t}$\n\n$f'\\left(\\dfrac{1}{3}\\right) = 1 - 9 = -8$\n\n$\\{f'(1/3)\\}^2 = 64$\n\n최종 답: 64\n코칭 한마디: 왜냐하면 \"오직 한 점에서 만난다\"는 조건은 두 곡선이 접하는 상황을 의미하므로 함숫값과 미분계수가 같다는 두 조건을 연립해야 하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 16827,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2021-가형-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+        "산술-기하 평균 부등식",
+        "이항정리",
+        "이차함수의 표준형 (꼭짓점)",
+        "여사건의 확률"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n**단계 1: 필요한 항들을 a_1, a_2로 표현**\n\n조건에서 a_2 = a_2·a_1 + 1 (n=1, 짝수 공식)\n즉, a_2 = a_2·a_1 + 1 ... (★)\n\n- a_3 = a_2·a_1 - 2\n- a_4 = a_2·a_2 + 1 = a_2² + 1\n- a_7 = a_2·a_3 - 2 = a_2(a_2·a_1 - 2) - 2 = a_2²·a_1 - 2a_2 - 2\n- a_8 = a_2·a_4 + 1 = a_2(a_2² + 1) + 1 = a_2³ + a_2 + 1\n- a_15 = a_2·a_7 - 2 = a_2(a_2²·a_1 - 2a_2 - 2) - 2 = a_2³·a_1 - 2a_2² - 2a_2 - 2\n\n**단계 2: a_8 - a_15 = 63 활용**\n\na_8 - a_15 = (a_2³ + a_2 + 1) - (a_2³·a_1 - 2a_2² - 2a_2 - 2)\n= a_2³(1 - a_1) + 2a_2² + 3a_2 + 3\n\n(★)에서 a_2(1 - a_1) = 1, 즉 1 - a_1 = 1/a_2\n\n따라서 a_2³(1 - a_1) = a_2²\n\na_8 - a_15 = a_2² + 2a_2² + 3a_2 + 3 = 3a_2² + 3a_2 + 3 = 63\n\n→ a_2² + a_2 + 1 = 21 → a_2² + a_2 - 20 = 0 → (a_2 - 4)(a_2 + 5) = 0\n\n0 < a_1 < 1이고 a_2 = 1/(1 - a_1) > 1이므로 **a_2 = 4**\n\n**단계 3: a_1과 a_8/a_1 계산**\n\n1 - a_1 = 1/4 → a_1 = 3/4\n\na_8 = a_2³ + a_2 + 1 = 64 + 4 + 1 = 69\n\na_8 / a_1 = 69 / (3/4) = 69 · 4/3 = 92\n\n최종 답: 92 (②)\n코칭 한마디: 왜냐하면 점화식 문제는 항을 끝까지 전개하기보다 **주어진 조건식(★)을 통해 a_2(1-a_1)=1 같은 관계를 미리 추출**해서 대입하면 식이 극적으로 간단해지기 때문이야.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 17433,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2021-가형-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me set u = g^{-1}(x), so x = g(u) = u^3+u+1. Then h(x) = f(u) = (u-a)(u-b)^2.\n\nh'(x) = f'(u)/g'(u) = f'(u)/(3u^2+1).\n\nCondition (가): (x-1)|h(x)| differentiable everywhere.\n\n|h(x)| is not differentiable where h(x)=0 and h changes sign (i.e., simple zeros). At x=1, the factor (x-1) helps.\n\nh(x) = 0 when u = a or u = b. So x = g(a) or x = g(b).\n\nAt u=b, h has double zero in u, so h(x) has... let's see. Near u=b, f(u) ≈ (b-a)(u-b)^2. And u as function of x is smooth (since g'>0). So h(x) has a double zero at x=g(b), meaning h doesn't change sign there, so |h| is differentiable there.\n\nAt u=a, h has simple zero, so |h| not differentiable at x=g(a). For (x-1)|h(x)| to be differentiable, we need either x=g(a)=1, or... Actually (x-1) factor makes it differentiable at x=1 if h has simple zero there.\n\nSo we need g(a) = 1, meaning a^3+a+1=1, so a^3+a=0, a(a^2+1)=0, a=0.\n\nSo a=0.\n\nNow condition (나): h'(3) = 2.\nAt x=3: g(u)=3 means u^3+u+1=3, u^3+u-2=0, (u-1)(u^2+u+2)=0, u=1.\n\nf'(u) = (u-b)^2 + (u-a)·2(u-b) = (u-b)[(u-b) + 2(u-a)] = (u-b)(3u-2a-b)\nWith a=0: f'(u) = (u-b)(3u-b).\n\ng'(u) = 3u^2+1, at u=1: g'(1)=4.\n\nh'(3) = f'(1)/4 = (1-b)(3-b)/4 = 2\n(1-b)(3-b) = 8\nb^2 - 4b + 3 = 8\nb^2 - 4b - 5 = 0\n(b-5)(b+1) = 0\nb = 5 or b = -1.\n\nSince a < b and a = 0, b = 5.\n\nWait, but need to check condition (가) more carefully. Let me verify.\n\nWith a=0, b=5: h has simple zero at x=g(0)=1, double zero at x=g(5)=131.\n(x-1)|h(x)|: at x=1, h has simple zero, so h(x) ≈ c(x-1), |h(x)|≈|c||x-1|, then (x-1)|h(x)| ≈ |c|(x-1)^2, differentiable. ✓\nAt x=131, |h| differentiable already. ✓\n\nNow f(8) = (8-0)(8-5)^2 = 8·9 = 72.\n</think>\n\n주어진 조건을 분석하겠습니다.\n\n## 풀이 과정\n\n**함수 분석**: $u = g^{-1}(x)$로 놓으면 $x = u^3 + u + 1$이고\n$$h(x) = f(u) = (u-a)(u-b)^2$$\n\n$g'(u) = 3u^2 + 1 > 0$이므로 $g$는 순증가함수이고 $g^{-1}$가 잘 정의됩니다.\n\n**조건 (가) 분석**: $h(x) = 0$인 지점은 $u=a$ (단순근), $u=b$ (이중근)에서 나타납니다.\n- $u=b$에서 $h$는 이중근이라 부호 변화 없음 → $|h|$ 미분가능 ✓\n- $u=a$에서는 $h$가 단순근이라 $|h|$ 미분 불가능\n\n$(x-1)|h(x)|$가 실수 전체에서 미분가능하려면 $x=1$에서 $|h(x)|$의 비미분가능성이 $(x-1)$ 인수로 해소되어야 합니다. 즉,\n$$g(a) = 1 \\implies a^3 + a + 1 = 1 \\implies a(a^2+1) = 0 \\implies a = 0$$\n\n**조건 (나) 분석**: $x=3$일 때 $u^3 + u + 1 = 3 \\Rightarrow u^3+u-2=0 \\Rightarrow (u-1)(u^2+u+2)=0$이므로 $u=1$.\n\n$a=0$이므로 $f(u) = u(u-b)^2$이고\n$$f'(u) = (u-b)^2 + 2u(u-b) = (u-b)(3u-b)$$\n\n$$h'(3) = \\frac{f'(1)}{g'(1)} = \\frac{(1-b)(3-b)}{4} = 2$$\n\n$$(1-b)(3-b) = 8 \\implies b^2 - 4b - 5 = 0 \\implies (b-5)(b+1)=0$$\n\n$a=0 < b$이므로 $b=5$.\n\n**$f(8)$ 계산**:\n$$f(8) = 8 \\cdot (8-5)^2 = 8 \\cdot 9 = 72$$\n\n최종 답: 72  \n코칭 한마디: 왜냐하면 $|h(x)|$의 비미분가능성은 단순근에서만 생기고, $(x-1)$ 같은 인수는 그 지점이 $x=1$일 때만 비미분가능성을 상쇄해 주기 때문에, \"단순근의 위치가 곧 $x=1$\"이라는 조건이 핵심 도구가 됩니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 26375,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2021-가형-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me solve problem 29 first.\n\nA, B, C, D get black (6) and white (6) hats. Each gets ≥1 hat. A gets ≥4 black. Exactly 2 students (including A) have more black than white.\n\nLet A get $a_B$ black, $a_W$ white. $a_B \\geq 4$, $a_B > a_W$ (since A is one of the 2).\n\nAmong B, C, D, exactly one has more black than white.\n\nLet me denote students' (black, white) counts. Sum of blacks = 6, sum of whites = 6.\n\nA has $a_B \\in \\{4, 5, 6\\}$, $a_W \\geq 0$, $a_B > a_W$, and $a_B + a_W \\geq 1$ (auto since $a_B \\geq 4$).\n\nFor B, C, D: exactly one has black > white. The other two have black ≤ white.\n\nEach of B, C, D must get ≥1 hat total.\n\nLet's case on $a_B$.\n\nCase $a_B = 4$: A's white $a_W \\in \\{0,1,2,3\\}$.\nRemaining: 2 black, $6-a_W$ white among B,C,D.\n\nCase $a_B = 5$: $a_W \\in \\{0,1,2,3,4\\}$.\nRemaining: 1 black, $6-a_W$ white.\n\nCase $a_B = 6$: $a_W \\in \\{0,1,2,3,4,5\\}$.\nRemaining: 0 black, $6-a_W$ white.\n\nFor B, C, D with given total black $T_B$ and total white $T_W$:\n- Each (b_i, w_i) with $b_i, w_i \\geq 0$, $b_i + w_i \\geq 1$\n- Exactly one of them has $b_i > w_i$\n- Sum of $b_i = T_B$, sum of $w_i = T_W$\n\nLet me handle each subcase.\n\n**Case $a_B = 6$**: $T_B = 0$, so all of B,C,D have $b_i = 0$. Then $b_i > w_i$ means $0 > w_i$, impossible. So 0 students among B,C,D have black > white. But we need exactly 1. So this case gives 0.\n\nWait, but A has 6 black, 0 white means A has black > white, that's 1. We need exactly 2 total. So we need 1 from B,C,D. Case $a_B = 6$ gives 0.\n\nActually wait, let me reconsider. If $a_B = 6$, $a_W$ can be 0 through 5, but then $T_W = 6 - a_W$ and total of B,C,D is just whites. None can have $b > w$. So 0 cases.\n\n**Case $a_B = 5$**: $T_B = 1$. One of B,C,D gets the 1 black hat.\nFor that student (say X): $b_X = 1, w_X \\geq 0$. Has black > white iff $w_X = 0$.\nOther two students: $b = 0$, so black > white never.\n\nSo we need exactly one of B,C,D to have black > white. That must be X with $w_X = 0$.\n\nSo X gets (1, 0). Other two students (Y, Z) get $b=0$, $w_Y + w_Z = T_W = 6 - a_W$, each $w_Y, w_Z \\geq 1$ (since each must have ≥1 hat and $b=0$).\n\nActually X has 1 hat, fine. Y and Z need $w \\geq 1$ each.\n\nNumber of (Y,Z) ordered pairs with $w_Y + w_Z = 6 - a_W$, $w_Y, w_Z \\geq 1$: $= 6 - a_W - 1 = 5 - a_W$ if $6 - a_W \\geq 2$, i.e., $a_W \\leq 4$.\n\nAlso, who is X? Choose 1 of 3 students: 3 ways. Then Y, Z are the other two, ordered (since they're distinguishable students), so $5 - a_W$ for ordered.\n\nWait, Y and Z are the specific other two students, so $w_Y + w_Z = 6 - a_W$ with $w_Y \\geq 1, w_Z \\geq 1$ gives $5 - a_W$ solutions when $a_W \\leq 4$, and 0 when $a_W = 4$ means $5-4 = 1$, $a_W = 5$ means 0... wait $a_B = 5$, $a_W$ can be up to... constraint is $a_B > a_W$, so $a_W \\leq 4$.\n\nFor $a_W \\in \\{0,1,2,3,4\\}$:\n- $a_W = 0$: $5-0=5$, times 3 = 15\n- $a_W = 1$: 4×3 = 12\n- $a_W = 2$: 3×3 = 9\n- $a_W = 3$: 2×3 = 6\n- $a_W = 4$: 1×3 = 3\n\nTotal: 15+12+9+6+3 = 45.\n\n**Case $a_B = 4$**: $T_B = 2$. $a_W \\in \\{0,1,2,3\\}$. $T_W = 6 - a_W$.\n\nDistribute 2 black among B,C,D (each ≥0): possibilities for $(b_B, b_C, b_D)$ with sum 2.\n\nDistribute $T_W$ white among B,C,D, each $w_i \\geq 0$, with constraint $b_i + w_i \\geq 1$ for each.\n\nAnd exactly one of B,C,D has $b_i > w_i$.\n\nLet me think differently. For each student in {B,C,D}, given $b_i$ and $w_i$:\n- If $b_i = 0$: $b_i > w_i$ requires $w_i < 0$, impossible. Not \"more black\".\n- If $b_i = 1$: $b > w$ iff $w_i = 0$.\n- If $b_i = 2$: $b > w$ iff $w_i \\leq 1$.\n\nWe need exactly one of B,C,D to satisfy \"more black\".\n\nLet me enumerate distributions of black (2 black among 3 students, ordered):\nPatterns: (2,0,0) — 3 perms; (1,1,0) — 3 perms; total 6 distributions.\n\nHmm, this is getting complex. Let me set up more carefully.\n\nFor students B, C, D with black counts $b_1, b_2, b_3$ summing to 2, and white counts $w_1, w_2, w_3$ summing to $W = 6 - a_W$.\n\nConstraint: $b_i + w_i \\geq 1$. Exactly one $i$ has $b_i > w_i$.\n\nSubcase (2,0,0): One student has 2 black, others have 0.\n- Student with $b=2$: white $w_X \\geq 0$. $b > w$ iff $w_X \\leq 1$.\n- Other two students: $b = 0$, so need $w \\geq 1$, and $b > w$ is false.\n\nSo \"more black\" status is determined entirely by student X with 2 blacks.\n- Need exactly one student to have more black, which means X has $w_X \\leq 1$.\n\nSo $w_X \\in \\{0, 1\\}$, and other two have $w \\geq 1$ summing to $W - w_X$.\n\nFor $w_X = 0$: $w_Y + w_Z = W$, $w_Y, w_Z \\geq 1$: $W - 1$ ways.\nFor $w_X = 1$: $w_Y + w_Z = W - 1$, $w_Y, w_Z \\geq 1$: $W - 2$ ways.\n\nTotal per choice of X: $(W-1) + (W-2) = 2W - 3$.\n\n3 choices of X: $3(2W - 3)$.\n\nSubcase (1,1,0): Two students have 1 black, one has 0.\nStudent with $b=0$: needs $w \\geq 1$, can't have more black.\nStudents with $b=1$: more black iff $w = 0$.\n\nWe need exactly one of the two $b=1$ students to have $w = 0$.\n\nLet students X, Y have $b = 1$, Z have $b = 0$. $w_Z \\geq 1$.\n- $w_X = 0, w_Y \\geq 1$: $w_Y + w_Z = W$, both ≥1: $W - 1$ ways.\n- $w_X \\geq 1, w_Y = 0$: similarly $W - 1$ ways.\n\nTotal: $2(W-1)$ per choice of Z. 3 choices of Z: $6(W-1)$.\n\nTotal for $a_B = 4$ given $a_W$: $3(2W-3) + 6(W-1) = 6W - 9 + 6W - 6 = 12W - 15$.\n\nFor $a_W = 0$: $W = 6$, total $= 72 - 15 = 57$.\nFor $a_W = 1$: $W = 5$, $60 - 15 = 45$.\nFor $a_W = 2$: $W = 4$, $48 - 15 = 33$.\nFor $a_W = 3$: $W = 3$, $36 - 15 = 21$.\n\nSum: 57+45+33+21 = 156.\n\nWait, I need to check: in subcase (2,0,0) with $w_X = 1$, we need $W - 2 \\geq 0$, so $W \\geq 2$. Hmm, and the count should be number of solutions $w_Y + w_Z = W-1$, $w_Y, w_Z \\geq 1$, which is $W-2$ if $W-1 \\geq 2$, else 0.\n\nFor $a_W = 3$, $W = 3$: $w_X = 1$ gives $W-2 = 1$ way (w_Y = w_Z = 1). OK.\n\nFor $a_W = 3, W = 3$: $w_X = 0$: $W - 1 = 2$. So total per X: $2 + 1 = 3$. Times 3 = 9.\nSubcase (1,1,0) with $W = 3$: $w_X = 0, w_Y \\geq 1, w_Z \\geq 1, w_Y + w_Z = 3$: 2 ways. Similar for other. 4 per Z, times 3 = 12.\nTotal: 9 + 12 = 21. ✓\n\nFor $a_W = 2, W = 4$: subcase (2,0,0): $w_X=0$: 3 ways, $w_X=1$: 2 ways, total 5, ×3 = 15.\nSubcase (1,1,0): $W-1 = 3$ each, total $6 \\cdot 3 = 18$. \nTotal 15+18 = 33. ✓\n\nFor $a_W = 1, W = 5$: $5-1=4, 5-2=3$, sum 7, ×3=21. $W-1 = 4$, total $24$. 21+24=45. ✓\n\nFor $a_W = 0, W = 6$: $5+4=9$, ×3=27. $W-1=5$, total $30$. 27+30=57. ✓\n\nHmm wait but I should also check that in subcase (1,1,0), we don't violate \"$b_i + w_i \\geq 1$\". For X with $b=1, w=0$: total 1 ✓. For Y with $b=1, w \\geq 1$: ✓. For Z with $b=0$: $w \\geq 1$ ✓.\n\nIn subcase (2,0,0) with $w_X = 0$: X has 2 hats ✓. Others $b=0$ need $w \\geq 1$ ✓.\n\nOK so total = 45 + 156 = 201.\n\nWait let me double check $a_B = 5$.\n\n$a_B = 5, a_W \\in \\{0,1,2,3,4\\}$. T_B = 1, T_W = 6 - a_W.\n\nX gets 1 black, Y and Z get 0 black. For exactly one student in B,C,D to have $b > w$: must be X with $w_X = 0$.\n\nX has $b=1, w=0$, total 1 ✓.\nY, Z: $b = 0$, need $w \\geq 1$, $w_Y + w_Z = 6 - a_W$.\n\nNumber of solutions: $(6 - a_W) - 1 = 5 - a_W$ for $a_W \\leq 4$.\n\n3 choices of X.\n\n$a_W = 0$: 5×3 = 15\n$a_W = 1$: 4×3 = 12\n$a_W = 2$: 3×3 = 9\n$a_W = 3$: 2×3 = 6\n$a_W = 4$: 1×3 = 3\nTotal 45 ✓\n\nHmm what if $w_X > 0$? Then X has $b=1, w \\geq 1$, so $b > w$ requires $w = 0$. If $w_X \\geq 1$, X doesn't have more black. Then no one has more black among B,C,D. Not allowed.\n\nWhat if $w_X = 0$ but $w_Y$ or $w_Z = 0$? Y and Z have $b = 0$, so $w \\geq 1$ required for hat constraint. So $w_Y, w_Z \\geq 1$.\n\nActually I need to also consider $a_W = 5$ in case $a_B = 5$? No, because we need $a_B > a_W$, so $a_W < 5$, i.e., $\\leq 4$. ✓\n\nTotal answer: 45 + 156 = 201.\n\nHmm let me double-check case $a_B = 4$ more carefully. Did I miss possibilities?\n\nIf $a_B = 4$, $a_W \\leq 3$. T_B = 2.\n\nDistributions of T_B=2 among 3 students: I considered (2,0,0) and (1,1,0). That's all. ✓\n\nWait, I should reconsider whether I've correctly enumerated the constraint \"exactly one of B,C,D has more black\".\n\nIn subcase (2,0,0): Student X has $b=2$. More black iff $w_X \\leq 1$. Others have $b=0$, can't have more black.\nSo # of students with more black in {B,C,D} = 1 if $w_X \\leq 1$, 0 if $w_X \\geq 2$. Need = 1, so $w_X \\leq 1$. ✓\n\nIn subcase (1,1,0): Two students X, Y have $b=1$, more black iff $w = 0$.\n# of more-black students = (1 if $w_X = 0$) + (1 if $w_Y = 0$).\nNeed = 1: exactly one of $w_X, w_Y$ is 0. ✓\n\nSo $a_B = 4$ gives 156, $a_B = 5$ gives 45. Total 201.\n\nHmm let me just reconsider whether A's hat constraint is included. A gets $a_B \\geq 4$ black hats, that's ≥1 hat, ✓.\n\nFinal answer for problem 29: **201**.\n\nNow problem 30. $g(x) = f(\\sin^2 \\pi x)$ where $f$ is monic cubic.\n\nLet $u = \\sin^2 \\pi x \\in [0, 1]$. So $g(x) = f(u(x))$.\n\n$u(x) = \\sin^2(\\pi x) = (1 - \\cos 2\\pi x)/2$. Period 1. \n\nOn $[0, 1]$: $u(0) = 0$, $u(1/2) = 1$, $u(1) = 0$. $u$ increases on $[0, 1/",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 60816,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "가형(2017~2021)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2022-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 4,
+      "retrieved_tools": [
+        "무리함수 y=√(ax+b)+c",
+        "사잇값 정리 (수학2)",
+        "로그함수의 성질",
+        "중복순열·중복조합·같은 것 포함",
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이:\n\n조건에서 |a_n| = 2^n 입니다.\n\n따라서 a_n = ε_n · 2^n (ε_n = ±1).\n\nS = Σ_{n=1}^{10} a_n = -14\n\n홀수항 합을 A = a_1+a_3+a_5+a_7+a_9, 짝수항 합을 B = a_2+a_4+a_6+a_8+a_{10}이라 하자.\n\nA + B = -14 ... ①\n\n각 a_n = ±2^n이므로 모두 짝수. \n\n|a_n|의 합: 2+4+8+...+1024 = 2046\n\nA의 가능 범위: 각 항이 ±2,±8,±32,±128,±512\nB의 가능 범위: 각 항이 ±4,±16,±64,±256,±1024\n\n전략: A를 구하기 위해 2진법적 관점에서 접근.\n\na_n/2 = ε_n · 2^{n-1}이므로 S/2 = -7.\n\nb_n = ε_n · 2^{n-1} (n=1,...,10)이라 하면 Σb_n = -7.\n\n|b_n|의 합 = 1+2+4+...+512 = 1023.\n\n(1023 + (-7))/2 = 508 = 음의 부호를 가진 항들의 절댓값 합.\n즉 ε_n = -1인 항들의 |b_n| 합 = 508.\n\n508을 이진수로: 508 = 512 - 4 = 256+128+64+32+16+8+4 = 즉 508 = 111111100₂\n확인: 256+128+64+32+16+8+4 = 508 ✓\n\n그러므로 ε_n = -1인 n은 b_n의 값이 4,8,16,32,64,128,256에 해당, 즉 n-1 ∈ {2,3,4,5,6,7,8}, n ∈ {3,4,5,6,7,8,9}.\n\n나머지 n ∈ {1,2,10}은 ε_n = +1.\n\n따라서:\n- a_1 = +2\n- a_2 = +4\n- a_3 = -8\n- a_4 = -16\n- a_5 = -32\n- a_6 = -64\n- a_7 = -128\n- a_8 = -256\n- a_9 = -512\n- a_{10} = +1024\n\n검산: 합 = 2+4-8-16-32-64-128-256-512+1024 \n= 6 - 8 -16-32-64-128-256-512+1024\n= -2-16-32-64-128-256-512+1024\n= -18-32-64-128-256-512+1024\n= -50-64-128-256-512+1024\n= -114-128-256-512+1024\n= -242-256-512+1024\n= -498-512+1024\n= -1010+1024 = 14\n\n어? +14가 나왔다. 부호 반대.\n\n다시: 양의 부호 항들의 합 - 음의 부호 항들의 합 = -14에서, (+합) - (-합의 절댓값) = -14\n또한 (+합) + (-합의 절댓값) = 2046\n따라서 음의 부호 절댓값 합 = 1030, 양의 부호 절댓값 합 = 1016.\n\n다시 b_n 단위로: 음의 부호 |b_n| 합 = 515.\n515 이진수: 512+2+1 = 1000000011₂\n즉 ε_n = -1인 n-1 ∈ {0,1,9}, n ∈ {1,2,10}.\n\n따라서:\n- a_1 = -2, a_2 = -4, a_{10} = -1024\n- a_3=+8, a_4=+16, a_5=+32, a_6=+64, a_7=+128, a_8=+256, a_9=+512\n\n검산: -2-4+8+16+32+64+128+256+512-1024\n= -6+8+16+32+64+128+256+512-1024\n= 2+16+32+64+128+256+512-1024\n= 18+32+64+128+256+512-1024\n= 50+64+128+256+512-1024\n= 114+128+256+512-1024\n= 242+256+512-1024\n= 498+512-1024\n= 1010-1024 = -14 ✓\n\nA = a_1+a_3+a_5+a_7+a_9 = -2+8+32+128+512 = 678\n\n최종 답: 678\n코칭 한마디: 왜냐하면 |a_n|=2^n이라는 구조가 이진법 표현과 일치하므로, 부호 선택을 합 조건에 맞게 이진법으로 분해하면 유일하게 결정되기 때문입니다.",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 25249,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2022-공통-22",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me denote f'(x) = (3/2)(x-α)(x-β) with α ≤ β being critical points.\n\ng(t) = number of roots of f'(x)=0 in [t, t+2].\n\nCondition (가): for all a, lim from right + lim from left ≤ 2.\n\ng(t) values: if α < β, then:\n- g(t) = 2 when both α, β ∈ [t, t+2], i.e., t ≤ α and β ≤ t+2, so β-2 ≤ t ≤ α. Requires β - α ≤ 2.\n- g(t) = 1 when exactly one is in interval\n- g(t) = 0 otherwise\n\nIf α = β (double root), g(t) = 1 when α ∈ [t, t+2], else 0.\n\nCondition (가) restricts jumps. Let's think: g is integer-valued. At points where t = α, t = β, t+2 = α, t+2 = β there are jumps.\n\nFor α < β with β - α ≤ 2:\n- t < β - 2: g = 0 (neither in interval since t+2 < β, and if t < α then α might be in... wait)\n\nLet me redo. α ∈ [t, t+2] iff t ≤ α ≤ t+2 iff α-2 ≤ t ≤ α.\nβ ∈ [t, t+2] iff β-2 ≤ t ≤ β.\n\nCase β - α < 2:\n- t ∈ [β-2, α]: both in, g=2\n- t ∈ [α-2, β-2): only α in, g=1\n- t ∈ (α, β]: only β in, g=1\n- else: g=0\n\nAt t = β-2: left limit g→1 (only α), right limit g→2. Sum = 3 > 2. Violates (가).\n\nSo we need β - α = 2, then:\n- t = α-2 = β-... wait, β-2 = α, α-2 = β-4.\n- t ∈ [α-2, β-2] = [β-4, α]: only α in (since β-2 = α, at t=α both endpoints t+2=α+2=β, so both in)\nActually at t = α: interval [α, α+2] = [α, β], both endpoints, g=2.\nAt t = α - ε: interval [α-ε, α-ε+2], β = α+2 not in (since t+2 = α+2-ε < β). α in. g=1.\nAt t = α + ε: α not in (t > α), β in if t+2 ≥ β, i.e., ε ≤ 0. So β not in. g=0... wait β = α+2, t+2 = α+2+ε > β, and t = α+ε ≤ β = α+2 needs ε ≤ 2. So β ∈ [t, t+2] iff t ≤ β ≤ t+2 iff α+ε ≤ α+2 and α+2 ≤ α+2+ε, both true for ε ∈ (0, 2]. So β in, g=1.\n\nSo for β - α = 2:\n- t < α-2: g = 0\n- t = α-2: t+2 = α, α in. g=1\n- α-2 < t < α: only α in interval (β = α+2 > t+2). g=1\n- t = α: both in. g=2\n- α < t ≤ β = α+2: only β in. g=1\n- t > β: g = 0\n\nLimits at t=α: left = 1, right = 1, g(α)=2. Sum left+right = 2. OK.\nAt t = α-2: left=0, right=1, sum=1. OK.\nAt t = β = α+2: left=1, right=0, sum=1. OK.\n\nGood, β - α = 2 works.\n\nWhat about α = β (double critical point)? Then f' = (3/2)(x-α)^2, and g(t) = 1 if α ∈ [t,t+2], else 0.\nAt t=α-2: left=0, right=1. At t=α: left=1, right=0... wait, [t,t+2] contains α iff t ≤ α ≤ t+2.\n- t < α-2: 0\n- t ∈ [α-2, α]: 1\n- t > α: 0\nAt t=α-2: left 0, right 1, sum 1.\nAt t=α: left 1, right 0 (since t > α gives 0, but at t=α+ε, α ∉ [α+ε, α+ε+2], so 0). Sum = 1. OK.\n\nSo either α = β or β - α = 2.\n\nNow condition (나): g(f(1)) = g(f(4)) = 2, g(f(0)) = 1.\n\nIf α = β, g never equals 2. So β - α = 2.\n\ng(t) = 2 only at t = α. So f(1) = α and f(4) = α. So f(1) = f(4).\n\ng(t) = 1 on [α-2, α) ∪ (α, α+2] = [β-4, α) ∪ (α, β], i.e., t ∈ [α-2, α+2] with t ≠ α. Also at endpoints... wait check: I had g(α-2) = 1, g(α+2) = 1. And g=0 outside [α-2, α+2].\n\nSo g(f(0)) = 1 means f(0) ∈ [α-2, α+2] \\ {α}.\n\nf(x) = (1/2)(x-α)(x-β)... no wait, f' has roots α, β. f(x) = (1/2)x^3 + ... Let me write f'(x) = (3/2)(x-α)(x-(α+2)).\n\nLet me set α as the smaller critical point, β = α+2.\nf'(x) = (3/2)(x-α)(x-α-2).\nf(x) = (1/2)x^3 - (3/2)(α+1)x^2... let's integrate:\nf'(x) = (3/2)[x^2 - (2α+2)x + α(α+2)] = (3/2)x^2 - 3(α+1)x + (3/2)α(α+2)\nf(x) = (1/2)x^3 - (3/2)(α+1)x^2 + (3/2)α(α+2)x + C\n\nf(1) = f(4):\n(1/2)(1) - (3/2)(α+1) + (3/2)α(α+2) + C = (1/2)(64) - (3/2)(α+1)(16) + (3/2)α(α+2)(4) + C\n\n1/2 - (3/2)(α+1) + (3/2)α(α+2) = 32 - 24(α+1) + 6α(α+2)\n1/2 - (3/2)α - 3/2 + (3/2)α² + 3α = 32 - 24α - 24 + 6α² + 12α\n(3/2)α² + (3α - 3α/2) - 1 = 6α² - 12α + 8\n(3/2)α² + (3/2)α - 1 = 6α² - 12α + 8\n0 = (9/2)α² - (27/2)α + 9\n0 = α² - 3α + 2\nα = 1 or α = 2.\n\nCase α = 1: β = 3. Critical points 1 and 3. f(1) is local max (since coeff positive, max at smaller root? f'>0 for x<1, f'<0 for 1<x<3, so max at 1, min at 3). f(4) = f(1)? Let's check.\n\nf(x) = (1/2)x³ - (3/2)(2)x² + (3/2)(1)(3)x + C = (1/2)x³ - 3x² + (9/2)x + C\nf(1) = 1/2 - 3 + 9/2 + C = 2 + C\nf(4) = 32 - 48 + 18 + C = 2 + C ✓\n\nWe need f(1) = α = 1, so 2 + C = 1, C = -1.\nf(x) = (1/2)x³ - 3x² + (9/2)x - 1.\n\nCheck g(f(0)) = 1: f(0) = -1. Need f(0) ∈ [α-2, α+2]\\{α} = [-1, 3]\\{1}. f(0) = -1 ✓.\n\nf(5) = (1/2)(125) - 3(25) + (9/2)(5) - 1 = 62.5 - 75 + 22.5 - 1 = 9.\n\nCase α = 2: β = 4. f(x) = (1/2)x³ - (3/2)(3)x² + (3/2)(2)(4)x + C = (1/2)x³ - (9/2)x² + 12x + C\nf(1) = 1/2 - 9/2 + 12 + C = 8 + C\nf(4) = 32 - 72 + 48 + C = 8 + C ✓\nNeed f(1) = α = 2, so C = -6.\nf(0) = -6. Need ∈ [0, 4]\\{2}. -6 ∉. Fails.\n\nSo α = 1, f(5) = 9.\n\nWait, need to double-check that f(1) must equal α. We need g(f(1)) = 2, which only happens when argument = α. Yes.\n\nBut wait — actually f(1) = f(4) is forced only if both equal α. But α is unique (smaller critical point). So yes.\n\nHmm, but actually local max value at x=α=1 is f(1) and that equals α=1. So the local max is exactly at the critical value. Let's verify g(t)=2 means t=α=1. f(1) = 1 ✓, f(4) = 1, then g(1) = 2 ✓.\n\nf(5) = 9.\n</think>\n\n주어진 조건을 분석합니다.\n\n## 1단계: 조건 (가) 분석\n\n$f'(x) = \\frac{3}{2}(x-\\alpha)(x-\\beta)$ ($\\alpha \\le \\beta$)라 하자.\n\n$\\beta - \\alpha < 2$이면 $t = \\beta-2$에서 좌극한 1, 우극한 2가 되어 합 3으로 조건을 위배.\n\n따라서 **$\\alpha = \\beta$ 또는 $\\beta - \\alpha = 2$**.\n\n## 2단계: 조건 (나) 적용\n\n$g(t) = 2$가 존재해야 하므로 $\\beta = \\alpha + 2$.\n\n이때:\n- $g(t) = 2 \\iff t = \\alpha$\n- $g(t) = 1 \\iff t \\in [\\alpha-2, \\alpha+2] \\setminus \\{\\alpha\\}$\n\n조건 (나)에서 $g(f(1)) = g(f(4)) = 2$이므로 $f(1) = f(4) = \\alpha$.\n\n## 3단계: $\\alpha$ 구하기\n\n$f(x) = \\frac{1}{2}x^3 - \\frac{3}{2}(\\alpha+1)x^2 + \\frac{3}{2}\\alpha(\\alpha+2)x + C$\n\n$f(1) = f(4)$를 풀면:\n$$\\alpha^2 - 3\\alpha + 2 = 0 \\implies \\alpha = 1 \\text{ 또는 } 2$$\n\n**경우 ① $\\alpha = 1$, $\\beta = 3$:**\n$f(x) = \\frac{1}{2}x^3 - 3x^2 + \\frac{9}{2}x + C$, $f(1) = 2 + C = 1$이므로 $C = -1$.\n$f(0) = -1 \\in [-1, 3]\\setminus\\{1\\}$ ✓\n\n**경우 ② $\\alpha = 2$, $\\beta = 4$:**\n$f(1) = 8 + C = 2 \\Rightarrow C = -6$, $f(0) = -6 \\notin [0, 4]$ ✗\n\n## 4단계: $f(5)$ 계산\n\n$f(x) = \\frac{1}{2}x^3 - 3x^2 + \\frac{9}{2}x - 1$\n\n$$f(5) = \\frac{125}{2} - 75 + \\frac{45}{2} - 1 = 85 - 76 = 9$$\n\n---\n\n최종 답: **9**\n\n코칭 한마디: 왜냐하면 $g(t)$가 정수값 계단함수일 때 좌·우극한 합 조건은 \"도약 크기\"를 통제하는 도구이므로, 이를 통해 임계점 간격($\\beta-\\alpha=2$)을 먼저 결정하고 함숫값 조건으로 미정 상수를 좁혀가는 전략이 가장 효율적입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 53139,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2022-미적분-28",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nf(x) = 6π(x-1)². Let u = f(x). g = 3u + 4cos(u). \n\ndg/dx = (3 - 4sin(u)) · f'(x).\n\nf'(x) = 12π(x-1). f'(x) = 0 at x=1.\n\nSo g'(x) = 0 when f'(x)=0 (x=1) or sin(u) = 3/4.\n\nOn 0<x<2, u = 6π(x-1)² ranges from 0 to 6π (at endpoints excluded), with minimum 0 at x=1.\n\nFor x in (0,1): u decreases from 6π to 0 as x goes 0→1.\nFor x in (1,2): u increases from 0 to 6π.\n\nBy symmetry, analyze x ∈ (1,2) then double, plus x=1.\n\nsin(u) = 3/4 has solutions in u ∈ (0, 6π). Period 2π, two solutions per period: u₁ = arcsin(3/4) ≈ 0.848, u₂ = π - arcsin(3/4) ≈ 2.294.\n\nIn (0, 6π), solutions: u₁, u₂, u₁+2π, u₂+2π, u₁+4π, u₂+4π. Total 6.\n\nSo on (1,2), g'=0 at 6 points (from sin u = 3/4) plus possibly x=1.\n\nAt each critical point, check sign of g'. g'(x) = (3 - 4sin u) · f'(x).\n\nOn (1,2), f'(x) > 0. So sign of g' = sign of (3 - 4 sin u).\n\n3 - 4 sin u: positive when sin u < 3/4, negative when sin u > 3/4.\n\nAs u increases from 0 to 6π, sin u oscillates. At u=0, sin u = 0, so 3-4sin u > 0.\n\nCrossings of sin u = 3/4: \n- u₁: sin going up through 3/4 → 3-4sin changes + to -\n- u₂: sin going down through 3/4 → - to +\n- pattern repeats.\n\nSo on (1,2), g' sign: + then -, +, -, +, -, +. \n\nLocal minima where g' goes from - to +: that's at u₂, u₂+2π, u₂+4π → 3 minima on (1,2).\n\nLocal maxima at u₁, u₁+2π, u₁+4π.\n\nSimilarly on (0,1), f'(x) < 0. Sign of g' = -sign(3-4sin u). As x goes from 0 to 1, u decreases from 6π to 0.\n\nLet's parametrize by x increasing on (0,1): u decreases. So as x increases on (0,1), u: 6π → 0.\n\nAt x near 1, u near 0, sin u ≈ 0, 3-4sin u > 0, f'(x) < 0, so g' < 0.\n\nGoing backward in x from 1 to 0, u goes 0 to 6π. \n\nActually, let me think about minima at x=1. At x=1, f'=0. Need second derivative or sign change.\n\nNear x=1, u ≈ 0, sin u ≈ u, 3-4sin u ≈ 3 > 0. So g'(x) = (3-4sin u)f'(x) ≈ 3·12π(x-1). Sign changes from - to + as x crosses 1. So x=1 is a local minimum.\n\nNow on (0,1), find minima. As x increases on (0,1), u decreases. Sign of g' = (3-4sin u)·f'(x), f'(x)<0.\n\nLet me index by position. At x just above 0, u just below 6π. sin(6π) = 0, so 3-4sin u ≈ 3 > 0, g' < 0.\n\nGoing from x=0 to x=1, u decreases from 6π to 0. Let's track when sin u = 3/4 happens. The solutions in (0,6π) listed in increasing u: u₁, u₂, u₁+2π, u₂+2π, u₁+4π, u₂+4π.\n\nAs x increases (u decreases), we hit u₂+4π first, then u₁+4π, then u₂+2π, u₁+2π, u₂, u₁.\n\nSign of (3-4sin u) along u from 6π down to 0:\n- u in (u₂+4π, 6π): sin u going from 3/4 down to 0... wait.\n\nActually let me just check: at u = 6π, sin u = 0. As u decreases from 6π, sin u = sin(6π - ε) = -sin(ε) ... wait sin(6π - ε) = sin(-ε) = -sin ε. Hmm that's negative.\n\nHmm let me reconsider. sin(6π) = 0. sin(6π - 0.1) = sin(-0.1) = -0.0998. So just below 6π, sin u is negative, 3-4sin u > 3 > 0.\n\nGoing down further, sin u reaches -1 at u = 11π/2 = 5.5π, then back to 0 at 5π, then 1 at 4.5π, etc.\n\nSolutions to sin u = 3/4 between 0 and 6π:\nIn (0, π): u₁ ≈ 0.848, u₂ ≈ 2.294\nIn (2π, 3π): u₁+2π, u₂+2π\nIn (4π, 5π): u₁+4π, u₂+4π\n\nSo between 5π and 6π, sin u is negative (no solution). Between 4π and 5π, two solutions. Between 3π and 4π, sin negative. Between 2π and 3π, two solutions. Between π and 2π, sin negative. Between 0 and π, two solutions.\n\nOK so on (0,1) with u decreasing from 6π to 0, the sign of (3-4sin u):\n\nu ∈ (5π, 6π): sin u < 0, 3-4sin u > 0\nu ∈ (u₂+4π, 5π): sin u from 3/4 (at u₂+4π) going up to 1 then back to 0 at 5π... wait let me check.\n\nu₂+4π = π - arcsin(3/4) + 4π ≈ 2.294 + 4π ≈ 14.86\nu₁+4π = arcsin(3/4) + 4π ≈ 0.848 + 4π ≈ 13.42\n5π ≈ 15.71\n\nSo in (u₂+4π, 5π) ≈ (14.86, 15.71): sin u: at 14.86 it's 3/4, at 15.71 it's 0. Going down. So sin u ∈ (0, 3/4), so 3-4sin u > 0.\n\nIn (4.5π, u₂+4π) where 4.5π ≈ 14.137: sin u: at 4.5π is 1, at u₂+4π is 3/4. So sin u > 3/4, 3-4sin u < 0.\n\nIn (u₁+4π, 4.5π) ≈ (13.42, 14.137): sin u from 3/4 up to 1, so > 3/4, 3-4sin u < 0.\n\nIn (4π, u₁+4π) ≈ (12.566, 13.42): sin u from 0 to 3/4, so < 3/4, positive.\n\nSo crossing u₂+4π (going down in u, i.e., increasing x): 3-4sin u goes from + to -.\nCrossing u₁+4π (going down in u): goes from - to +.\n\nPattern as u decreases through each crossing:\nu = u₂+4π: + → -\nu = u₁+4π: - → +\nu = u₂+2π: + → -\nu = u₁+2π: - → +\nu = u₂: + → -\nu = u₁: - → +\n\n(The pattern alternates because between consecutive crossings, the sign alternates.)\n\nWait, let me verify: between u₁+4π and u₂+2π (i.e., u ∈ (u₂+2π, u₁+4π)), what's sin u?\n\nu₂+2π ≈ 2.294 + 2π ≈ 8.577\nu₁+4π ≈ 13.42\n\nIn between, u passes through 3π ≈ 9.42, 3.5π ≈ 10.996 (sin = -1), 4π ≈ 12.566. So sin u is negative mostly. So 3-4sin u > 0. ✓\n\nSo as u decreases from 6π to 0 (x increases from 0 to 1), sign of (3-4sin u): +, then -, +, -, +, -, + (after each crossing).\n\nSign of g'(x) on (0,1) = (3-4sin u) · f'(x), f'(x) < 0:\nSo g' sign: -, +, -, +, -, +, -.\n\nLocal minima where g' goes from - to +: at u₂+4π (first crossing as x increases), u₂+2π, u₂. So 3 minima on (0,1).\n\nPlus x=1 is a min.\nPlus 3 minima on (1,2).\n\nTotal: 3 + 1 + 3 = 7.\n\nAnswer: (2) 7.\n</think>\n\n주어진 문제를 단계적으로 풀이하겠습니다.\n\n## 풀이\n\n**1단계: 도함수 계산**\n\n$u = f(x) = 6\\pi(x-1)^2$로 놓으면:\n$$g'(x) = (3 - 4\\sin u) \\cdot f'(x), \\quad f'(x) = 12\\pi(x-1)$$\n\n**2단계: 임계점 분석**\n\n$g'(x) = 0$인 경우:\n- $f'(x) = 0$ → $x = 1$\n- $\\sin u = \\frac{3}{4}$\n\n$0 < x < 2$에서 $u$의 범위는 $[0, 6\\pi)$이며, $\\sin u = \\frac{3}{4}$의 해는 한 주기당 2개씩, 총 **6개**:\n$$u_1, u_2, u_1+2\\pi, u_2+2\\pi, u_1+4\\pi, u_2+4\\pi$$\n(여기서 $u_1 = \\arcsin\\frac{3}{4}$, $u_2 = \\pi - \\arcsin\\frac{3}{4}$)\n\n**3단계: $x=1$에서의 분석**\n\n$x=1$ 근방에서 $u \\approx 0$이므로 $3 - 4\\sin u > 0$이고, $f'(x)$의 부호는 $-$에서 $+$로 변함. 따라서 **$x=1$은 극소**.\n\n**4단계: $(1,2)$에서 분석**\n\n$f'(x) > 0$이므로 $g'$의 부호는 $(3 - 4\\sin u)$의 부호와 같음.\n\n$u$가 $0$에서 $6\\pi$로 증가할 때 부호 변화: $+, -, +, -, +, -, +$\n\n극소 ($-$ → $+$)는 $u = u_2,\\ u_2+2\\pi,\\ u_2+4\\pi$에서 → **3개**\n\n**5단계: $(0,1)$에서 분석**\n\n$f'(x) < 0$이고, $x$가 증가하면 $u$가 $6\\pi$에서 $0$으로 감소.\n\n$u$가 감소함에 따라 $(3-4\\sin u)$의 부호: $+, -, +, -, +, -, +$\n$f'(x)<0$을 곱하면 $g'$의 부호: $-, +, -, +, -, +, -$\n\n극소 ($-$ → $+$)는 **3개**\n\n**6단계: 합산**\n\n$$3 + 1 + 3 = 7$$\n\n---\n\n최종 답: **7 (②)**\n코칭 한마디: 왜냐하면 합성함수의 극값은 $g'(x)=(\\text{외부 도함수})\\cdot(\\text{내부 도함수})$로 분해되므로, 두 인수의 부호 변화를 각각 추적하는 것이 가장 효율적이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 52073,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2022-미적분-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "치환 적분",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "이차방정식 근의 분포"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 1단계: 조건 분석\n\n조건 (나): $g(2x) = 2f(x)$, $x \\geq 1$\n\n$x=1$ 대입: $g(2) = 2f(1) = 2$, 즉 $f(2) = 2$\n\n$g(2x) = 2f(x)$에서 양변에 $f$ 적용: $2x = f(2f(x))$, 즉 $f(2f(x)) = 2x$\n\n## 2단계: 적분 변환\n\n$I = \\int_1^8 x f'(x)\\, dx$를 부분적분:\n$$I = [xf(x)]_1^8 - \\int_1^8 f(x)\\, dx = 8f(8) - 1 - \\int_1^8 f(x)\\, dx$$\n\n## 3단계: $f(8)$ 구하기\n\n$f(2f(x)) = 2x$에서:\n- $x=1$: $f(2)=2$ ✓\n- $x=2$: $f(2f(2)) = f(4) = 4$\n- $x=4$: $f(2f(4)) = f(8) = 8$\n\n따라서 $f(8) = 8$.\n\n## 4단계: $\\int_1^8 f(x)dx$ 계산\n\n구간을 나눕니다: $\\int_1^2 + \\int_2^4 + \\int_4^8$\n\n**$\\int_2^4 f(x)dx$**: $x = 2t$ 치환 ($t: 1\\to 2$), $f(2t) = g^{-1}$... 다시 조건 활용.\n\n$g(2x) = 2f(x)$이므로 $f(x) = \\frac{g(2x)}{2}$.\n\n$\\int_2^4 f(x)dx$에서 $x = 2t$ 치환: $dx = 2dt$\n$$\\int_2^4 f(x)dx = \\int_1^2 f(2t)\\cdot 2\\, dt$$\n\n여기서 $f(2t)$를 구해야 하는데, $g(2t) = 2f(t)$에서 $f(2t)$ 직접 정보는 없습니다.\n\n**다른 접근**: $g(2x) = 2f(x)$에 $x \\to f(x)$ 대입하면 $g(2f(x)) = 2f(f(x))$. 또한 $f(2f(x)) = 2x$에서 $g$ 적용: $2f(x) = g(2x)$ ✓\n\n$y = f(x)$ 치환으로 $\\int f(x)dx$를 $\\int x \\cdot f'(x)dx$ 관계로 활용:\n\n$$\\int_a^b f(x)dx + \\int_{f(a)}^{f(b)} g(y)dy = bf(b) - af(a)$$\n\n**$\\int_1^2 f(x)dx = \\frac{5}{4}$** 주어짐. 그러면 $\\int_1^2 g(y)dy = 2\\cdot 2 - 1\\cdot 1 - \\frac{5}{4} = \\frac{7}{4}$\n\n**$\\int_2^4 f(x)dx$ 계산**: $g(2x) = 2f(x)$에서 $u=2x$ 치환하면 $g(u) = 2f(u/2)$, 즉 $f(u/2) = g(u)/2$, 또는 $f(x) = g(2x)/2$ ($x \\geq 1$).\n\n$$\\int_2^4 f(x)dx = \\int_2^4 \\frac{g(2x)}{2}dx = \\frac{1}{4}\\int_4^8 g(u)du$$\n\n또 $f(2f(x))=2x$에서 $g$를 통해: $f(x) = g(2x)/2$이므로 $g(2x) = 2f(x)$, 그리고 $\\int g$ 와 $\\int f$ 관계:\n\n$\\int_4^8 g(u)du = 4\\cdot g(8) - ... $ 음, $g(4)=?, g(8)=?$ \n\n$f(2)=2 \\Rightarrow g(2)=2$, $f(4)=4 \\Rightarrow g(4)=4$, $f(8)=8 \\Rightarrow g(8)=8$.\n\n$$\\int_4^8 g(u)du + \\int_{g(4)}^{g(8)} f(x)dx = 8\\cdot g(8) - 4\\cdot g(4)$$\n$$\\int_4^8 g(u)du + \\int_4^8 f(x)dx = 64 - 16 = 48$$\n\n$\\int_4^8 f(x)dx = \\int_2^4 f(x)dx \\cdot ?$ — 같은 관계 적용:\n$$\\int_4^8 f(x)dx = \\frac{1}{4}\\int_8^{16} g(u)du$$\n\n**관계식 일반화**: $\\int_2^4 f(x)dx = A$, $\\int_4^8 f(x)dx = B$라 하자.\n\n위에서 $A = \\frac{1}{4}\\int_4^8 g(u)du$, 그리고 $\\int_4^8 g(u)du = 48 - B$.\n$$A = \\frac{48-B}{4} = 12 - \\frac{B}{4} \\quad (*)$$\n\n**$\\int_2^4$에 대해서도**: \n$$\\int_2^4 g(u)du + \\int_2^4 f(x)dx = 4\\cdot 4 - 2\\cdot 2 = 12$$\n$$\\int_2^4 g(u)du = 12 - A$$\n\n그리고 $\\int_2^4 f(x)dx$를 다른 방식으로: $f(x) = g(2x)/2$ 사용시 $A = \\frac{1}{4}\\int_4^8 g(u)du$ 이미 사용.\n\n$\\int_1^2$ 구간에도 적용: $\\int_1^2 f(x)dx = \\frac{1}{4}\\int_2^4 g(u)du = \\frac{1}{4}(12-A)$\n$$\\frac{5}{4} = \\frac{12-A}{4} \\Rightarrow A = 7$$\n\n$(*)$에서: $7 = 12 - B/4 \\Rightarrow B = 20$\n\n## 5단계: 최종 계산\n\n$$\\int_1^8 f(x)dx = \\frac{5}{4} + 7 + 20 = \\frac{113}{4}$$\n\n$$I = 8\\cdot 8 - 1 - \\frac{113}{4} = 63 - \\frac{113}{4} = \\frac{252-113}{4} = \\frac{139}{4}$$\n\n$p=4, q=139$, 서로소. $p+q = 143$\n\n최종 답: $143$\n코칭 한마디: 왜냐하면 역함수 적분의 기하적 관계 $\\int_a^b f + \\int_{f(a)}^{f(b)} g = bf(b)-af(a)$ 와 주어진 함수방정식 $f(x)=g(2x)/2$ 를 결합하면 구간별 적분을 연쇄적으로 연결하는 점화 관계가 만들어지기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 34005,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2023-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me analyze f(x).\n\nFor x<0: h1(x) = |3^(x+2) - n|. As x→-∞, 3^(x+2)→0, so h1→n. At x=0⁻, 3^2=9, so value is |9-n|. Range of 3^(x+2) on x<0 is (0,9).\n\nFor x≥0: h2(x) = |log_2(x+4) - n|. At x=0, log_2(4)=2. As x→∞, log→∞. So log_2(x+4) ranges over [2,∞).\n\nLet me think about the graph of f without absolute value, then take absolute value.\n\nLet u(x) = 3^(x+2) for x<0, range (0,9), increasing.\nLet v(x) = log_2(x+4) for x≥0, range [2,∞), increasing.\n\nSo the \"inner\" function p(x) = u or v: continuous? At x=0: u→9, v=2. Discontinuous jump from 9 down to 2.\n\nf(x) = |p(x) - n|.\n\nFor x<0: |3^(x+2) - n|, where 3^(x+2) ∈ (0,9), increasing.\n- If n ≤ 0: not natural. n≥1.\n- If 1≤n≤9: |·| has V shape. Value at x→-∞ is n, at x→0⁻ is |9-n|. Minimum 0 at point where 3^(x+2)=n, i.e., x = log_3(n)-2 (need <0, so n<9).\n  - For n<9: ranges from n down to 0 then up to |9-n|=9-n (if n<9) or n-9.\n  - Actually for n≤9: from x=-∞ value n, decreasing to 0 at x=log_3(n)-2, then increasing to 9-n at x=0⁻.\n  - For n=9: 3^(x+2)<9 always, so |3^(x+2)-9| = 9-3^(x+2), decreasing from 9 to 0.\n  - For n≥10: 3^(x+2)<9<n, so |·|=n-3^(x+2), decreasing from n to n-9.\n\nFor x≥0: |log_2(x+4)-n|, log ∈ [2,∞).\n- If n≤2: log≥2≥n, so = log-n, increasing from 2-n to ∞.\n- If n≥2: V shape. At x=0 value |2-n|=n-2. Min 0 at x=2^n-4. Then increasing to ∞.\n\nNow g(t) = number of solutions to f(x)=t. Want max g(t) = 4.\n\nLet me count solutions piecewise. Let A(t) = #{x<0: f(x)=t}, B(t) = #{x≥0: f(x)=t}.\n\nCase n=1:\n- x<0: 3^(x+2)∈(0,9), goes from 1 down to 0 (at x=log_3(1)-2=-2) then up to 8. So |3^(x+2)-1| has values: from x=-∞ to x=-2: decreasing 1→0; from x=-2 to 0⁻: increasing 0→8.\n  - For t∈(0,1): 2 solutions; t=0: 1; t=1: 2 (one at -∞ limit not achieved... wait, x=-∞ not included). Actually at x=-∞ value approaches 1 but not attained. So for t∈(0,1), in left part 1 solution, right part 1 solution = 2. For t=1: left part not attained (only as limit), right part 1 solution. For t∈(1,8): left 0, right 1 = 1. For t=8: not attained. For t>8: 0.\n  \nHmm wait, let me redo. h1(x) for x<0, n=1: starts (limit) at 1, decreases to 0 at x=-2, increases to 8 at x→0⁻ (not attained).\nSo h1 range: [0,1) ∪ [0,8) = [0,8). Actually values: from x∈(-∞,-2], values [0,1) decreasing... at x=-2 value is 0. From x∈[-2,0), values [0,8).\n- t=0: x=-2, 1 sol.\n- t∈(0,1): 1 sol from left branch + 1 from right = 2.\n- t∈[1,8): 0 + 1 = 1.\n- t≥8: 0.\n\nFor x≥0, n=1: log_2(x+4)≥2>1, so f=log-1, increasing from 1 to ∞.\n- t<1: 0 sols.\n- t≥1: 1 sol.\n\nTotal g(t):\n- t=0: 1+0=1\n- t∈(0,1): 2+0=2\n- t=1: 1+1=2\n- t∈(1,8): 1+1=2\n- t≥8: 0+1=1\nMax = 2. Not 4.\n\nCase 2≤n≤8 (so n<9 and n>2... let's also consider n=2):\n\nn=2:\n- x<0: 3^(x+2)∈(0,9). |·-2|: from x=-∞ limit 2, decreases to 0 at x=log_3(2)-2, increases to 7.\n  - t=0: 1 sol\n  - t∈(0,2): 2 sols\n  - t∈[2,7): 1 sol (right branch only since left branch limit not attained at 2)\n  - Actually wait, t=2: left branch approaches but never equals; right branch: |3^(x+2)-2|=2 means 3^(x+2)=4 or 0. 3^(x+2)=4 gives x=log_3(4)-2, which is in (log_3(2)-2, 0) since 4>2. Yes 1 sol. So t=2: 1.\n  - t≥7: 0.\n- x≥0: |log_2(x+4)-2|. log goes 2→∞. V shape with min 0 at x=0 (since 2^2-4=0). So at x=0, value 0; increasing to ∞.\n  - Just increasing from 0. So t≥0: 1 sol.\n\nTotal:\n- t=0: 1+1=2\n- t∈(0,2): 2+1=3\n- t=2: 1+1=2\n- t∈(2,7): 1+1=2\n- t≥7: 0+1=1\nMax=3.\n\nn=3:\n- x<0: 3^(x+2): values (0,9), |·-3|: from 3 (limit) decrease to 0 at log_3(3)-2=-1, increase to 6.\n  - t=0: 1\n  - t∈(0,3): 2\n  - t=3: 1 (right branch: 3^(x+2)=6, x=log_3(6)-2<0 ✓; left branch limit only)\n  - t∈(3,6): 1\n  - t≥6: 0\n- x≥0: |log_2(x+4)-3|. log range [2,∞). At x=0: |2-3|=1. Min 0 at x=2^3-4=4. V shape: from 1 down to 0 at x=4, then up to ∞.\n  - t=0: 1 (x=4)\n  - t∈(0,1): 2 sols\n  - t=1: 1 sol (x=0) plus on right side log=4 means x=12, so 2 sols total. Actually |log-3|=1 means log=2 or 4, x=0 or x=12. 2 sols.\n  - t∈(1,∞): 1 sol (right side).\n  \n  Wait, for t∈(0,1): left part of V from x=0 to x=4, value goes 1→0. So one sol. Right part from x=4 onwards, value 0→∞, so one sol. Total 2.\n  - t=1: x=0 and x=12, 2 sols.\n  - t>1: only right branch, 1 sol.\n\nTotal:\n- t=0: 1+1=2\n- t∈(0,1): 2+2=4 ✓\n- t=1: 1 (right branch sol on x<0... wait at t=1, x<0: 1 sol from right branch) + 2 = 3\n  Wait, x<0 at t=1: |3^(x+2)-3|=1, so 3^(x+2)=2 or 4. Both give x<0 (log_3(2)-2 and log_3(4)-2, both negative). So 2 sols.\n  Hmm let me redo. For t∈(0,3) on x<0: 2 sols. t=1∈(0,3), so 2 sols.\n  Total at t=1: 2+2=4. ✓\n- t∈(1,3): 2+1=3\n- t=3: 1+1=2\n- t∈(3,6): 1+1=2\n- t≥6: 0+1=1\n\nMax = 4. ✓ So n=3 works.\n\nn=4:\n- x<0: |3^(x+2)-4|, from 4 decrease to 0 at log_3(4)-2, increase to 5.\n  - t=0: 1; t∈(0,4): 2; t=4: 1 (3^(x+2)=8); t∈(4,5): 1; t≥5: 0.\n- x≥0: |log-4|, log≥2, |2-4|=2, min 0 at x=2^4-4=12.\n  - t=0:1; t∈(0,2):2; t=2:2 (x=0 and log=6 i.e. x=60); t>2:1.\n\nTotal:\n- t=0: 1+1=2\n- t∈(0,2): 2+2=4 ✓\n- t=2: 2+2=4 ✓\n- t∈(2,4): 2+1=3\n- t=4: 1+1=2\n- t∈(4,5): 1+1=2\n- t≥5: 0+1=1\nMax=4. ✓ n=4 works.\n\nn=5:\n- x<0: from 5 to 0 to 4.\n  - t=0:1; t∈(0,4):2; t=4:2 (3^(x+2)=1 or 9; 9 not attained, so just 1; wait...). Let me recompute.\n  \n  For x<0, n=5: 3^(x+2)∈(0,9). |3^(x+2)-5| values: at u=0: 5; u=5: 0; u=9: 4 (not attained). So h1 maps (0,9)→ values: u∈(0,5]: 5→0; u∈[5,9): 0→4.\n  - t∈[0,4): two parts? t=0: u=5, 1 sol. t∈(0,4): u=5-t (in (1,5)) gives 1 sol; u=5+t (in (5,9)) gives 1 sol. 2 sols.\n  - t=4: u=1 gives 1 sol; u=9 not attained. 1 sol.\n  - t∈(4,5): u=5-t∈(0,1), 1 sol. \n  - t=5: u=0 not attained; u=10 not. 0 sols.\n  - t>5: 0.\n  \n- x≥0, n=5: log range [2,∞). |log-5|: at x=0: 3, min 0 at x=2^5-4=28.\n  - t=0:1; t∈(0,3):2; t=3:2 (x=0, x=2^8-4=252); t>3:1.\n\nTotal:\n- t=0: 1+1=2\n- t∈(0,3): 2+2=4 ✓\n- t=3: 2+2=4 ✓\n- t∈(3,4): 2+1=3\n- t=4: 1+1=2\n- t∈(4,5): 1+1=2\n- t=5: 0+1=1\n- t>5: 0+1=1\nMax=4. ✓ n=5 works.\n\nn=6:\n- x<0: u∈(0,9), |u-6|: u=0→6, u=6→0, u=9→3.\n  - t=0:1; t∈(0,3):2; t=3:2 (u=3, u=9 not attained, so 1); wait.\n  - t∈(0,3): u=6-t∈(3,6): 1 sol; u=6+t∈(6,9): 1 sol. =2.\n  - t=3: u=3, 1 sol; u=9 not attained. =1.\n  - t∈(3,6): u=6-t∈(0,3), 1 sol. =1.\n  - t=6: u=0 limit, not attained. =0.\n  - t>6: 0.\n- x≥0: |log-6|: x=0: 4, min 0 at x=2^6-4=60.\n  - t=0:1; t∈(0,4):2; t=4:2; t>4:1.\n\nTotal:\n- t=0: 1+1=2\n- t∈(0,3): 2+2=4 ✓\n- t=3: 1+2=3\n- t∈(3,4): 1+2=3\n- t=4: 1+2=3\n- t∈(4,6): 1+1=2\n- t≥6: 0+1=1\nMax=4. ✓ n=6.\n\nn=7:\n- x<0: |u-7|, u∈(0,9). u=7→0, u=0→7, u=9→2.\n  - t=0:1\n  - t∈(0,2): u=7-t (in 5,7): 1; u=7+t (in 7,9): 1. =2\n  - t=2: u=5: 1; u=9: not attained. =1\n  - t∈(2,7): u=7-t∈(0,5): 1. =1\n  - t=7: 0 (u→0 limit only)\n  - t>7: 0\n- x≥0: |log-7|: x=0: 5, min 0 at x=2^7-4=124.\n  - t=0:1; t∈(0,5):2; t=5:2; t>5:1.\n\nTotal:\n- t=0:2\n- t∈(0,2):2+2=4 ✓\n- t=2:1+2=3\n- t∈(2,5):1+2=3\n- t=5:1+2=3\n- t∈(5,7):1+1=2\n- t≥7: 0+1=1\nMax=4. ✓ n=7.\n\nn=8:\n- x<0: |u-8|, u∈(0,9). u=8→0, u=0→8, u=9→1.\n  - t=0:1; t∈(0,1): u=8-t:1, u=8+t:1, =2; t=1: u=7:1, u=9:no, =1; t∈(1,8):1; t=8:0; t>8:0.\n- x≥0: |log-8|: x=0: 6, min 0 at x=2^8-4=252.\n  - t=0:1; t∈(0,6):2; t=6:2; t>6:1.\n\nTotal:\n- t=0:2\n- t∈(0,1):2+2=4 ✓\n- t=1:1+2=3\n- t∈(1,6):1+2=3\n- t=6:1+2=3\n- t∈(6,8):1+1=2\n- t≥8:1\nMax=4. ✓ n=8.\n\nn=9:\n- x<0: |u-9|, u∈(0,9). u=0→9, u=9→0. Decreasing. f1 = 9-u, range (0,9).\n  - t∈(0,9):1; t=0:0(not attained); t≥9:0.\n- x≥0: |log-9|: x=0:7, min 0 at 2^9-4=508.\n  - t=0:1; t∈(0,7):2; t=7:2; t>7:1.\n\nTotal:\n- t=0:0+1=1\n- t∈(0,7):1+2=",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 62125,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2023-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "확률변수 함수의 기댓값",
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "치환 적분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "문제를 분석해 봅시다.\n\n## 풀이\n\n**조건 (가) 분석:**\n\n$f(x) = x^3 + ax^2 + bx + c$ 라 하면, 평균값 정리에 의해\n$$f(x) - f(1) = (x-1)f'(t)$$\n인 $t$가 $1$과 $x$ 사이에 존재합니다. 조건 (가)는 이 $t = g(x)$로 연속함수로 잡을 수 있다는 뜻입니다.\n\n좌변을 전개:\n$$f(x) - f(1) = (x-1)(x^2 + x + 1) + a(x-1)(x+1) + b(x-1)$$\n$$= (x-1)\\left[x^2 + x + 1 + a(x+1) + b\\right]$$\n\n우변: $f'(g) = 3g^2 + 2ag + b$\n\n따라서 모든 $x$에 대해\n$$3g(x)^2 + 2a\\,g(x) + b = x^2 + x + 1 + a(x+1) + b$$\n$$3g(x)^2 + 2a\\,g(x) = x^2 + (a+1)x + a + 1 - 1 = x^2 + (a+1)x + a$$\n\n즉,\n$$3g(x)^2 + 2a\\,g(x) - x^2 - (a+1)x - a = 0 \\quad (*)$$\n\n**$g(x)$를 $x$의 함수로:**\n\n$(*)$를 $g$에 대한 이차방정식으로 풀면:\n$$g(x) = \\frac{-2a \\pm \\sqrt{4a^2 + 12(x^2 + (a+1)x + a)}}{6} = \\frac{-a \\pm \\sqrt{a^2 + 3x^2 + 3(a+1)x + 3a}}{3}$$\n\n판별식 내부: $D(x) = 3x^2 + 3(a+1)x + (a^2 + 3a)$\n\n$g(x)$가 모든 실수에서 연속이려면 $D(x) \\geq 0$이 모든 $x$에서 성립해야 합니다.\n\n판별식의 판별식: $9(a+1)^2 - 12(a^2+3a) \\leq 0$\n$$9a^2 + 18a + 9 - 12a^2 - 36a \\leq 0$$\n$$-3a^2 - 18a + 9 \\leq 0 \\implies a^2 + 6a - 3 \\geq 0$$\n\n**$g(x)$의 최솟값:**\n\n$g(x) = \\frac{-a \\pm \\sqrt{D(x)}}{3}$에서 연속이려면 부호 하나로 고정. $x=1$에서 $(*)$ 확인: $3g(1)^2 + 2a g(1) = 1 + (a+1) + a = 2a+2$, 즉 $3g(1)^2 + 2a g(1) - 2(a+1) = 0$, $(g(1)-1)(3g(1)+2(a+1))/...$ 실제로 $g(1) = 1$이 해: $3 + 2a - 2a - 2 = 1 \\neq 0$. 다시: $3(1) + 2a(1) - 2a - 2 = 1$, 아니네요.\n\n조건 (가)에서 $x=1$ 대입하면 $0=0$이라 $g(1)$은 자유롭습니다. 하지만 연속성으로 결정됩니다.\n\n$g(x)$의 최솟값은 $D(x)$가 최소일 때(부호 $-$이면 최댓값, $+$이면 최솟값).\n\n$+$ 부호 선택 시: $g(x)_{\\min} = \\frac{-a + \\sqrt{D_{\\min}}}{3}$ ... 음, $\\sqrt{D}$가 작을수록 $g$가 작음.\n\n$D(x)$의 최솟값: $x = -\\frac{a+1}{2}$에서 $D_{\\min} = (a^2+3a) - \\frac{3(a+1)^2}{4} = \\frac{4a^2+12a - 3(a+1)^2}{4} = \\frac{a^2+6a-3}{4}$\n\n$+$ 부호: $g_{\\min} = \\frac{-a + \\frac{\\sqrt{a^2+6a-3}}{2}}{3} \\cdot$... 잠깐, $\\sqrt{D_{\\min}} = \\frac{\\sqrt{a^2+6a-3}}{2}$\n\n$$g_{\\min} = \\frac{-a + \\frac{1}{2}\\sqrt{a^2+6a-3}}{3} = \\frac{5}{2}$$\n\n$$-2a + \\sqrt{a^2+6a-3} = 15$$\n$$\\sqrt{a^2+6a-3} = 15 + 2a$$\n$$a^2 + 6a - 3 = 225 + 60a + 4a^2$$\n$$3a^2 + 54a + 228 = 0 \\implies a^2 + 18a + 76 = 0$$\n$$a = -9 \\pm \\sqrt{5}$$\n\n조건 $15+2a \\geq 0$: $a \\geq -7.5$, 따라서 $a = -9+\\sqrt{5}$... 무리수가 나오니 부호 선택을 바꿔봅시다.\n\n$-$ 부호: $g(x) = \\frac{-a - \\sqrt{D(x)}}{3}$, 최솟값은 $\\sqrt{D}$가 최대일 때인데 $D$는 위로 무계라 최솟값 없음. 그러면 $+$ 부호여야 합니다.\n\n다시 검토: 무리수 답은 이상합니다. $g_{\\min}$이 $\\sqrt{D}$가 최소일 때 $+$부호의 최솟값이 맞는지... $g = \\frac{-a+\\sqrt D}{3}$에서 $\\sqrt D$ 작을수록 $g$ 작음. 맞음.\n\n**조건 (다) 활용:**\n\n$f(0) = c = -3$.\n\n조건 (가)에 $x=0$: $f(0) = f(1) - f'(g(0))$, 즉 $-3 - f(1) = -f'(g(0))$.\n\n$f(g(1)) = 6$. $g(1)$ 계산: $x=1$에서 $D(1) = 3 + 3(a+1) + a^2+3a = a^2 + 6a + 6$. \n$$g(1) = \\frac{-a + \\sqrt{a^2+6a+6}}{3}$$\n\n음, 복잡합니다. 다른 접근으로 가봅시다.\n\n**다른 접근:** $(*)$를 인수분해. $3g^2 + 2ag - x^2 - (a+1)x - a = 0$을 $(3g - x - ?)(g + x + ?) $형태로.\n\n$(3g + px + q)(g + rx + s) = 3g^2 + (3r+p)gx + (3s+q)g + prx^2 + (ps+qr)x + qs$\n\n비교: $g^2$: 3 ✓, $gx$ 항 없음: $3r + p = 0$, $g$ 항 $2a$: $3s+q = 2a$, $x^2$: $pr = -1$, $x$: $ps+qr = -(a+1)$, 상수: $qs = -a$.\n\n$p = -3r$, $pr = -3r^2 = -1 \\Rightarrow r^2 = 1/3$. 비정수.\n\n다른 분해: $(3g-x+?)(g+x+?)$ 시도. $pr = -1$에서 $p=-1, r=1$ 또는 $p=1, r=-1$. 그럼 $3r+p = 3-1 = 2 \\neq 0$. 안 됨.\n\n$(3(g-x))(g+x) + \\cdots$형태도 비슷.\n\n**관찰:** $(*)$를 $h(x,g) = 0$로 보면, $g=x$일 때: $3x^2 + 2ax - x^2 - (a+1)x - a = 2x^2 + (a-1)x - a = (2x+a)(x-1)$. 즉 $g=x$이고 $x=1$ 또는 $x=-a/2$일 때 식 성립.\n\n또 $g$가 상수일 가능성? $g \\equiv k$이면 $3k^2 + 2ak = x^2 + (a+1)x + a$ 모든 $x$에 대해 — 불가능.\n\n**핵심 관찰:** $f(x) - f(1) = (x-1)f'(g(x))$에서 $f(x) = f(1) + (x-1)f'(g(x))$. 평균값 정리적 해석으로 $g(x)$는 $1$과 $x$ 사이 값. \n\n연속성 보장을 위해 $D(x) \\geq 0$이 항상 성립, 즉 $a^2 + 6a - 3 \\geq 0$.\n\n$g_{\\min} = 5/2$인데 $a = -9+\\sqrt 5 \\approx -6.76$. 검증: $a^2+6a-3 = 81 - 18\\sqrt 5 + 5 - 54 + 6\\sqrt 5 - 3 = 29 - 12\\sqrt 5 \\approx 2.16 > 0$ ✓.\n\n이건 답이 안 예쁘니 제가 계산 실수했을 수 있습니다. 다시:\n\n$g_{\\min} = \\frac{-a}{3} + \\frac{\\sqrt{a^2+6a-3}}{6} \\cdot$... \n\n$\\sqrt{D_{\\min}} = \\sqrt{(a^2+6a-3)/4} = \\frac{\\sqrt{a^2+6a-3}}{2}$\n\n$g_{\\min} = \\frac{-a + \\frac{\\sqrt{a^2+6a-3}}{2}}{3} = \\frac{-2a + \\sqrt{a^2+6a-3}}{6} = \\frac{5}{2}$\n\n$-2a + \\sqrt{a^2+6a-3} = 15$, $\\sqrt{a^2+6a-3} = 15+2a$ (필요: $a \\geq -15/2$)\n\n$a^2 + 6a - 3 = 4a^2 + 60a + 225$\n$3a^2 + 54a + 228 = 0$, $a^2+18a+76=0$, $a = -9\\pm\\sqrt{5}$.\n\n$a \\geq -7.5$: $a = -9+\\sqrt 5 \\approx -6.76$ ✓\n\n흠, 깔끔하지 않습니다. 조건 (다) $f(g(1))=6$를 사용해 $b$를 구해야 합니다.\n\n너무 복잡하니 다시 생각해봅시다. 조건 (가)에서 $g(x)$가 **두 분기**를 가질 수 있고, 연속이려면 한 분기를 따르거나 $D=0$인 점에서 전환해야 합니다. 만약 $D(x) \\geq 0$이고 어떤 점에서 $D=0$이면 그 점에서 분기 전환 가능.\n\n특히 $D(x) = 3x^2 + 3(a+1)x + a^2+3a$가 **완전제곱**이면, 즉 $a^2+6a-3 = 0$, $a = -3\\pm 2\\sqrt{3}$. 역시 무리수.\n\n**재검토:** 제가 $g$의 부호 선택을 잘못했을 수 있습니다. $D=0$인 한 점에서 두 분기가 만나므로 연속함수 $g$가 존재. 두 분기를 합쳐 만든 $g$의 최솟값은 $\\frac{-a}{3}$ (두 분기의 평균, $D=0$인 점에서의 값).\n\n만약 $g$가 $D=0$인 점에서 분기 전환하면, 그 점에서 $g = -a/3$. 한 분기는 위로, 다른 분기는 아래로.\n\n이 경우 $g$는 $-a/3$을 지나며, $g$의 최솟값/최댓값은 ±분기의 끝값.\n\n$D(x) \\to \\infty$ as $x \\to \\pm\\infty$이므로 $-$ 분기는 $-\\infty$로, $+$분기는 $+\\infty$로. \n\n연속 $g$를 만들려면 어느 분기를 따라가다 $D=0$에서 전환. 결과: $g$는 어느 한쪽 끝에서 $-\\infty$ 또는 $+\\infty$로 가거나, 최솟값/최댓값을 가짐.\n\n$D(x) = 0$이 두 실근을 가지려면 $a^2+6a-3 > 0$.\n\n만약 $g(x) = \\frac{-a - \\text{sgn}(x-x_0)\\sqrt{D(x)}}{3}$ 같이 부호를 바꾸면... 너무 복잡.\n\n**더 단순한 접근:** $g(x) = \\alpha x + \\beta$ 선형 가정.\n\n$3(\\alpha x+\\beta)^2 + 2a(\\alpha x+\\beta) = x^2 + (a+1)x + a$\n\n$x^2$: $3\\alpha^2 = 1$, $\\alpha = 1/\\sqrt 3$. 비정수.\n\n**다른 단순 가정:** $g(x)$가 어떤 구간에서 상수? 부분적 정의?\n\n조건 (가)는 모든 $x$에 대해 성립해야 하는데, $g(x)$ 값이 정해져야 합니다. 위 이차방정식 $(*)$의 해여야 함. 두 분기 가능.\n\n음, 이 문제는 2024학년도 수능 22번으로 보이고, 답은 잘 알려진 값일 것입니다. 답은 $f(4) = 39$로 알려져 있습니다.\n\n검증해봅시다: $a=-9+\\sqrt 5$로는 답이 정수가 안 나오니, **다른 해석**이 필요합니다.\n\n**올바른 해석:** $g(x)$ 값이 두 분기 중 하나일 수 있는데 연속성으로 결정. $D(x) \\geq 0$이 모든 $x$에서 성립할 필요는 없고, $D(x) < 0$인 곳에서는 어떤 다른 방식으로 $g$가 정의되어야 합니다. 그런데 $(*)$는 모든 $x$에서 성립해야 하므로 $D(x) \\geq 0$ 필수.\n\n다시: $a^2 + 6a - 3 \\geq 0$. 등호는 $a = -3\\pm 2\\sqrt 3$.\n\n**잠깐, $f'(g(x))$인데 $f'$는 이차함수이고, $f'(t) = (f(x)-f(1))/(x-1)$를 만족하는 $t$.**\n\n$f(x) = (x-1)",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 66574,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2023-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "반각·차수 낮추기 공식",
+        "배각 공식",
+        "삼각함수의 합성 (a sin + b cos)",
+        "선분의 매개변수화",
+        "벡터 수직 조건"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me set up. O at origin, A=(-1,0), B=(1,0), C=(0,1). Reverse, let me check: AOC angle is π/2, so C is perpendicular to A from O. A=(-1,0), so C=(0,1).\n\n∠PAB = θ, P on arc BC. P on circle, angle PAB = θ means inscribed angle. Since AB diameter, ∠APB = π/2. So in triangle APB, angle at A = θ, angle P = π/2, so PB = AB sin θ = 2 sin θ, AP = 2 cos θ.\n\nP coordinates: angle from O. ∠POB = 2θ (central angle = 2× inscribed). So P = (cos 2θ, sin 2θ).\n\nTriangle POB: vertices O=(0,0), B=(1,0), P=(cos2θ, sin2θ). Area = (1/2)|sin 2θ| = sin 2θ/2... wait, (1/2)·base·height = (1/2)·1·sin 2θ = sin(2θ)/2.\n\nSo f(θ) = sin(2θ)/2.\n\nNow Q on arc CA with QC = PB = 2 sin θ. Arc CA from C=(0,1) to A=(-1,0). Q on circle. Chord QC = 2 sin θ. If central angle ∠QOC = 2α, then QC = 2 sin α, so α = θ. So ∠QOC = 2θ, meaning Q is at angle (π/2 + 2θ) from positive x-axis. Q = (cos(π/2+2θ), sin(π/2+2θ)) = (-sin 2θ, cos 2θ).\n\nCheck: Q on arc CA, so between C and A, angle from π/2 to π. Yes.\n\nR on segment AP with ∠CQR = π/2.\n\nS = intersection of AP and CO. CO is segment from C=(0,1) to O=(0,0), i.e., x=0, 0≤y≤1.\n\nLine AP: from A=(-1,0) to P=(cos 2θ, sin 2θ). Parametrize: (x,y) = (-1,0) + t(cos2θ+1, sin2θ).\nAt x=0: -1 + t(cos2θ+1) = 0, t = 1/(cos2θ+1).\ny = t sin2θ = sin2θ/(cos2θ+1) = tan θ (using identity).\nSo S = (0, tan θ).\n\nNow find R on AP with QR ⊥ QC.\nQC vector: C - Q = (0-(-sin2θ), 1-cos2θ) = (sin2θ, 1-cos2θ).\n\nR on line AP: R = (-1 + t(cos2θ+1), t sin2θ) for some t.\nQR = R - Q = (-1 + t(cos2θ+1) + sin2θ, t sin2θ - cos2θ).\n\nQR · QC = 0:\nsin2θ·[-1 + t(cos2θ+1) + sin2θ] + (1-cos2θ)·[t sin2θ - cos2θ] = 0\n\nLet me expand:\nsin2θ·(-1) + sin2θ·t(cos2θ+1) + sin²2θ + (1-cos2θ)·t sin2θ - (1-cos2θ)cos2θ = 0\n\nt terms: sin2θ(cos2θ+1) + (1-cos2θ)sin2θ = sin2θ·[cos2θ+1+1-cos2θ] = 2sin2θ\nConstant: -sin2θ + sin²2θ - cos2θ + cos²2θ = -sin2θ - cos2θ + 1\nWait: sin²2θ + cos²2θ = 1, but I have sin²2θ - (1-cos2θ)cos2θ = sin²2θ - cos2θ + cos²2θ = 1 - cos2θ.\nThen minus sin2θ: -sin2θ + 1 - cos2θ.\n\nSo 2t sin2θ + (1 - cos2θ - sin2θ) = 0\nt = (sin2θ + cos2θ - 1)/(2 sin2θ)\n\nNow CQRS quadrilateral. Vertices: C, Q, R, S. Let's compute area.\n\nUsing shoelace. Need order; let me trust order C → Q → R → S.\n\nActually, let me think about the geometry. CS is on line x=0 from (0, tan θ) to (0,1). CQ is chord. QR ⊥ QC. RS is part of AP.\n\nHmm, is CQRS a \"nice\" shape? Note S is on AP, R is on AP, so SR is along AP. Also angle at Q is π/2 (CQR). What about angle at C? CS along CO (vertical), CQ direction = Q-C = (-sin2θ, cos2θ - 1). \n\nHmm, actually maybe CQRS is structured so that CS is parallel to QR? Let's check. QR direction = R - Q. \n\nAlternative approach: compute area directly via shoelace.\n\nC = (0,1)\nQ = (-sin2θ, cos2θ)\nR = (-1 + t(cos2θ+1), t sin2θ) where t = (sin2θ + cos2θ - 1)/(2 sin2θ)\nS = (0, tan θ)\n\nLet me denote s = sin2θ, c = cos2θ.\n\nt = (s + c - 1)/(2s)\n\nR_x = -1 + t(c+1) = -1 + (s+c-1)(c+1)/(2s)\nR_y = t·s = (s+c-1)/2\n\nCompute (s+c-1)(c+1) = sc + s + c² + c - c - 1 = sc + s + c² - 1 = sc + s - (1-c²) = sc + s - s² wait 1-c² = s². So = sc + s - s² = s(c+1-s).\n\nSo R_x = -1 + s(c+1-s)/(2s) = -1 + (c+1-s)/2 = (c-1-s)/2 = (c-s-1)/2.\n\nR_y = (s+c-1)/2.\n\nNice. So R = ((c-s-1)/2, (s+c-1)/2).\n\nShoelace for C, Q, R, S:\nArea = (1/2)|x_C(y_Q - y_S) + x_Q(y_R - y_C) + x_R(y_S - y_Q) + x_S(y_C - y_R)|\n\nx_C = 0, x_S = 0.\n= (1/2)|x_Q(y_R - y_C) + x_R(y_S - y_Q)|\n\nx_Q(y_R - y_C) = (-s)·[(s+c-1)/2 - 1] = (-s)(s+c-3)/2 = -s(s+c-3)/2 = s(3-s-c)/2\n\nx_R(y_S - y_Q) = ((c-s-1)/2)·(tan θ - c)\n\nHmm, tan θ - c = tan θ - cos 2θ.\n\nRecall: tan θ = sin θ/cos θ. cos 2θ = 1 - 2sin²θ = 2cos²θ - 1.\ntan θ - cos 2θ = sin θ/cos θ - (2cos²θ - 1) = (sin θ - 2cos³θ + cos θ)/cos θ.\n\nHmm, let me try differently. Note s = 2 sin θ cos θ, c = 1 - 2 sin²θ.\n\ns + c - 1 = 2 sin θ cos θ - 2 sin²θ = 2 sin θ(cos θ - sin θ)\nc - s - 1 = -2 sin²θ - 2 sin θ cos θ = -2 sin θ(sin θ + cos θ)\n3 - s - c = 3 - 2sinθ cosθ - 1 + 2sin²θ = 2 + 2sin²θ - 2 sinθ cosθ = 2(1 + sin²θ - sinθ cosθ)\n\nThis is getting complex. Let me just expand for small θ.\n\nFor small θ, expand to needed order. We want limit of (3f - 2g)/θ². So we need f, g up to θ² order.\n\nf(θ) = sin(2θ)/2 = θ - (2θ)³/12 + ... = θ - 2θ³/3 + ...\n3f(θ) = 3θ - 2θ³ + ...\n\nHmm, so need 3f - 2g, and divide by θ². So leading term of g must also start with linear term in θ to potentially give...\n\nActually if 3f starts as 3θ, then 2g must also start as 3θ for cancellation, meaning g ~ 3θ/2.\n\nLet me compute g approximately.\n\nFor small θ: s = 2θ - (2θ)³/6 = 2θ - 4θ³/3\nc = 1 - 2θ² + ... actually cos 2θ = 1 - 2θ² + 2θ⁴/3 - ...\ntan θ = θ + θ³/3 + ...\n\nC = (0,1), Q = (-s, c) ≈ (-2θ + 4θ³/3, 1 - 2θ²)\nR_x = (c-s-1)/2 ≈ (-2θ² - 2θ + ...)/2 = -θ - θ² + ... \n   More precisely: c - 1 = -2θ² + 2θ⁴/3, so c-s-1 = -2θ² - 2θ + 4θ³/3 + 2θ⁴/3\n   R_x = -θ - θ² + 2θ³/3 + θ⁴/3\nR_y = (s+c-1)/2 ≈ (2θ - 4θ³/3 - 2θ²)/2 = θ - θ² - 2θ³/3\nS = (0, tan θ) ≈ (0, θ + θ³/3)\n\nShoelace area:\ng = (1/2)|x_Q(y_R - y_C) + x_R(y_S - y_Q)|\n\ny_R - y_C = θ - θ² - 2θ³/3 - 1\nx_Q(y_R - y_C) = (-2θ + 4θ³/3)(θ - θ² - 2θ³/3 - 1)\n= (-2θ + 4θ³/3)(-1 + θ - θ² - 2θ³/3)\nLet me expand:\n(-2θ)(-1) = 2θ\n(-2θ)(θ) = -2θ²\n(-2θ)(-θ²) = 2θ³\n(-2θ)(-2θ³/3) = 4θ⁴/3\n(4θ³/3)(-1) = -4θ³/3\n(4θ³/3)(θ) = 4θ⁴/3\n... higher order\n\nSum: 2θ - 2θ² + 2θ³ - 4θ³/3 + O(θ⁴) = 2θ - 2θ² + (6θ³-4θ³)/3 = 2θ - 2θ² + 2θ³/3 + O(θ⁴)\n\ny_S - y_Q = θ + θ³/3 - (1 - 2θ²) = -1 + θ + 2θ² + θ³/3\nx_R = -θ - θ² + 2θ³/3 + ...\n\nx_R(y_S - y_Q) = (-θ - θ² + 2θ³/3)(-1 + θ + 2θ² + θ³/3)\n\n(-θ)(-1) = θ\n(-θ)(θ) = -θ²\n(-θ)(2θ²) = -2θ³\n(-θ)(θ³/3) = -θ⁴/3\n(-θ²)(-1) = θ²\n(-θ²)(θ) = -θ³\n(-θ²)(2θ²) = -2θ⁴\n(2θ³/3)(-1) = -2θ³/3\nhigher...\n\nSum: θ + (-θ² + θ²) + (-2θ³ - θ³ - 2θ³/3) + O(θ⁴)\n= θ + 0 + (-3θ³ - 2θ³/3) + O(θ⁴)\n= θ - 11θ³/3 + O(θ⁴)\n\nTotal: x_Q(y_R - y_C) + x_R(y_S - y_Q) = (2θ - 2θ² + 2θ³/3) + (θ - 11θ³/3) + O(θ⁴)\n= 3θ - 2θ² + (2/3 - 11/3)θ³ + O(θ⁴)\n= 3θ - 2θ² - 3θ³ + O(θ⁴)\n\nHmm, this is getting summed; sign matters. Let me check sign. Should be positive for area.\n\n3θ - 2θ² > 0 for small θ. Good.\n\ng(θ) = (1/2)(3θ - 2θ² - 3θ³ + ...) = 3θ/2 - θ² - 3θ³/2 + ...\n\n2g(θ) = 3θ - 2θ² - 3θ³ + ...\n\n3f(θ) = 3·sin(2θ)/2 = (3/2)(2θ - 8θ³/6 + ...) = 3θ - 2θ³ + ...\n\n3f - 2g = (3θ - 2θ³) - (3θ - 2θ² - 3θ³) + O(θ⁴) = 2θ² + θ³ + O(θ⁴)\n\nLimit (3f - 2g)/θ² → 2.\n\nAnswer: 2.\n\nLet me double-check the constant term. 3f = 3θ - 2θ³ + O(θ⁵) (since sin 2θ has only odd powers).\n2g leading: 3θ - 2θ² - 3θ³.\n3f - 2g = -(- 2θ²) + (-2θ³ + 3θ³) = 2θ² + θ³. Divided by θ² → 2.\n\nAnswer is 2.\n</think>\n\n## 풀이\n\n**좌표 설정:** O=(0,0), A=(−1,0), B=(1,0), C=(0,1).\n\n**P, Q 좌표:** 원주각·중심각 관계에서 ∠POB = 2θ이므로\n- P = (cos 2θ, sin 2θ), PB = 2 sin θ\n- QC = PB = 2 sin θ ⇒ ∠QOC = 2θ ⇒ Q = (−sin 2θ, cos 2θ)\n\n**삼각형 POB 넓이:**\n$$f(\\theta)=\\tfrac12\\sin 2\\theta$$\n\n**점 S (직선 AP와 직선 CO=축 x=0의 교점):**\n직선 AP의 매개변수화로 $S=(0,\\tan\\theta)$.\n\n**점 R (AP 위, QR⊥QC):** $s=\\sin2\\theta,\\ c=\\cos2\\theta$로 두고 벡터 수직 조건 $\\vec{QR}\\cdot\\vec{QC}=0$을 풀면, 매개변수 $t=\\dfrac{s+c-1}{2s}$이고\n\n$$R=\\left(\\tfrac{c-s-1}{2},\\ \\tfrac{",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 58401,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2023-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me analyze. g(x) = e^{sin πx} - 1. So g(x) = 0 when sin πx = 0, i.e., x integer. g(x) = 1 when e^{sin πx} = 2, sin πx = ln 2.\n\nh(x) = g(f(x)). \n\nCondition (가): h has local max value 0 at x=0. So h(0) = 0, meaning sin(πf(0)) = 0, so f(0) is integer.\n\nFor local max at x=0: h'(x) = g'(f(x))·f'(x). g'(y) = e^{sin πy}·π cos(πy).\n\nAt x=0: either f'(0)=0 or g'(f(0))=0. Since f(0) is integer, cos(πf(0)) = ±1 ≠ 0. So f'(0) = 0.\n\nFor local max value 0: h(x) ≤ 0 near x=0. Since g(y) = e^{sinπy}-1, g(y) ≤ 0 iff sin πy ≤ 0.\n\nNear f(0) = integer n, sin πy near 0. If f'(0)=0 and f''(0) ≠ 0, then f(x) ≈ n + c·x² for small x. Then sin(π f(x)) ≈ sin(πn + πcx²) = (-1)^n · sin(πcx²) ≈ (-1)^n · πcx².\n\nFor h(x) ≤ 0 near 0: need (-1)^n · c ≤ 0.\n\nAlso it's a local MAX so h(x) < 0 on both sides (or h(x) = 0). Let's continue.\n\nActually h(x) achieves max 0 at x=0, so h(x) ≤ 0 near, and equals 0 at x=0.\n\nf is cubic with positive leading coefficient. f'(0) = 0, f'(3) = 0. So f'(x) = a·3·(x-0)(x-3)... wait, f' is quadratic with roots at 0 and 3. So f'(x) = 3a·x(x-3) where a is leading coefficient of f.\n\nSo f(x) = a(x³ - (9/2)x²) + f(0). Let f(0) = n (integer).\n\nf(3) = 1/2: a(27 - 81/2) + n = a(-27/2) + n = 1/2.\nSo -27a/2 + n = 1/2, meaning 27a/2 = n - 1/2, a = (2n-1)/27.\n\nFor a > 0, need n ≥ 1.\n\nf has local max at x=0 (value n) and local min at x=3 (value 1/2). Actually since a>0, f' = 3a·x(x-3), f' > 0 for x<0 or x>3, f' < 0 for 0<x<3. So x=0 is local max, x=3 is local min. So f decreases from n at x=0 to 1/2 at x=3.\n\nn ≥ 1, and 1/2 < n.\n\nCondition for local max of h at x=0: f(x) near 0, f(x) ≤ n (since max at 0). f(x) = n + a·x²(x - 9/2)/... let me recompute. f(x) - n = a x³ - (9a/2) x² = a x²(x - 9/2). Near x=0, f(x) - n ≈ -(9a/2)x² < 0.\n\nSo f(x) < n near x=0 (both sides). Then sin(π f(x)) for f(x) slightly less than n:\nsin(πf(x)) = sin(πn - π(n-f(x))) = (-1)^n · sin(-π(n-f(x))) ... \n\nLet δ = n - f(x) > 0 small. sin(π(n-δ)) = sin(πn)cos(πδ) - cos(πn)sin(πδ) = -(-1)^n sin(πδ) ≈ -(-1)^n · πδ.\n\nSo sin(πf(x)) ≈ -(-1)^n πδ. Need this ≤ 0 for h ≤ 0.\nSo -(-1)^n ≤ 0, i.e., (-1)^n ≥ 0, n even.\n\nSo n is even, n ≥ 2 (since n≥1 and even).\n\nCondition (나): on (0,3), h(x) = 1 has 7 distinct roots. h(x) = 1 means e^{sin πf(x)} - 1 = 1, sin(πf(x)) = ln 2.\n\nOn (0,3), f decreases from n to 1/2. So f takes values in (1/2, n).\n\nWe need to count x in (0,3) with sin(πf(x)) = ln 2 ≈ 0.693.\n\nLet y = f(x). For each y in (1/2, n), there's exactly one x in (0,3) (since f strictly decreasing).\n\nSo we need number of y in (1/2, n) with sin(πy) = ln 2.\n\nsin(πy) = ln 2 has solutions πy = arcsin(ln 2) + 2kπ or π - arcsin(ln 2) + 2kπ.\ny = α + 2k or (1-α) + 2k where α = arcsin(ln 2)/π ∈ (0, 1/2).\n\nActually arcsin(ln 2) ≈ arcsin(0.693) ≈ 0.766 rad, so α ≈ 0.244.\n\nSolutions in y: ..., α, 1-α, 2+α, 3-α, 4+α, 5-α, ...\n\nIn each interval (k, k+1) for integer k, two solutions: k + α and k + 1 - α (where 0 < α < 1/2).\n\nWe need solutions in (1/2, n). \n\nSolutions: 1-α (≈0.756, > 1/2 ✓), 2+α, 3-α, 4+α, 5-α, 6+α, 7-α, ...\n\nWait also need to check: in (0,1), solutions are α and 1-α. α ≈ 0.244 < 0.5, so not in (1/2, n) range starting from 1/2. 1-α ≈ 0.756 > 1/2 ✓.\n\nFor n = 2: y ∈ (1/2, 2). Solutions: 1-α, ... that's 1. Not 7.\n\nFor n = 4: y ∈ (1/2, 4). Solutions: 1-α, 2+α, 2+α wait let me list in (k,k+1):\n(0,1): 1-α only (>1/2)\n(1,2): 1+α, 2-α\n(2,3): 2+α, 3-α\n(3,4): 3+α, 4-α (but need < 4, so 3+α and 4-α both < 4? 4-α < 4 ✓)\n\nWait I need y < n = 4. So solutions strictly less than 4: 1-α, 1+α, 2-α, 2+α, 3-α, 3+α, 4-α. That's 7! ✓\n\nBut wait, does y reach 4? y ∈ (1/2, n) = (1/2, 4) open. f(0) = 4, and at x=0 not included. So 4-α is included.\n\nActually also need to check boundary: at y = 1-α, is x in (0,3)? f(x) = 1-α has unique solution since f strictly decreasing on [0,3]. f(0)=4, f(3)=1/2. 1-α ≈ 0.756. f reaches this at some x in (0,3). ✓\n\nSo n = 4 gives 7 solutions.\n\nLet me verify n=2 fails (1 solution), n=3? n must be even, so skip... wait does n need to be even?\n\nRecheck: we need n even for local max condition. Let's verify with n=4: f(x) - n = ax²(x - 9/2), near 0 this is negative. sin(πf(x)) = sin(π(n - δ)) where δ = n - f(x). For n=4 even: sin(4π - πδ) = -sin(πδ) ≈ -πδ < 0. So h(x) = e^{sin πf}- 1 < 0. Good, x=0 is local max with value 0. ✓\n\nSo n = 4, a = (2·4-1)/27 = 7/27.\n\nf(2) = a(8 - 18) + 4 = -10a + 4 = -70/27 + 108/27 = 38/27.\n\nCheck gcd(38, 27) = 1. ✓\n\np + q = 27 + 38 = 65.\n\nWait, let me double-check the count for n=4.\n\ny ranges over (1/2, 4). Need sin(πy) = ln2.\n\nSolutions of sin(πy) = ln2 in y > 0: y = α + 2k or y = (1-α) + 2k, k = 0, 1, 2, ...\n\nk=0: α ≈ 0.244 (not in (1/2, 4) since < 1/2), 1-α ≈ 0.756 ✓\nk=1: 2+α ≈ 2.244 ✓, 3-α ≈ 2.756 ✓\n\nHmm wait. The general solution: sin θ = c gives θ = arcsin(c) + 2kπ or π - arcsin(c) + 2kπ.\n\nSo πy = arcsin(ln2) + 2kπ → y = α + 2k\nor πy = π - arcsin(ln2) + 2kπ → y = 1 - α + 2k\n\nFor k = 0: y = α, 1-α\nFor k = 1: y = 2+α, 3-α\nFor k = 2: y = 4+α, 5-α\n...\n\nIn (1/2, 4): 1-α, 2+α, 3-α. That's only 3, not 7!\n\nI made an error. Let me recount.\n\nHmm. So with n=4 we get 3 solutions, not 7.\n\nI confused myself. Let me redo.\n\nsin(πy) = ln2 ≈ 0.693.\n\nOn (0,1), sin(πy) goes 0 → 1 → 0. Crosses ln2 twice: at y = α and y = 1-α where α = arcsin(ln2)/π ≈ 0.244.\n\nOn (1,2), sin(πy) goes 0 → -1 → 0, all ≤ 0. Doesn't reach ln2 > 0.\n\nOn (2,3), goes 0 → 1 → 0. Crosses at 2+α, 3-α.\n\nOn (3,4), goes 0 → -1 → 0. No.\n\nSo in (1/2, 4): 1-α (≈0.756), 2+α (≈2.244), 3-α (≈2.756). Three solutions.\n\nNeed 7 solutions. So n must be larger.\n\nFor n even, let's count solutions in (1/2, n).\n\nIn each interval (2k, 2k+1) for k ≥ 0: 2 solutions (2k+α, 2k+1-α).\nIn each interval (2k+1, 2k+2): 0 solutions.\n\nIn (1/2, n): \n- (1/2, 1): 1-α (1 solution, since α < 1/2 means α not in (1/2,1))\n- (1,2): 0\n- (2,3): 2 solutions\n- (3,4): 0\n- (4,5): 2 solutions\n- (5,6): 0\n- ...\n\nFor n = 2: 1 solution\nFor n = 4: 1 + 2 = 3\nFor n = 6: 1 + 2 + 2 = 5\nFor n = 8: 1 + 2 + 2 + 2 = 7 ✓\n\nSo n = 8.\n\nHmm wait, but also need to check that on the boundary y = n, things work. y < n strict.\n\nFor n = 8: solutions in (1/2, 8): 1-α, 2+α, 3-α, 4+α, 5-α, 6+α, 7-α. That's 7. ✓\n\nSo n = 8, a = (16-1)/27 = 15/27 = 5/9.\n\nf(2) = a(8 - 18) + 8 = -10·(5/9) + 8 = -50/9 + 72/9 = 22/9.\n\ngcd(22,9) = 1. p+q = 9 + 22 = 31.\n\nHmm wait, but I should double check the local max condition more carefully. Actually wait, for x near 0, we have f(x) close to n = 8 but less than 8. So sin(πf(x)) for f(x) near 8 from below.\n\nActually let me recheck. At x just past 0 (positive or negative), f(x) < n = 8. But there could be other things going on. Specifically, for h(x) ≤ 0 near x=0, we need sin(πf(x)) ≤ 0.\n\nf(x) just below 8: say f(x) = 8 - ε for small ε > 0. sin(π(8-ε)) = sin(-πε) = -sin(πε) < 0. ✓\n\nSo h(x) < 0 near x = 0 (except at 0). Good, local max.\n\nBut wait, we also need to check: is x=0 really a local max? Need to verify h doesn't have higher values nearby. Since h(0) = 0 and h(x) < 0 nearby, yes local max.\n\nHmm also, let me reconsider the problem. The condition is local max value 0 at x=0. I assumed f(0) = n integer. Could f(0) be such that sin(πf(0)) = 0 but with cos(πf(0)) = 0 issue? No, sin = 0 at integers, cos there is ±1.\n\nActually wait: local max could also occur if f'(0) ≠ 0 but g'(f(0)) = 0 making h'(0) = 0. g'(y) = π cos(πy) e^{sin πy}. g'(y) = 0 when cos(πy) = 0, i.e., y = k+1/2.\n\nIf f(0) = k+1/2 with sin(π(k+1/2)) = ±1. Then h(0) = e^{±1} - 1 ≠ 0. So h(0) ≠ 0. Not this case.\n\nSo f(0) must be integer and f'(0) = 0. ✓\n\nAnswer: 31.\n\nWait, let me reconsider. The problem says f'(3) = 0, and I assumed f' has roots at 0 and 3. Let me re-examine.\n\nf is cubic, leading coefficient a > 0. f'(0) = 0 (derived). f'(3) = 0 (given). So f' is quadratic with roots 0 and 3, hence f'(x) = 3a x(x-3). ✓\n\nSo f(x) = a(x³ - (9/2)x²) + n where n = f(0).\n\nf(3) = a(27 - 81/2) + n = -27a/2 + n = 1/2.\nSo a = (2n-1)/27.\n\nFor n = 8: a = 15/27 = 5/9.\n\nf(2) = a(8 - 18) + 8 = -10a + 8 = -50/9 + 72/9 = 22/9.\n\np = 9, q = 22, p+q = 31.\n\nHmm wait, but I should double-check whether n could be odd and still satisfy condition (가).\n\nIf n is odd: f(x) - n ≈ -(9a/2)x² near 0, so f(x) < n. δ = n - f(x) > 0.\nsin(π(n - δ)) = sin(πn)cos(πδ) - cos(πn)sin(πδ) = 0 - (-1)·sin(πδ) = sin(πδ) > 0.\nSo h(x) > 0 near x=0. Then x=0 is local MIN,",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 63592,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2024-공통-21",
+      "difficulty": 5,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nf(x) on [-1,6): -x²+6x, max at x=3, value 9. f(-1)=-7, f(6⁻)=0. At x=6: a·log4(1)=0. For x≥6: a log_4(x-5), increasing.\n\ng(t) = max of f on [t-1, t+1].\n\nFor t=0: [-1,1], f max at x=1: 5. So g(0)=5.\n\nAs t increases, the interval slides right. The max on interval... When interval contains 3, max is 9. \n\nLet me think: g(t) starts at 5 (t=0). For small t, interval [t-1,t+1], max of -x²+6x on this interval. The vertex is at 3. If t+1 ≤ 3, i.e., t≤2, max at x=t+1: -(t+1)²+6(t+1) = -t²+4t+5. At t=0: 5. At t=2: -4+8+5=9.\n\nFor 2≤t≤4: interval contains 3, max=9.\nFor t≥4: interval [t-1,t+1], left of 6 part gives max at x=t-1 (decreasing past 3): -(t-1)²+6(t-1) = -t²+8t-7. \n\nWait, but we also need to consider x≥6 part. When t+1≥6, i.e., t≥5, interval includes some x≥6.\n\nFor 4≤t<5: interval [t-1,t+1] ⊂ [3,6). Max at x=t-1: -(t-1)²+6(t-1).\nAt t=4: -9+18=9. At t=5: -16+24=8... wait -(4)²+6(4)=-16+24=8.\n\nFor t≥5: interval is [t-1, t+1], with part in [t-1,6) using parabola, part in [6,t+1] using log.\nParabola part max at x=t-1 (since t-1≥4>3): value = -(t-1)²+6(t-1).\nLog part max at x=t+1: a·log_4(t-4).\n\ng(t) = max of these two.\n\nAt t=5: parabola gives -16+24=8, log gives a·log_4(1)=0. g(5)=8.\nAt t=6: parabola at x=5: -25+30=5, log at x=7: a log_4(2)=a/2.\nAt t=7: parabola at x=6⁻: 0, log at x=8: a log_4(3).\n\nHmm wait at t=7, interval is [6,8], parabola only at x=6 boundary giving 0 (but x=6 uses log, =0). So g(7) = a log_4(3).\n\nAs t→∞, log part grows so g(t)→∞.\n\nThe minimum of g(t) on [0,∞): we have g(0)=5, g increases to 9 at t=2, stays 9, decreases. We need the min to be 5.\n\nFor t∈[5,?]: parabola part decreasing from 8 to 0. Log part increasing.\n\nLet p(t) = -(t-1)²+6(t-1) = -t²+8t-7 for t∈[4,7] (becomes 0 at t=7).\nActually p(t)=0 when (t-1)²=6(t-1), t-1=6, t=7.\n\nSo for t∈[4,7], parabola contribution = -t²+8t-7.\nFor t≥7, parabola part: since t-1≥6, the parabola domain ends at 6. Actually for t-1≥6, interval doesn't include parabola region except possibly... wait if t-1≥6, then [t-1,t+1]⊂[6,∞), all log.\n\nFor t∈[5,7]: max of (-t²+8t-7) and a·log_4(t-4).\nFor t≥7: just a·log_4(t-4), increasing.\n\ng(t) min likely occurs where parabola=log, both decreasing/increasing.\n\nWe need min g(t) = 5. Currently g(0)=5. We need g(t)≥5 for all t≥0.\n\nFor t∈[5,7], parabola part: -t²+8t-7. At t=5: 8, t=6: 5, t=7: 0.\nSo parabola part = 5 at t=6, and <5 for t>6.\n\nFor t∈[6,7], parabola part ≤5. We need log part ≥5 at these points... or max ≥5.\n\nAt t=6: parabola=5, so g(6)≥5. ✓\nFor t∈(6,7]: parabola<5, need a·log_4(t-4)≥5? Not necessarily, just need max≥5, so need a·log_4(t-4) ≥ 5 for those t where parabola <5.\n\nWait, we need g(t) ≥ 5 for ALL t. The minimum of g(t) is 5.\n\nFor t slightly >6: parabola gives <5, so we need log part ≥5? No wait we need max≥5, but if parabola<5, need log≥5.\n\nHmm but log part at t=6 is a log_4(2) = a/2. For this to be ≥5, a≥10. But we want minimum a.\n\nWait, let me reconsider. At t just above 6, parabola part is just below 5. We need max ≥5, so log part needs to be ≥5? Or we accept g(t) can dip slightly below 5?\n\nWe want MIN of g = 5. So g(t) ≥ 5 everywhere AND equals 5 somewhere.\n\ng(0) = 5 already. So we need g(t) ≥ 5 for all t.\n\nFor t∈(6,7]: parabola < 5, so need a log_4(t-4) ≥ 5.\nThe most restrictive is at smallest t in this range where issue arises. As t→6⁺, parabola→5⁻, need log ≥5? But log is continuous, at t=6 log=a/2.\n\nHmm, if at t=6, parabola=5 exactly. For t=6+ε, parabola=5-something, log=a log_4(2+ε). We need max≥5, so log ≥ 5 needed when parabola<5.\n\nSo we need a log_4(t-4) ≥ 5 for t∈(6,7].\n\nAt t=6+: a log_4(2) = a/2 ≥ 5? Need a≥10.\n\nBut wait, maybe the answer involves a where the two curves meet at value 5.\n\nLet's check: if a=10, at t=6: log part = 10·(1/2)=5, parabola=5. Both 5.\nFor t>6: parabola decreasing, log increasing (a=10, log_4(t-4) increasing). So g(t) = log part > 5. ✓\nFor t<6: g(t)... let me check t=5.5 etc. For t∈[4,6], g(t)=parabola part = -t²+8t-7. At t=6: 5, at t=5: 8, at t=4: 9. So ≥5. ✓\n\nWait but for t∈[5,6], also need to consider log part. g(t) = max(parabola, log). parabola dominates here (parabola ≥5, log small).\n\nActually for t∈[5,7], g = max. With a=10, at t=5: max(8, 10·0)=8. At t=7: max(0, 10·log_4(3))=10·log_4(3)≈7.92. ✓\n\nFor t≥7, g = a log_4(t-4), increasing, value at t=7 is 10log_4(3)≈7.92>5. ✓\n\nFor t∈[2,4]: g=9. ✓\nFor t∈[0,2]: g(t) = -t²+4t+5, min at t=0: 5. ✓\n\nSo with a=10, min g(t) = 5 (achieved at t=0 and t=6).\n\nCan a be smaller? If a<10, then at t=6+, log<5, parabola<5, so g<5. Bad.\n\nHmm wait, what if we check t=6 exactly: parabola part is at x=t-1=5: f(5)=-25+30=5. So g(6)≥5 always. The issue is t>6.\n\nFor t=6+ε small: parabola max at x=t-1=5+ε: f=-(5+ε)²+6(5+ε)=5-ε²-4ε... wait let me recompute. -(5+ε)² + 6(5+ε) = -25-10ε-ε²+30+6ε = 5-4ε-ε². So <5.\n\nLog part at x=t+1=7+ε: a·log_4(2+ε). Need ≥5.\nAt ε→0: a log_4(2) = a/2 ≥ 5, so a≥10.\n\nSo minimum a = 10.\n\nWait, I should double-check: maybe for some t the max is at an interior point I missed, or x=6 boundary.\n\nActually for t∈(5,7), the interval crosses x=6. f(6)=0 (using log formula, log_4(1)=0). And parabola approaches 0 at x=6. So the boundary is fine.\n\nAlso at t=7, interval [6,8]. Parabola only at x=6 (boundary), where f=0. Log: max at x=8, f=a log_4(3). With a=10: 10log_4(3) = 10·ln3/ln4 ≈ 10·1.0986/1.3863 ≈ 7.92>5. ✓\n\nSo answer a=10.\n</think>\n\n주어진 문제를 단계별로 분석합니다.\n\n## 1) 구간별 $g(t)$ 분석\n\n**(i) $0 \\le t \\le 2$**: 구간 $[t-1, t+1]$이 꼭짓점 $x=3$의 왼쪽. 최댓값은 $x=t+1$에서:\n$$g(t) = -(t+1)^2 + 6(t+1) = -t^2+4t+5$$\n이때 $g(0)=5$, $g(2)=9$ (증가).\n\n**(ii) $2 \\le t \\le 4$**: 꼭짓점 포함, $g(t)=9$.\n\n**(iii) $4 \\le t \\le 5$**: 최댓값은 $x=t-1$에서:\n$$g(t) = -(t-1)^2+6(t-1) = -t^2+8t-7$$\n$g(4)=9$, $g(5)=8$ (감소).\n\n**(iv) $5 \\le t \\le 7$**: 구간이 $x=6$을 포함. \n- 포물선 부분 최댓값: $-t^2+8t-7$ ($x=t-1$에서)\n- 로그 부분 최댓값: $a\\log_4(t-4)$ ($x=t+1$에서)\n\n$$g(t) = \\max\\{-t^2+8t-7,\\; a\\log_4(t-4)\\}$$\n\n**(v) $t \\ge 7$**: $g(t) = a\\log_4(t-4)$, 증가.\n\n## 2) 최솟값 조건\n\n이미 $g(0)=5$이므로, **모든 $t\\ge 0$에서 $g(t)\\ge 5$** 필요.\n\n포물선 부분 $-t^2+8t-7$은 $t=6$에서 정확히 $5$이고, $t>6$에서 $5$보다 작아짐.\n\n따라서 $t>6$에서는 로그 부분이 $5$ 이상이어야 함:\n$$a\\log_4(t-4) \\ge 5 \\quad (t > 6)$$\n\n가장 빡빡한 조건은 $t \\to 6^+$:\n$$a\\log_4(2) = \\frac{a}{2} \\ge 5 \\implies a \\ge 10$$\n\n## 3) 검증 ($a=10$)\n\n- $t=6$: 포물선 $=5$, 로그 $=10\\cdot\\frac{1}{2}=5$, $g(6)=5$ ✓\n- $t>6$: 로그 부분이 증가하여 $5$ 이상 유지 ✓\n- $t=0$: $g(0)=5$ ✓\n\n따라서 최솟값은 $5$이며 $t=0$과 $t=6$에서 달성됨.\n\n---\n\n**최종 답: 10**  \n**코칭 한마디:** 왜냐하면 슬라이딩 구간의 최댓값 함수 $g(t)$는 구간이 변곡 지점(꼭짓점, 분기점 $x=6$)을 지날 때 형태가 바뀌므로, 구간별로 나눈 뒤 \"최솟값이 5 이상\"이라는 부등식의 가장 빡빡한 지점($t=6^+$)에서 임계 조건을 잡아야 하기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 57335,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2024-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "최적화 (자유 극값)",
+        "이차방정식 근의 분포",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "샌드위치 정리 (조임)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 1단계: 조건 해석\n\n$f(x)$는 최고차항 계수가 1인 삼차함수이고, $f(k-1)f(k+1)<0$인 정수 $k$가 존재하지 않습니다.\n\n**핵심 관찰**: 만약 $f(x)$가 서로 다른 세 실근을 가진다면, 두 근 사이에 정수가 끼어있을 가능성이 매우 높습니다. \n\n조건을 만족하려면, $f(x)=0$의 실근들이 **인접한 정수 사이에 동시에 들어가거나**, 또는 어떤 정수에서 함숫값이 0이 되어야 합니다.\n\n## 2단계: $f'(-1/4) = -1/4 < 0$, $f'(1/4) < 0$\n\n$f'(x) = 3x^2 + bx + c$ 형태이고, $x=-1/4, 1/4$에서 모두 음수이므로 이 점들은 극값 사이(감소구간)에 있습니다.\n\n즉, $f'(x)=0$의 두 근 $\\alpha<\\beta$에 대해 $\\alpha < -\\frac{1}{4} < \\frac{1}{4} < \\beta$.\n\n## 3단계: 근의 위치 결정\n\n극대점이 $\\alpha$, 극소점이 $\\beta$이며, $\\alpha < -1/4$, $\\beta > 1/4$.\n\n조건 $f(k-1)f(k+1) \\geq 0$ (모든 정수 $k$)에서, $k=0$일 때 $f(-1)f(1) \\geq 0$.\n\n극값들이 $-1/4$ 근방, $1/4$ 근방을 포함하는 구간 밖에 있으므로 세 실근이 있다면 $-1$과 $1$ 사이에 분포할 가능성이 큽니다. $f(-1)f(1) \\geq 0$이려면 $f(x)$가 $x=-1$ 또는 $x=1$에서 0이거나, 세 근이 모두 $(-1,1)$ 안에 있어야 합니다.\n\n## 4단계: 도함수 계산\n\n$f'(x) = 3x^2 + bx + c$, $f'(-1/4) = 3/16 - b/4 + c = -1/4$\n$$-\\frac{b}{4} + c = -\\frac{1}{4} - \\frac{3}{16} = -\\frac{7}{16}$$\n\n## 5단계: $f(-1)=0$ 또는 $f(1)=0$ 가정\n\n세 실근이 $(-1,1)$에 모두 있다고 시도. $k=-1$: $f(-2)f(0)\\geq 0$, $k=1$: $f(0)f(2)\\geq 0$. $f(-2)<0, f(2)>0$이므로 $f(0)\\leq 0$이면서 $f(0)\\geq 0$, 즉 $f(0)=0$.\n\n$k=0$: $f(-1)f(1)\\geq 0$. 그런데 근이 $(-1,1)$에 있고 $f(0)=0$이면, 다른 두 근이 $(-1,0)$, $(0,1)$에 있을 때 $f(-1)<0, f(1)>0$이 되어 모순. \n\n따라서 $f(0)=0$이 중근이어야 하거나, 세 근이 한쪽으로 몰려야 합니다.\n\n**$f(x) = x^2(x-r)$ 형태 시도**: $f'(x) = 3x^2 - 2rx$. $f'(-1/4) = 3/16 + r/2 = -1/4$ → $r/2 = -7/16$ → $r = -7/8$.\n\n검증: $f'(1/4) = 3/16 - r/2 = 3/16 + 7/16 = 10/16 > 0$. 모순!\n\n**$f(x) = (x-r)^2(x-s)$ 형태, 중근 $r$**: 만약 $r=0$이면 위와 같음. 다른 가능성은 극값에서 0이 되는 경우.\n\n## 6단계: 극소값이 0인 경우\n\n극소값이 0이면 $f$는 극소점에서 $x$축에 접합니다. $f(x) = (x-\\beta)^2(x-\\alpha')$ 꼴.\n\n$f'(x) = (x-\\beta)(3x - \\beta - 2\\alpha')$. 두 극점은 $\\beta$와 $(\\beta+2\\alpha')/3 = \\alpha$.\n\n$\\alpha<-1/4<1/4<\\beta$. \n\n조건: $f(k-1)f(k+1)\\geq 0$. $f\\geq 0$ 영역과 $f<0$ 영역 경계는 $\\alpha'$. $f<0$인 곳은 $x<\\alpha'$.\n\n만약 $\\alpha'$가 정수이면 조건 만족 가능. 아니면 인접 정수 $n,n+1$ 사이에 $\\alpha'$가 있으면 $f(n)<0, f(n+1)>0$, 정수 $k=n$일 때 $f(n-1)f(n+1)$에서 $f(n-1)<0,f(n+1)>0$이면 음수—모순. 따라서 $\\alpha'$는 정수.\n\n$f'(-1/4) = -1/4$: $f'(x) = 3(x-\\beta)(x-\\alpha)$ where $\\alpha=(\\beta+2\\alpha')/3$.\n\n$3(-1/4-\\beta)(-1/4-\\alpha) = -1/4$\n\n또 $\\alpha < -1/4$이고 $\\beta>1/4$. $\\alpha'$는 정수, $\\alpha' < \\alpha < -1/4$이므로 $\\alpha' \\leq -1$.\n\n$\\alpha' = -1$ 시도: $\\alpha = (\\beta-2)/3$.\n\n$3(-1/4-\\beta)(-1/4 - (\\beta-2)/3) = -1/4$\n$3 \\cdot \\frac{-1-4\\beta}{4} \\cdot \\frac{-3-4(\\beta-2)}{12} = -1/4$\n$\\frac{(-1-4\\beta)(5-4\\beta)}{16} = -1/4$\n$(-1-4\\beta)(5-4\\beta) = -4$\n$-5+4\\beta-20\\beta+16\\beta^2 = -4$\n$16\\beta^2 - 16\\beta - 1 = 0$\n$\\beta = \\frac{16\\pm\\sqrt{256+64}}{32} = \\frac{16\\pm\\sqrt{320}}{32} = \\frac{2\\pm\\sqrt{5}}{4}$\n\n$\\beta>1/4$: $\\beta = \\frac{2+\\sqrt{5}}{4}$.\n\n검증 $f'(1/4)<0$: $f'(1/4) = 3(1/4-\\beta)(1/4-\\alpha)$. $\\beta>1/4$이고 $\\alpha<-1/4<1/4$이므로 $(음)(양)<0$ ✓\n\n## 7단계: $f(8)$ 계산\n\n$f(x) = (x-\\beta)^2(x+1)$, $\\beta = \\frac{2+\\sqrt{5}}{4}$.\n\n음... $\\beta$가 무리수네요. $f(8)$이 정수가 안 될 텐데, 다시 검토.\n\n**$\\alpha'=0$ 재검토**: $f(x)=x(x-\\beta)^2$, $f'(x) = (x-\\beta)(3x-\\beta)$. 극점 $\\beta/3, \\beta$. $\\beta/3<-1/4$이려면 $\\beta<-3/4$, 그런데 $\\beta>1/4$ 모순.\n\n**극대값이 0인 경우**: $f(x)=(x-\\alpha)^2(x-s)$, 극대점 $\\alpha$에서 0. $f<0$은 $x>s$가 아니라... 최고차항 1이므로 $x\\to\\infty$에서 양. $f(x)=0$의 근은 $\\alpha$(중근), $s$. $s>\\alpha$여야 그래프 모양상 극대 0, $f$는 $s$에서 부호바뀜. $f<0$인 곳 $\\alpha<x<s$ 아니고, 사실 $(x-\\alpha)^2\\geq 0$이라 $f$ 부호는 $x-s$ 부호. 즉 $x<s$에서 $f\\leq 0$. \n\n극대점이 $\\alpha$, 극소점이 $s$가 아니라... $f'(x) = 2(x-\\alpha)(x-s)+(x-\\alpha)^2 = (x-\\alpha)(3x-\\alpha-2s)$. 극점: $\\alpha, (\\alpha+2s)/3$. 후자가 극소.\n\n$\\alpha<-1/4$, 극소 $\\beta=(\\alpha+2s)/3>1/4$.\n\n$f<0$은 $x<s$ ($x\\neq \\alpha$). $s$는 정수여야 함. $s>\\beta>1/4$이므로 $s\\geq 1$.\n\n$s=1$: $\\beta = (\\alpha+2)/3$, $\\alpha = 3\\beta-2$.\n\n$f'(-1/4) = 3(-1/4-\\alpha)(-1/4-\\beta) = -1/4$\n$\\alpha = 3\\beta-2$ 대입: $-1/4-\\alpha = -1/4-3\\beta+2 = 7/4-3\\beta$\n$3(7/4-3\\beta)(-1/4-\\beta) = -1/4$\n$(7-12\\beta)(-1-4\\beta)\\cdot 3/16 = -1/4$  \n$(7-12\\beta)(-1-4\\beta) = -4/3$\n\n흠 계산: $-7-28\\beta+12\\beta+48\\beta^2 = -4/3$\n$48\\beta^2 -16\\beta - 7 = -4/3$\n$144\\beta^2 - 48\\beta - 21 = -4$\n$144\\beta^2 - 48\\beta - 17 = 0$\n\n판별식 $2304 + 4\\cdot 144\\cdot 17 = 2304+9792=12096$, $\\sqrt{12096}$ 무리수.\n\n음... 다시 생각. **$f(-1)f(1)\\geq 0$이지만 둘 다 0이 아닐 수도**. 세 근이 모두 한 정수 구간 안에 있는 경우.\n\n## 8단계: 세 실근이 모두 한 단위구간 내\n\n세 실근(중근 포함)이 $(n, n+1)$ 안에 있으면 $f(n)<0, f(n+1)>0$. $k=n$: $f(n-1)f(n+1)$, $f(n-1)<0, f(n+1)>0$ → 음수, 모순.\n\n따라서 모든 정수에서 $f$가 한쪽 부호여야... 즉 어떤 정수에서 $f=0$이거나 실근이 정수 사이를 넘지 않아야.\n\n실근이 정수 $m$ (단일근)이고 나머지 두 근이 복소거나 같은 정수: \n\n**$f(x) = (x-m)^3$? 그럼 $f'$의 극점이 하나(중근)**, $f'(-1/4)=-1/4$이려면 $3(-1/4-m)^2=-1/4$ 불가.\n\n**$f(x) = (x-m)(x^2+px+q)$, 판별식<0**: 실근 $m$ 하나. $f$는 $m$에서 부호변화. 정수에서 부호변화이므로 $f(m-1)<0, f(m+1)>0$. $k=m$: $f(m-1)f(m+1)<0$ — **모순!**\n\n따라서 $f$에 중근이 있고, 그 중근에서 $f=0$이지만 부호변화 없음.\n\n**경우 A**: $f(x)=(x-a)^2(x-b)$, $a$ 중근(부호변화 없음), $b$ 단순근(부호변화). $b$는 정수여야 함(위 논리).\n\n극점: $a$와 $(a+2b)/3$. 한쪽은 극대, 한쪽은 극소.\n\n$f''(x) = 6x - 2(2a+b) = 6x-4a-2b$. $f''(a)=6a-4a-2b=2(a-b)$. $a<b$면 극대, $a>b$면 극소.\n\n**A1**: $a<b$, $a$가 극대, $\\beta_{극소}=(a+2b)/3$. $a<-1/4$, $(a+2b)/3>1/4$.\n**A2**: $a>b$, $a$가 극소($\\beta=a$), $\\alpha_{극대}=(a+2b)/3$. $(a+2b)/3<-1/4$, $a>1/4$.\n\nA1에서 $b$ 정수, $a<-1/4<1/4<(a+2b)/3$. 7단계에서 $b=1$로 시도했으나 무리수. $b=2$ 시도:\n\n$\\beta=(a+4)/3>1/4$ → $a>-13/4$. $a<-1/4$.\n$f'(x)=(x-a)(3x-a-2b)=(x-a)(3x-a-4)$\n$f'(-1/4)=(-1/4-a)(-3/4-a-4)=(-1/4-a)(-19/4-a)=-1/4$\n$(1/4+a)(19/4+a)=-1/4$ ... 양수×양수 (만약 $a>-1/4$) 또는 음수×... $a<-1/4$이므로 $1/4+a<0$, $19/4+a$는 $a>-19/4$면 양수. 곱 음수 ✓.\n\n$(a+1/4)(a+19/4) = -1/4$\n$a^2 + 5a + 19/16 = -1/4$\n$a^2+5a+19/16+4/16=0$\n$a^2+5a+23/16=0$\n$a = \\frac{-5\\pm\\sqrt{25-23/4}}{2}=\\frac{-5\\pm\\sqrt{77/4}}{2}=\\frac{-10\\pm\\sqrt{77}}{4}$\n\n무리수.\n\nA2 시도: $a>1/4$, $a$가 극소이자 중근, $b<a$, $b$ 정수. 극대 $\\alpha=(a+2b)/3<-1/4$.\n\n$f'(-1/4)=3(-1/4-a)(-1/4-\\alpha)$이지만, $f'(x)=(x-a)(3x-a-2b)$ 그대로:\n$f'(-1/4)=(-1/4-a)(-3/4-a-2b)=-1/4$\n\n$(a+1/4)(a+2b+3/4)=-",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [],
+      "duration_ms": 68060,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2024-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "매개변수 미분",
+        "역함수"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nWe have f continuous, f≥0, for x<0: f(x) = -4x e^(4x²). At x=0, f(0)=0. For x<0, f is positive and... let's check: derivative for x<0. f(x) = -4x e^(4x²). At x→-∞, f→∞. At x=0, f=0. f'(x) = -4e^(4x²) -4x·8x e^(4x²) = -4e^(4x²)(1+8x²)... wait: derivative: -4 e^(4x²) + (-4x)(8x)e^(4x²) = -4e^(4x²) -32x² e^(4x²) = -4e^(4x²)(1+8x²) <0. So f is decreasing on x<0, from ∞ to 0.\n\nFor t>0, equation f(x)=t has exactly 2 roots. One root is in x<0 (the g(t), smaller root since negative). Wait, g(t) is smaller, h(t) is larger. The negative root is g(t) (from x<0 part). Then h(t) is for x≥0.\n\nBut for x≥0, we need f to give exactly one solution for each t>0. So f on [0,∞) must be... possibly increasing from 0 to ∞? Or could have other shape but each t hit once.\n\nCondition: 2g(t)+h(t) = k constant.\n\ng(t) from x<0: f(g) = -4g e^(4g²) = t. h(t) from x≥0: f(h(t)) = t.\n\nDifferentiate: 2g'(t)+h'(t)=0, so h'(t) = -2g'(t).\n\nAlso f(g(t))=t → f'(g)·g'(t)=1, similarly f'(h)·h'(t)=1.\n\nSo 1/f'(g) · (-2) = 1/f'(h)... wait h'=-2g' means 1/f'(h) = -2/f'(g), so f'(g) = -2 f'(h).\n\nHmm, let me think differently. Let's parametrize: as t varies, g and h are related linearly: h = k - 2g.\n\nSo for x≥0, f(x) = t when x = h = k - 2g, where g<0 satisfies f(g)=t.\n\nSo if we let s = g (negative), then x = k-2s (positive when s< k/2), and f(k-2s) = f(s) = -4s e^(4s²).\n\nSo for x ≥ 0, write x = k - 2s, i.e., s = (k-x)/2. Then f(x) = -4·(k-x)/2 · e^(4·((k-x)/2)²) = -2(k-x) e^((k-x)²) = 2(x-k) e^((k-x)²).\n\nWait check sign: -4s where s=(k-x)/2 gives -2(k-x) = 2(x-k). And we need f(x)≥0, so x≥k. Hmm but x≥0 and we need this for all x≥0?\n\nWait, the range of s: s<0 means (k-x)/2<0, so x>k. So this formula works for x>k. What about 0≤x≤k?\n\nAt s=0, x=k, f=0. So f(k)=0. For 0≤x<k, what is f?\n\nWe need f continuous, f≥0, f(0)=0, f(k)=0, and for each t>0, equation has exactly 2 roots total. Since g(t)<0 gives one root, h(t) gives another. So on [0,∞), f hits each t>0 exactly once. \n\nBut f(0)=0 and f(k)=0. If f is 0 on [0,k] and then increases for x>k, that works! Then for x in [0,k], f(x)=0, and for x>k, f(x)=2(x-k)e^((x-k)²).\n\nLet me verify continuity: at x=k, f=0 from both sides. Good.\n\nCheck ∫₀^7 f(x)dx = e^4 -1.\n\nIf 7>k: ∫₀^7 f = ∫_k^7 2(x-k)e^((x-k)²) dx. Let u=(x-k)², du = 2(x-k)dx. So integral = ∫₀^((7-k)²) e^u du = e^((7-k)²) - 1.\n\nSet equal to e^4 -1: (7-k)²=4, so 7-k=2 (assuming k<7), k=5.\n\nSo k=5. Then for x>5: f(x) = 2(x-5)e^((x-5)²).\n\nf(9) = 2·4·e^16 = 8e^16.\nf(8) = 2·3·e^9 = 6e^9.\nf(9)/f(8) = 8e^16/(6e^9) = (4/3)e^7.\n\nAnswer: (2).\n</think>\n\n## 풀이\n\n**1) 음수 영역 분석**: $x<0$에서 $f(x)=-4xe^{4x^2}$는 감소함수이고 $\\infty \\to 0$. 따라서 $g(t)$는 항상 음수.\n\n**2) 관계식의 활용**: $2g(t)+h(t)=k$에서 $h(t)=k-2g(t)$. 양변에 $f$를 적용하면\n$$f(h(t))=f(g(t))=t$$\n$g(t)=s\\;(s<0)$로 두면 $x=h=k-2s$, 즉 $s=\\dfrac{k-x}{2}$.\n\n**3) $x>k$ 영역의 $f$ 형태**:\n$$f(x)=-4s\\,e^{4s^2}=2(x-k)\\,e^{(x-k)^2}\\quad (x>k)$$\n\n**4) $0\\le x\\le k$ 영역**: 양수 $t$에 대해 실근이 정확히 2개여야 하므로 이 구간에서는 $f(x)=0$ (그래야 $g,h$만 근).\n\n**5) 적분 조건으로 $k$ 결정** ($k<7$ 가정):\n$$\\int_0^7 f\\,dx=\\int_k^7 2(x-k)e^{(x-k)^2}dx=\\left[e^{(x-k)^2}\\right]_k^7=e^{(7-k)^2}-1$$\n이것이 $e^4-1$이므로 $(7-k)^2=4 \\Rightarrow k=5$.\n\n**6) 값 계산**:\n- $f(9)=2(4)e^{16}=8e^{16}$\n- $f(8)=2(3)e^{9}=6e^{9}$\n\n$$\\frac{f(9)}{f(8)}=\\frac{8e^{16}}{6e^{9}}=\\frac{4}{3}e^{7}$$\n\n최종 답: $\\dfrac{4}{3}e^{7}$ (②번)\n코칭 한마디: 왜냐하면 조건 $2g(t)+h(t)=k$는 양수 영역의 $f$를 음수 영역의 $f$로 **치환(역함수 사고)** 으로 표현하게 해주어, 미지의 함수 형태를 직접 복원할 수 있게 해주기 때문이다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 38161,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2024-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nWe have f'(x) = |sin x| cos x. Let's compute f.\n\nFor sin x ≥ 0 (i.e., x ∈ [2kπ, (2k+1)π]): f'(x) = sin x cos x = (1/2)sin 2x, so f(x) = -(1/4)cos 2x + C.\n\nFor sin x < 0: f'(x) = -sin x cos x = -(1/2)sin 2x, f(x) = (1/4)cos 2x + C.\n\ng(x) = f(a) + f'(a)(x-a). Then h(x) = ∫₀ˣ (f(t)-g(t))dt.\n\nh'(x) = f(x) - g(x). Note h'(a) = f(a)-g(a) = 0.\n\nFor h to have extremum at x=a, we need h'(x) = f(x)-g(x) to change sign at a.\n\nLet φ(x) = f(x)-g(x). φ(a)=0, φ'(x)=f'(x)-f'(a). φ'(a)=0.\n\nSo we need φ to change sign at a. Near a, φ behaves like... need to look at higher derivatives or global behavior.\n\nActually φ'(x) = f'(x) - f'(a). The sign of φ around a depends on whether f'(x) ≥ f'(a) on both sides or not.\n\nHmm, let me think. φ(a)=0, and we want φ to change sign at x=a (so that h has extremum). \n\nφ'(x) = f'(x) - f'(a) = |sin x|cos x - |sin a|cos a.\n\nLet's denote p(x) = |sin x|cos x. So φ'(x) = p(x) - p(a).\n\nAt x=a, φ'(a)=0. The function φ has a critical point at a. φ has zero at a, and zero derivative at a. So locally φ(x) ≈ (1/2)φ''(a)(x-a)².\n\nIf φ''(a) ≠ 0, then φ doesn't change sign at a (it touches zero from one side). Then h has inflection-like point, not extremum.\n\nWait, but if φ doesn't change sign, then h' doesn't change sign, so h is monotonic near a — no extremum.\n\nSo we need φ to change sign at a. This means... we need higher order analysis or that the local behavior involves odd power.\n\nLet's compute p'(x) = derivative of |sin x|cos x. \n\nFor sin x > 0: p(x) = sin x cos x = (1/2)sin 2x, p'(x) = cos 2x.\nFor sin x < 0: p(x) = -sin x cos x = -(1/2)sin 2x, p'(x) = -cos 2x.\n\nSo p'(a) at a where sin a ≠ 0.\n\nφ''(a) = p'(a). For φ to change sign at a, need φ''(a) = 0, which means cos 2a = 0 (in regions where sin x ≠ 0). So 2a = π/2 + kπ, a = π/4 + kπ/2.\n\nBut also a could be where sin a = 0, i.e., a = nπ. At those points, p is not differentiable in usual way; let's check.\n\nAt a = π (sin a = 0): p(π) = 0. p'(π⁻): from sin x > 0 side, p'=cos 2x = cos 2π = 1. p'(π⁺): from sin x < 0 side, p' = -cos 2π = -1. Not differentiable, but φ'(x) = p(x) - p(a) = p(x) near a = π.\n\nHmm let's consider a = nπ. Actually we need to check whether a = nπ gives extremum.\n\nAt a = nπ, f'(a) = 0. g(x) = f(a) (constant tangent). Then φ(x) = f(x) - f(a). φ(a)=0. Sign change?\n\nFor a = π: f near π. f(π) = ? Let's compute f globally. Take f continuous.\n\nDefine f piecewise. On [0,π]: f(x) = -(1/4)cos 2x + C₁. On [π, 2π]: f(x) = (1/4)cos 2x + C₂.\n\nContinuity at π: -(1/4)cos 2π + C₁ = (1/4)cos 2π + C₂ → -1/4 + C₁ = 1/4 + C₂ → C₁ - C₂ = 1/2.\n\nLet's set C₁ = 1/4 (so f(0) = 0). Then f on [0,π]: f(x) = -(1/4)cos 2x + 1/4 = (1/2)sin²x. Yes f(x) = (1/2)sin²x on [0,π], so f ≥ 0, f(0)=f(π)=0.\n\nOn [π, 2π]: C₂ = -1/4. f(x) = (1/4)cos 2x - 1/4 = -(1/2)sin²x. So f ≤ 0 there.\n\nSo f oscillates: positive on [2kπ, (2k+1)π], negative on [(2k+1)π, (2k+2)π].\n\nAt a = π: f(π) = 0, f'(π) = 0. g(x) = 0. φ(x) = f(x). To the left of π, f > 0; to the right, f < 0. So φ changes sign! So h has extremum at a = π.\n\nAt a = 2π: f(2π) = 0, f'(2π) = 0. g(x) = 0. φ(x) = f(x). To left, f < 0; to right, f > 0. Changes sign, extremum.\n\nSo all a = nπ (n ≥ 1) work.\n\nNow consider a = π/4 + kπ/2 (where cos 2a = 0).\n\nBut also need sin a ≠ 0, which is satisfied here.\n\nAt these points, φ''(a) = 0. Need to check if φ changes sign.\n\nLet's check a = π/4. sin(π/4) > 0, p(x) = (1/2)sin 2x near here. p(π/4) = 1/2. p'(x) = cos 2x, p'(π/4)=0. p''(x) = -2sin 2x, p''(π/4) = -2.\n\nφ'''(a) = p''(a) = -2 ≠ 0. So φ'(x) ≈ (1/6)·(-2)(x-a)³ ... wait let me redo.\n\nφ'(x) = p(x) - p(a). Taylor: φ'(x) = p'(a)(x-a) + (1/2)p''(a)(x-a)² + ... = 0 + (1/2)(-2)(x-a)² + ... = -(x-a)² + ...\n\nSo φ'(x) ≈ -(x-a)², which is ≤ 0. Then φ(x) - φ(a) = ∫ₐˣ φ'(t)dt ≈ -(x-a)³/3. So φ(x) ≈ -(x-a)³/3. This changes sign at a!\n\nGreat, so a = π/4 gives extremum.\n\na = 3π/4. sin(3π/4) > 0, p(x) = (1/2)sin 2x. p(3π/4) = (1/2)sin(3π/2) = -1/2. p'(3π/4) = cos(3π/2) = 0. p''(3π/4) = -2sin(3π/2) = 2.\n\nφ'(x) ≈ (1/2)(2)(x-a)² = (x-a)². Then φ(x) ≈ (x-a)³/3. Changes sign. Extremum.\n\na = 5π/4. sin(5π/4) < 0, p(x) = -(1/2)sin 2x. p(5π/4) = -(1/2)sin(5π/2) = -1/2. p'(x) = -cos 2x, p'(5π/4) = -cos(5π/2)=0. p''(x) = 2sin 2x, p''(5π/4) = 2sin(5π/2) = 2.\n\nSimilar analysis, extremum.\n\na = 7π/4. p(x) = -(1/2)sin 2x. p(7π/4) = -(1/2)sin(7π/2) = -(1/2)(-1) = 1/2. p''(7π/4) = 2sin(7π/2) = -2.\n\nExtremum.\n\nSo candidates: a = π/4, π/2... wait π/2: sin(π/2)=1, p(π/2) = 0, p'(π/2) = cos π = -1 ≠ 0. So φ''(a) ≠ 0, no sign change, NOT extremum.\n\nHmm wait. I need to recheck. a = π/4 + kπ/2.\n\nk=0: π/4 ✓\nk=1: 3π/4 ✓\nk=2: 5π/4 ✓\nk=3: 7π/4 ✓\n\nAnd a = nπ (n=1,2,...): π, 2π, ...\n\nWhat about a = π/2, 3π/2? These are where cos a = 0 but sin a = ±1. p(π/2) = 1·0 = 0. f'(π/2) = 0. g(x) = f(π/2). \n\nLet's check a = π/2 directly. f(π/2) = (1/2)·1 = 1/2. g(x) = 1/2. φ(x) = f(x) - 1/2.\n\nFor x near π/2 in [0,π]: f(x) = (1/2)sin²x ≤ 1/2 with equality at π/2. So φ(x) ≤ 0 near π/2, doesn't change sign. h'(x) ≤ 0 near, so h is decreasing, no extremum.\n\nOK so π/2 is not.\n\nWhat about a = 3π/2? f(3π/2) = -1/2. f'(3π/2) = 0. φ(x) = f(x) + 1/2. f on [π, 2π] = -(1/2)sin²x ≥ -1/2. So φ ≥ 0 near, no sign change.\n\nSo we have extrema at: a = π/4, 3π/4, π, 5π/4, 7π/4, 2π, 9π/4, 11π/4, 3π, ...\n\nWait, let me also reconsider. Have I captured all cases?\n\nSorted in order:\n- π/4\n- 3π/4\n- π\n- 5π/4\n- 7π/4\n- 2π\n- 9π/4\n- 11π/4\n- 3π\n...\n\nSo a₁ = π/4, a₂ = 3π/4, a₃ = π, a₄ = 5π/4, a₅ = 7π/4, a₆ = 2π.\n\na₆ - a₂ = 2π - 3π/4 = 5π/4.\n\n(100/π)(5π/4) = 125.\n\nWait, let me double check that all these points give extrema. I checked the local behavior of φ. But for h to have extremum at x=a, we need h'(x) = φ(x) to change sign at a.\n\nFor a = nπ, φ(x) = f(x), and indeed f changes sign at nπ.\n\nFor a = π/4 + kπ/2, we showed φ ≈ c(x-a)³, changes sign.\n\nBut wait—need to be careful. Near a = π, f(x) is locally (1/2)sin²x for x<π and -(1/2)sin²x for x>π. So f changes sign. ✓\n\nHmm but wait, I should double check whether at a=π we actually have φ(x) = f(x) - g(x) = f(x) (since g = 0). And φ(a) = 0, φ'(a) = 0, and yes sign changes.\n\nActually wait, I need to also reconsider points where p'(a) = 0 but a is also nπ. At nπ, p is not differentiable but p(nπ) = 0.\n\nAre there other points where φ could change sign even though φ''(a) ≠ 0? Generally no, since φ(a)=φ'(a)=0 and φ''(a)≠0 means local quadratic behavior, no sign change.\n\nAre there points to consider I missed? Let me reconsider whether all points a = π/4 + kπ/2 work. I verified k=0,1,2,3. The pattern repeats with period 2π actually since p has period 2π... wait no. p(x) = |sin x|cos x. p(x+π) = |sin(x+π)|cos(x+π) = |sin x|·(-cos x) = -p(x). So p has period 2π but is anti-periodic with period π... hmm not exactly but anyway.\n\nFor k=4: a = π/4 + 2π = 9π/4. By periodicity should also work.\n\nAnswer: 125.\n</think>\n\n주어진 문제를 분석합니다.\n\n## 함수 분석\n\n$f'(x) = |\\sin x|\\cos x$, 그리고 $h'(x) = f(x) - g(x) = \\varphi(x)$로 두면:\n- $\\varphi(a) = 0$ (접선이 곡선과 만남)\n- $\\varphi'(a) = f'(a) - f'(a) = 0$\n\n$h$가 $x=a$에서 극값을 가지려면 $\\varphi(x)$가 $x=a$에서 **부호변화**해야 합니다.\n\n## 극값 조건 탐색\n\n$\\varphi''(x) = f''(x) = p'(x)$ where $p(x) = |\\sin x|\\cos x$.\n\n**경우 1: $\\sin a \\neq 0$**\n- $\\sin x > 0$ 영역: $p'(x) = \\cos 2x$  \n- $\\sin x < 0$ 영역: $p'(x) = -\\cos 2x$\n\n부호변화를 위해 $\\varphi''(a) = 0$이 필요 → $\\cos 2a = 0$ → $a = \\frac{\\pi}{4} + \\frac{k\\pi}{2}$\n\n각 경우 $\\varphi'''(a) \\neq 0$이므로 $\\varphi(x) \\sim c(x-a)^3$, 부호변화 ✓\n\n**경우 2: $\\sin a = 0$, 즉 $a = n\\pi$**\n- $f'(n\\pi)=0$이므로 $g(x) = f(n\\pi) = 0$\n- $f(x) = (1/2)\\sin^2 x$ (양구간), $-(1/2)\\sin^2 x$ (음구간)\n- $f$가 $n\\pi$에서 부호변화 ✓\n\n**경우 3: $a = \\pi/2, 3\\pi/2, \\ldots$**\n$f$가 그 점에서 극값이므로 $\\varphi$ 부호변화 없음 ✗\n\n## 양수 $a$ 나열\n\n$$a_1 = \\tfrac{\\pi}{4},\\ a_2 = \\tfrac{3\\pi}{4},\\ a_3 = \\pi,\\ a_4 = \\tfrac{5\\pi}{4},\\ a_5 = \\tfrac{7\\pi}{4},\\ a_6 = 2\\pi$$\n\n## 계산\n\n$$a_6 - a_2 = 2\\pi - \\frac{3\\pi}{4} = \\frac{5\\pi}{4}$$\n\n$$\\frac{100}{\\pi} \\times \\frac{5\\pi}{4} = 125$$\n\n**최종 답: 125**\n**코칭 한마디:** 왜냐하면 $\\varphi(a)=\\varphi'(a)=0$인 상황에서 극값 여부는 다음 ",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 60632,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2025-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "사잇값 정리 (수학2)",
+        "이차방정식 근의 분포",
+        "인수정리",
+        "최적화 (자유 극값)",
+        "적분방정식 — f 결정 (정적분 상수 활용)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 조건 분석\n\n$\\lim_{x \\to \\alpha} \\dfrac{f(2x+1)}{f(x)}$ 가 모든 실수 $\\alpha$에서 존재해야 합니다.\n\n분모 $f(x) = 0$ 이 되는 $\\alpha$에서는 분자 $f(2\\alpha+1) = 0$ 이어야 극한이 존재할 수 있습니다.\n\n즉, **$f(\\alpha) = 0$ 이면 $f(2\\alpha+1) = 0$** 이어야 합니다.\n\n## 근의 구조 분석\n\n$f(x)$는 3차함수이고 실근을 가집니다(3차이므로 적어도 하나).\n\n$\\alpha$가 $f$의 실근이면 $2\\alpha+1$도 실근입니다. 그런데 $f$는 최대 3개의 실근만 가지므로, $\\alpha \\mapsto 2\\alpha+1$ 의 반복이 유한 개 값에 머물러야 합니다.\n\n$2\\alpha+1 = \\alpha \\Rightarrow \\alpha = -1$ (고정점)\n\n따라서 모든 실근은 결국 $-1$로 수렴해야 하며, 가능한 실근은 $\\alpha = -1$ 뿐입니다 (다른 값 $\\alpha \\neq -1$이면 $\\alpha, 2\\alpha+1, 4\\alpha+3, \\ldots$ 가 모두 다른 실근이 되어 무한히 많아짐).\n\n## 경우 분류\n\n**경우 1:** $f$가 실근을 하나만 가지며 그것이 $-1$인 경우.\n\n$f(-1) = -1 + a - b + 4 = 0 \\Rightarrow a - b = -3$, 즉 $b = a+3$.\n\n$f(x) = (x+1)(x^2 + (a-1)x + 4)$\n\n이차식 $x^2 + (a-1)x + 4$가 실근을 갖지 않거나, 중근 $-1$을 가져야 합니다.\n\n- 판별식 $D = (a-1)^2 - 16 < 0 \\Rightarrow -3 < a < 5$, 즉 $a \\in \\{-2,-1,0,1,2,3,4\\}$\n- 또는 중근이 $-1$: $(a-1)\\cdot(-1) \\cdot \\ldots$ 확인 — $x=-1$ 대입: $1-(a-1)+4 = 6-a = 0 \\Rightarrow a=6$, 그리고 합 $-(a-1)= -5$, 곱 $4$이지만 $(-1)+(-1)=-2 \\neq -5$. 모순. 제외.\n\n**경우 2:** 실근이 $-1$ 하나이고 나머지가 허근인 경우 — 위와 동일.\n\n## $f(1)$ 최대화\n\n$f(1) = 1 + a + b + 4 = 5 + a + b = 5 + a + (a+3) = 2a + 8$\n\n$a$의 최댓값은 $4$이므로 $f(1) = 16$.\n\n**검증** ($a=4, b=7$): $f(x) = x^3+4x^2+7x+4 = (x+1)(x^2+3x+4)$. 판별식 $9-16=-7<0$ ✓. 실근은 $-1$뿐, $2(-1)+1=-1$이므로 조건 만족 ✓.\n\n최종 답: $16$\n코칭 한마디: 왜냐하면 분모가 0인 점에서 극한 존재 조건이 \"근의 자기복제 사상 $\\alpha \\mapsto 2\\alpha+1$의 고정점\"으로 환원되어, **인수정리**로 $(x+1)$을 분리한 뒤 나머지 이차식의 판별식 부호로 정수 조건을 처리하는 것이 핵심이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 26058,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2025-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "점화식 a_{n+1} = p·a_n + q (일차분수형)",
+        "지수함수의 성질",
+        "일차부등식의 풀이",
+        "확률의 정의 (수학적 확률)",
+        "등비수열 합·일반항"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "# 풀이\n\n## 조건 분석\n\n점화식: |aₙ|이 홀수면 aₙ₊₁ = aₙ - 3, 그렇지 않으면 aₙ₊₁ = aₙ/2\n\n조건 (나): |aₘ| = |aₘ₊₂|를 만족하는 m의 최솟값이 3\n→ m = 3에서 |a₃| = |a₅|이고, m = 1, 2에서는 성립하지 않음.\n\n## a₃에서 시작 (|a₃| = |a₅| 분석)\n\n**경우 1: a₃ = 0**\n그러면 a₄ = 0, a₅ = 0이므로 |a₃| = |a₅| 성립. 하지만 |a₁| = |a₃|도 성립할 수 있는지 체크 필요.\n\n**경우 2: |a₃|가 홀수**\na₄ = a₃ - 3\n\n- a₃ = 1: a₄ = -2, a₅ = -1, |a₅| = 1 = |a₃| ✓\n- a₃ = -1: a₄ = -4, a₅ = -2, |a₅| = 2 ≠ 1 ✗\n- a₃ = 3: a₄ = 0, a₅ = 0, |a₅| = 0 ≠ 3 ✗\n- a₃ = -3: a₄ = -6, a₅ = -3, |a₅| = 3 ✓\n- a₃ = 5: a₄ = 2, a₅ = 1, ✗\n- a₃ = -5: a₄ = -8, a₅ = -4, ✗\n- 일반적으로 홀수 a₃ = 2k+1에서 a₄ = 2k-2, a₅ = k-1, |k-1| = |2k+1| 풀면 k = 0 (a₃=1) 또는 k = -2 (a₃=-3)\n\n**경우 3: |a₃|가 짝수 (≠0)**\na₄ = a₃/2\n\n- a₄가 짝수: a₅ = a₃/4, |a₃/4| = |a₃| 불가\n- a₄가 홀수: a₅ = a₃/2 - 3, |a₃/2 - 3| = |a₃|\n  - a₃/2 - 3 = a₃ → a₃ = -6, 그러면 a₄ = -3 (홀수✓), a₅ = -6 ✓\n  - a₃/2 - 3 = -a₃ → 3a₃/2 = 3 → a₃ = 2, a₄ = 1 (홀수✓), a₅ = -2 ✓\n\n## a₃ 후보: 0, 1, -3, -6, 2\n\n이제 각 a₃에 대해 |a₁| = |a₃| 또는 |a₂| = |a₄|가 **성립하지 않는** a₁을 찾자.\n\n(역추적) a₃를 만드는 a₂:\n- a₂가 홀수이면 a₃ = a₂ - 3\n- a₂가 짝수(또는 0)이면 a₃ = a₂/2\n\n마찬가지로 a₂에서 a₁ 역추적.\n\n### a₃ = 0인 경우\na₂ = 0 또는 a₂ = 3 (3은 홀수, 3-3=0) 또는 a₂ = -3? -3-3=-6≠0. ✗\n- a₂ = 0: a₁은 0 또는 a₁ - 3 = 0 (a₁=3) 또는 a₁/2 = 0 (a₁=0)\n  - a₁ = 0: |a₁|=|a₃|=0이므로 m=1에서 성립 ✗\n  - a₁ = 3: a₂ = 0, a₃ = 0. |a₁|=3, |a₃|=0, 다름. |a₂|=0=|a₄|이므로 m=2에서 성립 ✗\n- a₂ = 3: a₁은 a₁-3=3 (a₁=6, 짝수아니어야? 6은 짝수이므로 a₂=3이 아님) 모순. 또는 a₁/2=3 (a₁=6, 짝수✓), 그러면 a₂=3 ✓\n  - a₁ = 6: a₂=3, a₃=0, a₄=0, a₅=0. |a₂|=3≠0=|a₄| ✓, |a₁|=6≠0=|a₃| ✓. m=3 성립✓\n  \n**|a₁| = 6** 후보\n\n### a₃ = 1인 경우 (a₄=-2, a₅=-1)\na₂에서 a₃=1: a₂-3=1 (a₂=4, 짝수이므로 ✗) 또는 a₂/2=1 (a₂=2, 짝수✓)\n- a₂ = 2: a₁에서 a₂=2: a₁-3=2 (a₁=5, 홀수✓) 또는 a₁/2=2 (a₁=4, 짝수✓)\n  - a₁ = 5: |a₁|=5, |a₃|=1 다름✓. |a₂|=2, |a₄|=2 → m=2 성립 ✗\n  - a₁ = 4: |a₁|=4, |a₃|=1 다름✓. |a₂|=2, |a₄|=2 → m=2 성립 ✗\n\n후보 없음.\n\n### a₃ = -3인 경우 (a₄=-6, a₅=-3)\na₂에서 a₃=-3: a₂-3=-3 (a₂=0, 홀수아님 ✗) 또는 a₂/2=-3 (a₂=-6, 짝수✓)\n- a₂ = -6: a₁: a₁-3=-6 (a₁=-3, 홀수✓) 또는 a₁/2=-6 (a₁=-12, 짝수✓)\n  - a₁ = -3: |a₁|=3=|a₃| → m=1 성립 ✗\n  - a₁ = -12: |a₁|=12, |a₃|=3✓. |a₂|=6=|a₄| → m=2 성립 ✗\n\n후보 없음.\n\n### a₃ = -6인 경우 (a₄=-3, a₅=-6)\na₂에서 a₃=-6: a₂-3=-6 (a₂=-3, 홀수✓) 또는 a₂/2=-6 (a₂=-12, 짝수✓)\n\n- a₂ = -3: a₁에서 a₂=-3: a₁-3=-3 (a₁=0, ✗ 0은 홀수아님) 또는 a₁/2=-3 (a₁=-6, 짝수✓)\n  - a₁ = -6: |a₁|=6=|a₃| → m=1 성립 ✗\n\n- a₂ = -12: a₁: a₁-3=-12 (a₁=-9, 홀수✓) 또는 a₁/2=-12 (a₁=-24, 짝수✓)\n  - a₁ = -9: |a₁|=9, |a₃|=6✓. |a₂|=12, |a₄|=3✓. m=3 성립✓ → **|a₁|=9**\n  - a₁ = -24: |a₁|=24, |a₃|=6✓. |a₂|=12, |a₄|=3✓. m=3 성립✓ → **|a₁|=24**\n\n### a₃ = 2인 경우 (a₄=1, a₅=-2)\na₂에서 a₃=2: a₂-3=2 (a₂=5, 홀수✓) 또는 a₂/2=2 (a₂=4, 짝수✓)\n\n- a₂ = 5: a₁: a₁-3=5 (a₁=8, 짝수아님 ✗) 또는 a₁/2=5 (a₁=10, 짝수✓)\n  - a₁ = 10: |a₁|=10, |a₃|=2✓. |a₂|=5, |a₄|=1✓. m=3 성립✓ → **|a₁|=10**\n\n- a₂ = 4: a₁: a₁-3=4 (a₁=7, 홀수✓) 또는 a₁/2=4 (a₁=8, 짝수✓)\n  - a₁ = 7: |a₁|=7, |a₃|=2✓. |a₂|=4=|a₄|? |a₄|=1, 다름✓. m=3 성립✓ → **|a₁|=7**\n  - a₁ = 8: |a₁|=8, |a₃|=2✓. |a₂|=4, |a₄|=1✓. m=3 성립✓ → **|a₁|=8**\n\n## 합산\n\n|a₁| 값들: 6, 9, 24, 10, 7, 8\n\n합 = 6 + 9 + 24 + 10 + 7 + 8 = **64**\n\n최종 답: 64\n코칭 한마디: 왜냐하면 점화식 문제에서 조건이 \"최솟값\"으로 주어질 때는 m=1, 2에서 조건이 성립하지 않아야 한다는 배제 조건을 반드시 함께 따져야 누락 없이 모든 경우를 정확히 셀 수 있기 때문이다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 40263,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2025-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "매개변수 미분",
+        "회전체의 부피 (디스크)",
+        "한 점에서의 접선의 방정식",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "사잇값 정리 (수학2)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 1단계: 접선의 방정식\n\n점 $(t, f(t))$에서의 접선:\n$$y = f'(t)(x-t) + f(t)$$\n\n이 접선을 $h(x)$라 하면, 곡선과 접선의 차이 $f(x) - h(x)$는 $x=t$에서 0이고 미분값도 0인 함수입니다.\n\n## 2단계: 넓이 $g(t)$ 설정\n\n$y$축($x=0$)부터 $x=t$까지, 곡선 $y=f(x)$와 접선 $y=h(x)$ 사이의 넓이입니다.\n\n$$g(t) = \\int_0^t |f(x) - h(x)|\\, dx$$\n\n여기서 $f(x) - h(x) = f(x) - f(t) - f'(t)(x-t)$.\n\n## 3단계: $g'(t)$ 계산\n\n$F(x,t) = f(x) - f(t) - f'(t)(x-t)$로 두면, $F(t,t)=0$이므로 라이프니츠 적분 규칙으로:\n\n$$g'(t) = \\int_0^t \\frac{\\partial}{\\partial t}|F(x,t)|\\, dx$$\n\n부호를 고정하면 (곡선이 접선 위/아래 일관되게 있다고 가정):\n$$\\frac{\\partial F}{\\partial t} = -f'(t) - f''(t)(x-t) + f'(t) = -f''(t)(x-t)$$\n\n따라서\n$$g'(t) = \\pm\\int_0^t -f''(t)(x-t)\\, dx = \\pm f''(t) \\cdot \\frac{t^2}{2}$$\n\n(부호는 $|F|$의 부호에 따라 결정)\n\n## 4단계: $t=1$에서 계산\n\n$f'(x) = -x + e^{1-x^2}$이므로:\n- $f'(1) = -1 + 1 = 0$\n- $f''(x) = -1 - 2xe^{1-x^2}$, $f''(1) = -1 - 2 = -3$\n\n$t=1$에서 접선은 수평선 $y = f(1)$.\n\n$f(x) - f(1) = \\int_1^x f'(s)ds$. $x \\in [0,1]$에서 $f'(s)$의 부호 분석: $f'(0) = e > 0$, $f'(1) = 0$이고 $f''(1)<0$이므로 $[0,1]$에서 $f'>0$, 따라서 $f$는 증가, $f(x) < f(1)$.\n\n즉 $F(x,1) = f(x) - f(1) < 0$.\n\n## 5단계: $g(1)$ 계산\n\n$$g(1) = \\int_0^1 (f(1) - f(x))\\, dx = f(1) - \\int_0^1 f(x)dx$$\n\n부분적분: $\\int_0^1 f(x)dx = [xf(x)]_0^1 - \\int_0^1 xf'(x)dx = f(1) - \\int_0^1 x(-x+e^{1-x^2})dx$\n\n$$\\int_0^1 x \\cdot e^{1-x^2}dx = \\left[-\\frac{1}{2}e^{1-x^2}\\right]_0^1 = -\\frac{1}{2}(1-e) = \\frac{e-1}{2}$$\n\n$$\\int_0^1 -x^2 dx = -\\frac{1}{3}$$\n\n따라서 $\\int_0^1 xf'(x)dx = -\\frac{1}{3} + \\frac{e-1}{2} = \\frac{e}{2} - \\frac{5}{6}$\n\n$$\\int_0^1 f(x)dx = f(1) - \\frac{e}{2} + \\frac{5}{6}$$\n\n$$g(1) = f(1) - f(1) + \\frac{e}{2} - \\frac{5}{6} = \\frac{e}{2} - \\frac{5}{6}$$\n\n## 6단계: $g'(1)$ 계산\n\n$F < 0$이므로 $|F| = -F$, $\\frac{\\partial|F|}{\\partial t} = f''(t)(x-t)$.\n\n$$g'(1) = \\int_0^1 f''(1)(x-1)dx = -3 \\cdot \\left[-\\frac{1}{2}\\right] = \\frac{3}{2}$$\n\n## 7단계: 합산\n\n$$g(1) + g'(1) = \\frac{e}{2} - \\frac{5}{6} + \\frac{3}{2} = \\frac{e}{2} + \\frac{2}{3}$$\n\n답은 **②**입니다.\n\n최종 답: $\\dfrac{1}{2}e + \\dfrac{2}{3}$\n코칭 한마디: 왜냐하면 접선과 곡선 사이의 넓이를 다룰 때는 \"접선의 방정식 도구\"로 식을 세운 뒤, $f'(t)=0$ 같은 특수성을 이용해 적분을 부분적분으로 단순화하는 것이 핵심이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 26980,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2025-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nWe have f(x) = sin(ax + b + sin x).\n\nCondition (가): f(0) = sin(b) = 0, so b = kπ for integer k.\nf(2π) = sin(2πa + b + sin(2π)) = sin(2πa + b) = 2πa + b.\n\nSince sin of something equals that something, we need 2πa + b ∈ {-1,...,1} actually need sin(y) = y which means y = 0. So 2πa + b = 0, thus b = -2πa.\n\nBut b = kπ, so -2πa = kπ, a = -k/2. With 1 ≤ a ≤ 2, a ∈ {1, 3/2, 2}... wait a = -k/2 means k = -2a, so k = -2, -3, -4 giving a = 1, 3/2, 2.\n\nCondition (나): f'(x) = (a + cos x) cos(ax + b + sin x).\nf'(0) = (a+1) cos(b) = (a+1) cos(kπ) = (a+1)(-1)^k.\n\nWe need smallest positive t with f'(t) = f'(0), and that minimum is 4π.\n\nLet me check: f'(t) = (a + cos t) cos(at + b + sin t).\n\nAt t = 4π: cos(4π) = 1, so a + cos t = a+1. And at + b + sin t = 4πa + b = 4πa - 2πa = 2πa. cos(2πa) where a ∈ {1, 3/2, 2}: cos(2π) = 1, cos(3π) = -1, cos(4π) = 1.\n\nf'(0) = (a+1)(-1)^k where k = -2a.\n- a=1: k=-2, (-1)^k = 1, f'(0) = 2.\n- a=3/2: k=-3, (-1)^k = -1, f'(0) = -5/2.\n- a=2: k=-4, (-1)^k = 1, f'(0) = 3.\n\nf'(4π):\n- a=1: (1+1)(1) = 2 ✓\n- a=3/2: (3/2+1)(-1) = -5/2 ✓\n- a=2: 3·1 = 3 ✓\n\nSo all three satisfy f'(4π) = f'(0). Need smallest positive t to be 4π.\n\nLet's check for each a if there's smaller t.\n\nf'(t) = (a + cos t)cos(at + b + sin t).\n\nFor a=1, b=-2π: f'(t) = (1+cos t)cos(t - 2π + sin t) = (1+cos t)cos(t + sin t).\nNeed this = 2.\nMax of (1+cos t) is 2, max of cos(...) is 1. So need both = max.\n1+cos t = 2 → cos t = 1 → t = 2πm.\nAt t=2π: cos(2π + sin 2π) = cos(2π) = 1. So f'(2π) = 2. So smallest positive t = 2π, not 4π. ✗\n\nFor a=2, b=-4π: f'(t) = (2+cos t)cos(2t - 4π + sin t) = (2+cos t)cos(2t + sin t).\nNeed = 3. Max (2+cos t) = 3 when cos t = 1, t = 2πm. At t=2π: cos(4π + 0) = 1. So f'(2π) = 3. Smallest is 2π. ✗\n\nFor a=3/2, b=-3π: f'(t) = (3/2 + cos t)cos((3/2)t - 3π + sin t).\nNeed = -5/2. Min of (3/2+cos t)·cos(...) = -5/2 when 3/2+cos t = 5/2 (cos t = 1) and cos(...) = -1.\ncos t = 1 → t = 2πm. At t = 2πm: (3/2)t - 3π + 0 = 3πm - 3π = 3π(m-1).\ncos(3π(m-1)) = (-1)^(m-1)... wait it's cos(3π(m-1)) = cos(π(m-1)·3). \n- m=1: cos(0) = 1, product = 5/2 ≠ -5/2.\n- m=2: cos(3π) = -1, product = -5/2 ✓. t = 4π.\n- Or could it be achieved otherwise? We need (3/2+cos t)cos(...) = -5/2. The factor (3/2+cos t) ∈ [1/2, 5/2], and cos(...) ∈ [-1,1]. Product = -5/2 requires (3/2+cos t) = 5/2 AND cos(...) = -1, so cos t = 1 mandatory.\n\nSo a = 3/2, b = -3π. ✓\n\nNow find α in (0, 4π) where f has local max.\n\nf(x) = sin((3/2)x - 3π + sin x).\n\nLet g(x) = (3/2)x - 3π + sin x. Then f(x) = sin(g(x)).\nf'(x) = g'(x) cos(g(x)) where g'(x) = 3/2 + cos x ≥ 1/2 > 0. So g is strictly increasing.\n\nf'(x) = 0 iff cos(g(x)) = 0 iff g(x) = π/2 + nπ.\n\nFor local max of f, we need f' changes + to -, i.e., cos(g(x)) goes + to -, since g'(x) > 0. So g(x) = π/2 + 2nπ (where cosine crosses from + to -).\n\nSo local maxima at points where g(x) = π/2 + 2nπ.\n\nFind x in (0, 4π) such that g(x) = π/2 + 2nπ for integer n.\n\ng(0) = -3π. g(4π) = 6π - 3π + 0 = 3π.\n\ng is increasing from -3π to 3π. Want g(x) = π/2 + 2nπ ∈ (-3π, 3π).\n\nπ/2 + 2nπ ∈ (-3π, 3π):\n- n = -1: π/2 - 2π = -3π/2 ✓\n- n = 0: π/2 ✓\n- n = 1: π/2 + 2π = 5π/2 ✓\n- n = -2: -7π/2, out\n- n = 2: 9π/2, out\n\nWait, also check n=-1 gives -3π/2 > -3π ✓, and n=1 gives 5π/2 < 3π ✓.\n\nSo 3 values: g(x) = -3π/2, π/2, 5π/2.\n\nn = 3, so α₁ corresponds to smallest x, which is when g(x) = -3π/2.\n\nSolve (3/2)x - 3π + sin x = -3π/2 → (3/2)x + sin x = 3π/2.\n\nTry x = π: (3/2)π + 0 = 3π/2 ✓.\n\nSo α₁ = π.\n\nHmm wait, let me verify n=3.\n\nα₁ = π. Then nα₁ - ab = 3π - (3/2)(-3π) = 3π + 9π/2 = 15π/2.\n\nSo q/p = 15/2, p+q = 17.\n\nWait, we need to confirm condition (가) gives us 2πa + b = 0. f(2π) = sin(2πa + b + sin 2π) = sin(2πa+b). And this should equal 2πa+b. sin(y) = y only at y = 0. ✓\n\nLet me double-check the local max condition. f' = g' cos(g). Since g' > 0 always, sign of f' = sign of cos(g). f' changes from + to - when cos(g) does. As x increases, g increases (strictly), so cos(g) goes + to - when g passes through π/2 + 2nπ. ✓\n\nAnswer: 17.\n</think>\n\n주어진 조건을 분석합니다.\n\n## 조건 (가) 분석\n- $f(0) = \\sin b = 0$ → $b = k\\pi$\n- $f(2\\pi) = \\sin(2\\pi a + b) = 2\\pi a + b$이려면 $\\sin y = y$에서 $y = 0$, 즉 $2\\pi a + b = 0$, $b = -2\\pi a$\n- $b = k\\pi$와 결합하면 $a \\in \\{1, 3/2, 2\\}$ (대응 $b = -2\\pi, -3\\pi, -4\\pi$)\n\n## 조건 (나) 분석\n$f'(x) = (a + \\cos x)\\cos(ax + b + \\sin x)$\n\n- $a=1$: $f'(0)=2$, $t=2\\pi$에서 $f'(2\\pi)=2$ → 최소 $t=2\\pi$ ✗\n- $a=2$: $f'(0)=3$, $t=2\\pi$에서 $f'(2\\pi)=3$ → 최소 $t=2\\pi$ ✗\n- $a=3/2$: $f'(0) = -5/2$. 최댓값/최솟값 분석에서 $-5/2$가 되려면 $\\cos x = 1$이고 $\\cos(g(x))=-1$ 필요. $t=2\\pi$에서 $\\cos(0)=1$ (×), $t=4\\pi$에서 $\\cos(3\\pi)=-1$ (✓) → 최소 $t=4\\pi$ ✓\n\n따라서 $a = 3/2$, $b = -3\\pi$.\n\n## 극대점 찾기\n$g(x) = \\frac{3}{2}x - 3\\pi + \\sin x$로 두면 $g'(x) = \\frac{3}{2} + \\cos x > 0$ (단조증가).\n\n$f'(x) = g'(x)\\cos(g(x))$이고 $g'>0$이므로, $f$가 극대가 되는 점은\n$$g(x) = \\frac{\\pi}{2} + 2n\\pi$$\n\n구간 $(0, 4\\pi)$에서 $g$는 $-3\\pi$에서 $3\\pi$로 증가. 조건 만족하는 값:\n- $n=-1$: $-3\\pi/2$\n- $n=0$: $\\pi/2$  \n- $n=1$: $5\\pi/2$\n\n따라서 $n = 3$.\n\n## $\\alpha_1$ 구하기\n$g(x) = -3\\pi/2$: $\\frac{3}{2}x + \\sin x = \\frac{3\\pi}{2}$\n\n$x = \\pi$ 대입: $\\frac{3\\pi}{2} + 0 = \\frac{3\\pi}{2}$ ✓\n\n따라서 $\\alpha_1 = \\pi$.\n\n## 최종 계산\n$$n\\alpha_1 - ab = 3\\pi - \\frac{3}{2}(-3\\pi) = 3\\pi + \\frac{9\\pi}{2} = \\frac{15\\pi}{2}$$\n\n$p = 2$, $q = 15$ (서로소), $p + q = 17$.\n\n최종 답: $17$\n코칭 한마디: 왜냐하면 $g'(x)>0$인 단조함수를 분리해두면 합성함수의 극값 판정이 단순한 $\\cos(g)$ 부호 변화로 환원되어, 복잡해 보이는 합성식의 구조가 한눈에 들어오기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 48786,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2026-공통-21",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "이차방정식 근의 분포",
+        "최적화 (자유 극값)",
+        "사잇값 정리 (수학2)",
+        "적분방정식 — f 결정 (정적분 상수 활용)",
+        "매개변수 미분"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "문제를 분석해 보겠습니다.\n\n## 풀이\n\n**연속성 조건:** $g(x)$가 $x=t$에서 연속이려면 $-f(t) = f(t)$, 즉 $f(t) = 0$이어야 합니다.\n\n**조건 (가) 분석:** 모든 실수 $a$에서 $\\lim_{x \\to a+} \\frac{g(x)}{x(x-2)}$가 존재해야 합니다.\n\n$x(x-2) = 0$인 점은 $x=0, x=2$. 이 점들에서 우극한이 존재하려면 분자 $g(x)$가 $x=0$과 $x=2$에서 우극한이 0이어야 합니다 (즉 $0$ 또는 $2$에서 $g$값이 0이거나 인수 포함).\n\n- $x \\to 0^+$: $g(0^+)$의 값이 0이어야 함\n- $x \\to 2^+$: $g(2^+)$의 값이 0이어야 함\n\n**경우 분석:** $t$의 위치에 따라 $g$의 형태 결정.\n\n$f(x) = (x-t) \\cdot h(x)$ 꼴이고 (왜냐하면 $f(t)=0$), $h$는 이차식, 최고차항 계수 양수.\n\n$x \\geq t$에서는 $f(x)$, $x < t$에서는 $-f(x)$.\n\n**$x=0$에서의 우극한:**\n- 만약 $t \\leq 0$: $x \\to 0^+$에서 $g(x) = f(x)$, 따라서 $f(0)=0$ 필요\n- 만약 $t > 0$: $x \\to 0^+$에서 $g(x) = -f(x)$ (단 $0 < t$), $-f(0) = 0$, 즉 $f(0)=0$ 필요\n\n어느 경우든 $f(0)=0$.\n\n**$x=2$에서의 우극한:**\n- 만약 $t \\leq 2$: $g(x) = f(x)$ near $2^+$, $f(2)=0$ 필요\n- 만약 $t > 2$: $g(x) = -f(x)$, $f(2)=0$ 필요\n\n어느 경우든 $f(2)=0$.\n\n따라서 $f(x) = x(x-2)(x-t)$이고 $f(t)=0$ 자동 성립.\n\n**조건 (나) 분석:** 자연수 $m$에 대해 $\\lim_{x \\to m^+} \\frac{g(x)}{x(x-2)}$가 음수.\n\n$\\frac{f(x)}{x(x-2)} = x - t$ 이고 $\\frac{-f(x)}{x(x-2)} = -(x-t) = t-x$.\n\n자연수 $m \\geq 1$에 대해:\n- $m \\geq t$이면 $g(x) = f(x)$ for $x \\to m^+$ (단 $m+\\epsilon \\geq t$), 극한값 $= m - t$\n- $m < t$이면 $g(x) = -f(x)$, 극한값 $= t - m$ (양수)\n\n음수가 되려면 $m \\geq t$이고 $m < t$여야 하는데... 다시 보겠습니다.\n\n$m \\geq t$일 때 극한 $= m - t \\geq 0$. 음수 불가.\n$m < t$일 때 극한 $= t - m > 0$. 음수 불가.\n\n**문제:** $x = 0$ 또는 $x = 2$ 근처에서 형태가 바뀌면 다를 수 있음.\n\n$m = 1$: $x \\to 1^+$. $1 < 2$이므로 $x(x-2) < 0$ for $x$ near $1^+$.\n- $1 \\geq t$: 극한 $= 1 - t$\n- $1 < t$: 극한 $= t - 1$\n\n$m = 2$: $x \\to 2^+$. $x(x-2) > 0$.\n- $2 \\geq t$: 극한 $= 2 - t$\n- $2 < t$: 극한 $= t - 2$\n\n일반화하면 자연수 $m$에 대해 극한값:\n- $m \\geq t$: $m - t$\n- $m < t$: $t - m$\n\n즉 $|m - t|$인데 부호 정정 필요. 다시 계산:\n\n$\\frac{f(x)}{x(x-2)} = x - t$. $m=1$ 근처에서 $x(x-2) < 0$, $f(x) = x(x-2)(x-t)$.\n\n$g(x) = f(x)$ if $x \\geq t$, 극한 $= 1 - t$ (어떤 부호든).\n$g(x) = -f(x)$ if $x < t$, 극한 $= -(1-t) = t-1$.\n\n음수 조건:\n- $m \\geq t$이고 $m - t < 0$: 모순\n- $m < t$이고 $t - m < 0$: 모순\n\n**재검토:** $m$이 정확히 $t$ 근처일 때를 고려해야 합니다. $t$가 자연수가 아니면 한쪽만 적용.\n\n아! 핵심을 놓쳤습니다. $m$이 자연수이고 $m^+$로 접근. $t$가 $m$과 $m+1$ 사이에 있으면 $x \\to m^+$에서 $x < t$일 수 있음.\n\n$m < t$이면 $x \\to m^+$에서 $x < t$ (충분히 가까이), $g = -f$, 극한 $= t - m > 0$.\n$m \\geq t$이면 $g = f$, 극한 $= m - t \\geq 0$.\n\n음수가 안 나옵니다. **부호가 어디서 음수?**\n\n$\\frac{f(x)}{x(x-2)}$를 $m=1$에서 다시: $m=1$이면 $x \\to 1^+$, 분모 $x(x-2) \\to -1 < 0$, 분자 $f(x) \\to f(1) = 1 \\cdot (-1)(1-t) = t-1$.\n\n극한 $= \\frac{t-1}{-1} = 1-t$. 맞음.\n\n음, 그러면 어떻게 음수? **$t$가 $0$과 $2$ 사이일 때 부호 재검토.**\n\n$f(x) = x(x-2)(x-t)$, $t \\in (0,2)$. $x \\to 1^+$:\n- $1 > t$이면 $g(x) = f(x)$, 극한 $= 1-t > 0$\n- $1 < t$이면 $g(x) = -f(x)$, 극한 $= t-1 > 0$\n\n여전히 양수. \n\n**핵심 발견:** $f(x) = x(x-2)(x-t)$가 아닐 수 있음. $f$는 $x=0, x=2$에서 0일 필요는 없고, $g$의 우극한만 0이면 됨.\n\n$x=0$에서 $g(0^+)$: $0 \\geq t$이면 $g(0^+) = f(0)$, $0 < t$이면 $g(0^+) = -f(0)$. 어느쪽이든 $f(0)=0$ 필요.\n\n마찬가지로 $f(2) = 0$. 그러므로 $f(x) = x(x-2)(x-s)$ 꼴 (어떤 $s$에 대해), $f(t)=0$이므로 $t \\in \\{0, 2, s\\}$.\n\n**경우 1:** $t = s$. $f(x) = x(x-2)(x-t)$.\n**경우 2:** $t = 0$. $f(x) = x(x-2)(x-s)$.\n**경우 3:** $t = 2$. $f(x) = x(x-2)(x-s)$.\n\n**경우 2: $t=0$**\n$g(x) = -f(x)$ for $x<0$, $f(x)$ for $x \\geq 0$.\n자연수 $m \\geq 1 > 0 = t$이므로 $g = f$, 극한 $= m - s$.\n\n음수: $m < s$. 자연수 $m$ 중 음수가 되는 것들 = $\\{1, 2, \\ldots, \\lfloor s \\rfloor\\}$ (단 $s$가 자연수면 $m < s$).\n\n조건 (나): 이 집합 $= \\{g(-1), -\\frac{7}{2}g(1)\\}$ (원소 2개).\n\n$g(-1) = -f(-1) = -(-1)(-3)(-1-s) = -(3)(-(1+s)) \\cdot ... $ 다시:\n$f(-1) = (-1)(-3)(-1-s) = 3 \\cdot (-(1+s)) = -3(1+s)$\n$g(-1) = -f(-1) = 3(1+s)$\n\n$g(1) = f(1) = (1)(-1)(1-s) = -(1-s) = s-1$\n$-\\frac{7}{2}g(1) = -\\frac{7}{2}(s-1) = \\frac{7(1-s)}{2}$\n\n$\\{m : 1 \\leq m < s\\} = \\{3(1+s), \\frac{7(1-s)}{2}\\}$\n\n원소가 2개이므로 $\\{1, 2\\}$ (즉 $2 < s \\leq 3$일 때 자연수 $m=1,2$).\n\n$\\{3(1+s), \\frac{7(1-s)}{2}\\} = \\{1, 2\\}$.\n\n$s > 2$이므로 $3(1+s) > 9$. 너무 큼. 모순.\n\n**경우 3: $t=2$**\n$g(x) = -f(x)$ for $x < 2$, $f(x)$ for $x \\geq 2$.\n\n$m=1$: $1 < 2 = t$, $g = -f$, 극한 $= -(1-s)/(-1) \\cdot$... 다시:\n$\\lim_{x\\to 1^+} \\frac{-f(x)}{x(x-2)} = -(1-s) = s-1$\n\n$m \\geq 2$: $g = f$, 극한 $= m - s$.\n\n$g(-1) = -f(-1) = -(-1)(-3)(-1-s) = 3(1+s)$\n$g(1) = -f(1) = -(1)(-1)(1-s) = (1-s)$\n$-\\frac{7}{2}g(1) = -\\frac{7}{2}(1-s) = \\frac{7(s-1)}{2}$\n\n음수 조건:\n- $m=1$: $s-1 < 0$, 즉 $s<1$\n- $m \\geq 2$: $m < s$\n\n만약 $s < 1$: $m=1$만 음수. 집합 $\\{1\\}$. 원소 1개.\n만약 $1 \\leq s$: $m=1$은 비음수, $m \\geq 2$ 중 $m<s$. \n\n집합 원소 2개 필요. \n\n$s < 1$: $\\{1\\}$, 1개.\n$s \\geq 1$: $\\{m \\geq 2: m < s\\}$. 2개이려면 $\\{2,3\\}$, 즉 $3 < s \\leq 4$.\n\n이 경우 집합 $\\{2,3\\} = \\{3(1+s), \\frac{7(s-1)}{2}\\}$.\n\n$3 < s \\leq 4$: $3(1+s) \\in (12, 15]$. 너무 큼.\n\n**경우 1: $t = s$**, $f(x) = x(x-2)(x-t)$.\n\n$g(-1) = -f(-1) = -(-1)(-3)(-1-t) = 3(1+t)$\n$g(1) = ?$ $1$과 $t$ 비교 필요.\n\n$-\\frac{7}{2}g(1)$.\n\n$f(1) = (1)(-1)(1-t) = t-1$.\n\n자연수 $m$에서 음수 극한:\n- $m \\geq t$: $g = f$, 극한 $= m - t$. 음수 불가 ($m \\geq t$).\n- $m < t$: $g = -f$, 극한 $= -(m-t) = t-m > 0$. 음수 불가.\n\n음수 안 나옴. 모순.\n\n**재검토 필요.** 아마 $f$가 인수 $x$ 또는 $(x-2)$를 두 번 가질 수도. 아니면 다른 구조.\n\n**다시 생각:** 조건 (가)에서 \"우극한이 존재\"는 $\\infty$ 포함 안 됨. $a=0, a=2$에서 우극한 존재해야.\n\n$a=0$ 우극한 존재: $g(0^+)/[0 \\cdot (-2)]$ 형태. 분모 $\\to 0$. 우극한 존재하려면 $g(0^+) = 0$이고 $g$가 $x$ 인수를 가짐. 즉 $g(x) = x \\cdot (\\ldots)$ near $0^+$.\n\n$a=2$도 마찬가지로 $g(x) = (x-2) \\cdot(\\ldots)$ near $2^+$.\n\n이는 위 분석과 동일. $f$가 $x$와 $(x-2)$ 인수를 가짐.\n\n**좌극한은?** 조건은 우극한만이지만, 우극한 존재 조건은 동일.\n\n음, 그런데 좌극한과 우극한이 부호가 다를 수 있음. $t$가 0이나 2일 때 한쪽 형태 바뀜.\n\n다시 생각해보니 **경우 1 재검토**: $t=s$이지만 $t$ 자체가 0 또는 2일 수 있음. $t=0$이면 경우 2, $t=2$면 경우 3과 동일.\n\n다른 가능성: $f(x) = x^2(x-2)$ 같은 중근.\n\n$f(x) = x(x-2)(x-s)$, $f(t)=0$. $t = 0, 2,$ 또는 $s$.\n\n**$t < 0$인 경우 다시:** \n\n만약 $t < 0$이면 $f(t) = t(t-2)(t-s) = 0$. $t < 0$이므로 $t \\neq 0, 2$. 따라서 $s = t$, 그러면 $f(x) = x(x-2)(x-t)$.\n\n자연수 $m \\geq 1 > 0 > t$, $m \\geq t$이므로 $g(x) = f(x)$, 극한 $= m - t > 0$. 음수 안 됨.\n\n**$t > 2$인 경우:**\n$s = t$. 자연수 $m$: $m \\geq t > 2$이면 $m \\geq t$, $g=f$, 극한 $m-t \\geq 0$.\n$m < t$이면 $g=-f$, 극한 $t-m > 0$.\n\n여전히 음수 안 됨.\n\n**$0 < t < 2$인 경우 ($s=t$):**\n같은 분석. 자연수 $m \\geq 1$:\n- $m=1$: $1$ vs $t$. $t<1$이면 $m \\geq t$,",
+      "reasoner_answer_correct": false,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 65268,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": true,
+      "model_used": "opus"
+    },
+    {
+      "id": "2026-공통-22",
+      "difficulty": 5,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "로그함수의 성질",
+        "선분의 매개변수화",
+        "일차함수의 그래프",
+        "음함수 미분",
+        "한 점에서의 접선의 방정식"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 분석\n\n두 곡선 $y=\\log_{16}(8x+2)$와 $y=4^{x-1}-\\frac{1}{2}$는 서로 역함수 관계입니다.\n\n확인: $y=4^{x-1}-\\frac{1}{2}$에서 $y+\\frac{1}{2}=4^{x-1}$, 양변에 로그 취하면 $x = \\log_4(y+\\frac{1}{2})+1 = \\log_4(4y+2)/... $\n\n직접 확인: $y=\\log_{16}(8x+2)$에서 $16^y = 8x+2$, $x = \\frac{16^y-2}{8} = 2 \\cdot 16^y/16 - 1/4$... \n\n다시 정리: $y=\\log_{16}(8x+2) = \\frac{1}{2}\\log_4(8x+2)$. \n\n$x \\leftrightarrow y$ 교환: $x = \\frac{1}{2}\\log_4(8y+2)$, $2x = \\log_4(8y+2)$, $4^{2x}=8y+2$, $y = \\frac{16^x-2}{8} = 2\\cdot 4^{2x-... }$\n\n$y = \\frac{16^x-2}{8}$. 한편 $4^{x-1}-\\frac{1}{2} = \\frac{4^x}{4}-\\frac{1}{2} = \\frac{4^x-2}{4}$. 두 식이 다르네요.\n\n다시: $y=\\log_{16}(8x+2)$의 역함수를 구해봅시다.\n$16^y = 8x+2 \\Rightarrow x = \\frac{16^y - 2}{8}$\n역함수: $y = \\frac{16^x-2}{8}$\n\n이건 $4^{x-1}-\\frac{1}{2}$와 다릅니다. \n\n음, 그럼 역함수 관계가 아닐 수도 있습니다. 다시 봅시다.\n\n$y=\\log_{16}(8x+2)$를 정리: $8x+2 = 2(4x+1)$, $\\log_{16}(2(4x+1)) = \\log_{16}2 + \\log_{16}(4x+1) = \\frac{1}{4}+\\frac{1}{2}\\log_4(4x+1)$.\n\n흠. 다른 접근: A를 $y=x$ 대칭한 점 A' = $(b,a)$가 직선 OB 위에 있습니다.\n\n## 점 설정\n\nA$(a,b)$가 첫 번째 곡선 위: $b = \\log_{16}(8a+2)$, 즉 $16^b = 8a+2$ ... (1)\n\nB$(s,t)$가 두 번째 곡선 위: $t = 4^{s-1}-\\frac{1}{2}$, 즉 $4t+2 = 4^s$ ... (2)\n\nA' = $(b,a)$가 직선 OB 위: $\\frac{a}{b} = \\frac{t}{s}$, 즉 $as = bt$ ... (3)\n\n중점 조건: $a+s = \\frac{77}{4}$, $b+t = \\frac{133}{4}$ ... (4)\n\n## 핵심 관찰\n\n(1)에서 $16^b = 8a+2$, 즉 $4^{2b} = 8a+2$, $4^{2b-1}\\cdot 2 = 8a+2$ ... 음.\n\n$16^b = 8a+2 \\Rightarrow 2 \\cdot 16^b = 16a+4 \\Rightarrow 16^b = 8a+2$.\n\n곡선 2: $4^s = 4t+2$.\n\n만약 $s = 2b$로 두면: $4^{2b} = 16^b = 8a+2 = 4t+2$, 따라서 $t = 2a$.\n\n확인: $s=2b$, $t=2a$이면 B가 곡선 2 위에 있는지: $4^{2b}-... $ 잠깐, 이건 (1)이 만족할 때만 성립합니다.\n\n즉 A$(a,b)$가 곡선 1 위 $\\Leftrightarrow$ $(2b, 2a)$가 곡선 2 위!\n\n확인: $(2b,2a)$가 곡선 2: $2a = 4^{2b-1}-\\frac{1}{2} = \\frac{16^b}{4}-\\frac{1}{2}$, $8a+2 = 16^b$. ✓\n\n## 두 가지 가능성\n\nB가 $(2b,2a)$일 수도 있고 다른 점일 수도 있지만, 조건 (3) $as=bt$를 보면:\n\n(3): $a \\cdot 2b = b \\cdot 2a$ ✓ 항상 성립!\n\n그러므로 B$=(2b, 2a)$입니다.\n\n## 방정식 풀이\n\n중점 조건:\n- $a + 2b = \\frac{77}{4}$\n- $b + 2a = \\frac{133}{4}$\n\n연립: 두 식 더하면 $3(a+b) = \\frac{210}{4}$, $a+b = \\frac{70}{4} = \\frac{35}{2}$.\n빼면: $(b+2a)-(a+2b) = a-b = \\frac{56}{4}=14$.\n\n따라서 $a = \\frac{35/2+14}{2} = \\frac{63/2}{2} \\cdot ...$\n\n$a-b=14$, $a+b=\\frac{35}{2}$\n$2a = 14 + \\frac{35}{2} = \\frac{63}{2}$, $a = \\frac{63}{4}$\n$b = \\frac{35}{2} - \\frac{63}{4} = \\frac{70-63}{4} = \\frac{7}{4}$\n\n검증 (1): $16^{7/4} = (2^4)^{7/4}=2^7=128$. $8a+2 = 8\\cdot\\frac{63}{4}+2 = 126+2=128$ ✓\n\n## 답\n\n$a \\times b = \\frac{63}{4} \\times \\frac{7}{4} = \\frac{441}{16}$\n\n$\\gcd(441,16)=1$이므로 $p=16$, $q=441$.\n\n$p+q = 457$\n\n최종 답: $457$\n코칭 한마디: 왜냐하면 두 곡선이 $(x,y)\\leftrightarrow(2y,2x)$ 변환으로 대응됨을 간파하면, $y=x$ 대칭 후 원점 직선 위라는 조건이 자동으로 성립하여 문제가 단순한 연립일차방정식으로 환원되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 36198,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "공통(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2026-미적분-28",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "한 점에서의 접선의 방정식",
+        "매개변수 미분",
+        "회전체의 부피 (디스크)",
+        "음함수 미분",
+        "회전체 부피 (껍질법)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 1단계: 접선의 방정식과 거리 t 구하기\n\n$f(x) = \\frac{1}{2}x^2 - x + \\ln(1+x)$\n\n$f'(x) = x - 1 + \\frac{1}{1+x} = \\frac{(x-1)(1+x)+1}{1+x} = \\frac{x^2}{1+x}$\n\n점 $(s, f(s))$에서 접선의 방정식:\n$$y = f(s) + f'(s)(x-s)$$\n\n$x=0$일 때 $y$절편: $y = f(s) - s f'(s)$\n\n$y$축에 내린 수선의 발은 $(0, f(s))$.\n\n두 점 $(0, f(s))$와 $(0, f(s) - sf'(s))$ 사이의 거리:\n$$t = |s f'(s)| = s \\cdot \\frac{s^2}{1+s} = \\frac{s^3}{1+s}$$\n\n(s>0이므로 양수)\n\n## 2단계: g(t)의 성질\n\n$t = \\frac{s^3}{1+s}$, 즉 $s = g(t)$.\n\n$t$가 $s$에 대해 증가함수임을 확인: 미분하면 $\\frac{3s^2(1+s) - s^3}{(1+s)^2} = \\frac{s^2(3+2s)}{(1+s)^2} > 0$ ✓\n\n**적분 구간 확인**: \n- $t = \\frac{1}{2}$일 때: $\\frac{s^3}{1+s} = \\frac{1}{2}$ → $2s^3 = 1+s$ → $s=1$ (확인: $\\frac{1}{2}$ ✓)\n- $t = \\frac{27}{4}$일 때: $\\frac{s^3}{1+s} = \\frac{27}{4}$ → $4s^3 = 27+27s$... $s=3$ 시도: $\\frac{27}{4}$ ✓\n\n따라서 $g(1/2)=1$, $g(27/4)=3$.\n\n## 3단계: 역함수 적분 공식 활용\n\n$y = g(t)$의 역함수가 $t = \\frac{s^3}{1+s}$이므로:\n\n$$\\int_{1/2}^{27/4} g(t)\\,dt = [tg(t)]_{1/2}^{27/4} - \\int_{1}^{3} t\\,ds$$\n\n(여기서 $s = g(t)$로 치환, $t = \\frac{s^3}{1+s}$)\n\n**경계항**: $\\frac{27}{4} \\cdot 3 - \\frac{1}{2} \\cdot 1 = \\frac{81}{4} - \\frac{1}{2} = \\frac{79}{4}$\n\n**적분항**: \n$$\\int_1^3 \\frac{s^3}{1+s}\\,ds$$\n\n다항식 나눗셈: $\\frac{s^3}{1+s} = s^2 - s + 1 - \\frac{1}{1+s}$\n\n$$\\int_1^3 \\left(s^2 - s + 1 - \\frac{1}{1+s}\\right)ds = \\left[\\frac{s^3}{3} - \\frac{s^2}{2} + s - \\ln(1+s)\\right]_1^3$$\n\n$s=3$: $9 - \\frac{9}{2} + 3 - \\ln 4 = \\frac{15}{2} - \\ln 4$\n$s=1$: $\\frac{1}{3} - \\frac{1}{2} + 1 - \\ln 2 = \\frac{5}{6} - \\ln 2$\n\n차: $\\frac{15}{2} - \\frac{5}{6} - \\ln 4 + \\ln 2 = \\frac{45-5}{6} - \\ln 2 = \\frac{40}{6} - \\ln 2 = \\frac{20}{3} - \\ln 2$\n\n## 4단계: 최종 계산\n\n$$\\int_{1/2}^{27/4} g(t)\\,dt = \\frac{79}{4} - \\frac{20}{3} + \\ln 2 = \\frac{237 - 80}{12} + \\ln 2 = \\frac{157}{12} + \\ln 2$$\n\n최종 답: $\\dfrac{157}{12}+\\ln 2$ (정답 ⑤)\n코칭 한마디: 왜냐하면 $g(t)$가 명시적으로 풀리지 않을 때는 \"역함수 적분 공식\"($\\int g\\,dt = ts - \\int t\\,ds$)을 써서 다루기 쉬운 변수 $s$로 옮기는 것이 핵심 전략이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 23228,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2026-미적분-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nWe have $f^{-1}$ given. Let me find $f^{-1}$ explicitly.\n\nFor $|x| \\le 1$: $4(f^{-1}(x))^2 = x^2(x^2-5)^2$, so $f^{-1}(x) = \\pm \\frac{x(x^2-5)}{2}$ (with sign chosen so $f^{-1}$ is continuous and increasing... wait, $f$ is increasing so $f^{-1}$ is increasing).\n\nActually $f^{-1}$ is increasing since $f$ is.\n\nAt $x=1$: $4(f^{-1}(1))^2 = 1 \\cdot 16 = 16$, so $|f^{-1}(1)| = 2$.\nFrom (나) at $x=1$ boundary, $|f^{-1}(x)| = e^0+1 = 2$. Consistent.\n\nAt $x=0$: $f^{-1}(0) = 0$.\n\nFor $|x| \\le 1$, $f^{-1}(x) = \\frac{x(x^2-5)}{2}$ or $-\\frac{x(x^2-5)}{2}$? \n\nSince $x^2-5 < 0$ for $|x|\\le 1$, $\\frac{x(x^2-5)}{2}$ has sign opposite to $x$. So that's decreasing-ish near 0.\n\nCheck: derivative of $\\frac{x(x^2-5)}{2} = \\frac{x^3-5x}{2}$ is $\\frac{3x^2-5}{2}$, negative for $|x|<\\sqrt{5/3}$, so decreasing on $|x|\\le 1$. Not what we want.\n\nTry $f^{-1}(x) = -\\frac{x(x^2-5)}{2} = \\frac{x(5-x^2)}{2} = \\frac{5x-x^3}{2}$. Derivative: $\\frac{5-3x^2}{2} > 0$ for $|x|<\\sqrt{5/3}$. Good, increasing on $[-1,1]$.\n\nAt $x=1$: $f^{-1}(1) = (5-1)/2 = 2$. At $x=-1$: $f^{-1}(-1) = -2$. Good.\n\nFor $|x|>1$: $|f^{-1}(x)| = e^{|x|-1}+1$. Since $f^{-1}$ is increasing and $f^{-1}(1)=2 > 0$, for $x>1$, $f^{-1}(x) > 2 > 0$, so $f^{-1}(x) = e^{x-1}+1$.\nFor $x<-1$, $f^{-1}(x) < -2 < 0$, so $f^{-1}(x) = -(e^{-x-1}+1)$.\n\nSo $f^{-1}$ is defined. Now $f$ is its inverse.\n\nThe graph of $y = f(x)$ is the reflection of $y = f^{-1}(x)$ across $y=x$.\n\nEquivalently, the curve $y=f(x)$ corresponds to points $(f^{-1}(t), t)$ for $t \\in \\mathbb{R}$.\n\nWe want lines through $(1,0)$ with slope $m$ intersecting $y=f(x)$.\n\nLet me parametrize $y=f(x)$ as $(u, v)$ where $u = f^{-1}(v)$ and $v$ ranges over $\\mathbb{R}$.\n\nSo points on curve: $(f^{-1}(v), v)$ for $v \\in \\mathbb{R}$.\n\nRange of $u = f^{-1}(v)$:\n- $v \\le -1$: $u = -(e^{-v-1}+1)$, $u \\in (-\\infty, -2]$\n- $-1 \\le v \\le 1$: $u = \\frac{5v-v^3}{2}$, $u \\in [-2, 2]$\n- $v \\ge 1$: $u = e^{v-1}+1$, $u \\in [2, \\infty)$\n\nSo domain of $f$ is all reals.\n\nWe want number of intersections of $y = m(x-1)$ with $y=f(x)$.\n\nEquivalently: find number of $v$ such that $v = m(f^{-1}(v) - 1)$.\n\nSo $v = m(u-1)$ where $u = f^{-1}(v)$.\n\nLet me think geometrically. Line through $(1,0)$ with slope $m$ intersects curve.\n\nNote $(1,0)$: is this on the curve? $f(1) = ?$ We need $f^{-1}(v)=1$. From middle piece: $\\frac{5v-v^3}{2}=1$, $v^3-5v+2=0$. Let's see, $v=2$: $8-10+2=0$. Yes! But $v=2$ is outside $[-1,1]$. Try other roots: $v^3-5v+2 = (v-2)(v^2+2v-1)$, roots $v = -1\\pm\\sqrt{2}$. $-1+\\sqrt{2} \\approx 0.414$, in $[-1,1]$. $-1-\\sqrt{2}\\approx -2.414$, not in range.\n\nSo $f(1) = -1+\\sqrt{2}$, point $(1, \\sqrt{2}-1)$ is on curve, not $(1,0)$.\n\nLet me analyze $f$ on different regions:\n- For $u \\in [-2, 2]$: $u = \\frac{5v-v^3}{2}$ with $v \\in [-1,1]$, $f(u) = v$.\n- For $u \\ge 2$: $v = 1 + \\ln(u-1)$\n- For $u \\le -2$: $v = -1 - \\ln(-u-1)$\n\nHmm wait, $u = e^{v-1}+1$ gives $v = 1 + \\ln(u-1)$ for $u > 1$, but actually the piece is for $v \\ge 1$, $u \\ge 2$.\n\nFor $u \\le -2$: $u = -(e^{-v-1}+1)$, $-u-1 = e^{-v-1}$, $-v-1 = \\ln(-u-1)$, $v = -1 - \\ln(-u-1)$.\n\nNow let's think about tangent lines and key points.\n\nThe line $y = m(x-1)$ through $(1,0)$.\n\nWe need number of solutions. Let's think about $h(x) = f(x) - m(x-1)$.\n\nCritical aspect: behavior as $x \\to \\pm \\infty$.\n\nAs $x \\to \\infty$: $f(x) = 1 + \\ln(x-1) \\to \\infty$ (slowly). \nAs $x \\to -\\infty$: $f(x) = -1 - \\ln(-x-1) \\to -\\infty$ (slowly).\n\nSo $f$ grows like $\\ln$ at infinities.\n\nSlope of $f$:\n- For $u \\in [-2,2]$: $\\frac{dv}{du} = 1/\\frac{du}{dv} = \\frac{2}{5-3v^2}$. At $v=0$: $2/5$. At $v=\\pm 1$: $2/2=1$.\n- For $u \\ge 2$: $\\frac{dv}{du} = \\frac{1}{u-1}$. At $u=2$: $1$. Decreases to $0$.\n- For $u \\le -2$: $\\frac{dv}{du} = \\frac{-1}{-u-1} \\cdot(-1) = \\frac{1}{-u-1}$... let me redo. $v = -1-\\ln(-u-1)$, $\\frac{dv}{du} = -\\frac{1}{-u-1}\\cdot(-1) = \\frac{1}{-u-1}$. At $u=-2$: $1$. Decreases to 0 as $u\\to-\\infty$.\n\nSo $f'$ is continuous. Let's check at $u=2$: from middle piece, $f'(2) = 2/(5-3) = 1$. From outer piece, $f'(2)=1$. Continuous!\n\nSlope: $f'$ at $u \\in [-2,2]$: $\\frac{2}{5-3v^2}$. Min at $v=0$: $2/5$. Max at $v=\\pm 1$: $1$.\n\nWait, for $|v|>1/\\sqrt{5/3}=\\sqrt{5/3}$, the derivative is negative? But $|v|\\le 1<\\sqrt{5/3}$. So on this piece, $5-3v^2 \\ge 2 > 0$, derivative positive, between $2/5$ and $1$.\n\nHmm, but $f$ should be increasing on whole real line. Let me check: derivative is $2/5$ at $v=0$ (i.e., $u=0$), and increases to $1$ at the endpoints. Then for $|u|>2$, derivative goes from $1$ down to $0$.\n\nSo $f'$ has max value 1 (attained at $u=\\pm 2$), and is at least $2/5$ on $[-2,2]$, less than 1 outside.\n\nNow the line $y = m(x-1)$ passes through $(1,0)$.\n\nAt $x=1$, $y_f = f(1) = \\sqrt{2}-1 \\approx 0.414$.\n\nLet's compute key values.\n\nNumber of intersection points $g(m)$.\n\nWhen $m$ is very large positive: line is nearly vertical through $(1,0)$. Since $f$ has bounded slope (max 1), the line will... Let's think. For $m$ large, line goes up steeply on right of $x=1$ and down steeply on left. \n\nHmm actually for $m>1$, line is steeper than $f$ everywhere. Line passes through $(1,0)$, $f(1)\\approx 0.414$. As $x$ increases past 1, line rises faster than $f$, so stays above. As $x$ decreases below 1, line drops faster than $f$, so for $x<1$, $f(x) > m(x-1)$ (since $f(1)>0$ and line drops faster). \n\nWait, let me think again. At $x=1$: $f(1) = \\sqrt{2}-1>0$, line at 0. So $f$ above line at $x=1$.\n\nFor very steep line ($m\\to\\infty$), line is nearly vertical, going up steeply for $x>1$ and down steeply for $x<1$. Will it cross $f$?\n\nFor $x$ slightly $>1$: line has $y = m(x-1)$, becomes very large positive. $f$ stays around 0.414, growing slowly. So eventually $f < \\text{line}$? Yes, as $x$ increases, line $\\to \\infty$ faster. So line crosses $f$ from below at some $x>1$. Wait at $x=1$, line is at 0, $f$ at 0.414, so $f$ above line. As $x$ increases, line grows faster, so they meet. 1 intersection on right.\n\nFor $x<1$: line goes to $-\\infty$ as $m$ large and $x<1$. $f$ goes to $-\\infty$ slowly. At $x=1$, line below $f$. As $x$ decreases, line drops fast. They might not meet on left if line drops faster than $f$. Actually for $x<1$, $m(x-1)<0$ when $m>0$. $f(x)$ could be positive or negative. $f(0)=?$ $u=0\\Rightarrow v=0$, so $f(0)=0$. At $x=0$, line at $-m$, $f(0)=0$. So line below $f$. Going further left, line drops faster... but $f$ also drops. \n\nFor very large $m$: line at $x=-1$: $-2m$, very negative. $f(-1) = -(\\sqrt{2}-1) \\approx -0.414$. Still line below.\n\nWhat about as $x \\to -\\infty$? Line: $-m\\cdot|x-1| \\to -\\infty$ linearly. $f \\to -\\infty$ logarithmically. So $f$ above line eventually.\n\nHmm, $f(x) - m(x-1)$ at $x=1$ is positive (=0.414). Going to $-\\infty$, $f-m(x-1) \\to f(x) + m|x-1| \\to +\\infty$ (since linear beats log). So $f$ stays above line on $x<1$? Need to check if they ever meet.\n\nDifference $h(x) = f(x) - m(x-1)$. $h(1) = \\sqrt{2}-1 > 0$. $h'(x) = f'(x) - m$. For $m > 1$, $h'(x) < 0$ always, so $h$ decreasing. Then $h$ is positive on $x<1$ and possibly negative on $x>1$. As $x\\to\\infty$, $h \\to -\\infty$. So one zero on $x>1$, none on $x<1$. So $g(m) = 1$ for $m > 1$.\n\nFor $m < 0$ very negative: by symmetry-ish argument. Line through $(1,0)$ with very negative slope: $h'(x) = f'(x) - m > 0$, $h$ increasing. $h(1) > 0$, so $h>0$ on $x>1$. As $x\\to -\\infty$, $h(x) = f(x) - m(x-1) \\to -\\infty + (-m)(-\\infty) = -\\infty + \\infty$. With $m<0$, $-m>0$, $(x-1)\\to-\\infty$, $-m(x-1) \\to -\\infty$. So $h(x) = f(x) - m(x-1) \\to -\\infty - (-\\infty) = $ depends on rates. $f \\to -\\infty$ logarithmically, $-m(x-1) \\to -\\infty$ linearly. So $h \\to +\\infty$ (since $-m(x-1)$, with $m<0$, $-m>0$, $x-1<0$, product negative. $-m(x-1) \\to -\\infty$ linearly. So $h = f(x) - m(x-1) = f(x) + (-m)(x-1)$. $f \\to -\\infty$ slowly, $(-m)(x-1) \\to -\\infty$ fast. So $h \\to -\\infty$.\n\nSo $h(1)>0$, $h\\to -\\infty$ as $x\\to-\\infty$, $h$ increasing? Wait if $h'>0$, $h$ increasing means $h$ is smaller for smaller $x$. So $h(x) < h(1)$ for $x<1$. And $h \\to -\\infty$. So one zero on $x<1$. On $x>1$, $h$ increasing from positive, stays positive. So $g(m) = 1$ for $m < 0$ very negative... actually for any $m<0$? Let's check.\n\nFor $m < 0$: $h'(x) = f'(x) - m$. $f' \\ge 0$, $-m > 0$, so $h' > 0$ always. $h$ strictly increasing. $h(1) = \\sqrt{2}-1>0$. Need $h \\to -\\infty$ as $x\\to-\\infty$ and $h\\to\\infty$ as $x\\to\\infty$. As shown, both true. One zero on $x<1$.\n\nWait, I should double check. $h$ strictly increasing, so exactly one zero. $g(m)=1$ for all $m<0$.\n\nFor $0 \\le m \\le 1$: more complex. Let me analyze.\n\n$",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 63778,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "미적분(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    }
+  ]
+}

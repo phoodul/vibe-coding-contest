@@ -125,6 +125,25 @@
 
 ---
 
+## [2026-04-28] Phase G-05 — KPI 85% 게이트 통과 + 모델 격상 결정
+
+- **상용화 게이트 통과 입증**: 진짜 multi-turn agentic (매 turn 마다 원문제 + 누적 trace 주입) + Gemini 3.1 Pro 또는 GPT-5.5 = 수능 killer 정답률 86~89% 달성. KPI 85% 게이트 통과.
+- **G-04 결함 정정**: chain prompt-inject 만으로는 학계 30% 단발 천장 못 깨남. 매 turn 마다 LLM 실제 호출 + 원문제 컨텍스트 동시 주입이 정답.
+- **Production 모델 격상 결정**:
+  - 메인: **Gemini 3.1 Pro + agentic** (정답률 89.5%, 월 ~$540, parse_err 0) ★ 1순위
+  - 대체: GPT-5.5 + agentic (86.8%, 월 ~$1,260)
+  - Sonnet 4.5 (현재) → Sonnet 4.6 (코드 변경 1줄, 비용 동일)
+- **영역별 듀얼 모델 라우팅**:
+  - 미적분 28+30 → **Opus 4.7 baseline** (단발 100%, 빠르고 비용 ↓)
+  - 공통 21+22 → Gemini 3.1 Pro agentic (90%)
+  - 가형 킬러 → Sonnet 4.6 agentic (100%) 또는 Gemini agentic (88.9%)
+- **agentic 라이브 도입 정책**: 난이도 5+ 만 multi-turn (5 step), 단순 문제는 baseline 단발. max_tokens 5000.
+- **평가셋**: 수능 21+22+28+30 / 가형 21+28+29+30 / 2017~2026 / 38문항 (parse_err 모수 포함 strict 채점).
+- **학계 천장 돌파**: 학계 보고 75~85% (6계층 풀구현) 를 89.5% 로 돌파. 핵심 = 매 turn 마다 원문제 컨텍스트 동시 주입 (사용자 통찰).
+- **caching 미적용** (현재) — 향후 prompt caching 활성화 시 운영비 30~50% 추가 절감.
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부
