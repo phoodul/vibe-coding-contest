@@ -1,5 +1,51 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-27 (8차 세션 — G-04 killer 정답률 85% 도전 + 4채널 trigger 시스템)
+
+### 진행 요약
+사용자 지시: "math_process.md 의 alternating loop 사고법 + similar RAG + trigger 4채널 입력 시스템으로 killer 문제 정답률 85% 달성 → 상용화 게이트". 9 task 모두 commit 완료. 다만 1차 측정 결과 KPI 게이트 한참 미달 (20~30%).
+
+### 9 task commits
+| Task | 커밋 | 내용 |
+|---|---|---|
+| G04-1 | 74a607b | killer 평가셋 58문항 추출 (user_docs 격리) |
+| G04-2 | 211481e | eval-kpi --killer / --mode + 객관식·주관식 자동 채점 + LLM judge |
+| G04-3 | c87e08b | Manager goals/constraints/expected_triggers 출력 강화 |
+| G04-4 | f2a0ef8 | alternatingChain (역행↔순행) — math_process.md ③ |
+| G04-5 | 6635504 | similar_problems RAG (58/160 trigger 라벨, 백엔드 한정) |
+| G04-6 | c52fe49 | eval-kpi inline alternating + RAG (4-way 측정 인프라) |
+| G04-8 | 59265c2 | trigger 직접 입력 (3채널) — admin + contributor 권한 |
+| G04-9 | c2f9268 | 자체 학습 trigger mining (4채널) — cron + 검수 큐 |
+| G04-7 | 3829e6b | 1차 측정 보고서 — KPI 미달 + 4 옵션 제시 |
+
+### 핵심 측정 결과 (limit 20)
+- **baseline 30%** = **chain_only 30%** = SOTA 단발 천장. alternating loop 효과 없음.
+- **chain_rag 20%** — RAG inject 가 오히려 attention 분산.
+- **Manager 실패율 60%** — expected_triggers 추가로 출력 잘림 → 측정 신뢰도 저해.
+- chain 종료의 75% 가 forward_only_progress — chain 자체가 풀이를 닫지 못함.
+
+### KPI 85% 게이트 미달 — 향후 4 옵션
+A. Manager 안정화 → 재측정 (단기, maxTokens 1500)
+B. KPI 게이트 전환 — 학생 코칭 가치 (chain visualization, trigger 학습) 차별화
+C. GPT-5.1 측정 — SOTA 천장 확인
+D. chain 을 진짜 multi-turn API 로 전환 (장기)
+
+권장: A + C 병행 + B 동시 진행.
+
+### 4채널 trigger 입력 시스템 가동 완료 (KPI 게이트와 별개 자산)
+| 채널 | 상태 |
+|---|---|
+| (1) 시드 JSON | ✅ 244 / 463 trigger |
+| (2) Haiku batch (G-03) | ✅ |
+| (3) 직접 입력 (developer + contributor) | ✅ G04-8 |
+| (4) 자체 학습 mining (cron) | ✅ G04-9 매일 03:30 KST |
+
+### 사용자 결정 대기
+- KPI 85% 게이트 유지/완화 여부
+- 4 옵션 중 어느 방향으로
+
+---
+
 ## 2026-04-27 Night (7차 세션 — G-03 chain miss + Trigger 보강 + KPI A/B, Night mode 자율)
 
 ### 진행 요약
