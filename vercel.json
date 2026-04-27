@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/anonymize-graduated",
       "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/cron/mine-triggers",
+      "schedule": "30 18 * * *"
     }
   ]
 }
