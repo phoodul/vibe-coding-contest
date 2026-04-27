@@ -24,6 +24,7 @@
 | Phase G-02 (6차 세션) | ✅ Recursive Backward Reasoner + 8-Layer 명시화 + chain 시각화 (난이도 5+) | 4/4 |
 | 중학교 시드 분할 (6차 세션) | ✅ middle → middle1/middle2/middle3 (8/8/19 도구) | 2/2 |
 | Phase G-03 (7차 세션) | ✅ chain miss 인프라 + Trigger 1.07→1.90 + KPI A/B 측정 | 3/3 |
+| Phase G-04 (8차 세션) | 🔄 killer 정답률 85% 게이트 — 평가셋 + alternating loop + similar_problems RAG + trigger 4채널 | 0/9 |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |
@@ -98,6 +99,15 @@ Railway μSvc + Supabase 14 마이그레이션 + 32 도구 시드 + Vercel 19 en
 총 3 commits. Phase G-03 인프라 + 시드 보강 + 정답률 측정.
 
 **KPI A/B 핵심**: 난이도 ≥5 정답률 baseline 47.4% = chain ON 47.4% (변동 없음). Chain 19/19 reached_conditions (100% robust). Sonnet 단발 자체가 이미 강해 chain 의 정답률 효과 미미. 다만 chain 시각화의 학생 코칭 가치는 별개 — Phase G-03 누적 데이터로 향후 측정.
+
+### 8차 세션 (2026-04-27) — Phase G-04 killer 정답률 85% 게이트
+
+> 목표: 수능 killer (21+29+30) 자동 채점 정답률 ≥ **85%** → 상용화 게이트 통과.
+> Plan: `docs/implementation_plan_g04.md` (9 task).
+
+| 단계 | 커밋 | 내용 |
+|---|---|---|
+| G04-1 | (진행) | 평가셋 추출 — killer-eval.json 58문항 (메인 21+29+30) + extra 22문항 (28번). 출력 user_docs/ 로 저작권 격리 |
 
 | Task ID | 상태 | 커밋 해시 | 비고 |
 |---|---|---|---|

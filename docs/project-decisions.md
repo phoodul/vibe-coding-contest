@@ -111,6 +111,20 @@
 
 ---
 
+## [2026-04-27] Phase G-04 — Killer 정답률 85% 게이트
+
+- **상용화 게이트**: 수능 killer 문제 (21+29+30) 자동 채점 정답률 ≥ **85%** 도달 시 상용화 가능 판단. < 70% 시 원인 분석 후 G-05 후보 검토.
+- **평가셋**: 수능 21+29+30 메인 (≈100문항, 2017~2026 모든 학년도/유형) + 28번 보조. 출처 `user_docs/suneung-math/parsed/all_problems.json` + `src/lib/data/math-problems.ts` 정답 매핑.
+- **계산도구·자기검증 호출 정책**: 어려운 단계 한정 (난이도 5+ 임계값 유지). chain step 마다 강제 호출은 금지 — 효율성 자해.
+- **Tool 의 본질은 trigger 패턴(when)**: "평균값정리" 같은 정리 이름은 교과서 지식. "닫힌구간 연속+미분가능 → 평균변화율 일치" 같은 발동 조건이 진짜 학습 대상. 모든 학생 노출 카드 / 백엔드 RAG / Manager 출력은 trigger 본문 우선, tool 이름은 부수 정보.
+- **풀이법 RAG = 백엔드 한정**: similar_problems 인덱스는 Reasoner system prompt 에만 inject. 학생 화면 노출 0%. 라벨 단위는 trigger (tool 이름 X). 풀이 본문은 미저장.
+- **trigger 입력 4채널**: (1) 시드 JSON 초기 / (2) Haiku batch 보강 / (3) developer + admin 토글한 베타 contributor 직접 입력 (출처 추적: developer/정석/해법서/beta_contributor) / (4) 자체 학습 mining (운영 로그 → candidate_triggers → admin 검수).
+- **약점 리포트 우선순위**: `l6_trigger_miss` (정리는 알지만 언제 쓸지 모름) 1순위. `l6_recall_miss` (정리 자체를 모름) 는 학교 수업 영역.
+- **A/B 측정 4-way**: baseline / chain_only (alternating loop) / chain_rag (+similar_problems) / full (+expected_triggers Manager). 단일 시드 동일 프롬프트.
+- **핵심 가설**: "수학적 alternating 사고법(역행↔순행)이 LLM 정답률을 끌어올리면, 같은 사고법을 trigger 패턴으로 학생에게 가르칠 수 있다."
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부
