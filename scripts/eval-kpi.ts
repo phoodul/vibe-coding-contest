@@ -151,10 +151,14 @@ const RAG_ON = RUN_MODE === "chain_rag" || RUN_MODE === "full"; // G04-5 이후 
 const TRIGGERS_STRONG = RUN_MODE === "full"; // G04-3 expected_triggers (G04-3 이후)
 const AGENTIC_ON = RUN_MODE === "agentic"; // G05: 진짜 multi-turn agentic
 
-// Phase G-05: --model <sonnet|gpt> 플래그
-const MODEL_NAME: "sonnet" | "gpt" = (() => {
+// Phase G-05: --model <sonnet|opus|gpt|gpt55|gemini> 플래그
+type ModelName = "sonnet" | "opus" | "gpt" | "gpt55" | "gemini";
+const MODEL_NAME: ModelName = (() => {
   const i = process.argv.indexOf("--model");
-  if (i >= 0 && process.argv[i + 1] === "gpt") return "gpt";
+  if (i >= 0 && process.argv[i + 1]) {
+    const v = process.argv[i + 1] as ModelName;
+    if (["sonnet", "opus", "gpt", "gpt55", "gemini"].includes(v)) return v;
+  }
   return "sonnet";
 })();
 
@@ -179,10 +183,12 @@ const LIMIT = (() => {
 })();
 
 const HAIKU_MODEL = process.env.ANTHROPIC_HAIKU_MODEL_ID || "claude-haiku-4-5-20251001";
-// Phase G-05: Sonnet 4.6 (latest) 으로 격상. ANTHROPIC_SONNET_MODEL_ID 로 override 가능.
+// Phase G-05: 모델 ID 정의
 const SONNET_MODEL = process.env.ANTHROPIC_SONNET_MODEL_ID || "claude-sonnet-4-6";
-// Phase G-05: GPT-5.1 (가우스 호환) — 1단계 측정용
-const GPT_MODEL = process.env.OPENAI_GPT_MODEL_ID || "gpt-5.1";
+const OPUS_MODEL = process.env.ANTHROPIC_OPUS_MODEL_ID || "claude-opus-4-7";
+const GPT_MODEL = process.env.OPENAI_GPT_MODEL_ID || "gpt-5.1"; // 1단계 (가우스 호환)
+const GPT55_MODEL = process.env.OPENAI_GPT55_MODEL_ID || "gpt-5.5";
+const GEMINI_MODEL = process.env.GEMINI_MODEL_ID || "gemini-3.1-pro-preview";
 
 const WHY_PATTERNS = [/왜냐하면/, /이유는/, /때문에/, /쓰는 이유/, /왜 (?:이|그|쓰)/];
 
@@ -299,21 +305,22 @@ interface AnthropicMessage {
   content: string;
 }
 
-// Phase G-05: 모델 추상화 — sonnet (Anthropic) / gpt (OpenAI)
+// Phase G-05: 모델 추상화 — sonnet/opus (Anthropic) / gpt/gpt55 (OpenAI) / gemini (Google)
 async function callModel(
-  modelName: "sonnet" | "gpt",
+  modelName: ModelName,
   system: string,
   messages: AnthropicMessage[],
   maxTokens = 1500,
 ): Promise<string> {
-  if (modelName === "gpt") {
+  // OpenAI 라인 (GPT-5.1 / GPT-5.5)
+  if (modelName === "gpt" || modelName === "gpt55") {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) throw new Error("OPENAI_API_KEY missing");
     const resp = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: GPT_MODEL,
+        model: modelName === "gpt55" ? GPT55_MODEL : GPT_MODEL,
         max_completion_tokens: maxTokens,
         messages: [
           { role: "system", content: system },
@@ -325,7 +332,35 @@ async function callModel(
     const data = (await resp.json()) as { choices: { message: { content: string } }[] };
     return data.choices[0]?.message?.content ?? "";
   }
-  return callAnthropic(SONNET_MODEL, system, messages, maxTokens);
+  // Google Gemini 라인
+  if (modelName === "gemini") {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error("GEMINI_API_KEY missing");
+    // Google Generative Language REST API
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: messages.map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }],
+        })),
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.2 },
+      }),
+    });
+    if (!resp.ok) throw new Error(`Gemini ${resp.status}: ${(await resp.text()).slice(0, 200)}`);
+    const data = (await resp.json()) as {
+      candidates?: { content?: { parts?: { text?: string }[] } }[];
+    };
+    return (data.candidates?.[0]?.content?.parts ?? [])
+      .map((p) => p.text ?? "")
+      .join("");
+  }
+  // Anthropic 라인 (Sonnet 4.6 / Opus 4.7)
+  const anthropicModel = modelName === "opus" ? OPUS_MODEL : SONNET_MODEL;
+  return callAnthropic(anthropicModel, system, messages, maxTokens);
 }
 
 async function callAnthropic(
@@ -520,7 +555,8 @@ async function runReasoner(
     MODEL_NAME,
     REASONER_SYSTEM,
     [{ role: "user", content: `${problem}${toolsHint}${triggersHint}${similarContext ?? ""}${chainHint}` }],
-    1500
+    // G-05 (재측정): Gemini 응답 잘림 → 3000 → 5000
+    5000
   );
   return text;
 }
@@ -814,7 +850,7 @@ const AGENTIC_SYSTEM = `당신은 한국 수학 전문 시니어 강사입니다
 
 async function runAgenticChain(args: {
   problem: string;
-  modelName: "sonnet" | "gpt";
+  modelName: ModelName;
   maxTurns?: number;
 }): Promise<AgenticResult> {
   const t0 = Date.now();
@@ -854,7 +890,9 @@ ${instruction}`;
         args.modelName,
         AGENTIC_SYSTEM,
         [{ role: "user", content: userMsg }],
-        isLast ? 600 : 1200,
+        // G-05 (재측정): 마지막 step 도 풀이 잘리지 않게 토큰 ↑
+        // Gemini 응답이 길어 5000 까지 허용
+        isLast ? 3000 : 5000,
       );
     } catch (e) {
       console.warn(`[agentic] step ${step + 1} failed:`, (e as Error).message);
