@@ -67,7 +67,12 @@ interface RetrievedTool {
 
 interface ChainMeta {
   enabled: boolean;
-  termination?: "reached_conditions" | "max_depth" | "dead_end" | "cycle";
+  termination?:
+    | "reached_conditions"
+    | "max_depth"
+    | "dead_end"
+    | "cycle"
+    | "forward_only_progress";
   depth?: number;
   used_tools?: string[];
   duration_ms?: number;
@@ -900,8 +905,8 @@ async function fullEvaluate(p: EvalProblem): Promise<ProblemEvalResult> {
   // G-04: chain_only 이상이면 alternating 사용, baseline 은 chain X.
   if (CHAIN_ON && manager && p.difficulty >= 5) {
     try {
-      const chainFn = RUN_MODE !== "baseline" ? runAlternatingChain : runRecursiveChain;
-      const cr = await chainFn({
+      // CHAIN_ON 진입 시점에 RUN_MODE 는 baseline 이 아님 (alternating 사용)
+      const cr = await runAlternatingChain({
         problem: p.problem,
         conditions: manager.conditions,
         goal: manager.goal,
