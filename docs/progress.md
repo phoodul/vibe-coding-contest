@@ -3,8 +3,8 @@
 ## Last Checkpoint
 - Time: 2026-04-28 (9차 세션 — M2 진행)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-05 ✅** — Stage 0 (similar_problems 매칭) + Stage 1 (Manager Haiku 분류) 구현. vitest 14 테스트 모두 통과 + `pnpm tsc --noEmit` 통과. M2 2/4. 다음: G06-06 (Stage 2 probe + escalation-detector + legend-router 통합).
-- Session: 9차 (G-06 진행 중, 5/25)
+- Step: **G06-06 ✅** — Stage 2 Ramanujan probe (Opus 4.7 baseline + SymPy cross-check + [STUCK] 토큰) + escalation-detector (둘 다 신호일 때만 권유) + legend-router 통합 (Stage 0→1→2 + DB insert). vitest 19 테스트 모두 통과 + `pnpm tsc --noEmit` 통과. M2 3/4. 다음: G06-07 (/api/legend/route SSE 라우트).
+- Session: 9차 (G-06 진행 중, 6/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 
