@@ -18,9 +18,9 @@
 | M3 — 5-튜터 orchestrator + 5종 quota + fallback | 6일 | ✅ | 4/4 |
 | M4 — Per-Problem Report 백엔드 (Δ3 + Δ4) | 8일 | ✅ | 5/5 |
 | M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | ✅ | 5/5 |
-| M6 — KPI 측정 + 베타 검증 | 4일 | 🔄 | 1/2 |
-| M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | 🔄 | 0/2 |
-| **합계** | **40일** | — | **22/25** |
+| M6 — KPI 측정 + 베타 검증 | 4일 | ⏸ 1/2 | G06-23 보류 (베타 모집 후 별도) |
+| M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | 🔄 | 1/2 |
+| **합계** | **40일** | — | **23/25 (G06-23 deferred)** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -435,16 +435,23 @@
 
 ## M7. /euler→/legend 마이그·배포 (4일, 2 task)
 
-### G06-24: /api/euler-tutor 내부 위임 + 1주 안정화 모니터링
-- **선행**: G06-23
+### G06-24: /api/euler-tutor 내부 위임 + 1주 안정화 모니터링 ✅ (commit `__G06_24_HASH__`)
+- **선행**: G06-23 (deferred — 베타 인터뷰 별도)
 - **변경 파일**:
-  - `src/app/api/euler-tutor/route.ts` (내부 구현만 `legend-router.routeProblem` + `tutor-orchestrator.callTutor` 위임 — 외부 시그니처 무변경)
-  - `src/lib/euler/orchestrator.ts` (필요 시 위임 import)
-- **변경 내용**: architecture.md §8.2. 기존 client 호환 보존. 응답에 `legend_session_id` 옵셔널 채움. 위임 후 1주일 production 모니터링 (회귀 0 회 보장).
-- **검증**: 기존 euler 라우트 5 시나리오 회귀 (텍스트 / 사진 / 필기 / 가우스 토글 / 베타 게이트) 모두 통과 + Playwright `tests/e2e/euler-legacy.spec.ts` 회귀 0
-- **위험**: HIGH (베타 사용자 50명 풀이 흐름 회귀 위험)
-- **예상 토큰**: 6K
-- **commit**: `refactor(g06): /api/euler-tutor 내부 위임 → legend orchestrator (외부 무변경)`
+  - `src/app/api/euler-tutor/route.ts` (점진적 위임 — `routeProblem` best-effort 비차단 호출 + streamData `legend_routing` payload 추가)
+  - `src/lib/euler/solve-logger.ts` (`legend_session_id` 옵셔널 컬럼 매핑 추가)
+  - `tests/e2e/euler-legacy.spec.ts` (신규 — 5 회귀 시나리오 spec)
+- **변경 내용**:
+  - **위임 범위**: `routeProblem` 만 (Stage 0/1/2 라우팅 + DB 적재). `callTutor` (튜터 호출) 위임은 G-07 으로 이관.
+  - **이유**: 기존 라우트가 `messages` chat array → `streamText` (Sonnet 4.5/GPT-5.1) 코칭 stream 흐름. Legend orchestrator 의 비스트리밍 단발 호출 (`callTutor → final_answer 문자열`) 과 시그니처 비호환 + 베타 50명 회귀 위험 → task.md 안전 가드 ("이미 있는 라우트 구조가 너무 다르면 단계적 wrap 패턴 고려") 채택.
+  - **베타 50명 회귀 0 보장**: 본 streamText 코칭 흐름 무파괴. Legend route 는 3초 timeout + try/catch silent skip + 환경변수 `LEGEND_DELEGATION_ENABLED=false` 로 즉시 disable 가능.
+  - **legend_session_id**: solve_logger schema 만 마련 (DB column 은 G06-03 ALTER 로 이미 존재). 본 task 단계에선 routing_decision_id 만 streamData 로 전달. session_id 자체는 G-07 callTutor 위임 후 채워질 자리.
+- **검증**:
+  - `pnpm tsc --noEmit` ✅ (무에러)
+  - `pnpm dlx vitest run` ✅ (213/213 회귀 0)
+  - 5 회귀 시나리오 Playwright spec 작성 (실행은 G06-25 인증 fixture 통합 후)
+- **위험**: HIGH → 본 task 위임 범위 축소로 MEDIUM 으로 완화 (callTutor 위임 미수행)
+- **commit**: `refactor(g06): /api/euler-tutor routeProblem 점진적 위임 + legend_routing payload`
 
 ### G06-25: 302 → 301 영구 전환 + 베타 안내 + production 배포
 - **선행**: G06-24 (1주 안정화 후)

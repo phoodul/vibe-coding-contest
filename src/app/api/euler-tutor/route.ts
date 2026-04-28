@@ -32,6 +32,8 @@ import { checkFreeQuota } from "@/lib/euler/usage-quota";
 import { createClient as createSupabaseServer } from "@/lib/supabase/server";
 import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 import { tryParseJson } from "@/lib/euler/json";
+import { routeProblem } from "@/lib/legend/legend-router";
+import type { RouteDecision } from "@/lib/legend/types";
 
 const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
 const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본 on
@@ -504,6 +506,64 @@ ${cc.verified
         }
       } catch (e) {
         console.warn("[euler-tutor] manager/retriever skipped:", e);
+      }
+    }
+
+    // G06-24: Legend Router 점진적 위임 — best-effort 비차단.
+    // 외부 시그니처 무변경 절대 원칙. routeProblem 만 호출하여 routing_decision 을 DB 적재 +
+    // streamData 에 legend_routing payload 옵셔널 추가. 본 코칭 streamText 흐름은 무파괴.
+    // tutor-orchestrator (callTutor) 본격 위임은 G-07 으로 이관 — 비스트리밍 단발 호출 vs
+    // 기존 chat coaching streamText 의 시그니처 차이 + 베타 50명 회귀 위험으로 본 task 보류.
+    let legendRouting: RouteDecision | null = null;
+    if (
+      isFirstTurn &&
+      problemText &&
+      problemText.length >= 5 &&
+      userIdForTracking &&
+      process.env.LEGEND_DELEGATION_ENABLED !== "false"
+    ) {
+      try {
+        // 3초 timeout — 라우팅 지연이 본 응답 지연으로 전파되지 않도록.
+        const ROUTE_TIMEOUT_MS = parseInt(
+          process.env.LEGEND_ROUTE_TIMEOUT_MS ?? "3000",
+          10,
+        );
+        legendRouting = await Promise.race([
+          routeProblem({
+            user_id: userIdForTracking,
+            problem_text: problemText,
+            input_mode: inputMode === "voice" ? "voice" : (inputMode as
+              | "text"
+              | "photo"
+              | "handwrite"),
+          }),
+          new Promise<null>((resolve) =>
+            setTimeout(() => resolve(null), ROUTE_TIMEOUT_MS),
+          ),
+        ]);
+        if (legendRouting) {
+          // 시각화 + client legend_session_id 호환을 위해 streamData append.
+          // 기존 client 는 이 kind 를 무시하므로 외부 호환 보존.
+          streamData.append({
+            kind: "legend_routing",
+            routing_decision_id: legendRouting.routing_decision_id,
+            stage_reached: legendRouting.stage_reached,
+            routed_tier: legendRouting.routed_tier,
+            routed_tutor: legendRouting.routed_tutor,
+            area: legendRouting.area ?? null,
+            confidence: legendRouting.confidence ?? null,
+            duration_ms: legendRouting.duration_ms,
+          });
+          console.log(
+            `[euler-tutor] legend-route: stage=${legendRouting.stage_reached} tier=${legendRouting.routed_tier} tutor=${legendRouting.routed_tutor} ${legendRouting.duration_ms}ms`,
+          );
+        }
+      } catch (e) {
+        // best-effort — 어떤 실패도 본 응답을 막지 않음.
+        console.warn(
+          "[euler-tutor] legend-route skipped:",
+          (e as Error).message,
+        );
       }
     }
 

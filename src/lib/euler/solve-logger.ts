@@ -68,6 +68,8 @@ export interface SolveLogInput {
     | null;
   chain_depth?: number | null;
   chain_used_tools?: string[];
+  /** G06-24: Legend Tutor 위임 시 채워짐 (G-07 본격 위임 후). 본 task 단계에서는 routing_decision_id 만 streamData 로 전달. */
+  legend_session_id?: string | null;
 }
 
 const LAYER_NUM_MAP: Record<string, number> = {
@@ -121,6 +123,7 @@ export async function logSolve(input: SolveLogInput): Promise<{ ok: boolean; id?
         chain_termination: input.chain_termination ?? null,
         chain_depth: input.chain_depth ?? null,
         chain_used_tools: input.chain_used_tools ?? [],
+        legend_session_id: input.legend_session_id ?? null,
       })
       .select("id")
       .maybeSingle();

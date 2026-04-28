@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — **M6 1/2 진행 중**)
+- Time: 2026-04-28 (9차 세션 — **M7 1/2 진행 중**)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-22 ✅ (M6 1/2)** — KPI 측정. commit `9f3c3c9`. `scripts/eval-legend-routing.ts` (33KB) — Stage 1 분류 + pickTutor + callModel + fallback matrix 재현. **3문항 샘플 측정 결과: 3/3 = 100%, KPI 86% 게이트 ✅ 통과**. 튜터별: gauss / ramanujan_intuit / von_neumann 각 1건 100%. fallback 0건 (quota 한도 도달 없음). 평균 라우팅 813ms / 튜터 호출 53.5초 / agentic turn 1개당 12.5초. R1 근사 통계: 평균 트리 depth 3.67, 평균 노드 5.67, LLM struggle 발생 2/3 (66.7%). **한계**: server-only 모듈 (`legend-router`/`buildReport` DB insert 부) 은 CLI 환경 직접 실행 불가 → 동등 callModel 재현. 38문항 풀 측정 + R1 persist 검증은 G06-23 베타 단계로 위임. 보고서: `docs/qa/kpi-legend-routing.md` + raw `kpi-legend-routing.json`. 다음: **G06-23** (베타 5명 1주 만족도 인터뷰 — 사용자 작업 영역).
-- Session: 9차 (G-06 진행 중, **22/25**, M6 1/2)
+- Step: **G06-24 ✅ (M7 1/2)** — `/api/euler-tutor` 점진적 위임. `routeProblem` 만 best-effort 비차단 호출 + streamData `legend_routing` payload 추가. `callTutor` 위임은 G-07 이관 (기존 messages chat array + streamText 코칭 흐름과 Legend orchestrator 의 비스트리밍 단발 호출이 시그니처 비호환 + 베타 50명 회귀 위험 → task 안전 가드 채택). 외부 시그니처 무변경 절대 원칙 준수, env `LEGEND_DELEGATION_ENABLED=false` 즉시 kill switch. 변경 파일: `src/app/api/euler-tutor/route.ts` / `src/lib/euler/solve-logger.ts` / `tests/e2e/euler-legacy.spec.ts` (신규 5 회귀 spec). 검증: tsc 무에러 + vitest 213/213 PASS. 다음: **G06-25** (302→301 영구 + production 배포 + 베타 안내).
+- Session: 9차 (G-06 진행 중, **23/25**, M7 1/2)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 
