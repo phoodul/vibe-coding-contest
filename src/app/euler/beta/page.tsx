@@ -137,7 +137,17 @@ export default function EulerBetaPage() {
           </motion.div>
         )}
 
-        <div className="mt-8 text-center text-xs text-white/40">
+        <div className="mt-6 text-center text-xs text-white/50">
+          코드가 없으신가요?{" "}
+          <Link
+            href="/legend/beta/apply"
+            className="underline text-violet-300 hover:text-violet-200"
+          >
+            베타 신청서 작성
+          </Link>
+        </div>
+
+        <div className="mt-4 text-center text-xs text-white/40">
           <Link href="/dashboard" className="hover:text-white/60">
             ← 대시보드로
           </Link>
