@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — M5 진행)
+- Time: 2026-04-29 (9차 세션 — **M5 ✅ 완료, M6 진입**)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-20 ✅ (M5 4/5)** — LLMStruggleSection ⭐ Δ3 + 6 보조 컴포넌트 (Δ1) 본 구현. `LLMStruggleSection` (rose 글래스 + quote-style resolution_narrative + hardest_step_ms < 1s 자동 숨김) / `EscalationPrompt` (amber + 3 선택지 + escalate 옵션 legend quota 부족 시 disabled + target_tutor 라벨) / `TutorPickerModal` (5 튜터 grid + portraits.ts 흉상 next/image priority 첫 카드 + ESC·outside-click 닫기 + currentTutor 제외 + legend/problem quota 분리 disabled) / `QuotaIndicator` (5종 dot + client fetch fallback `/api/legend/quota` + reset_at·eligibility tooltip + blocked 시 rose 톤) / `Weekly·MonthlyReportRequestButton` (eligibility_gate 미충족·limit 소진 시 카피 분기 + loading 상태) / `RoutingTrace` (admin monospace + Stage·Tier·Tutor·Confidence·Duration + escalation signals + Stage 0 hit 표시). PerProblemReportCard 의 LLM struggle 섹션 자체를 hardest_step_ms ≥ 1000ms 조건으로 감싸 빈 헤딩 노출 방지. 의존성 추가 0 (swr 미설치 → fetch + useState). `pnpm tsc --noEmit` 무에러. vitest 213/213 회귀 0. **M5 4/5** (20/25). 다음: G06-21 — /euler→/legend 302 redirect (middleware) + /legend 6 페이지 (canvas/beta/billing/family/report/page).
-- Session: 9차 (G-06 진행 중, 20/25)
+- Step: **G06-21 ✅ (M5 5/5 ✅)** — `/euler→/legend` 302 redirect + `/legend` 6 페이지. `src/middleware.ts` 에 `EULER_TO_LEGEND` 6 경로 매핑 (`/euler|/euler/canvas|billing|family|beta|report` → `/legend/<route>`) + 동적 하위 경로 (`/euler/canvas/<slug>`) 도 prefix replace 로 보존 — 베타 즐겨찾기 무파괴. `/euler-tutor` 는 매핑 제외 (api 호환, architecture §8.2). 302 임시 (M7 G06-25 에서 301 영구 전환). `/legend` 6 페이지는 모두 `export { default } from '@/app/euler-tutor/page'` (메인 채팅) / `'@/app/euler/<route>/page'` (5종) re-export only — 기존 `/euler/*`·`/euler-tutor/*` 컴포넌트 무수정 (격리 원칙). `tests/e2e/legend-redirect.spec.ts` 신규 — 6 경로 + 동적 슬러그 검증 spec (실제 통합 실행은 G06-22). `pnpm tsc --noEmit` 무에러. vitest 213/213 회귀 0. **M5 ✅ 5/5** (21/25). **M6 진입**. 다음: G06-22 — 평가셋 38문항 자동 라우팅 KPI 재측정 (`scripts/eval-legend-routing.ts` + `docs/qa/kpi-legend-routing.md`).
+- Session: 9차 (G-06 진행 중, 21/25, M5 ✅)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 

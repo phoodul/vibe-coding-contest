@@ -17,10 +17,10 @@
 | M2 — 라우팅 모듈 (Stage 0~2) + /api/legend/route | 6일 | ✅ | 4/4 |
 | M3 — 5-튜터 orchestrator + 5종 quota + fallback | 6일 | ✅ | 4/4 |
 | M4 — Per-Problem Report 백엔드 (Δ3 + Δ4) | 8일 | ✅ | 5/5 |
-| M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | 🔄 | 4/5 |
+| M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | ✅ | 5/5 |
 | M6 — KPI 측정 + 베타 검증 | 4일 | 🔄 | 0/2 |
 | M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | 🔄 | 0/2 |
-| **합계** | **40일** | — | **20/25** |
+| **합계** | **40일** | — | **21/25** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -389,7 +389,7 @@
 - **예상 토큰**: 14K
 - **commit**: `feat(g06): LLMStruggleSection + 6 보조 컴포넌트 (Δ3 + Δ1)`
 
-### G06-21: /euler→/legend 302 redirect + /legend 메인 채팅
+### G06-21: /euler→/legend 302 redirect + /legend 메인 채팅 ✅ (commit `acbd1c8`)
 - **선행**: G06-20
 - **변경 파일**:
   - `src/middleware.ts` (확장 또는 신규 `src/middleware.legend.ts` 추가)
