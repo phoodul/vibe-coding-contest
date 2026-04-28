@@ -527,7 +527,7 @@ G06-01 → G06-02 → G06-03 (M1)
 > 추가일: 2026-04-29 (사용자 결정)
 > 목적: 베타 모집 직전 단계. 격 차별화 UI + 신청·승인제 + 피드백 동의 필수.
 
-### G06-26: TutorChoicePrompt 카드 (격 차별화 + 카운트다운, 방안 A) ✅ (commit `__G06_26_HASH__`)
+### G06-26: TutorChoicePrompt 카드 (격 차별화 + 카운트다운, 방안 A) ✅ (commit `bc3cd5a`)
 - **선행**: G06-21 (M5 완료)
 - **변경 파일**:
   - `src/components/legend/TutorChoicePrompt.tsx` (신규)
