@@ -43,6 +43,14 @@ export interface CallModelTurn {
   step: number;
   response: string;
   duration_ms: number;
+  /**
+   * G06-16 보강 — agentic 모드에서도 provider raw 응답 보존.
+   * trace-normalizer 가 provider 별 tool_use blocks / function_call / parts 를
+   * 추출해 step 분해의 정확도를 높이는 데 사용.
+   * 누락(undefined) 시에도 기존 string-only 소비 코드와 호환됨.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  raw?: any;
 }
 
 export interface CallModelResult {
@@ -302,6 +310,7 @@ ${trace || '(아직 없음 — 이번이 Step 1)'}
 ${instruction}`;
 
     let respText: string;
+    let respRaw: unknown = undefined;
     try {
       const result = await callProviderOnce(
         provider,
@@ -312,13 +321,14 @@ ${instruction}`;
         isLast ? Math.min(maxTokensPerTurn, 5000) : maxTokensPerTurn,
       );
       respText = result.text;
+      respRaw = result.raw;
     } catch (e) {
       console.warn(`[call-model agentic] step ${step + 1} failed:`, (e as Error).message);
       break;
     }
 
     const stepDur = Date.now() - stepStart;
-    turns.push({ step: step + 1, response: respText, duration_ms: stepDur });
+    turns.push({ step: step + 1, response: respText, duration_ms: stepDur, raw: respRaw });
 
     // G-05c: 빈 응답일 때 trace 에 명시 — 다음 turn 이 단서 활용 가능
     const traceBody =
