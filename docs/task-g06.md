@@ -181,7 +181,7 @@
 - **예상 토큰**: 8K
 - **commit**: `feat(g06): quota-manager 5종 통합 + 자격 게이트 (Δ1)`
 
-### G06-11: /api/legend/solve + /escalate + /retry-with-tutor + /quota ✅ (commit `__G06_11_HASH__`)
+### G06-11: /api/legend/solve + /escalate + /retry-with-tutor + /quota ✅ (commit `da5e449`)
 - **선행**: G06-10
 - **변경 파일**:
   - `src/app/api/legend/solve/route.ts` (신규, POST + SSE)
