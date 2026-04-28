@@ -11,6 +11,7 @@
  * 표준 SSE 형식: `data: <json>\n\n`. content-type 은 호출처에서 `text/event-stream` 으로 지정.
  */
 import type { TutorName, Tier, EscalationPrompt } from './types';
+import type { FallbackEvent } from './tutor-fallback';
 
 export type SSEEvent =
   | {
@@ -25,6 +26,30 @@ export type SSEEvent =
         tier: Tier;
         routing_decision_id: string;
         escalation_prompt?: EscalationPrompt;
+      };
+    }
+  | {
+      // G06-11 — /solve 스트림: 튜터 turn 단위 메시지 (UI 진행 가시화)
+      type: 'tutor_turn';
+      payload: { turn: number; content: string };
+    }
+  | {
+      // G06-11 — /solve 스트림: 도구 호출 결과 (UI 배지 표시)
+      type: 'tool_call';
+      payload: { tool_id: string; ok: boolean };
+    }
+  | {
+      // G06-11 — /solve 스트림: 1단계 자동 fallback 발생 가시화
+      type: 'fallback';
+      payload: FallbackEvent;
+    }
+  | {
+      // G06-11 — /solve 스트림 종료 메시지
+      type: 'final';
+      payload: {
+        answer: string;
+        session_id: string;
+        actual_tutor?: TutorName;
       };
     }
   | {
