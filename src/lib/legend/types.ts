@@ -95,6 +95,10 @@ export interface TutorCallResult {
   trace_jsonb: unknown;
   final_answer: string;
   duration_ms: number;
+  /** G06-09 — 1단계 자동 fallback 발생 시 set. 정상 호출 시 undefined. */
+  fallback_event?: import('./tutor-fallback').FallbackEvent;
+  /** G06-09 — 실제 응답한 튜터 (fallback 시 primary 와 다름). 정상 시 input.tutor 와 동일. */
+  actual_tutor?: TutorName;
 }
 
 // ────────────────────────────────────────────────────────────────────────────

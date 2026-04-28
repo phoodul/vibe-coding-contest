@@ -28,6 +28,12 @@ import type {
   TutorCallResult,
 } from './types';
 import type { ModelMode, ModelProvider } from './call-model';
+import {
+  buildFallbackMessage,
+  classifyError,
+  getNextFallback,
+  type FallbackEvent,
+} from './tutor-fallback';
 
 // ────────────────────────────────────────────────────────────────────────────
 // 6 튜터 → (tier, model_id, mode, provider) 매핑
@@ -135,10 +141,12 @@ function extractFinalAnswer(text: string): string {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// 메인 진입점
+// 내부: 실제 모델 호출 + DB insert (fallback 분기 없는 단발 경로)
 // ────────────────────────────────────────────────────────────────────────────
 
-export async function callTutor(input: TutorCallInput): Promise<TutorCallResult> {
+async function callTutorInternal(
+  input: TutorCallInput,
+): Promise<TutorCallResult> {
   const t0 = Date.now();
 
   const config = TUTOR_CONFIG[input.tutor];
@@ -153,6 +161,7 @@ export async function callTutor(input: TutorCallInput): Promise<TutorCallResult>
   const system = buildSystemPrompt(input.tutor);
 
   // 1) 모델 호출 (mode × provider 5 분기는 callModel 내부)
+  //    여기서 throw 되면 callTutorWithFallback 의 catch 가 1단계 fallback 시도.
   const result = await callModel({
     model_id: config.model,
     provider: config.provider,
@@ -200,4 +209,65 @@ export async function callTutor(input: TutorCallInput): Promise<TutorCallResult>
     final_answer: finalAnswer,
     duration_ms: totalDuration,
   };
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// 메인 진입점 (G06-09 — 1단계 자동 fallback 통합)
+// ────────────────────────────────────────────────────────────────────────────
+
+/**
+ * 튜터 호출. 1단계 fallback 까지 자동 (architecture §9.5 정책).
+ * - primary 호출 실패 → classifyError → 1단계 fallback 1회 자동 시도.
+ * - 1단계 fallback 도 실패 → throw (G06-11 에서 EscalationPrompt 변환).
+ */
+export async function callTutor(
+  input: TutorCallInput,
+): Promise<TutorCallResult> {
+  return callTutorWithFallback(input, 0, input.tutor);
+}
+
+async function callTutorWithFallback(
+  input: TutorCallInput,
+  attempt: number,
+  primaryTutor: TutorName,
+): Promise<TutorCallResult> {
+  try {
+    const result = await callTutorInternal(input);
+    return { ...result, actual_tutor: input.tutor };
+  } catch (err) {
+    // 1단계 자동 fallback 후보 결정
+    const fallback = getNextFallback(primaryTutor, attempt);
+    if (!fallback) {
+      // 매트릭스에 1순위가 없거나 이미 1단계 시도했음 → 상위 호출자에게 throw.
+      throw err;
+    }
+
+    const reason = classifyError(err);
+    const fallbackEvent: FallbackEvent = {
+      primary: primaryTutor,
+      fallback_to: fallback,
+      reason,
+      error_message:
+        err instanceof Error ? err.message : String(err ?? 'unknown'),
+      attempt: 1,
+    };
+
+    console.warn(
+      `[legend-tutor-fallback] ${buildFallbackMessage(fallbackEvent)}`,
+      fallbackEvent,
+    );
+
+    // 1단계 fallback 호출 (call_kind='retry' — legend_tutor_sessions check 규칙 준수)
+    const result = await callTutorWithFallback(
+      { ...input, tutor: fallback, call_kind: 'retry' },
+      attempt + 1,
+      primaryTutor,
+    );
+
+    return {
+      ...result,
+      fallback_event: fallbackEvent,
+      actual_tutor: fallback,
+    };
+  }
 }
