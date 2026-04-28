@@ -3,7 +3,7 @@
 ## Last Checkpoint
 - Time: 2026-04-28 (9차 세션 진입)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: G06-01 완료 (라우팅·세션·quota 마이그레이션 3종, commit `c83d650`). M1 진행 1/3.
+- Step: G06-02 완료 (R1 캐시·step 분해·reasoning tree 마이그레이션 3종, Δ3+Δ4). M1 진행 2/3.
 - Session: 9차 (G-06 시작)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
