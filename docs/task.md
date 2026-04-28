@@ -26,6 +26,8 @@
 | Phase G-03 (7차 세션) | ✅ chain miss 인프라 + Trigger 1.07→1.90 + KPI A/B 측정 | 3/3 |
 | Phase G-04 (8차 세션) | ✅ killer 정답률 측정 인프라 + 4채널 trigger 시스템 가동 (단 chain prompt-inject 한계로 30% 천장) | 9/9 |
 | Phase G-05 (8차 night) | ✅ **KPI 85% 게이트 압도적 통과 — Gemini 3.1 Pro agentic 89.5% / GPT-5.5 agentic 86.8%**. 진짜 multi-turn agentic (원문제 매 turn 주입) + 5 모델 × 2 모드 측정 | 5/5 |
+| Phase G-05b (8차 종료) | ✅ 기하/벡터 6-mode 측정 — GPT-5.5 agentic 100% / Opus baseline 90% / Gemini agentic 10% (quota) | 1/1 |
+| Phase G-05c (8차 종료) | ✅ Gemini 429 원인 진단 — Preview 모델 paid tier Tier 1 250 RPD 강제 한도 발견. 코드 보강 + probe 헬퍼 | 1/1 |
 
 ### 3차 세션 (2026-04-26) — 운영 라이브 + 통합 UX
 | 단계 | 커밋 | 내용 |

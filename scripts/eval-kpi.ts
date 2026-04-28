@@ -341,31 +341,51 @@ async function callModel(
     const data = (await resp.json()) as { choices: { message: { content: string } }[] };
     return data.choices[0]?.message?.content ?? "";
   }
-  // Google Gemini 라인
+  // Google Gemini 라인 (G-05c: safetySettings BLOCK_NONE + finishReason 로깅)
   if (modelName === "gemini") {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) throw new Error("GEMINI_API_KEY missing");
-    // Google Generative Language REST API
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+    // RECITATION 트리거 감소 위해 system prompt 끝에 "자기 표현 강조" 추가 (수능 기출 인용 방지)
+    const systemAug = system + "\n\n## 표현 원칙\n원문제 본문을 그대로 인용하지 말고 자신의 말로 다시 표현하세요. 수식·숫자는 그대로 사용해도 됩니다.";
     const resp = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
+        systemInstruction: { parts: [{ text: systemAug }] },
         contents: messages.map((m) => ({
           role: m.role === "assistant" ? "model" : "user",
           parts: [{ text: m.content }],
         })),
         generationConfig: { maxOutputTokens: maxTokens, temperature: 0.2 },
+        // G-05c: 4 카테고리 BLOCK_NONE — 수학 문제 false positive 차단 방지
+        safetySettings: [
+          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
+        ],
       }),
     });
     if (!resp.ok) throw new Error(`Gemini ${resp.status}: ${(await resp.text()).slice(0, 200)}`);
     const data = (await resp.json()) as {
-      candidates?: { content?: { parts?: { text?: string }[] } }[];
+      candidates?: {
+        content?: { parts?: { text?: string }[] };
+        finishReason?: string;
+        safetyRatings?: { category: string; probability: string; blocked?: boolean }[];
+      }[];
+      promptFeedback?: { blockReason?: string };
     };
-    return (data.candidates?.[0]?.content?.parts ?? [])
-      .map((p) => p.text ?? "")
-      .join("");
+    const cand = data.candidates?.[0];
+    const text = (cand?.content?.parts ?? []).map((p) => p.text ?? "").join("");
+    // 빈 응답 시 finishReason 로깅 (실측 진단용)
+    if (!text) {
+      const fr = cand?.finishReason ?? "?";
+      const block = data.promptFeedback?.blockReason ?? "?";
+      const blocked = cand?.safetyRatings?.filter((s) => s.blocked).map((s) => s.category).join(",") ?? "";
+      console.warn(`[gemini] empty response: finishReason=${fr}, promptBlock=${block}, blockedCats=[${blocked}]`);
+    }
+    return text;
   }
   // Anthropic 라인 (Sonnet 4.6 / Opus 4.7)
   const anthropicModel = modelName === "opus" ? OPUS_MODEL : SONNET_MODEL;
@@ -909,7 +929,9 @@ ${instruction}`;
     }
     const stepDur = Date.now() - t0;
     turns.push({ step: step + 1, response: respText, duration_ms: stepDur });
-    trace += `\n--- Step ${step + 1} 결과 ---\n${respText}\n`;
+    // G-05c: 빈 응답일 때 trace 에 명시 — 다음 turn 이 단서 활용 가능
+    const traceBody = respText && respText.trim() ? respText : "(이전 step 응답이 비어 있습니다 — 모델이 차단됐거나 거절했습니다. 이번 step 에서 처음부터 다시 시도하세요.)";
+    trace += `\n--- Step ${step + 1} 결과 ---\n${traceBody}\n`;
   }
 
   return {

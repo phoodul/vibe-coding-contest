@@ -144,6 +144,22 @@
 
 ---
 
+## [2026-04-28] G-05b 기하/벡터 6-mode + G-05c Gemini quota 진단
+
+- **기하/벡터(2022~2026 29+30) 영역 1위**: GPT-5.5 agentic 100% (10/10), Opus 4.7 baseline 90% (39초 ⚡).
+- **Gemini 3.1 Pro 기하 자체 붕괴 (10%)** — 일부 응답 즉시 빈 값 (108~223ms).
+- **원인 확정**: Gemini 3.1 Pro **Preview** 모델은 paid tier Tier 1 도 **250 RPD 강제 한도** (Preview 모델 정책). 우리 누적 350+ 호출 → 429 RESOURCE_EXHAUSTED.
+- **코드 보강 (eval-kpi.ts callModel)**:
+  - safetySettings BLOCK_NONE × 4 카테고리 (HARASSMENT/HATE/SEXUAL/DANGEROUS)
+  - 빈 응답 시 finishReason/promptFeedback/safetyRatings 로깅
+  - agentic trace 빈 응답 시 placeholder 명시 (multi-turn 누적 차단 방지)
+  - system prompt 에 "원문제 인용 X, 자기 표현" 추가 (RECITATION 트리거 감소)
+- **scripts/probe-gemini.ts** 진단 헬퍼 추가 (직접 호출로 finishReason 확인).
+- **9차 세션 미결정**: Gemini 라인업 — GA 전환 / Vertex AI / Batch API / Tier 2 격상 중 선택.
+- **G-06 plan 후보**: 4-튜터 다변화 (오일러 Sonnet / 라이프니츠 Opus / 가우스 Gemini-or-Sonnet / 페르마 GPT-5.5) + 영역별 라우팅.
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부

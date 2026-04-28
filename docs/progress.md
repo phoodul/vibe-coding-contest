@@ -1,10 +1,56 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-27 Night (7차 세션 자율 진행)
-- Phase: **Phase G-03 완료 (chain miss 인프라 + Trigger 보강 + KPI A/B 측정)**
-- Step: 다음 세션 — 사용자 검증 + Phase G-04 후보 (chain min_depth 강제 / chain inject 강화 / 실제 수능 평가셋)
-- Session: 7차 (G-03 인프라 + 시각화 + Trigger 1.07→1.90 + KPI A/B baseline vs chain, Night mode 자율)
+- Time: 2026-04-28 (8차 세션 종료)
+- Phase: **Phase G-04 + G-05 + G-05b + G-05c 모두 완료** — KPI 85% 게이트 압도적 통과
+- Step: 다음 세션 (9차) — G-06 4-튜터 다변화 + 영역별 라우팅 + 라이브 배포
+- Session: 8차 (G-04 9 task + G-05 multi-turn agentic + G-05b 기하 + G-05c Gemini 진단)
+
+## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
+
+| 모델 · 모드 | killer 38문항 | 기하 10문항 | 게이트 |
+|---|---|---|---|
+| **Gemini 3.1 Pro agentic** | **89.5%** ⭐⭐⭐ | 10% (quota 초과) | ✅ killer |
+| **GPT-5.5 agentic** | **86.8%** ⭐⭐ | **100%** ⭐ | ✅ |
+| Sonnet 4.6 agentic | 81.6% | 80% | ❌ |
+| Opus 4.7 baseline | 78.9% | 90%, 39초 ⚡ | ❌ |
+| Opus 4.7 agentic | 81.6% | 90% | ❌ |
+
+영역별 1위:
+- 가형(2017~2021): Sonnet 4.6 agentic 100%
+- 공통(2022~2026): Gemini 3.1 Pro agentic 90%
+- 미적분(2022~2026): Opus 4.7 baseline 100% / GPT-5.5 agentic 100%
+- 기하(2022~2026): GPT-5.5 agentic 100% / Opus 4.7 baseline 90%
+
+## G-05c — Gemini 429 진단 (세션 종료 직전)
+
+원인 확정: **Gemini 3.1 Pro Preview 모델은 paid tier Tier 1 도 250 RPD 강제 한도** (Preview 모델 정책).
+- 우리 누적 호출 ~350 → 429 RESOURCE_EXHAUSTED
+- 보강 (safetySettings BLOCK_NONE + finishReason 로깅 + agentic trace 보강) 효과 측정 불가 (quota 초과로 0/10)
+- 진짜 baseline 정답률은 30~40% (응답 잘림 다수, max_tokens 5000 으로도 일부 절단)
+- **9차 세션 결정 필요**: GA 모델 전환 / Vertex AI / 24시간 대기 / 다른 모델 라인업
+
+## 운영 상태 — Production 라이브
+
+| 영역 | 상태 | URL/메모 |
+|---|---|---|
+| Web (Vercel) | ✅ Live | https://vibe-coding-contest.vercel.app |
+| DB (Supabase) | ✅ 17 마이그레이션 (G-04 +3) | wrcpehyvxvgvkdzeiehf |
+| 시드 (math_tools) | ✅ 244 도구 / 463 trigger / 926 임베딩 | data/math-tools-seed/ |
+| 외부 도구 (Phase F) | ✅ SymPy 25 + Z3 + matplotlib | services/euler-sympy/ |
+| 4채널 trigger 입력 (G-04) | ✅ 시드/Haiku/직접/자동 mining | /admin/{math-tools,contributors,candidate-triggers} |
+| KPI 평가셋 | ✅ 38 killer + 10 geometry + 45 합성 | user_docs/suneung-math/eval/ + data/ |
+| Vercel env | ✅ 19 row 등록 | EULER_*, ANTHROPIC_HAIKU, CRON_SECRET |
+| 베타 게이트 | ✅ 동작 검증 | 코드 EULER2026, 50명 cap |
+| GEMINI_API_KEY | ✅ paid tier (Preview RPD 250 한도 발견) | .env 등록 |
+
+## Next Action (9차 세션)
+
+1. Gemini 모델 결정 — GA 전환 (gemini-3-pro 등) vs Vertex AI vs 다른 라인업
+2. G-06 4-튜터 다변화 (오일러/라이프니츠/가우스/페르마) + 영역별 라우팅 라이브 배포
+3. 학생 선호도 측정 인프라 (별점 + tutor_choice 추적)
+4. agentic streaming UI (체감 속도 ↑)
+5. 베타 사용자 모집 + 운영 모니터링
 
 ## 운영 상태 — Production 라이브
 

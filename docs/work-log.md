@@ -1,5 +1,52 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-28 (8차 세션 마무리 — G-05b 기하 + G-05c Gemini 진단)
+
+### G-05b — 기하/벡터 6-mode 측정 (commit 02db0cd)
+2022~2026 기하(벡터 포함) 29+30 = 10문항. 6 모드 (Sonnet agentic / Opus baseline+agentic / Gemini baseline+agentic / GPT-5.5 agentic) 측정.
+
+핵심:
+- GPT-5.5 agentic = **100%** (10/10) ⭐⭐⭐
+- Opus 4.7 baseline = 90%, 39초 ⚡
+- Gemini 3.1 agentic = 10% (자체 붕괴 — quota 추정)
+
+영역별 라우팅 근거 데이터 확보. 보고서 docs/qa/kpi-geometry-g05b-report.md.
+
+### G-05c — Gemini 429 원인 진단 (코드 보강, commit 진행)
+보강:
+- callModel Gemini 분기에 safetySettings BLOCK_NONE × 4 카테고리 추가
+- 빈 응답 시 finishReason / promptFeedback / safetyRatings 로깅
+- agentic trace 빈 응답 시 placeholder 명시 (multi-turn 누적 차단 방지)
+- system prompt 에 "원문제 그대로 인용 X" 추가 (RECITATION 트리거 감소)
+- scripts/probe-gemini.ts 진단 헬퍼 추가
+
+재측정 결과: baseline 30%, agentic 0% (오히려 더 나빠짐).
+
+직접 진단으로 진짜 원인 확정:
+**Gemini 3.1 Pro "Preview" 는 paid tier Tier 1 도 250 RPD 강제 한도** (Preview 모델 정책).
+- 우리 누적 350+ 호출로 429 RESOURCE_EXHAUSTED
+- 21시간 후 quota 리셋
+
+해결 옵션 (9차 세션 결정):
+- A. GA 모델 전환 (gemini-3-pro 등 안정 출시 버전)
+- B. Vertex AI 통해 호출 (별도 quota system)
+- C. Batch API (24h turnaround)
+- D. Tier 2 격상 (누적 지출 $250)
+
+### 8차 세션 종합 commits (14)
+G-04 (9): 74a607b / 211481e / c87e08b / f2a0ef8 / 6635504 / c52fe49 / 59265c2 / c2f9268 / 3b37131 / 3829e6b
+G-05 (3): 25d57d0 / 6b04fd8 / 2217d29
+G-05b (1): 02db0cd
+G-05c (이 commit): 보강 코드 + 진단 자료
+
+### 다음 세션 (9차) Next Action
+1. Gemini 라인업 결정 (GA 전환 등)
+2. G-06 4-튜터 다변화 + 영역별 라우팅 라이브 배포
+3. 학생 선호도 측정 인프라
+4. agentic streaming UI
+
+---
+
 ## 2026-04-27 ~ 28 (8차 night 세션 — Phase G-05 KPI 85% 게이트 통과 ⭐)
 
 ### 진행 요약

@@ -1,14 +1,14 @@
 {
   "mode": "full",
-  "run_at": "2026-04-28T02:07:15.316Z",
+  "run_at": "2026-04-28T02:56:22.307Z",
   "summary": {
     "total": 4,
     "retriever_hit_rate_top3": 0,
     "retriever_hit_rate_top5": 0,
-    "reasoner_accuracy": 1,
-    "reasoner_accuracy_hard": 1,
-    "why_inclusion_rate": 0.75,
-    "manager_classify_rate": 0.75,
+    "reasoner_accuracy": 0.75,
+    "reasoner_accuracy_hard": 0.75,
+    "why_inclusion_rate": 0,
+    "manager_classify_rate": 0.5,
     "pass": {
       "retriever": false,
       "accuracy": true,
@@ -36,13 +36,13 @@
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "**오일러 튜터의 단계별 풀이**\n\n**1단계: 주어진 벡터의 크기와 내적 구하기**\n먼저 $\\overrightarrow{\\mathrm{OA}} = \\vec{a}$, $\\overrightarrow{\\mathrm{OB}} = \\vec{b}$라고 합시다.\n문제의 조건에 따라 다음을 알 수 있습니다.\n$|\\vec{a}| = \\sqrt{2}$\n$|\\vec{b}| = 2\\sqrt{2}$\n$\\vec{a} \\cdot \\vec{b} = |\\vec{a}||\\vec{b}|\\cos(\\angle \\mathrm{AOB}) = \\sqrt{2} \\times 2\\sqrt{2} \\times \\frac{1}{4} = 1$\n\n**2단계: 조건 (나)를 이용하여 점 P의 자취 찾기**\n조건 (가)에서 $\\overrightarrow{\\mathrm{OP}} = s",
+      "reasoner_text": "반갑습니다! 오일러 튜터입니다. 주어진 벡터와 도형의 자취 문제를 함께 단계별로 파헤쳐 봅시다.\n\n### 1. 문제 상황의 재구성\n우리는 평행사변형 OACB에서 두 벡터 $\\overrightarrow{\\mathrm{OA}}$와 $\\overrightarrow{\\mathrm{OB}}$의 크기와 그 사이의 각도에 대한 코사인 값을 알고 있습니다. \n점 P는 평행사변형 내부(또는 경계)에 있으면서 특정 내적 조건을 만족하며 움직입니다. 점 X는 원점을 중심으로 하고 반지름이 $\\sqrt{2}$인 원 위를 움직입니다. 이때 두 점의 위치벡터를 이용해 만들어진 새로운 벡터 $|3\\overrightarrow{\\mathrm{OP}} - \\overrightarrow{\\mathrm{OX}}|$의 길이의 최댓값과 최솟값을 구하는 것이 목표입니다.\n\n### 2. 기본 벡터 설정 및 내적 계산\n계산을 편리하게 하기 위해 $\\",
       "reasoner_answer_correct": false,
       "why_included": false,
       "errors": [
         "Manager JSON parse failed"
       ],
-      "duration_ms": 46360,
+      "duration_ms": 43885,
       "chain": {
         "enabled": false
       },
@@ -58,40 +58,45 @@
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "5, 3)$.\n        *   $\\vec{v}_2 = \\frac{3}{4} \\vec{PR} = (\\frac{6 + 5\\sqrt{5}}{4}, \\frac{3\\sqrt{5} - 10}{4}, 3)$.\n        *   Actually, let's just use the points.\n        *   Notice that $Q$ and $R$ both lie on the plane $z=5$.\n        *   The vector $\\vec{QR}$ is in the $xy$-plane (its $z$-component is 0).\n        *   $\\vec{QR} = R - Q = (2 + \\frac{5\\sqrt{5}}{3} - \\frac{16}{3}, \\sqrt{5} - \\frac{10}{3} - \\frac{8\\sqrt{5}}{3}, 0) = (\\",
+      "reasoner_text": "a = 2+\\sqrt{5}, b = -(2-\\sqrt{5}) = \\sqrt{5}-2$.\n        *   $a^2 + b^2 = 9 + 4\\sqrt{5} + 9 - 4\\sqrt{5} = 18$.\n        *   $\\vec{n} \\cdot \\vec{PQ} = (2+\\sqrt{5})\\frac{16}{3} + (\\sqrt{5}-2)\\frac{8\\sqrt{5}}{3} + 4c = 0$.\n        *   $\\frac{32 + 16\\sqrt{5} + 40 - 16\\sqrt{5}}{3} + 4c = 0 \\implies \\frac{72}{3} + 4c = 0 \\implies 24 + 4c = 0 \\implies c = -",
       "reasoner_answer_correct": false,
       "why_included": false,
       "errors": [
         "Manager JSON parse failed"
       ],
-      "duration_ms": 47585,
+      "duration_ms": 45881,
       "chain": {
         "enabled": false
       },
       "area_label": "기하(2022~2026)",
-      "parse_error": true,
+      "parse_error": false,
       "model_used": "gemini"
     },
     {
       "id": "2023-기하-29",
       "difficulty": 6,
-      "manager_ok": false,
-      "retrieved_tools": [],
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [
+        "삼각방정식의 풀이",
+        "벡터의 내적",
+        "인수정리",
+        "두 점 사이의 거리",
+        "도형의 평행이동"
+      ],
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": ", because $\\overrightarrow{\\mathrm{BP}} = -\\frac{1}{2}\\overrightarrow{\\mathrm{BA}}$, so BP is in the same direction as AB extended.\n    *   Therefore, $\\angle PBQ$ is indeed the exterior angle at B for $\\triangle ABQ$.\n    *   Exterior angle $\\angle PBQ = \\angle BQA + \\angle BAQ$.\n    *   $2\\theta = \\theta + \\angle BAQ \\implies \\angle BAQ = \\theta$.\n    *   This means $\\triangle ABQ$ is an isosceles triangle with $\\angle BQA = \\angle BAQ = \\theta$.\n    *   Therefore, $BQ = AB$.\n    *   We know $AB = 2$. So $BQ = 2$.\n    *   This is a massive simplification!\n\n7.  **Step 5: Find the coordinates of Q:**\n    *   We know $BQ = ",
-      "reasoner_answer_correct": false,
+      "reasoner_text": "반갑습니다! 오일러 튜터입니다. 주어진 기하와 벡터 문제를 단계별로 차근차근 분석해 봅시다.\n\n**1단계: 사다리꼴 ABCD의 좌표 설정**\n문제를 쉽게 해결하기 위해 평면 위에 좌표계를 도입해 보겠습니다.\n사다리꼴 ABCD는 $\\overline{\\mathrm{AB}}=\\overline{\\mathrm{CD}}=\\overline{\\mathrm{AD}}=2$ 이고 밑각이 $\\frac{\\pi}{3}(60^\\circ)$인 등변사다리꼴입니다. \n점 B를 $(-1, 0)$으로 두면, $\\angle \\mathrm{ABC}=60^\\circ$이고 $\\overline{\\mathrm{AB}}=2$이므로 점 A의 좌표는 $(0, \\sqrt{3})$이 됩니다.\n$\\overline{\\mathrm{AD}}$가 $x$축과 평행하고 길이가 2이므로 점 D는 $(2, \\sqrt{",
+      "reasoner_answer_correct": true,
       "why_included": false,
-      "errors": [
-        "Manager JSON parse failed"
-      ],
-      "duration_ms": 47040,
+      "errors": [],
+      "duration_ms": 47633,
       "chain": {
         "enabled": false
       },
       "area_label": "기하(2022~2026)",
-      "parse_error": true,
+      "parse_error": false,
       "model_used": "gemini"
     },
     {
@@ -102,13 +107,13 @@
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "주어진 문제를 해결하기 위해 좌표공간을 도입하여 단계별로 접근해 보겠습니다.\n\n**1. 좌표계 설정 및 정사면체의 꼭짓점 좌표 구하기**\n정삼각형 BCD의 외심을 원점 $H(0,0,0)$으로 설정하고, 평면 BCD를 $xy$평면($z=0$)으로 둡니다.\n구 $S$는 중심이 $H$이고 점 B를 지나며 반지름이 6이므로, $HB = HC = HD = 6$입니다.\n점 B의 좌표를 $B(6, 0, 0)$으로 둘 수 있습니다.\n\n정사면체의 한 모서리의 길이를 $a$라고 하면, 정삼각형 BCD의 외접원의 반지름이 6이므로 사인법칙(또는 정삼각형의 성질)에 의해 다음이 성립합니다.\n$$6 = \\frac{a}{\\sqrt{3}} \\implies a = 6\\sqrt{3}$$\n\n정사면체의 높이 $AH$를 구해보면, 직각삼각형 $ABH$에서 피타고라스 정리를 이용할 수 있습니다.\n$$AH = \\sqrt{AB^2 - HB^2} = \\sqrt{(6\\sqrt{3})^2 - 6^2} = \\sqrt{108 - 36} = \\sqrt{72} = 6\\sqrt{2}$$\n따라서 점 A의 좌표는 $A(0, 0, 6\\sqrt{2})$가 됩니다.\n\n**2. 점 P, Q, R의 위치 파악**\n점 P는 선분 AB와 구 $S$의 교점입니다. 선분 AB를 매개변수 $t$ ($0 \\le t \\le 1$)로 나타내면,\n$$P = A + t(\\vec{AB}) = (0, 0, 6\\sqrt{2}) + t(6, 0, -6\\sqrt{2}) = (6t, 0, 6\\sqrt{2}(1-t))$$\n점 P는 구 $S$ ($x^2 + y^2 + z^2 = 36$) 위의 점이므로 대입합니다.\n$$(6t)^2 + 0^2 + (6\\sqrt{2}(1-t))^2 = 36$$\n$$36t^2 + 72(1 - 2t + t^2) = 36$$\n양변을 36으로 나누면,\n$$t^2 + 2(1 - 2t + t^2) = 1$$\n$$3t^2 - 4t + 1 = 0$$\n$$(3t - 1)(t - 1) = 0$$\n$t=1$일 때는 점 B이므로, 점 P에 해당하는 값은 $t = \\frac{1}{3}$입니다.\n즉, $\\vec{AP} = \\frac{1}{3}\\vec{AB}$ 이며, 점 P의 좌표는 $P(2, 0, 4\\sqrt{2})$가 됩니다.\n\n대칭성에 의해 점 Q와 R 역시 각각 선분 AC, AD를 1:2로 내분하는 점이 됩니다.\n따라서 삼각형 PQR은 삼각형 BCD와 평행하며, 닮음비는 $1:3$입니다.\n\n**3. 삼각형 PQR의 넓이와 평면의 법선벡터**\n삼각형 BCD의 넓이는 $\\frac{\\sqrt{3}}{4} \\times (6\\sqrt{3})^2 = 27\\sqrt{3}$ 입니다.\n삼각형 PQR의 넓이를 $S$라 하면, 닮음비가 $1:3$이므로 넓이비는 $1:9$가 됩니다.\n$$S = 27\\sqrt{3} \\times \\frac{1}{9} = 3\\sqrt{3}$$\n또한, 평면 PQR은 $xy$평면과 평행하므로 이 평면의 법선벡터는 $\\vec{n_1} = (0, 0, 1)$입니다.\n\n**4. 평면 $\\alpha$의 법선벡터와 두 평면이 이루는 각**\n평면 $\\alpha$는 구 $S$ 위의 점 P에서의 접평면이므로, 원점 $H$에서 P로 향하는 벡터 $\\vec{HP}$가 평면 $\\alpha$의 법선벡터가 됩니다.\n$$\\vec{HP} = (2, 0, 4\\sqrt{2})$$\n계산의 편의를 위해 방향이 같은 벡터 $\\vec{n_2} = (1, 0, 2\\sqrt{2})$를 법선벡터로 사용합니다.\n\n두 평면 PQR과 $\\alpha$가 이루는 예각을 $\\theta$라고 하면,\n$$\\cos \\theta = \\frac{|\\vec{n_1} \\cdot \\vec{n_2}|}{|\\vec{n_1}||\\vec{n_2}|} = \\frac{1 \\times 2\\sqrt{2}}{1 \\times \\sqrt{1^2 + 0^2 + (2\\sqrt{2})^2}} = \\frac{2\\sqrt{2}}{\\sqrt{9}} = \\frac{2\\sqrt{2}}{3}$$\n\n**5. 정사영의 넓이 계산**\n삼각형 PQR의 평면 $\\alpha$ 위로의 정사영의 넓이 $k$는 다음과 같습니다.\n$$k = S \\cos \\theta = 3\\sqrt{3} \\times \\frac{2\\sqrt{2}}{3} = 2\\sqrt{6}$$\n따라서 우리가 구하고자 하는 $k^2$의 값은,\n$$k^2 = (2\\sqrt{6})^2 = 24$$\n\n최종 답: 24\n코칭 한마디: 왜냐하면 복잡한 공간도형에서의 이면각과 정사영 문제는 좌표계를 도입해 두 평면의 법선벡터가 이루는 각을 계산하는 것이 가장 직관적이고 확실한 방법이기 때문입니다.",
+      "reasoner_text": "안녕하세요! 오일러 튜터입니다. 공간도형과 정사영이 결합된 꽤 까다로운 문제를 만나셨군요. \n\n이 문제는 정사면체와 그 밑면의 외심을 중심으로 하는 구가 만날 때 생기는 새로운 삼각형을, 구의 특정 접평면 위로 정사영 내렸을 때의 넓이를 구하는 것입니다. 입체 기하학적 직관만으로는 각도를 구하기 어려울 수 있으므로, **좌표공간을 도입**하여 대수적으로 접근하는 것이 가장 확실한 방법입니다. 단계별로 차근차근 풀어봅시다.\n\n---\n\n### 1단계: 정사면체에 좌표계 도입하기\n밑면인 정삼각형 BCD의 외심을 원점 $H(0,0,0)$으로 설정합시다. \n구 $S$의 중심이 $H$이고 점 B를 지나므로, 구의 반지름은 6입니다. 즉, 점 B, C, D는 원점으로부터 거리가 6인 $xy$평면 위의 점들입니다.\n*   정삼각형 BCD의 외접원 반지름이 6이므로, 한 변의 길이를 $a$라 하면 $\\frac{a}{\\sqrt{3}} = 6$에서 $a = 6\\sqrt{3}$입니다.\n*   정사면체의 높이 $h$는 피타고라스 정리에 의해 $h = \\sqrt{a^2 - 6^2} = \\sqrt{108 - 36} = \\sqrt{72} = 6\\sqrt{2}$가 됩니다.\n*   따라서 꼭짓점 A의 좌표는 $(0, 0, 6\\sqrt{2})$로 둘 수 있고, 점 B는 계산의 편의를 위해 $(6, 0, 0)$으로 잡겠습니다.\n\n### 2단계: 점 P의 위치와 삼각형 PQR의 넓이 구하기\n점 P는 선분 AB와 구 $S$($x^2 + y^2 + z^2 = 36$)가 만나는 점입니다.\n선분 AB 위의 점을 매개변수 $t$ ($0 \\le t \\le 1$)를 이용해 표현해 봅시다.\n*   $\\vec{OP} = \\vec{OB} + t\\vec{BA} = (6, 0, 0) + t(-6, 0, 6\\sqrt{2}) = (6-6t, 0, 6\\sqrt{2}t)$\n이 좌표를 구의 방정식에 대입합니다.\n*   $(6-6t)^2 + 0^2 + (6\\sqrt{2}t)^2 = 36$\n*   $36(1 - 2t + t^2) + 72t^2 = 36$\n*   $1 - 2t + 3t^2 = 1 \\implies 3t^2 - 2t = 0$\n$t=0$은 점 B를 의미하므로, 점 P에 해당하는 값은 $t = \\frac{2}{3}$입니다. \n이는 점 P가 선분 AB를 A에서부터 1:2로 내분하는 점이라는 뜻입니다. 대칭성에 의해 Q와 R",
       "reasoner_answer_correct": true,
-      "why_included": true,
+      "why_included": false,
       "errors": [
         "Manager JSON parse failed"
       ],
-      "duration_ms": 42785,
+      "duration_ms": 46171,
       "chain": {
         "enabled": false
       },
@@ -124,13 +129,13 @@
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "6 \\implies PF' = 14, PF = 8$.\n    *   This is extremely clean and doesn't depend on $c$ yet.\n    *   Let me re-read my previous thought: \"If the line is not horizontal, it intersects the left branch at exactly one point... The segment $PF'$ crosses the left branch! This means $Q$ lies ON THE SEGMENT $PF'$.\"\n    *   Wait. Is $F'$ inside the left branch?\n    *   The left branch is $x \\le -3$. The focus is $-c$. Since $c > 3$, $-c < -3$.\n    *   So $F'$ is to the LEFT of the left branch.\n    *   $P$ is to the RIGHT of the left branch ($x \\ge 3$).\n    *   So the segment from $F'$ to $P$ goes from $x =",
+      "reasoner_text": "오일러 튜터로서 학생에게 설명하듯 단계별로 풀이를 정리해 보겠습니다.\n\n---\n\n### 1. 쌍곡선의 정의와 기본 성질 파악하기\n주어진 쌍곡선은 두 초점이 $F(c, 0), F'(-c, 0)$이고 주축의 길이가 6입니다. \n쌍곡선의 정의에 의해 쌍곡선 위의 임의의 점 $X$에 대하여 두 초점까지의 거리의 차는 주축의 길이와 같습니다.\n$$|XF' - XF| = 6$$\n점 $P$는 제1사분면(오른쪽 가지)에 있으므로 $F'$보다 $F$에 더 가깝습니다. 따라서 다음이 성립합니다.\n$$PF' - PF = 6 \\quad \\cdots \\text{ (ㄱ)}$$\n\n### 2. 점 Q의 위치와 삼각형",
       "reasoner_answer_correct": false,
       "why_included": false,
       "errors": [
         "Manager JSON parse failed"
       ],
-      "duration_ms": 48951,
+      "duration_ms": 47368,
       "chain": {
         "enabled": false
       },
@@ -144,20 +149,20 @@
       "manager_ok": true,
       "manager_difficulty": 5,
       "retrieved_tools": [
+        "피타고라스 정리",
         "도형의 평행이동",
-        "조건부확률",
+        "두 점 사이의 거리",
         "삼각형의 합동 조건 (SSS·SAS·ASA)",
-        "두 곡선 사이 넓이",
-        "일차부등식의 풀이"
+        "연속균등분포"
       ],
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "주어진 문제를 단계별로 해결해 봅시다.\n\n**1. 벡터 $\\overrightarrow{\\mathrm{AX}}$의 식 간단히 하기**\n조건 (나)에서 주어진 식을 점 D, E, F를 활용하여 분해해 봅니다.\n$\\overrightarrow{\\mathrm{PB}} = \\overrightarrow{\\mathrm{DB}} - \\overrightarrow{\\mathrm{DP}}$\n$\\overrightarrow{\\mathrm{QC}} = \\overrightarrow{\\mathrm{EC}} - \\overrightarrow{\\mathrm{EQ}}$\n$\\overrightarrow{\\mathrm{RA}} = \\overrightarrow{\\mathrm{FA}} - \\overrightarrow{\\mathrm{FR}}$\n\n이를 모두 더하면,\n$\\overrightarrow{\\mathrm{AX}} = (\\overrightarrow{\\mathrm{DB}} + \\overrightarrow{\\mathrm{EC}} + \\overrightarrow{\\mathrm{FA}}) - (\\overrightarrow{\\mathrm{DP}} + \\overrightarrow{\\mathrm{EQ}} + \\overrightarrow{\\mathrm{FR}})$\n\n**2. $\\overrightarrow{\\mathrm{DB}} + \\overrightarrow{\\mathrm{EC}} + \\overrightarrow{\\mathrm{FA}}$ 계산하기**\n점 D, E, F는 각각 선분 AB, BC, CA를 $1:3$으로 내분하는 점입니다.\n따라서 $\\overrightarrow{\\mathrm{DB}} = \\frac{3}{4}\\overrightarrow{\\mathrm{AB}}$, $\\overrightarrow{\\mathrm{EC}} = \\frac{3}{4}\\overrightarrow{\\mathrm{BC}}$, $\\overrightarrow{\\mathrm{FA}} = \\frac{3}{4}\\overrightarrow{\\mathrm{CA}}$가 됩니다.\n이 세 벡터를 더하면,\n$\\overrightarrow{\\mathrm{DB}} + \\overrightarrow{\\mathrm{EC}} + \\overrightarrow{\\mathrm{FA}} = \\frac{3}{4}(\\overrightarrow{\\mathrm{AB}} + \\overrightarrow{\\mathrm{BC}} + \\overrightarrow{\\mathrm{CA}}) = \\frac{3}{4}(\\vec{0}) = \\vec{0}$\n\n결과적으로 $\\overrightarrow{\\mathrm{AX}}$는 다음과 같이 간단해집니다.\n$\\overrightarrow{\\mathrm{AX}} = -(\\overrightarrow{\\mathrm{DP}} + \\overrightarrow{\\mathrm{EQ}} + \\overrightarrow{\\mathrm{FR}})$\n\n**3. $|\\overrightarrow{\\mathrm{AX}}|$가 최대가 될 조건 찾기**\n조건 (가)에서 $|\\overrightarrow{\\mathrm{DP}}| = |\\overrightarrow{\\mathrm{EQ}}| = |\\overrightarrow{\\mathrm{FR}}| = 1$입니다.\n크기가 1인 세 벡터의 합의 크기가 최대가 되려면, 세 벡터가 모두 **같은 방향**을 향해야 합니다.\n즉, $\\overrightarrow{\\mathrm{DP}} = \\overrightarrow{\\mathrm{EQ}} = \\overrightarrow{\\mathrm{FR}}$ 일 때 $|\\overrightarrow{\\mathrm{AX}}|$가 최대가 됩니다.\n\n**4. 삼각형 PQR의 넓이 $S$ 구하기**\n$\\overrightarrow{\\mathrm{DP}} = \\overrightarrow{\\mathrm{EQ}} = \\overrightarrow{\\mathrm{FR}}$라는 것은 점 P, Q, R이 각각 점 D, E, F를 동일한 벡터만큼 평행이동한 점이라는 뜻입니다.\n평행이동은 도형의 모양과 크기를 보존하므로, 삼각형 PQR은 삼각형 DEF와 합동이며 넓이도 같습니다.\n\n삼각형 DEF의 한 변의 길이를 코사인 법칙을 이용해 구해봅시다.\n삼각형 ADF에서 $\\mathrm{AD} = 1$, $\\mathrm{AF} = 3$, $\\angle \\mathrm{A} = 60^\\circ$이므로,\n$\\mathrm{DF}^2 = 1^2 + 3^2 - 2 \\cdot 1 \\cdot 3 \\cdot \\cos 60^\\circ = 10 - 3 = 7$\n따라서 $\\mathrm{DF} = \\sqrt{7}$입니다.\n삼각형 DEF는 한 변의 길이가 $\\sqrt{7}$인 정삼각형이므로, 그 넓이 $S$는 다음과 같습니다.\n$S = \\frac{\\sqrt{3}}{4} \\times (\\sqrt{7})^2 = \\frac{7\\sqrt{3}}{4}$\n\n**5. $16S^2$의 값 계산하기**\n$16S^2 = 16 \\times \\left(\\frac{7\\sqrt{3}}{4}\\right)^2 = 16 \\times \\frac{49 \\times 3}{16} = 147$\n\n최종 답: 147\n코칭 한마디: 왜냐하면 벡터의 합이 최대가 되려면 세 벡터가 같은 방향이어야 하고, 이는 삼각형 PQR이 삼각형 DEF를 그대로 평행이동한 도형임을 의미하기 때문입니다.",
+      "reasoner_text": "주어진 문제는 한 변의 길이가 4인 정삼각형 ABC의 각 변을 1:3으로 내분하는 점 D, E, F와, 이 점들을 중심으로 반지름이 1인 원 위를 움직이는 점 P, Q, R에 대한 벡터 방정식의 최댓값을 묻고 있습니다. 벡터 $\\overrightarrow{AX}$의 크기가 최대일 때 형성되는 삼각형 PQR의 넓이를 구하여 주어진 식의 값을 계산해 봅시다.\n\n**1. 벡터 방정식의 분해 및 단순화**\n주어진 조건 $\\overrightarrow{AX} = \\overrightarrow{PB} + \\overrightarrow{QC} + \\overrightarrow{RA}$를 점 D, E, F를 시점으로 하는 벡터로 쪼개어 표현해 봅니다.\n- $\\overrightarrow{PB} = \\overrightarrow{DB} - \\overrightarrow{DP}$\n- $\\overrightarrow{QC} = \\overrightarrow{EC} - \\overrightarrow{EQ}$\n- $\\overrightarrow{RA} = \\overrightarrow{FA} - \\overrightarrow{FR}$\n\n이를 원래 식에 대입하여 정리하면 다음과 같습니다.\n$\\overrightarrow{AX} = (\\overrightarrow{DB} + \\overrightarrow{EC} + \\overrightarrow{FA}) - (\\overrightarrow{DP} + \\overrightarrow{EQ} + \\overrightarrow{FR})$\n\n**2. 상수 벡터 부분의 계산**\n점 D, E, F는 각각 변 AB, BC, CA를 1:3으로 내분하므로 다음이 성립합니다.\n- $\\overrightarrow{DB} = \\frac{3}{4}\\overrightarrow{AB}$\n- $\\overrightarrow{EC} = \\frac{3}{4}\\overrightarrow{BC}$\n- $\\overrightarrow{FA} = \\frac{3}{4}\\overrightarrow{CA}$\n\n이 세 벡터를 더하면 닫힌 경로를 형성하는 벡터의 합이 되므로 영벡터가 됩니다.\n$\\overrightarrow{DB} + \\overrightarrow{EC} + \\overrightarrow{FA} = \\frac{3}{4}(\\overrightarrow{AB} + \\overrightarrow{BC} + \\overrightarrow{CA}) = \\vec{0}$\n\n따라서 식은 매우 간단해집니다.\n$\\overrightarrow{AX} = - (\\overrightarrow{DP} + \\overrightarrow{EQ} + \\overrightarrow{FR})$\n\n**3. $|\\overrightarrow{AX}|$가 최대가 되는 조건 파악**\n문제 조건에서 $|\\overrightarrow{DP}| = |\\overrightarrow{EQ}| = |\\overrightarrow{FR}| = 1$입니다. \n크기가 1인 세 벡터의 합의 크기가 최대가 되려면, 세 벡터가 모두 같은 방향을 가리켜야 합니다.\n즉, $\\overrightarrow{DP} = \\overrightarrow{EQ} = \\",
       "reasoner_answer_correct": true,
-      "why_included": true,
+      "why_included": false,
       "errors": [],
-      "duration_ms": 34951,
+      "duration_ms": 48314,
       "chain": {
         "enabled": false
       },
@@ -171,25 +176,25 @@
       "manager_ok": true,
       "manager_difficulty": 5,
       "retrieved_tools": [
-        "회전체의 부피 (디스크)",
         "한 점에서의 접선의 방정식",
         "음함수 미분",
-        "인수분해 기본 패턴",
-        "이심률"
+        "회전체의 부피 (디스크)",
+        "곡선 밖의 점에서 그은 접선",
+        "그래프의 오목·볼록과 변곡점"
       ],
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "쌍곡선 문제에 접근할 때는 항상 **'쌍곡선의 정의(두 초점으로부터의 거리의 차가 일정)'**를 가장 먼저 떠올려야 합니다. 주어진 문제를 단계별로 간단히 풀어보겠습니다.\n\n**1. 쌍곡선의 초점과 거리의 차 구하기**\n주어진 쌍곡선의 방정식 $x^{2}-\\frac{y^{2}}{35}=1$ 에서 $a^2=1, b^2=35$ 이므로 $c^2 = 1+35 = 36$ 입니다. \n따라서 초점은 $\\mathrm{F}(6, 0), \\mathrm{F}^{\\prime}(-6, 0)$ 이며, 두 초점 사이의 거리 $\\overline{\\mathrm{FF}^{\\prime}} = 12$ 입니다.\n주축의 길이는 $2a = 2$ 이므로, 쌍곡선의 정의에 의해 $\\overline{\\mathrm{PF}^{\\prime}} - \\overline{\\mathrm{PF}} = 2$ 가 성립합니다.\n\n**2. 미지수 설정 및 닮음비 적용**\n$\\overline{\\mathrm{PF}} = k (k>0)$ 라고 하면, $\\overline{\\mathrm{PF}^{\\prime}} = k+2$ 입니다.\n문제 조건에서 $\\overline{\\mathrm{PQ}} = \\overline{\\mathrm{PF}} = k$ 이고, 점 $\\mathrm{Q}$ 는 직선 $\\mathrm{PF}^{\\prime}$ 위의 점이므로 $\\overline{\\mathrm{QF}^{\\prime}} = \\overline{\\mathrm{PF}^{\\prime}} + \\overline{\\mathrm{PQ}} = 2k+2$ 가 됩니다.\n삼각형 $\\mathrm{QF}^{\\prime}\\mathrm{F}$ 와 삼각형 $\\mathrm{FF}^{\\prime}\\mathrm{P}$ 가 서로 닮음이고 공통각 $\\angle \\mathrm{F}^{\\prime}$ 을 가지므로, 대응변의 길이 비는 다음과 같습니다.\n$\\overline{\\mathrm{QF}^{\\prime}} : \\overline{\\mathrm{FF}^{\\prime}} = \\overline{\\mathrm{FF}^{\\prime}} : \\overline{\\mathrm{PF}^{\\prime}}$\n$(2k+2) : 12 = 12 : (k+2)$\n\n**3. 이차방정식 풀이 (인수분해 기본 패턴 활용)**\n위 비례식을 풀면 $(2k+2)(k+2) = 144$ 가 됩니다.\n양변을 2로 나누고 전개하면 $k^2 + 3k - 70 = 0$ 입니다.\n이를 인수분해하면 $(k+10)(k-7) = 0$ 이고, $k>0$ 이므로 $k=7$ 입니다.\n따라서 $\\overline{\\mathrm{PF}} = 7, \\overline{\\mathrm{PF}^{\\prime}} = 9, \\overline{\\mathrm{PQ}} = 7$ 입니다.\n\n**4. 삼각형의 넓이 계산**\n삼각형 $\\mathrm{FF}^{\\prime}\\mathrm{P}$ 의 세 변의 길이는 $7, 9, 12$ 입니다. 코사인 법칙을 이용하여 $\\angle \\mathrm{PF}^{\\prime}\\mathrm{F} = \\theta$ 에 대한 코사인 값을 구합니다.\n$\\cos \\theta = \\frac{9^2 + 12^2 - 7^2}{2 \\cdot 9 \\cdot 12} = \\frac{22}{27}$\n$\\sin \\theta = \\sqrt{1 - \\left(\\frac{22}{27}\\right)^2} = \\frac{7\\sqrt{5}}{27}$\n삼각형 $\\mathrm{FF}^{\\prime}\\mathrm{P}$ 의 넓이는 $\\frac{1}{2} \\times 9 \\times 12 \\times \\frac{7\\sqrt{5}}{27} = 14\\sqrt{5}$ 입니다.\n삼각형 $\\mathrm{PFQ}$ 와 삼각형 $\\mathrm{FF}^{\\prime}\\mathrm{P}$ 는 높이가 같고 밑변이 각각 $\\overline{\\mathrm{PQ}}=7, \\overline{\\mathrm{PF}^{\\prime}}=9$ 이므로, 넓이의 비는 $7:9$ 입니다.\n따라서 삼각형 $\\mathrm{PFQ}$ 의 넓이는 $14\\sqrt{5} \\times \\frac{7}{9} = \\frac{98}{9}\\sqrt{5}$ 입니다.\n$p=9, q=98$ 이므로 $p+q = 107$ 입니다.\n\n최종 답: 107\n코칭 한마디: 이유는 쌍곡선의 정의를 통해 세운 비례식을 풀 때 '인수분해 기본 패턴'을 활용하면 복잡한 선분의 길이를 빠르고 정확하게 이차방정식의 해로 유도해낼 수 있기 때문입니다.",
-      "reasoner_answer_correct": true,
-      "why_included": true,
+      "reasoner_text": "주어진 문제는 쌍곡선의 방정식과 초점의 성질을 이용하여 삼각형의 닮음 조건을 만족하는 선분의 길이를 구하고, 이를 바탕으로 특정 삼각형의 넓이를 계산하는 문제입니다.\n\n**1. 쌍곡선의 초점과 주축의 길이 구하기**\n주어진 쌍곡선의 방정식 $x^2 - \\frac{y^2}{35} = 1$ 에서 $a^2 = 1, b^2 = 35$ 입니다.\n초점의 좌표를 구하기 위해 $c^2 = a^2 + b^2 = 1 + 35 = 36$ 을 계산하면 $c = 6$ 이 됩니다.\n따라서 두 초점은 $F(6, 0), F'(-6, 0)$ 이며, 두 초점 사이의 거리는 $\\overline{FF'} = 12$ 입니다.\n또한, 주축의 길이는 $2a = 2$ 입니다.\n\n**2. 쌍곡선의 정의를 이용한 선분 길이 설정**\n점 $P$는 제1사분면 위의 쌍곡선 점이므로, 쌍곡선의 정의에 의해 두 초점까지의 거리의 차는 주축의 길이와 같습니다.\n$\\overline{PF'} - \\overline{PF} = 2$\n계산의 편의를 위해 $\\overline{PF} = k$ 라 두면, $\\overline{PF'} = k + 2$ 가 됩니다.\n문제의 조건에서 $\\overline{PQ} = \\overline{PF} = k$ 이고, 점 $P$는 $F'$와 $Q$ 사이에 위치하므로($\\overline{PF'} < \\overline{QF'}$), \n$\\overline{QF'} = \\overline{PF'} + \\overline{PQ} = (k + 2) + k = 2k + 2$ 입니다.\n\n**3. 삼각형의 닮음 조건을 이용한 $k$ 값 구하기**\n$\\triangle QF'F$ 와 $\\triangle FF'P$ 가 서로 닮음이라고 주어졌습니다.\n두 삼각형은 $\\angle F'$ 를 공통으로 가지고 있으므로, SAS 닮음 조건에 의해 각을 끼고 있는 두 변의 길이의 비가 같아야 합니다.\n$\\overline{QF'} : \\overline{FF'} = \\overline{FF'} : \\overline{PF'}$\n$(2k + 2) : 12 = 12 : (k + 2)$\n내항의 곱과 외항의 곱이 같으므로,\n$2(k + 1)(k + 2) = 144$\n$(k + 1)(k + 2) = 72$\n연속된 두 자연수의 곱이 72가 되는 경우는 $8 \\times 9$ 이므로, $k + 1 = 8$ 에서 $k = 7$ 임을 알 수 있습니다.\n따라서 $\\overline{PF} = 7, \\overline{PF'} = 9, \\overline{PQ} = 7$ 입니다.\n\n**4. 삼각형의 넓이 계산**\n먼저 세 변의 길이가 $7, 9, 12$ 인 $\\triangle FF'P$ 의 넓이를 헤론의 공식을 이용하여 구합니다.\n$s = \\frac{7 + 9 + 12}{2} = 14$\n$\\triangle FF'P \\text{의 넓이} = \\sqrt{14(14 - 7)(14 - 9)(14 - 12)} = \\sqrt{14 \\times 7 \\times 5 \\times 2} = \\sqrt{980} = 14\\sqrt{5}$\n\n$\\triangle PFQ$ 와 $\\triangle FF'P$ 는 꼭짓점 $F$ 를 공유하고 밑변이 같은 직선 위에 있으므로, 넓이의 비는 밑변의 길이의 비와 같습니다.\n$\\triangle PFQ \\text{의 넓이} = \\triangle FF'P \\text{의 넓이} \\times \\frac{\\overline{PQ}}{\\overline{PF'}} = 14\\sqrt{5} \\",
+      "reasoner_answer_correct": false,
+      "why_included": false,
       "errors": [],
-      "duration_ms": 36425,
+      "duration_ms": 55109,
       "chain": {
         "enabled": false
       },
       "area_label": "기하(2022~2026)",
-      "parse_error": false,
+      "parse_error": true,
       "model_used": "gemini"
     },
     {
@@ -199,19 +204,21 @@
       "manager_difficulty": 5,
       "retrieved_tools": [
         "도형의 평행이동",
-        "두 점 사이의 거리",
-        "산술-기하 평균 부등식",
         "정사영의 넓이",
-        "일차함수의 그래프"
+        "산술-기하 평균 부등식",
+        "선분의 매개변수화",
+        "두 점 사이의 거리"
       ],
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "주어진 문제를 해결하기 위해 벡터의 성질과 내적을 활용하여 단계별로 풀어보겠습니다.\n\n**1단계: 점 X가 나타내는 도형 $S$ 파악하기**\n주어진 조건식은 다음과 같습니다.\n$$|\\overrightarrow{\\mathrm{XB}}+\\overrightarrow{\\mathrm{XC}}|=|\\overrightarrow{\\mathrm{XB}}-\\overrightarrow{\\mathrm{XC}}|$$\n양변을 제곱하여 정리해 봅시다.\n$$|\\overrightarrow{\\mathrm{XB}}|^2 + 2\\overrightarrow{\\mathrm{XB}} \\cdot \\overrightarrow{\\mathrm{XC}} + |\\overrightarrow{\\mathrm{XC}}|^2 = |\\overrightarrow{\\mathrm{XB}}|^2 - 2\\overrightarrow{\\mathrm{XB}} \\cdot \\overrightarrow{\\mathrm{XC}} + |\\overrightarrow{\\mathrm{XC}}|^2$$\n$$4\\overrightarrow{\\mathrm{XB}} \\cdot \\overrightarrow{\\mathrm{XC}} = 0 \\implies \\overrightarrow{\\mathrm{",
+      "reasoner_text": "",
       "reasoner_answer_correct": false,
       "why_included": false,
-      "errors": [],
-      "duration_ms": 42288,
+      "errors": [
+        "Reasoner: Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a"
+      ],
+      "duration_ms": 6852,
       "chain": {
         "enabled": false
       },
@@ -227,13 +234,14 @@
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "  *   Foci: $c^2 = a^2 - b^2 = 169 - \\frac{169}{4} = \\frac{3 \\times 169}{4}$.\n    *   $c = \\frac{13\\sqrt{3}}{2}$.\n    *   Foci are at $x_0 \\pm c = -4 \\pm \\frac{13\\sqrt{3}}{2}$.\n    *   $B$ is the focus with positive $x$-coordinate.\n    *   $-4 + \\frac{13\\sqrt{3}}{2} = -4 + 11.258... = 7.258... > 0$. So $B$ has a positive $x$-coordinate.\n    *   Everything is perfectly consistent.\n\n6.  **Calculate $k^2$ again:**\n    *   $H =",
+      "reasoner_text": "",
       "reasoner_answer_correct": false,
       "why_included": false,
       "errors": [
-        "Manager JSON parse failed"
+        "Manager JSON parse failed",
+        "Reasoner: Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a"
       ],
-      "duration_ms": 47613,
+      "duration_ms": 6393,
       "chain": {
         "enabled": false
       },
@@ -244,28 +252,24 @@
     {
       "id": "2026-기하-30",
       "difficulty": 6,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "내분점·외분점",
-        "유리함수 y=k/(x-p)+q",
-        "두 평면이 이루는 각",
-        "벡터의 크기",
-        "조건부확률"
-      ],
+      "manager_ok": false,
+      "retrieved_tools": [],
       "expected_tools": [],
       "hit_top3": false,
       "hit_top5": false,
-      "reasoner_text": "\\overrightarrow{\\mathrm{QB}} = -50 + 5\\sqrt{2} x_1 - 5\\sqrt{2} x_2 + x_1 x_2 + y_1 y_2$\n$= -50 + 5\\sqrt{2}(x_1 - x_2) - 48 = -98 + 5\\sqrt{2}(x_1 - x_2)$\n부호가 다르다!\n다시 전개해보자.\n$\\overrightarrow{\\mathrm{PA}} = \\overrightarrow{\\mathrm{OA}} - \\overrightarrow{\\mathrm{OP}}$\n$\\overrightarrow{\\mathrm{QB}} = \\overrightarrow{\\mathrm{OB}} - \\overrightarrow{\\mathrm{OQ}} = -\\overrightarrow{\\mathrm{OA}} - \\overrightarrow{\\{OQ\\}}$\n$\\overrightarrow{\\mathrm{PA}} \\cdot \\overrightarrow{\\mathrm{QB}} = (\\overrightarrow{\\",
-      "reasoner_answer_correct": true,
+      "reasoner_text": "",
+      "reasoner_answer_correct": false,
       "why_included": false,
-      "errors": [],
-      "duration_ms": 42634,
+      "errors": [
+        "Manager JSON parse failed",
+        "Reasoner: Gemini 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a"
+      ],
+      "duration_ms": 6455,
       "chain": {
         "enabled": false
       },
       "area_label": "기하(2022~2026)",
-      "parse_error": false,
+      "parse_error": true,
       "model_used": "gemini"
     }
   ]
