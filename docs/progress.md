@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — **G-06 베타 모집 준비 진행** M8 1/2)
-- Phase: **Phase G-06 (M8 베타 모집 준비)** → G-07 진입 대기
-- Step: **G06-26 ✅ (M8 1/2, G-06 26/27 + G06-23 deferred)** — `TutorChoicePrompt.tsx` 신규 (3초 카운트다운 + 4 거장 카드 grid + 호버 일시정지 + quota 게이트). `portraits.ts` 에 `tier_label: '기본' | '거장'` 메타 추가. `/legend/page.tsx` 가 단순 `/euler-tutor` re-export 라 통합 진입점이 없어 컴포넌트만 작성, 통합은 G-07 callTutor 위임 시점으로 유보. 검증: tsc 무에러 + vitest 213/213 PASS (회귀 0). 다음 task G06-27 (베타 신청·승인 시스템 + 피드백 동의 필수).
-- Session: 9차 (**G-06 M8 진행**, 다음 task G06-27)
+- Time: 2026-04-29 (9차 세션 — **G-06 ✅ 진정 완결, M8 포함 27/27**)
+- Phase: **Phase G-06 ✅ (M8 포함)** → G-07 진입 대기
+- Step: **G06-27 ✅ (M8 2/2 ✅, G-06 27/27 + G06-23 deferred)** — 베타 신청·승인 시스템. `supabase/migrations/20260609_beta_applications.sql` 신규 (테이블 + RLS + SECURITY DEFINER RPC `list_beta_applications` / `review_beta_application` — admin email 검증 + 승인 시 `euler_beta_invites` 자동 발급 + 50명 cap). MCP `apply_migration` 적용 완료. 신청 폼 (`/legend/beta/apply`) + 관리자 페이지 (`/admin/beta-applications`) + API 3종 (POST/GET apply / GET admin list / POST admin approve). motivation 50자+ CHECK / feedback_consent=true CHECK / 1 user 1 신청. 기존 `EULER2026` 페이지에 "신청서 작성" 링크 추가 (deprecate 보수적). 검증: tsc 무에러 + vitest **230/230 PASS** (+17 신규, 회귀 0). commit `37c9714`.
+- Session: 9차 (**G-06 ✅ 진정 완결**, 다음 단계: 베타 모집 시작 + 피드백 수집)
 
 ## G-06 완결 — 핵심 성과
 - **브랜드 변경**: Euler Tutor → Legend Tutor (5 거장 튜터)
@@ -13,7 +13,8 @@
 - **R1 Per-Problem Report**: 추론 트리 (Δ4 ToT) + LLM struggle (Δ3) + trigger 확장 + stuck 신호
 - **5종 quota 통합 (Δ1)**: 베타 5문제/일·레전드 3회/일·R1 1회/일·주간 1회·월간 1회 + 자격 게이트 (10/20)
 - **흉상 이미지 5종**: 오일러·가우스 (기존) + 폰 노이만·라마누잔·라이프니츠 (신규, Wikimedia PD)
-- 23 commits / 25 tasks (G06-23 deferred) / 213 vitest PASS / 회귀 0
+- **M8 베타 모집 준비 ✅**: TutorChoicePrompt 격 차별화 (G06-26) + 베타 신청·승인 시스템 + 피드백 동의 필수 (G06-27)
+- 25 commits / 27 tasks (G06-23 deferred — 베타 모집 후 별도) / **230 vitest PASS** / 회귀 0
 
 ## Next Action (10차 세션 G-07)
 1. 베타 사용자 모집 및 G06-23 인터뷰 (5명 1주)
