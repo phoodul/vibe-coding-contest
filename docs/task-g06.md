@@ -20,7 +20,8 @@
 | M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | ✅ | 5/5 |
 | M6 — KPI 측정 + 베타 검증 | 4일 | ⏸ 1/2 | G06-23 보류 (베타 모집 후 별도) |
 | M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | ✅ | 2/2 |
-| **합계** | **40일** | — | **23/25 (G06-23 deferred) — G-06 ✅ 완결** |
+| M8 — 베타 모집 준비 (격 차별화 + 신청·승인) | 2일 | 🔄 | 0/2 |
+| **합계** | **42일** | — | **25/27 (G06-23 deferred)** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -518,3 +519,48 @@ G06-01 → G06-02 → G06-03 (M1)
 ## 토큰 예산 (대략)
 
 총 ≈ **170K 토큰** (코드 작성). 평균 task 당 7K. M3·M4 가 가장 무거움 (각 30K+).
+
+---
+
+## M8. 베타 모집 준비 — 격 차별화 + 신청·승인 (2일, 2 task)
+
+> 추가일: 2026-04-29 (사용자 결정)
+> 목적: 베타 모집 직전 단계. 격 차별화 UI + 신청·승인제 + 피드백 동의 필수.
+
+### G06-26: TutorChoicePrompt 카드 (격 차별화 + 카운트다운, 방안 A)
+- **선행**: G06-21 (M5 완료)
+- **변경 파일**:
+  - `src/components/legend/TutorChoicePrompt.tsx` (신규)
+  - `src/components/legend/PerProblemReportCard.tsx` (TutorChoicePrompt 노출 위치 통합 안 함 — `/legend/page.tsx` 가 라우팅 결과 직후 노출)
+  - `src/app/legend/page.tsx` (또는 `/legend/solve/[sessionId]` 진입 흐름) — TutorChoicePrompt 통합
+  - `src/lib/legend/portraits.ts` (Tier 시각 구분 메타 추가 — `tier_label: '기본' | '거장'`)
+- **변경 내용**: 라우팅 결과 (Stage 0~2 완료) 직후 학생에게 카드 노출:
+  - 라우팅된 튜터 (default 라마누잔) 표시
+  - **3초 카운트다운** 후 자동 풀이 시작 (default 진행)
+  - 카운트다운 중 "⭐ 거장에게도?" 4 레전드 버튼 클릭 가능 — 즉시 레전드 호출
+  - 한도 표시: "오늘 남은 문제: N/5" / "오늘 남은 레전드: M/3"
+  - 카피: 라마누잔 = "기본 / 단순·중등" / 레전드 = "거장 / 고난도 전문 / 일 3회"
+- **검증**: `pnpm tsc --noEmit` + 수동 dev 카운트다운 + 클릭 인터럽트
+- **위험**: LOW (UI 추가, 기존 흐름 무파괴)
+- **예상 토큰**: 6K
+- **commit**: `feat(g06): TutorChoicePrompt 격 차별화 카드 (방안 A 카운트다운)`
+
+### G06-27: 베타 신청·승인 시스템 (피드백 동의 필수)
+- **선행**: G06-21 (M5 완료)
+- **변경 파일**:
+  - `supabase/migrations/20260609_beta_applications.sql` (신규) — `beta_applications` 테이블 (user_id, motivation, feedback_consent, status, applied_at, approved_at, approved_by) + RLS
+  - `src/app/legend/beta/apply/page.tsx` (신규) — 신청 폼 (동기·피드백 동의 필수 체크박스)
+  - `src/app/admin/beta-applications/page.tsx` (신규) — 관리자 승인 페이지
+  - `src/app/api/legend/beta/apply/route.ts` (신규, POST)
+  - `src/app/api/admin/beta-applications/route.ts` (신규, GET 목록)
+  - `src/app/api/admin/beta-applications/[id]/approve/route.ts` (신규, POST)
+  - `src/lib/euler/beta-gate.ts` (수정) — 기존 `EULER2026` 자동 승인 deprecate, 신청·승인 흐름으로 전환
+- **변경 내용**:
+  - 신청 폼: 동기 (자유 텍스트) + 피드백 동의 (필수 체크박스) + 학년·과목·풀이 빈도 (선택)
+  - 관리자 페이지: 신청 목록 + 1-click 승인/거부 + 코멘트
+  - 승인 시 `euler_beta_invites` 자동 발급 + 사용자에게 이메일 알림 (옵션 — Supabase Edge Function 또는 단순 status 변경)
+  - 기존 `EULER2026` 코드는 backwards compat 유지 (사용자 직접 deprecate 결정 시까지)
+- **검증**: vitest 단위 테스트 (RLS / 관리자 권한 / 신청 → 승인 흐름) + 수동 E2E
+- **위험**: MEDIUM (RLS + 관리자 권한 + 이메일 알림)
+- **예상 토큰**: 12K
+- **commit**: `feat(g06): 베타 신청·승인 시스템 + 피드백 동의 필수`
