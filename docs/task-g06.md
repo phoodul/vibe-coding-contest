@@ -135,7 +135,7 @@
 
 ## M3. 5-튜터 orchestrator + quota (6일, 4 task)
 
-### G06-08: callModel 추출 + tutor-orchestrator 코어 ✅ (commit `<PENDING>`)
+### G06-08: callModel 추출 + tutor-orchestrator 코어 ✅ (commit `929111d`)
 - **선행**: G06-07
 - **변경 파일**:
   - `src/lib/legend/call-model.ts` (신규, `scripts/eval-kpi.ts` 의 callModel 패턴 추출)
