@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-28 (8차 세션 종료)
-- Phase: **Phase G-04 + G-05 + G-05b + G-05c 모두 완료** — KPI 85% 게이트 압도적 통과
-- Step: 다음 세션 (9차) — G-06 4-튜터 다변화 + 영역별 라우팅 + 라이브 배포
-- Session: 8차 (G-04 9 task + G-05 multi-turn agentic + G-05b 기하 + G-05c Gemini 진단)
+- Time: 2026-04-28 (9차 세션 진입)
+- Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
+- Step: G06-01 완료 (라우팅·세션·quota 마이그레이션 3종, commit `c83d650`). M1 진행 1/3.
+- Session: 9차 (G-06 시작)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 
