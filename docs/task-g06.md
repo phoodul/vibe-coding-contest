@@ -435,7 +435,7 @@
 
 ## M7. /euler→/legend 마이그·배포 (4일, 2 task)
 
-### G06-24: /api/euler-tutor 내부 위임 + 1주 안정화 모니터링 ✅ (commit `__G06_24_HASH__`)
+### G06-24: /api/euler-tutor 내부 위임 + 1주 안정화 모니터링 ✅ (commit `c67bac8`)
 - **선행**: G06-23 (deferred — 베타 인터뷰 별도)
 - **변경 파일**:
   - `src/app/api/euler-tutor/route.ts` (점진적 위임 — `routeProblem` best-effort 비차단 호출 + streamData `legend_routing` payload 추가)
