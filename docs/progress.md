@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-28 (9차 세션 — M2 ✅ 완료)
+- Time: 2026-04-28 (9차 세션 — M3 진입)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-07 ✅** — POST /api/legend/route SSE 진입점 (인증 가드 + in-memory rate limit 5/s + body 파싱 + 비동기 routeProblem stream). `src/lib/legend/sse.ts` SSE 헬퍼 + `src/app/api/legend/route/route.ts` 핸들러 + 단위 테스트 4 시나리오 (401/400/정상 SSE/429) 모두 통과. `pnpm tsc --noEmit` 무에러. **M2 ✅ 4/4 완료**. 다음: G06-08 (M3 진입 — callModel 추출 + tutor-orchestrator 코어).
-- Session: 9차 (G-06 진행 중, 7/25)
+- Step: **G06-08 ✅** — callModel 5 분기 추출 (Anthropic baseline / agentic / Haiku + OpenAI agentic + Google Gemini agentic + safetySettings BLOCK_NONE × 4 + finishReason 로깅) + tutor-orchestrator 6 튜터 dispatch (TUTOR_CONFIG 매핑 + buildSystemPrompt 페르소나 + legend_tutor_sessions insert + extractFinalAnswer). 단위 테스트 8/8 PASS (TUTOR_CONFIG 매핑 / 가우스·라마누잔_calc·폰노이만 호출 / 알 수 없는 튜터 throw / 빈 problem 거부 / DB insert 실패 fallback / 마지막 줄 fallback). `pnpm tsc --noEmit` 무에러. **M3 1/4**. 다음: G06-09 (fallback 매트릭스 + Gemini 429 자동 전환).
+- Session: 9차 (G-06 진행 중, 8/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 
