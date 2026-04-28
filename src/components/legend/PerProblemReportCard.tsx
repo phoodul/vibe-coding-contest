@@ -147,16 +147,18 @@ export function PerProblemReportCard({
           </section>
         )}
 
-        {/* 6. LLM Struggle (G06-20 본 구현 — stub mount) */}
-        <section>
-          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-white/85">
-            <span aria-hidden>🤖</span> AI도 어려웠던 순간
-          </h3>
-          <LLMStruggleSection
-            llmStruggleSummary={report.llm_struggle_summary}
-            steps={report.steps}
-          />
-        </section>
+        {/* 6. LLM Struggle (Δ3) — hardest_step_ms < 1s 시 섹션 자체 숨김 */}
+        {report.llm_struggle_summary && report.llm_struggle_summary.hardest_step_ms >= 1000 && (
+          <section>
+            <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-white/85">
+              <span aria-hidden>🤖</span> AI도 어려웠던 순간
+            </h3>
+            <LLMStruggleSection
+              llmStruggleSummary={report.llm_struggle_summary}
+              steps={report.steps}
+            />
+          </section>
+        )}
 
         {/* 7. Second Opinion CTA */}
         {onCallSecondOpinion && (
