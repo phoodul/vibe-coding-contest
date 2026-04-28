@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — M4 진행 중)
+- Time: 2026-04-29 (9차 세션 — M4 ✅ 완료)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-15 ✅ (M4 4/5)** — trigger-expander + stuck-tracker 신규 (commit `57f03e8`). `src/lib/legend/report/trigger-expander.ts` (expandTrigger: math_tool_triggers 의 trigger_condition / goal_pattern 임베딩 → match_math_tool_triggers RPC ANN top-K → self+exclude_tool_id+similarity<0.7 필터 → max 3 TriggerCard. similar_problems.trigger_labels jsonb @> 매칭으로 example_problem_ref {year,type,number} 채움. backward direction primary 시 goal_pattern 으로 query). `src/lib/legend/report/stuck-tracker.ts` (recordStuck: 현재 user_stuck_ms / user_revisit_count read → delta 누적 update / no-op 가드 / aggregateStuck: step_index 정렬 + inferStuckReason 휴리스틱 6분류 — tool_trigger_miss·tool_recall_miss·forward/backward_dead_end·computation_error·parse_failure / 5초+revisit 0 시 reason undefined). 단위 테스트 26 case (trigger-expander 8 + stuck-tracker 18) PASS. legend 전체 154/154 PASS (회귀 0). `pnpm tsc --noEmit` 무에러. **M4 4/5** (15/25). 다음: G06-16 (M4 마지막 — report-builder + /api/legend/report 5 라우트 통합).
-- Session: 9차 (G-06 진행 중, 15/25)
+- Step: **G06-16 ✅ (M4 ✅ 5/5)** — report-builder + /api/legend/report 5 라우트 통합 (commit `367955d`). `src/lib/legend/report/report-builder.ts` (buildReport: per_problem_reports 캐시 hit 즉시 반환 / miss 시 session+routing_decisions 조회 → provider 매핑(gauss=google, von_neumann=openai, 그 외 anthropic) → decomposeChainSteps + extractLLMStruggle + buildReasoningTree + expandTrigger(pivotal trigger_id, exclude=pivotal tool_id, max 3) + aggregateStuck → PerProblemReport schema 1.1 조립 → upsert(onConflict=session_id) + expansion_trigger_ids 캐시. export TUTOR_LABELS_KO / inferProvider). 5 라우트: GET /[sessionId] (캐시 hit 304 ETag / miss 시 problem_text query param 필수 + report_per_problem_daily quota), POST /[sessionId]/stuck (recordStuck delta), POST /weekly (eligibility_gate + limit_exceeded 분기 + aggregateWeakness windowDays=7 R2 재활용), POST /monthly (windowDays=30, gate≥20), GET /eligibility (5 quota 일괄 + weekly/monthly current/required + lifetime). callModel.turn.raw 옵셔널 보강 (G06-12 이슈 — agentic 모드에서 provider raw 보존, 회귀 X). 단위 테스트 36 case (builder 14 + 5 라우트 22) PASS. legend 전체 213/213 PASS (회귀 0, 23 파일). `pnpm tsc --noEmit` 무에러. **M4 ✅** (16/25). 다음: G06-17 (M5 첫 task — UI 의존성 + 11 컴포넌트 stub + 흉상 이미지 3종).
+- Session: 9차 (G-06 진행 중, 16/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 

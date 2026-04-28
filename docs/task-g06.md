@@ -16,11 +16,11 @@
 | M1 — DB 마이그레이션 + 호환 검증 | 4일 | ✅ | 3/3 |
 | M2 — 라우팅 모듈 (Stage 0~2) + /api/legend/route | 6일 | ✅ | 4/4 |
 | M3 — 5-튜터 orchestrator + 5종 quota + fallback | 6일 | ✅ | 4/4 |
-| M4 — Per-Problem Report 백엔드 (Δ3 + Δ4) | 8일 | 🔄 | 4/5 |
+| M4 — Per-Problem Report 백엔드 (Δ3 + Δ4) | 8일 | ✅ | 5/5 |
 | M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | 🔄 | 0/5 |
 | M6 — KPI 측정 + 베타 검증 | 4일 | 🔄 | 0/2 |
 | M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | 🔄 | 0/2 |
-| **합계** | **40일** | — | **15/25** |
+| **합계** | **40일** | — | **16/25** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -291,7 +291,7 @@
 - **예상 토큰**: 6K
 - **commit**: `feat(g06): trigger-expander + stuck-tracker`
 
-### G06-16: report-builder + /api/legend/report 라우트 5종
+### G06-16: report-builder + /api/legend/report 라우트 5종 ✅ (commit `367955d`)
 - **선행**: G06-13, G06-14, G06-15
 - **변경 파일**:
   - `src/lib/legend/report/report-builder.ts` (신규)
