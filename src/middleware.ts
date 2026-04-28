@@ -2,10 +2,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 /**
- * Phase G-06 — /euler → /legend 302 redirect 매핑.
+ * Phase G-06 — /euler → /legend 301 영구 redirect 매핑.
  *
  * 베이스: docs/architecture-g06-legend.md §8.1.
- * 정책: 302 임시 (베타 단계 SEO 영향 적음). M7 (G06-25) 에서 301 영구 전환.
+ * 정책: G06-25 에서 302 → 301 영구 전환 (G-06 production 배포 시점). SEO 가치 /legend 로 이전.
  * 제외: /euler-tutor (api 호환 보존, §8.2). 본 매핑에 포함되지 않으므로 그대로 유지.
  */
 const EULER_TO_LEGEND: Record<string, string> = {
@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
     if (target) {
       const url = request.nextUrl.clone();
       url.pathname = target;
-      return NextResponse.redirect(url, 302);
+      return NextResponse.redirect(url, 301);
     }
   }
 

@@ -1,10 +1,26 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-28 (9차 세션 — **M7 1/2 진행 중**)
-- Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-24 ✅ (M7 1/2)** — `/api/euler-tutor` 점진적 위임. `routeProblem` 만 best-effort 비차단 호출 + streamData `legend_routing` payload 추가. `callTutor` 위임은 G-07 이관 (기존 messages chat array + streamText 코칭 흐름과 Legend orchestrator 의 비스트리밍 단발 호출이 시그니처 비호환 + 베타 50명 회귀 위험 → task 안전 가드 채택). 외부 시그니처 무변경 절대 원칙 준수, env `LEGEND_DELEGATION_ENABLED=false` 즉시 kill switch. 변경 파일: `src/app/api/euler-tutor/route.ts` / `src/lib/euler/solve-logger.ts` / `tests/e2e/euler-legacy.spec.ts` (신규 5 회귀 spec). 검증: tsc 무에러 + vitest 213/213 PASS. 다음: **G06-25** (302→301 영구 + production 배포 + 베타 안내).
-- Session: 9차 (G-06 진행 중, **23/25**, M7 1/2)
+- Time: 2026-04-29 (9차 세션 — **G-06 ✅ 완결**)
+- Phase: **Phase G-06 ✅** → G-07 진입 대기
+- Step: **G06-25 ✅ (M7 2/2 ✅, G-06 23/25 + G06-23 deferred)** — `src/middleware.ts` 302 → 301 영구 redirect 전환 (1줄). 베타 안내 메일 템플릿 (`docs/qa/g06-beta-announcement.md`) + production 배포 체크리스트 (`docs/qa/g06-launch-checklist.md`) 신규. production 배포 (`git push origin main`) 은 사용자 결정 — 본 task 는 commit 까지만. 베타 인터뷰 (G06-23) 는 베타 사용자 모집 후 별도. 검증: tsc 무에러 + vitest 213/213 PASS.
+- Session: 9차 (**G-06 ✅ 완결**, 다음 세션 G-07 진입)
+
+## G-06 완결 — 핵심 성과
+- **브랜드 변경**: Euler Tutor → Legend Tutor (5 거장 튜터)
+- **5-튜터 라우팅**: 라마누잔 (Tier 0+1) / 가우스 / 폰 노이만 / 오일러 / 라이프니츠
+- **3-Stage Adaptive Router**: similar_problems 매칭 → Manager Haiku → 라마누잔 probe → escalation 권유
+- **R1 Per-Problem Report**: 추론 트리 (Δ4 ToT) + LLM struggle (Δ3) + trigger 확장 + stuck 신호
+- **5종 quota 통합 (Δ1)**: 베타 5문제/일·레전드 3회/일·R1 1회/일·주간 1회·월간 1회 + 자격 게이트 (10/20)
+- **흉상 이미지 5종**: 오일러·가우스 (기존) + 폰 노이만·라마누잔·라이프니츠 (신규, Wikimedia PD)
+- 23 commits / 25 tasks (G06-23 deferred) / 213 vitest PASS / 회귀 0
+
+## Next Action (10차 세션 G-07)
+1. 베타 사용자 모집 및 G06-23 인터뷰 (5명 1주)
+2. `/api/euler-tutor` 의 callTutor 위임 본격 이관 (G-06 보류 사항)
+3. R2 Weekly/Monthly Report 강화 (현재는 R2 인프라 재활용만)
+4. KPI 38문항 풀 측정 (server-side, R1 persist 검증)
+5. 38문항 평가셋 풀 채점 (G06-22 의 3문항 한계 보강)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 

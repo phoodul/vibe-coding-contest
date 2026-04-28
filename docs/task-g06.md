@@ -19,8 +19,8 @@
 | M4 — Per-Problem Report 백엔드 (Δ3 + Δ4) | 8일 | ✅ | 5/5 |
 | M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | ✅ | 5/5 |
 | M6 — KPI 측정 + 베타 검증 | 4일 | ⏸ 1/2 | G06-23 보류 (베타 모집 후 별도) |
-| M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | 🔄 | 1/2 |
-| **합계** | **40일** | — | **23/25 (G06-23 deferred)** |
+| M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | ✅ | 2/2 |
+| **합계** | **40일** | — | **23/25 (G06-23 deferred) — G-06 ✅ 완결** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -453,18 +453,18 @@
 - **위험**: HIGH → 본 task 위임 범위 축소로 MEDIUM 으로 완화 (callTutor 위임 미수행)
 - **commit**: `refactor(g06): /api/euler-tutor routeProblem 점진적 위임 + legend_routing payload`
 
-### G06-25: 302 → 301 영구 전환 + 베타 안내 + production 배포
+### G06-25: 302 → 301 영구 전환 + 베타 안내 + production 배포 ✅ (M7 2/2 — G-06 완결)
 - **선행**: G06-24 (1주 안정화 후)
 - **변경 파일**:
-  - `src/middleware.ts` (302 → 301 변경)
+  - `src/middleware.ts` (302 → 301 변경 — 1줄)
   - `docs/work-log.md` (G-06 항목 추가)
   - `docs/progress.md` (9차 세션 상태 갱신)
-  - `docs/task.md` (G06-01~25 매핑 표 갱신)
+  - `docs/task-g06.md` (M7 ✅ + G06-25 행 갱신)
   - `docs/qa/g06-launch-checklist.md` (신규, production 배포 체크리스트)
-- **변경 내용**: 302 → 301 영구 redirect 전환. 베타 50명 안내 메일 (도메인 변경 + 5종 quota + 트리·struggle 안내). production 배포 + 24h 모니터링.
-- **검증**: 운영 24h 모니터링 — 라우팅 99%+ 성공률 / quota 차단 정상 / fallback 0 또는 정상 동작 / R1 카드 응답 시간 P95 ≤ 25s
-- **위험**: HIGH (배포 시점 사용자 영향 최대)
-- **예상 토큰**: 4K
+  - `docs/qa/g06-beta-announcement.md` (신규, 베타 안내 메일 템플릿)
+- **변경 내용**: 302 → 301 영구 redirect 전환. 베타 안내 메일 템플릿 작성 (실제 발송은 G06-23 시점). production 배포 명령은 사용자가 직접 (`git push origin main`). G-06 ✅ 완결 → G-07 진입 대기.
+- **검증**: `pnpm tsc --noEmit` 무에러 + vitest 213/213 PASS + 운영 배포 후 24h 모니터링 (라우팅 99%+ / quota 정상 / R1 P95 ≤ 25s)
+- **위험**: HIGH (배포 시점 사용자 영향 최대) → 코드 변경 단 1줄로 완화. 배포는 사용자 결정.
 - **commit**: `feat(g06): 301 영구 redirect + production 배포 + 베타 안내`
 
 ---

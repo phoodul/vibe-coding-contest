@@ -1,5 +1,59 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-28~29 (9차 세션 — Phase G-06 Legend Tutor + R1 Per-Problem Report ⭐ 완결)
+
+### 핵심 성과
+- **브랜드 변경**: Euler Tutor → Legend Tutor (5 거장 튜터)
+- **5-튜터 라우팅**: 라마누잔 (Tier 0+1) / 가우스 / 폰 노이만 / 오일러 / 라이프니츠
+- **3-Stage Adaptive Router**: similar_problems 매칭 → Manager Haiku → 라마누잔 probe → escalation 권유
+- **R1 Per-Problem Report**: 추론 트리 (Δ4 ToT) + LLM struggle (Δ3) + trigger 확장 + stuck 신호
+- **5종 quota 통합 (Δ1)**: 베타 5문제/일·레전드 3회/일·R1 1회/일·주간 1회·월간 1회 + 자격 게이트 (10/20)
+- **흉상 이미지 5종**: 오일러·가우스 (기존) + 폰 노이만·라마누잔·라이프니츠 (신규, Wikimedia PD)
+
+### 마일스톤별 commit 매핑
+
+| Milestone | Tasks | Commits |
+|---|---|---|
+| M1 — DB 마이그 (3/3 ✅) | G06-01·02·03 | `c83d650` / `2ceebfb` / `e0fd359` |
+| M2 — 라우팅 모듈 (4/4 ✅) | G06-04~07 | `02702bd` / `5807275` / `bcc933b` / `e0a2371` |
+| M3 — 5-튜터 + quota (4/4 ✅) | G06-08~11 | `929111d` / `b0ca04e` / `9a8877f` / `da5e449` |
+| M4 — R1 백엔드 (5/5 ✅) | G06-12~16 | `8ccd4de` / `8a5724d` / `d0d9844` / `57f03e8` / `367955d` |
+| M5 — UI + ToT (5/5 ✅) | G06-17~21 | `00d9684` / `e34aedc` / `3693f9c` / `8579238` / `acbd1c8` |
+| M6 — KPI (1/2, G06-23 보류) | G06-22 | `9f3c3c9` (3문항 100%) |
+| M7 — 배포 (2/2 ✅) | G06-24·25 | `c67bac8` / `<G06-25 hash>` |
+
+총 23 commits / 25 tasks (G06-23 deferred — 베타 인터뷰 별도) / 213 vitest PASS / 회귀 0.
+
+### Δ1~Δ4 핵심 결정 (project-decisions.md 명문화)
+- **Δ1**: 5종 quota 통합 카운터 + 자격 게이트 (10/20문제)
+- **Δ2**: Gemini 3.1 Pro Preview 유지 + 429 자동 fallback (가우스 → 폰 노이만)
+- **Δ3**: LLM struggle (AI도 어려웠던 순간) + Haiku resolution 요약
+- **Δ4**: ToT 추론 트리 시각화 (React Flow + dagre + 풀스크린 모달)
+
+### 운영 변경
+- DB 마이그 8 적용 (legend_routing_decisions / legend_tutor_sessions / legend_quota_counters / solve_step_decomposition / per_problem_reports / solve_reasoning_trees + 2 ALTER + RPC 2종)
+- 신규 라우트 11종 (`/api/legend/{route, solve, escalate, retry-with-tutor, quota, report/[sessionId], report/[sessionId]/stuck, report/weekly, report/monthly, report/eligibility}`)
+- 신규 페이지 7종 (`/legend/{., canvas, beta, billing, family, report, solve/[sessionId]}`)
+- 신규 컴포넌트 13종 (`src/components/legend/`)
+- `/euler/*` → `/legend/*` 301 영구 redirect (G06-25 에서 302 → 301 전환)
+- `/api/euler-tutor` 점진적 위임 (routeProblem only, callTutor 위임은 G-07)
+
+### G06-25 (M7 2/2 — G-06 완결)
+- `src/middleware.ts` 302 → 301 영구 redirect 전환 (1줄 변경)
+- 베타 안내 메일 템플릿 신규 (`docs/qa/g06-beta-announcement.md`) — 도메인 변경 + 5종 quota + 트리·struggle 안내
+- production 배포 체크리스트 신규 (`docs/qa/g06-launch-checklist.md`)
+- production 배포 (`git push origin main`) 은 사용자 결정 — 본 task 는 commit 까지만
+- 베타 인터뷰 (G06-23) 는 베타 사용자 모집 후 별도 진행 (deferred)
+
+### 다음 세션 (10차 — G-07 진입)
+1. 베타 사용자 모집 및 G06-23 인터뷰 (5명 1주)
+2. `/api/euler-tutor` 의 callTutor 위임 본격 이관
+3. R2 Weekly/Monthly Report 강화 (현재는 R2 인프라 재활용만)
+4. KPI 38문항 풀 측정 (server-side, R1 persist 검증)
+5. 38문항 평가셋 풀 채점 (G06-22 의 3문항 한계 보강)
+
+---
+
 ## 2026-04-28 (8차 세션 마무리 — G-05b 기하 + G-05c Gemini 진단)
 
 ### G-05b — 기하/벡터 6-mode 측정 (commit 02db0cd)
