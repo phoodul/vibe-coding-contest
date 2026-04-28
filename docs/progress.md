@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — M5 진입)
+- Time: 2026-04-29 (9차 세션 — M5 진행)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-18 ✅ (M5 2/5)** — PerProblemReportCard + StepDecompositionView + TriggerExpansionCard + TutorBadge 본 구현 + `/legend/solve/[sessionId]` server page (commit `e34aedc`). PerProblemReportCard 6 섹션 (problem 헤더 / tree preview / steps / trigger / stuck 인라인 / struggle / second opinion CTA) — Framer Motion fade-up + 글래스 backdrop-blur + gradient CTA. StepDecompositionView staggered fade-x + pivotal 좌측 amber 보더·glow + step_kind 8 종 한글·tone 매핑 + AI struggle 🔴 8s+ 인라인 배지. TriggerExpansionCard primary amber 글래스 + expansions 3-grid + direction 라벨. TutorBadge next/image priority+sizes (라이프니츠 4.3MB 자동 최적화) + 3 사이즈 + ring-2. Server page: 인증 가드 → ownership → per_problem_reports 캐시 hit/miss 분기 → quota consume → buildReport. ReasoningTreeView·LLMStruggleSection 은 stub mount (G06-19/20 예정). `pnpm tsc --noEmit` 무에러. vitest 213/213 회귀 0. **M5 2/5** (18/25). 다음: G06-19 ⭐ Δ4 ReasoningTreeView (React Flow + dagre + Fullscreen Modal).
-- Session: 9차 (G-06 진행 중, 18/25)
+- Step: **G06-19 ✅ (M5 3/5)** — ReasoningTreeView ⭐ Δ4 본 구현 + ReasoningTreeNode 커스텀 + ReasoningTreeFullscreenModal + Playwright spec. React Flow `@xyflow/react@12.10.2` + dagre `0.8.5` rankdir BT (답이 위) + nodesep 60 / ranksep 80 자동 레이아웃. 5종 노드 색상 (answer=amber / goal=blue / subgoal=violet / derived_fact=emerald / condition=slate) + edge 종류 2 (requires=violet animated / derived_from=slate). 강조 신호: pivotal=★+amber boxShadow / student_stuck>5s=⚠ / llm_struggle>3s=🔴. preview=true (h-280) depth ≤ 3 필터 + "전체 트리 펼쳐보기" CTA. preview=false (h-600) Controls + MiniMap pannable·zoomable. FullscreenModal: ESC/배경 클릭 닫기 + body scroll lock + dynamic import 로 React Flow lazy mount. 노드 클릭 → onNodeClick(step_index). Framer Motion scale 진입 애니메이션. tsconfig exclude `tests/**` 추가 (Playwright 인프라는 G06-22 도입). `pnpm tsc --noEmit` 무에러. vitest 213/213 회귀 0. **M5 3/5** (19/25). 다음: G06-20 LLMStruggleSection ⭐ Δ3 + 6 보조 컴포넌트 (EscalationPrompt / TutorPickerModal / QuotaIndicator / Weekly·Monthly Button / RoutingTrace).
+- Session: 9차 (G-06 진행 중, 19/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 
