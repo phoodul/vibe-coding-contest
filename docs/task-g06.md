@@ -70,7 +70,7 @@
 
 ## M2. 라우팅 모듈 + /api/legend/route (6일, 4 task)
 
-### G06-04: 공통 타입 + 모듈 stub ✅ (commit `__G06_04_HASH__`)
+### G06-04: 공통 타입 + 모듈 stub ✅ (commit `02702bd`)
 - **선행**: G06-03
 - **변경 파일**:
   - `src/lib/legend/types.ts` (신규)

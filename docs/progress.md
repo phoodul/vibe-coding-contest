@@ -3,7 +3,7 @@
 ## Last Checkpoint
 - Time: 2026-04-28 (9차 세션 — M2 진입)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **M2 진입** — G06-04 ✅ (legend 공통 타입 + 라우터 모듈 stub, commit `__G06_04_HASH__`). `src/lib/legend/` 7 파일 생성, `pnpm tsc --noEmit` 통과. 다음: G06-05 (Stage 0/1 구현).
+- Step: **M2 진입** — G06-04 ✅ (legend 공통 타입 + 라우터 모듈 stub, commit `02702bd`). `src/lib/legend/` 7 파일 생성, `pnpm tsc --noEmit` 통과. 다음: G06-05 (Stage 0/1 구현).
 - Session: 9차 (G-06 진행 중, 4/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
