@@ -150,7 +150,7 @@
 - **예상 토큰**: 12K
 - **commit**: `feat(g06): tutor-orchestrator 6 튜터 + callModel 추출`
 
-### G06-09: fallback 매트릭스 (Gemini 429 자동 전환 포함) ✅ (commit `<HASH>`)
+### G06-09: fallback 매트릭스 (Gemini 429 자동 전환 포함) ✅ (commit `b0ca04e`)
 - **선행**: G06-08
 - **변경 파일**:
   - `src/lib/legend/tutor-fallback.ts` (신규)
