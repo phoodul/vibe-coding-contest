@@ -367,7 +367,7 @@
 - **예상 토큰**: 16K
 - **commit**: `feat(g06): ReasoningTreeView React Flow + dagre + 풀스크린 모달 (Δ4)`
 
-### G06-20: LLMStruggleSection ⭐ Δ3 + 나머지 6 컴포넌트 ✅ (commit `__PENDING__`)
+### G06-20: LLMStruggleSection ⭐ Δ3 + 나머지 6 컴포넌트 ✅ (commit `8579238`)
 - **선행**: G06-19
 - **변경 파일**:
   - `src/components/legend/LLMStruggleSection.tsx` (구현)
