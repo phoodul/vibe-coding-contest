@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — **G-06 ✅ 완결**)
-- Phase: **Phase G-06 ✅** → G-07 진입 대기
-- Step: **G06-25 ✅ (M7 2/2 ✅, G-06 23/25 + G06-23 deferred)** — `src/middleware.ts` 302 → 301 영구 redirect 전환 (1줄). 베타 안내 메일 템플릿 (`docs/qa/g06-beta-announcement.md`) + production 배포 체크리스트 (`docs/qa/g06-launch-checklist.md`) 신규. production 배포 (`git push origin main`) 은 사용자 결정 — 본 task 는 commit 까지만. 베타 인터뷰 (G06-23) 는 베타 사용자 모집 후 별도. 검증: tsc 무에러 + vitest 213/213 PASS.
-- Session: 9차 (**G-06 ✅ 완결**, 다음 세션 G-07 진입)
+- Time: 2026-04-29 (9차 세션 — **G-06 베타 모집 준비 진행** M8 1/2)
+- Phase: **Phase G-06 (M8 베타 모집 준비)** → G-07 진입 대기
+- Step: **G06-26 ✅ (M8 1/2, G-06 26/27 + G06-23 deferred)** — `TutorChoicePrompt.tsx` 신규 (3초 카운트다운 + 4 거장 카드 grid + 호버 일시정지 + quota 게이트). `portraits.ts` 에 `tier_label: '기본' | '거장'` 메타 추가. `/legend/page.tsx` 가 단순 `/euler-tutor` re-export 라 통합 진입점이 없어 컴포넌트만 작성, 통합은 G-07 callTutor 위임 시점으로 유보. 검증: tsc 무에러 + vitest 213/213 PASS (회귀 0). 다음 task G06-27 (베타 신청·승인 시스템 + 피드백 동의 필수).
+- Session: 9차 (**G-06 M8 진행**, 다음 task G06-27)
 
 ## G-06 완결 — 핵심 성과
 - **브랜드 변경**: Euler Tutor → Legend Tutor (5 거장 튜터)

@@ -20,8 +20,8 @@
 | M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | ✅ | 5/5 |
 | M6 — KPI 측정 + 베타 검증 | 4일 | ⏸ 1/2 | G06-23 보류 (베타 모집 후 별도) |
 | M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | ✅ | 2/2 |
-| M8 — 베타 모집 준비 (격 차별화 + 신청·승인) | 2일 | 🔄 | 0/2 |
-| **합계** | **42일** | — | **25/27 (G06-23 deferred)** |
+| M8 — 베타 모집 준비 (격 차별화 + 신청·승인) | 2일 | 🔄 | 1/2 |
+| **합계** | **42일** | — | **26/27 (G06-23 deferred)** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -527,22 +527,20 @@ G06-01 → G06-02 → G06-03 (M1)
 > 추가일: 2026-04-29 (사용자 결정)
 > 목적: 베타 모집 직전 단계. 격 차별화 UI + 신청·승인제 + 피드백 동의 필수.
 
-### G06-26: TutorChoicePrompt 카드 (격 차별화 + 카운트다운, 방안 A)
+### G06-26: TutorChoicePrompt 카드 (격 차별화 + 카운트다운, 방안 A) ✅ (commit `__G06_26_HASH__`)
 - **선행**: G06-21 (M5 완료)
 - **변경 파일**:
   - `src/components/legend/TutorChoicePrompt.tsx` (신규)
-  - `src/components/legend/PerProblemReportCard.tsx` (TutorChoicePrompt 노출 위치 통합 안 함 — `/legend/page.tsx` 가 라우팅 결과 직후 노출)
-  - `src/app/legend/page.tsx` (또는 `/legend/solve/[sessionId]` 진입 흐름) — TutorChoicePrompt 통합
   - `src/lib/legend/portraits.ts` (Tier 시각 구분 메타 추가 — `tier_label: '기본' | '거장'`)
 - **변경 내용**: 라우팅 결과 (Stage 0~2 완료) 직후 학생에게 카드 노출:
-  - 라우팅된 튜터 (default 라마누잔) 표시
-  - **3초 카운트다운** 후 자동 풀이 시작 (default 진행)
-  - 카운트다운 중 "⭐ 거장에게도?" 4 레전드 버튼 클릭 가능 — 즉시 레전드 호출
-  - 한도 표시: "오늘 남은 문제: N/5" / "오늘 남은 레전드: M/3"
-  - 카피: 라마누잔 = "기본 / 단순·중등" / 레전드 = "거장 / 고난도 전문 / 일 3회"
-- **검증**: `pnpm tsc --noEmit` + 수동 dev 카운트다운 + 클릭 인터럽트
+  - 라우팅된 튜터 (default 라마누잔) + tier_label 배지 (기본/거장)
+  - **3초 카운트다운** 후 자동 풀이 시작 — 호버 시 일시정지, "바로 진행" 버튼 + 옵션 onCancel
+  - 카운트다운 중 4 거장 카드 grid (가우스/폰노이만/오일러/라이프니츠) 클릭 → 즉시 onChooseLegend
+  - quota 표시: 오늘 남은 문제 N/5 + 오늘 남은 레전드 M/3 (legend_call_daily 또는 problem_total_daily 0 시 거장 카드 disabled)
+  - Vibe: 다크 글래스 + ring + Framer Motion fadeUp + 호버 lift + tabular-nums
+- **통합 유보**: `/legend/page.tsx` 가 단순 `/euler-tutor` re-export 라 진입점이 아니어서 통합 위치가 없음. 본 task 는 컴포넌트 + portraits.ts 수정만 — `/legend/page.tsx` 통합은 G-07 callTutor 위임 시점에 진입.
+- **검증**: `pnpm tsc --noEmit` 무에러 + vitest 213/213 PASS (회귀 0)
 - **위험**: LOW (UI 추가, 기존 흐름 무파괴)
-- **예상 토큰**: 6K
 - **commit**: `feat(g06): TutorChoicePrompt 격 차별화 카드 (방안 A 카운트다운)`
 
 ### G06-27: 베타 신청·승인 시스템 (피드백 동의 필수)
