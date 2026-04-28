@@ -334,7 +334,7 @@
 - **예상 토큰**: 8K
 - **commit**: `feat(g06): legend UI 의존성 + 11 컴포넌트 stub + 흉상 이미지 3종 + layout`
 
-### G06-18: PerProblemReportCard + StepDecompositionView + TriggerExpansionCard ✅ (commit `<HASH>`)
+### G06-18: PerProblemReportCard + StepDecompositionView + TriggerExpansionCard ✅ (commit `e34aedc`)
 - **선행**: G06-16, G06-17
 - **변경 파일**:
   - `src/components/legend/PerProblemReportCard.tsx` (구현)
