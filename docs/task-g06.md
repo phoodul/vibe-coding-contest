@@ -277,7 +277,7 @@
 - **예상 토큰**: 14K
 - **commit**: `feat(g06): tree-builder ToT 추론 트리 DAG 구축 (Δ4)`
 
-### G06-15: trigger-expander + stuck-tracker ✅ (commit `__G06_15_HASH__`)
+### G06-15: trigger-expander + stuck-tracker ✅ (commit `57f03e8`)
 - **선행**: G06-12
 - **변경 파일**:
   - `src/lib/legend/report/trigger-expander.ts` (신규)
