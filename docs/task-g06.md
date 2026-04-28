@@ -40,7 +40,7 @@
 - **예상 토큰**: 4K
 - **commit**: `feat(g06): legend 라우팅·세션·quota 마이그레이션 3종 추가`
 
-### G06-02: R1 캐시·step 분해·reasoning tree 마이그레이션 3종 ⭐
+### G06-02: R1 캐시·step 분해·reasoning tree 마이그레이션 3종 ⭐ ✅ (commit `2ceebfb`)
 - **선행**: G06-01
 - **변경 파일**:
   - `supabase/migrations/20260604_solve_step_decomposition.sql` (신규, Δ3 LLM struggle 5 컬럼 포함)
