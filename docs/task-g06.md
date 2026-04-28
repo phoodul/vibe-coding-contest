@@ -102,7 +102,7 @@
 - **예상 토큰**: 6K
 - **commit**: `feat(g06): Stage 0 similar 매칭 + Stage 1 Manager 분류 구현`
 
-### G06-06: Stage 2 (Ramanujan probe) + escalation-detector + legend-router 통합 ✅ (commit `__G06_06_HASH__`)
+### G06-06: Stage 2 (Ramanujan probe) + escalation-detector + legend-router 통합 ✅ (commit `bcc933b`)
 - **선행**: G06-05
 - **변경 파일**:
   - `src/lib/legend/stage2-probe.ts` (구현)
