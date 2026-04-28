@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — M4 ✅ 완료)
+- Time: 2026-04-29 (9차 세션 — M5 진입)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-16 ✅ (M4 ✅ 5/5)** — report-builder + /api/legend/report 5 라우트 통합 (commit `367955d`). `src/lib/legend/report/report-builder.ts` (buildReport: per_problem_reports 캐시 hit 즉시 반환 / miss 시 session+routing_decisions 조회 → provider 매핑(gauss=google, von_neumann=openai, 그 외 anthropic) → decomposeChainSteps + extractLLMStruggle + buildReasoningTree + expandTrigger(pivotal trigger_id, exclude=pivotal tool_id, max 3) + aggregateStuck → PerProblemReport schema 1.1 조립 → upsert(onConflict=session_id) + expansion_trigger_ids 캐시. export TUTOR_LABELS_KO / inferProvider). 5 라우트: GET /[sessionId] (캐시 hit 304 ETag / miss 시 problem_text query param 필수 + report_per_problem_daily quota), POST /[sessionId]/stuck (recordStuck delta), POST /weekly (eligibility_gate + limit_exceeded 분기 + aggregateWeakness windowDays=7 R2 재활용), POST /monthly (windowDays=30, gate≥20), GET /eligibility (5 quota 일괄 + weekly/monthly current/required + lifetime). callModel.turn.raw 옵셔널 보강 (G06-12 이슈 — agentic 모드에서 provider raw 보존, 회귀 X). 단위 테스트 36 case (builder 14 + 5 라우트 22) PASS. legend 전체 213/213 PASS (회귀 0, 23 파일). `pnpm tsc --noEmit` 무에러. **M4 ✅** (16/25). 다음: G06-17 (M5 첫 task — UI 의존성 + 11 컴포넌트 stub + 흉상 이미지 3종).
-- Session: 9차 (G-06 진행 중, 16/25)
+- Step: **G06-17 ✅ (M5 1/5)** — UI 의존성 + 12 컴포넌트 stub + /legend layout + 흉상 이미지 3종 (commit `<TBD>`). `package.json` (`@xyflow/react@12.10.2` + `dagre@0.8.5` + `@types/dagre`). `public/von-neumann-portrait.jpg` (PD-USGov-DOE, Los Alamos), `public/ramanujan-portrait.jpg` (PD-old, 1920년 사망), `public/leibniz-portrait.jpg` (PD-old, 1716년 사망 — Francke 1695년경 회화). `public/LICENSES.md` 출처/라이선스 6 항목 명시. `src/lib/legend/portraits.ts` 6 TutorName → src·alt·label_ko·model_short 매핑 + getTutorLabelKo/getTutorModelShort 헬퍼. `src/components/legend/` 12 stub: PerProblemReportCard / ReasoningTreeView (Δ4) / StepDecompositionView / TriggerExpansionCard / LLMStruggleSection (Δ3) / TutorPickerModal / EscalationPrompt / QuotaIndicator (Δ1) / WeeklyReportRequestButton / MonthlyReportRequestButton / TutorBadge / RoutingTrace. `src/app/legend/layout.tsx` (헤더 QuotaIndicator + glass 헤더 sticky) + `src/app/legend/page.tsx` (메인 stub). `npx tsc --noEmit` 무에러. **M5 1/5** (17/25). 다음: G06-18 (PerProblemReportCard + StepDecompositionView + TriggerExpansionCard + TutorBadge 본 구현 + /legend/solve/[sessionId]).
+- Session: 9차 (G-06 진행 중, 17/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 
