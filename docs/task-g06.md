@@ -86,7 +86,7 @@
 - **예상 토큰**: 4K
 - **commit**: `feat(g06): legend 공통 타입 + 라우터 모듈 stub`
 
-### G06-05: Stage 0 (similar_problems) + Stage 1 (Manager Haiku)
+### G06-05: Stage 0 (similar_problems) + Stage 1 (Manager Haiku) ✅ (commit `5807275`)
 - **선행**: G06-04
 - **변경 파일**:
   - `src/lib/legend/stage0-similar.ts` (구현)
