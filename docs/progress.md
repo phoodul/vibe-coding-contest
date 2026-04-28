@@ -3,8 +3,8 @@
 ## Last Checkpoint
 - Time: 2026-04-29 (9차 세션 — M4 진행 중)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-13 ✅ (M4 2/5)** — llm-struggle-extractor (Δ3) 신규 (commit `8a5724d`). `src/lib/legend/report/llm-struggle-extractor.ts` (extractLLMStruggle: trace → NormalizedTurn[] → step 1:1 매핑 → turns_at_step / tool_retries / reasoning_chars / step_ms 집계 → hardest step 선정 score=step_ms×100+reasoning_chars → Haiku 4.5 baseline mode 1회만 호출 (max_tokens 200, ~$0.0002, "AI도 어려웠지만 어떻게 해결했는지" 1~2문장) → solve_step_decomposition.llm_* 5 컬럼 update). 단위 테스트 9 case PASS (callModel/supabase mock + agentic hardest=idx 2 + Haiku 정확 1회 + reasoning_chars 0 skip + 실패 graceful + DB update 5회). G06-12 회귀 30/30 유지 (전체 39/39). `pnpm tsc --noEmit` 무에러. **M4 2/5** (13/25). 다음: G06-14 ⭐ Δ4 (tree-builder — recursive-reasoner trace → ReasoningTree DAG, React Flow 시각화 데이터).
-- Session: 9차 (G-06 진행 중, 13/25)
+- Step: **G06-14 ✅ (M4 3/5)** — tree-builder (Δ4) 신규 (commit `__G06_14_HASH__`). `src/lib/legend/report/tree-builder.ts` (buildReasoningTree: 한국어 (가)(나)(다) / 조건 N: / 번호매김 3-tier parseConditions → root 'answer' + 조건 노드 + step 노드 → forward=derived_from·root / backward chain (직전 backward 의 자식, 첫 backward 만 root 직속) / tool_call=직전 backward subgoal 의 자식 / parse·domain·verify·computation=root fallback → detectMultiParents: 같은 trigger_id 공유 노드끼리 합류 edge → BFS computeDepth from root → collapse_hint=node_count≥30 → solve_reasoning_trees insert + branching_factor 메트릭). `src/lib/legend/types.ts` 확장 (`ReasoningTree.collapse_hint?: boolean` optional). fixture 4 종 (single-path 5 step / multi-parent trig-tangent-line 공유 / depth-6plus backward chain 6 / collapse 30 step). 단위 테스트 14 case PASS (parseConditions / detectMultiParents / computeDepth / 4 fixture 시나리오 / answer 흡수 / DB insert / 빈 steps). M4 회귀 53/53 + legend 전체 128/128 PASS. `pnpm tsc --noEmit` 무에러. **M4 3/5** (14/25). 다음: G06-15 (trigger-expander + stuck-tracker — primary trigger.condition_pattern ANN top-K + similar_problems example_problem_ref + delta stuck 누적).
+- Session: 9차 (G-06 진행 중, 14/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 

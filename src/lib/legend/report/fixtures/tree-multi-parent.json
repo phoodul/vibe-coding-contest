@@ -1,0 +1,60 @@
+{
+  "problem_text": "곡선 위의 점 P(t, f(t)) 에서 (가) 접선이 x축과 만나는 점 Q (나) 접선이 y축과 만나는 점 R (다) 삼각형 OQR 의 넓이가 6 일 때 t 를 구하시오.",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "parse",
+      "summary": "문제 구조화: 점 P 에서의 접선 + 좌표 + 삼각형 넓이",
+      "difficulty": 2,
+      "is_pivotal": false
+    },
+    {
+      "index": 1,
+      "kind": "backward",
+      "summary": "subgoal A — Q 좌표 = 접선과 x축 교점",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 2,
+      "kind": "tool_call",
+      "summary": "sympy_diff 호출",
+      "difficulty": 4,
+      "is_pivotal": false,
+      "trigger_id": "trig-tangent-line",
+      "tool_id": "TOOL_TANGENT"
+    },
+    {
+      "index": 3,
+      "kind": "backward",
+      "summary": "subgoal B — R 좌표 = 접선과 y축 교점",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 4,
+      "kind": "tool_call",
+      "summary": "sympy_diff 호출 (재사용)",
+      "difficulty": 4,
+      "is_pivotal": false,
+      "trigger_id": "trig-tangent-line",
+      "tool_id": "TOOL_TANGENT"
+    },
+    {
+      "index": 5,
+      "kind": "forward",
+      "summary": "삼각형 넓이 = (1/2)|OQ||OR| = 6 방정식 도출",
+      "difficulty": 5,
+      "is_pivotal": true,
+      "trigger_id": "trig-area-triangle",
+      "tool_id": "TOOL_AREA"
+    },
+    {
+      "index": 6,
+      "kind": "answer",
+      "summary": "따라서 t = 2",
+      "difficulty": 3,
+      "is_pivotal": false
+    }
+  ]
+}

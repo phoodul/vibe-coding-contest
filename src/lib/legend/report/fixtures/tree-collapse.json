@@ -1,0 +1,215 @@
+{
+  "problem_text": "복잡한 다단계 문제 (가) 조건1 (나) 조건2",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "parse",
+      "summary": "문제 구조화",
+      "difficulty": 2,
+      "is_pivotal": false
+    },
+    {
+      "index": 1,
+      "kind": "backward",
+      "summary": "step 1 (backward) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 2,
+      "kind": "tool_call",
+      "summary": "step 2 (tool_call) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 3,
+      "kind": "computation",
+      "summary": "step 3 (computation) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 4,
+      "kind": "verify",
+      "summary": "step 4 (verify) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 5,
+      "kind": "forward",
+      "summary": "step 5 (forward) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 6,
+      "kind": "backward",
+      "summary": "step 6 (backward) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 7,
+      "kind": "tool_call",
+      "summary": "step 7 (tool_call) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 8,
+      "kind": "computation",
+      "summary": "step 8 (computation) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 9,
+      "kind": "verify",
+      "summary": "step 9 (verify) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 10,
+      "kind": "forward",
+      "summary": "step 10 (forward) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 11,
+      "kind": "backward",
+      "summary": "step 11 (backward) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 12,
+      "kind": "tool_call",
+      "summary": "step 12 (tool_call) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 13,
+      "kind": "computation",
+      "summary": "step 13 (computation) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 14,
+      "kind": "verify",
+      "summary": "step 14 (verify) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": true
+    },
+    {
+      "index": 15,
+      "kind": "forward",
+      "summary": "step 15 (forward) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 16,
+      "kind": "backward",
+      "summary": "step 16 (backward) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 17,
+      "kind": "tool_call",
+      "summary": "step 17 (tool_call) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 18,
+      "kind": "computation",
+      "summary": "step 18 (computation) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 19,
+      "kind": "verify",
+      "summary": "step 19 (verify) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 20,
+      "kind": "forward",
+      "summary": "step 20 (forward) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 21,
+      "kind": "backward",
+      "summary": "step 21 (backward) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 22,
+      "kind": "tool_call",
+      "summary": "step 22 (tool_call) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 23,
+      "kind": "computation",
+      "summary": "step 23 (computation) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 24,
+      "kind": "verify",
+      "summary": "step 24 (verify) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 25,
+      "kind": "forward",
+      "summary": "step 25 (forward) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 26,
+      "kind": "backward",
+      "summary": "step 26 (backward) 단계 처리",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 27,
+      "kind": "tool_call",
+      "summary": "step 27 (tool_call) 단계 처리",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 28,
+      "kind": "computation",
+      "summary": "step 28 (computation) 단계 처리",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 29,
+      "kind": "answer",
+      "summary": "따라서 답은 100",
+      "difficulty": 3,
+      "is_pivotal": false
+    }
+  ]
+}

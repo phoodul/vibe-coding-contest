@@ -234,6 +234,8 @@ export interface ReasoningTree {
   conditions: { idx: number; text: string }[];
   depth_max: number;
   node_count: number;
+  /** Δ4 — node_count ≥ LEGEND_TREE_COLLAPSE_NODE_THRESHOLD 시 UI 가 default collapsed 렌더 */
+  collapse_hint?: boolean;
 }
 
 export interface ReasoningTreeNode {

@@ -1,0 +1,70 @@
+{
+  "problem_text": "수열 {a_n} 에 대해 a_1=1, a_{n+1}=2a_n+f(n) 의 일반항과 lim S_n 을 구하시오.",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "parse",
+      "summary": "문제 구조화 — 일반항 + 급수 극한",
+      "difficulty": 2,
+      "is_pivotal": false
+    },
+    {
+      "index": 1,
+      "kind": "backward",
+      "summary": "역으로 — lim S_n 을 구하려면 일반항 a_n 필요",
+      "difficulty": 3,
+      "is_pivotal": false
+    },
+    {
+      "index": 2,
+      "kind": "backward",
+      "summary": "subgoal — a_n 일반항을 구하려면 점화식 풀이 필요",
+      "difficulty": 4,
+      "is_pivotal": false
+    },
+    {
+      "index": 3,
+      "kind": "backward",
+      "summary": "역으로 — 점화식을 풀려면 특수해 + 일반해 분리 필요",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 4,
+      "kind": "backward",
+      "summary": "subgoal — 특수해 g(n) 형태 추정 필요",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 5,
+      "kind": "backward",
+      "summary": "역으로 — g(n) 형태는 f(n) 의 차수 + 비제차 항 형태 따라감",
+      "difficulty": 5,
+      "is_pivotal": false
+    },
+    {
+      "index": 6,
+      "kind": "backward",
+      "summary": "subgoal — f(n) 분해 (다항·지수·삼각 분리) 필요",
+      "difficulty": 6,
+      "is_pivotal": true
+    },
+    {
+      "index": 7,
+      "kind": "tool_call",
+      "summary": "sympy_solve 호출 — 점화식 일반해",
+      "difficulty": 5,
+      "is_pivotal": false,
+      "trigger_id": "trig-recurrence",
+      "tool_id": "TOOL_SOLVE"
+    },
+    {
+      "index": 8,
+      "kind": "answer",
+      "summary": "따라서 lim S_n = 무한대로 발산",
+      "difficulty": 3,
+      "is_pivotal": false
+    }
+  ]
+}
