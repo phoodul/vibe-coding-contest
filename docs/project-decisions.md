@@ -160,6 +160,161 @@
 
 ---
 
+## [2026-04-28] Phase G-06 — Legend Tutor 라우팅 아키텍처 (9차 세션 진입)
+
+### 1. 브랜드 변경
+- **결정**: "Euler Tutor" → **"Legend Tutor"** 로 명칭 변경. 내부에 5명의 수학 전설 튜터 배치.
+- **이유**: 단일 튜터 → 거장 4인 + 계산 달인 라마누잔 구조로 확장. "당신만의 수학 거장 4인을 만나보세요" 마케팅 카피.
+- **영향**: UI 카피 / 도메인 라우트 (`/euler` → `/legend`) / DB enum 전반.
+
+### 2. 5-튜터 매핑 (Tier 기반)
+
+| Tier | 난이도 | 튜터 | 모델 + 모드 | 주 영역 |
+|---|---|---|---|---|
+| 0 | 1~2 (단순계산) | **라마누잔** (계산 모드) | Haiku + SymPy 도구 | 모든 영역 |
+| 1 | 3~4 (중등) | **라마누잔** (직관 모드) | Opus 4.7 baseline 단독 | 모든 영역 |
+| 2 | 5+ (고난도) | **가우스** | Gemini 3.1 Pro agentic | 공통·미적분 (KPI 90/100%) |
+| 2 | 5+ (고난도) | **폰 노이만** | GPT-5.5 agentic | 기하·미적분 (KPI 100%) |
+| 2 | 5+ (고난도) | **오일러** | Opus 4.7 agentic | 종합·약점 보강 |
+| 2 | 5+ (고난도) | **라이프니츠** | Sonnet 4.6 agentic | 가형 (KPI 100%) |
+
+- **이유 (라마누잔=계산달인)**: 단순+중등 둘 다 라마누잔이 mode 분기로 처리 → 학생 인지 부하 ↓.
+- **이유 (Tier 1 단독 Opus)**: G-05b 검증 — Opus baseline 미적분 100%/기하 90%/39초로 가장 안정. Gemini 250 RPD 한도를 Tier 2 가우스 전용으로 보존.
+
+### 3. 3-Stage Adaptive Router (분류 ≠ 라우팅)
+
+```
+Stage 0: similar_problems pgvector 매칭 (≥ 0.85 → 사전 라벨)
+  ↓ 매칭 실패
+Stage 1: Manager Haiku → difficulty + confidence
+  ↓ confidence ≥ 0.7 → 즉시 라우팅
+Stage 2: 라마누잔 baseline probe + 자가평가 → escalation 권유
+```
+
+- **이유**: LLM 사전 난이도 예측은 부정확(overconfidence bias). Adaptive escalation 안전망이 핵심. "분류기 100%"가 아닌 "Adaptive Computation"(Graves 2016) 패러다임.
+
+### 4. Stage 2 Probe — escalation 권유 정책
+
+- **결정**: 자동 escalate ✗ → **사용자 권유** ○. "선생님이 못 푸는데 학생을 어떻게 가르쳐" 원칙.
+- **escalation 신호 (둘 다)**: ① SymPy 검증 실패 ② "막힘" 토큰 출현
+- **빈도**: 라마누잔이 아예 못 풀면 **매번** 권유. 학생 정직성·메타인지 학습 효과.
+- **UX**: 3가지 선택지 — [레전드 호출] / [더 시도] / [힌트만].
+
+### 5. 튜터 선택권 (Second Opinion 패턴) ⭐ 결정적 차별화
+
+- **결정**: 매 문제마다 학생 자율. 라우팅이 추천하되, 학생이 다른 튜터도 자유롭게 호출.
+- **사용 예**: 같은 문제 → 오일러 풀이 → 가우스 풀이 → 폰 노이만 풀이 비교 가능. 호출 횟수만큼 quota 소진.
+- **이유**: ChatGPT/Khanmigo/Photomath 누구도 못 하는 구조. "거장 4인의 강의를 골라 듣는 학습 경험".
+- **영향**: 라우팅은 "추천", 학생은 "결정자". usage_events.tutor_name + tier 컬럼 추가.
+
+### 6. Quota 정책 (베타 단계)
+
+- **베타 (현재)**: 라마누잔 무제한 / 레전드 일 5회.
+- **향후 (대중화 시)**: 월 10/20/50/100/무제한 문제 다변화.
+- **Free**: 라마누잔 일 10회 / 레전드 일 1회.
+- **이유**: Gemini 250 RPD 한도를 사용자 quota로 자연 분배. 가격 정책은 트래픽 데이터 누적 후 결정.
+
+### 7. 미결정 (G-06 architecture.md 작성 중 결정)
+
+- **Gemini 라인업**: Vertex AI 마이그 vs GA `gemini-3-pro` 전환 → Stage 3 가우스 안정화 선결조건.
+- **DB 마이그레이션**: 기존 `euler_*` 테이블 명칭을 `legend_*` 로 rename할지, 또는 `tutor_name` 컬럼만 추가할지.
+- **라우트 마이그레이션**: `/euler/*` → `/legend/*` redirect 정책.
+
+---
+
+## [2026-04-28] 제품 정체성 — 풀이가 아닌 Trigger 학습 리포트 ⭐
+
+- **결정**: 본 앱의 차별화 본질은 LLM 풀이 자체가 아니라 **학생의 trigger 학습 과정을 추적·분석·코칭하는 리포트 시스템**이다.
+- **이유**: GPT-5/Gemini 4가 풀이를 더 잘하면 풀이 자체는 commodity. "이 학생이 어느 trigger를 못 떠올렸는가"는 우리 자체 데이터 없이는 누구도 만들 수 없는 moat. 일타강사가 못 하는 이유는 1:N 스케일 한계 (N=학생 수). 우리는 N=∞.
+- **영향**: 마케팅·UX·DB·KPI 전 영역에서 가치 축 이동 — "풀이 정확도" → "trigger 학습 정확도". 메모리 [Tool vs Trigger] 와 정확히 매핑.
+
+## [2026-04-28] G-06 재정의 — Legend Router + Per-Problem Report 통합
+
+- **결정**: G-06 범위를 "5-튜터 라우팅"에서 "**라우팅 + Per-Problem Report v1**" 통합으로 확장.
+- **이유**: 라우팅 결과를 trigger 단위로 분해 저장하지 않으면 리포트 데이터가 빈약. 분리 진행 시 G-07에서 raw 로그 메타데이터를 다시 손대야 함.
+- **영향**: G-06 task 수 12~16 → 18~22로 증가. 산출물에 `PerProblemReportCard` 컴포넌트 + `solve_step_decomposition` DB 추가. trigger 단위 step 매핑이 핵심.
+
+## [2026-04-28] 두 리포트 구조 명문화
+
+### R1. Per-Problem Report (G-06)
+- 풀이 직후 즉시 노출되는 카드
+- 단계 분해 (n-step approach) + "어느 단계가 가장 어려운지" 마킹
+- 핵심 trigger 카드 (왜 이 도구를 호출했는가)
+- 같은 trigger를 가진 다른 도구·예제 노출 → 사고 확장
+- 학생 막힘 지점 마킹 (handwriting/chat 멈춤 시간)
+
+### R2. Weekly/Monthly Report (G-07, 기존 인프라 강화)
+- "당신이 자주 놓치는 trigger TOP 5"
+- 약점 영역 + 개선 영역 분리
+- 학습 방법 권유 (도구별 학습 자료 매핑)
+- 추천 문제 (Phase H에서 활성화)
+
+## [2026-04-28] Phase H — 추천 문제 시스템 (장기)
+
+- **결정**: `similar_problems` pgvector 인프라(G-04)를 활용해 학생 약점 trigger와 매칭되는 문제를 자동 추천.
+- **진입 게이트**: 베타 사용자 100명+ 데이터 누적 + 평균 풀이 30문제 이상.
+- **이유**: 추천이 의미 있으려면 학생별 weakness 누적 데이터 필요. 50명 시점부터 데이터 검증 시작.
+
+## [2026-04-28] Phase I — 학습지 통합 플랫폼 (꿈, 비즈 검증 후)
+
+- **결정**: 출판사·학습지(메가스터디·시대인재·일등급·EBS 등)와 계약, 그 문제집을 Legend Tutor 안에서 **개념 설명 + 문제 풀이 + 즉시 피드백**으로 학습 진행.
+- **진입 게이트**: MAU 1,000+ + 학습지 1곳 contract.
+- **이유**: "모르는 문제 풀어주기" → "체계적 학습 동반자"로 가치 확장. 학습지 출판사는 자체 LLM 인프라 부재 — 우리가 차별화된 LLM 동반 학습 제공.
+- **영향**: 비즈 모델 변경 B2C → B2B2C. Phase I 진입 시 별도 PRD 작성.
+
+---
+
+## [2026-04-28] G-06 Architecture 검토 후 변경 4종 (Δ1~Δ4)
+
+### Δ1. Quota 정책 5종 통합 카운터 (사용자 #3, #4)
+
+- **결정**: 단일 `legend_quota_counters` 테이블에 5종 quota 통합 관리.
+
+| Quota Kind | 베타 한도 | 자격 게이트 | 트리거 |
+|---|---|---|---|
+| `problem_total_daily` | 5문제/일 | — | 문제 입력 시 +1 |
+| `legend_call_daily` | 3회/일 | — | Tier 2 호출 시 +1 (튜터 변경 재호출 동일 소진) |
+| `report_per_problem_daily` | 1회/일 | — | R1 생성 시 +1 |
+| `weekly_report` | 1회/주 (사용자 요청) | 누적 풀이 ≥ **10문제** | R2-week 생성 시 +1 |
+| `monthly_report` | 1회/월 (사용자 요청) | 누적 풀이 ≥ **20문제** | R2-month 생성 시 +1 |
+
+- **이유**: Second Opinion 별도 개념 폐기. "튜터 바꿔서 재호출 = 또 한 번의 레전드 호출". 유료화 시 quota 한도만 plan별 차등.
+- **자격 게이트 명시**: 주간 리포트는 누적 10문제 이상, 월간 리포트는 누적 20문제 이상 풀이 후에만 요청 가능. 빈약한 데이터 리포트 방지.
+- **유료화 시 예시**: Plan A (월 9,900원) — 월 50문제·레전드 30회·주간 4회·월간 1회. Plan B (월 19,900원) — 무제한.
+
+### Δ2. Gemini 3.1 Pro Preview 유지 (사용자 #2)
+
+- **결정**: GA `gemini-3-pro` 다운그레이드 ✗. **3.1 Pro Preview 그대로 유지**.
+- **이유**: KPI 89.5% 달성한 모델은 3.1 Pro Preview. 베타 50명 일 3회 × 가우스 비중 0.3 ≈ 일 45회로 250 RPD 한도 내 충분. 모델 격차 사용자에게 그대로 전달.
+- **fallback**: 250 RPD 초과 시 가우스 → 폰 노이만 자동 전환 + UI "가우스가 잠시 휴식 중, 폰 노이만이 응답합니다" 1줄 노출. Vertex AI 마이그레이션은 사용자 100명+ 시점 재검토.
+
+### Δ3. R1 LLM Struggle 차원 추가 (사용자 #7)
+
+- **결정**: PerProblemReport에 학생 stuck과 별도로 **LLM struggle 신호** 추적·노출.
+- **추적 신호**: agentic turn 수, tool retry 횟수, reasoning 길이(chars), step 소요 ms, LLM 자체 self-reflection 텍스트.
+- **DB**: `solve_step_decomposition`에 5 컬럼 추가 (`llm_turns_at_step`, `llm_tool_retries`, `llm_reasoning_chars`, `llm_step_ms`, `llm_resolution_text`).
+- **UI**: R1 카드 신규 섹션 "AI도 어려웠던 순간" — "3단계가 가장 까다로웠어요. 해결법은…".
+- **이유**: AI 정직성 + 학생 동질감 → 학습 동기 ↑. 일타강사가 못 하는 메타 차원.
+
+### Δ4. Reasoning Tree (Tree of Thought) 시각화 (사용자 추가)
+
+- **결정**: PerProblemReport에 **추론 트리 시각화** 추가. R1의 결정적 차별화.
+- **학술 매핑**: ToT (Yao et al. 2023, "Tree of Thoughts: Deliberate Problem Solving with LLMs") 의 정확한 시각화.
+- **데이터 모델**: `ReasoningTree { nodes, edges, root_id, conditions }`. 노드 종류: `goal`/`subgoal`/`condition`/`derived_fact`/`answer`. 다중 부모 허용.
+- **변환 소스**: 기존 `recursive-reasoner.ts` (G-02) + `alternatingChain` (G-04) trace → tree (이미 backend에서 생성 중, 시각화만 신규).
+- **DB**: `solve_reasoning_trees` 신규 테이블 (session_id 1:1, tree_jsonb).
+- **기술**: **React Flow (xyflow) + dagre.js** auto-layout. Vibe·인터랙션·Vercel 친화. 번들 +60KB 수용.
+- **UI**: R1 카드의 "추론 트리 펼쳐보기" 섹션 → 인라인 expand 또는 풀스크린 모달. 노드 클릭 → 해당 step의 trigger·tool·struggle 상세.
+- **하이라이트**: pivotal step / 학생 stuck 가장 큰 노드 / LLM struggle 가장 큰 노드 = 색상·배지로 강조.
+- **이유**: ChatGPT/Khanmigo/Photomath 누구도 못 보여주는 시각화. **R1의 moat 시각화**.
+
+### Redirect 정책 확정 (사용자 #5 권고 수용)
+
+- **결정**: `/euler/*` → `/legend/*` **302 임시 redirect** 1주 안정화 후 **301 영구 전환**.
+- **이유**: 베타 단계 SEO 영향 미미. 1주 운영 모니터링 + 베타 사용자 피드백 후 영구 이전.
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부
