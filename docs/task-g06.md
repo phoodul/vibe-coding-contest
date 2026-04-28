@@ -203,7 +203,7 @@
 
 ## M4. Per-Problem Report 백엔드 (8일, 5 task)
 
-### G06-12: step-decomposer + 모델별 trace normalizer ✅ (commit 후속 갱신)
+### G06-12: step-decomposer + 모델별 trace normalizer ✅ (commit `8ccd4de`)
 - **선행**: G06-11
 - **변경 파일**:
   - `src/lib/legend/report/step-decomposer.ts` (신규)
