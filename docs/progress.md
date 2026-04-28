@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — M4 진입)
+- Time: 2026-04-29 (9차 세션 — M4 진행 중)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-12 ✅ (M4 1/5)** — step-decomposer + 3 provider trace normalizer 신규. `src/lib/legend/report/trace-normalizer.ts` (Anthropic content blocks / OpenAI tool_calls / Google parts.functionCall 분기, NormalizedTurn[] 통합, is_retry 동일 turn 내 동일 tool_name 두 번째 이상 표시). `src/lib/legend/report/step-decomposer.ts` (decomposeChainSteps: turn → tool_call step + text heuristic step 분류 / matchTriggerByToolName 1차 + matchTriggerByText 2차 ANN ≥0.7 / pivotal max difficulty + tool_call tie-break / solve_step_decomposition insert). 6 fixture (anthropic-baseline·agentic / openai-agentic / google-agentic / chain-depth1·5) + 2 test file (trace-normalizer 13 case + step-decomposer 17 case = 30/30 PASS). 기존 legend 6 file 75/75 회귀 안전. `pnpm tsc --noEmit` 무에러. **M4 1/5** (12/25). 다음: G06-13 (Δ3 llm-struggle-extractor — Haiku 4.5 hardest step resolution 1~2문장 요약).
-- Session: 9차 (G-06 진행 중, 12/25)
+- Step: **G06-13 ✅ (M4 2/5)** — llm-struggle-extractor (Δ3) 신규 (commit `8a5724d`). `src/lib/legend/report/llm-struggle-extractor.ts` (extractLLMStruggle: trace → NormalizedTurn[] → step 1:1 매핑 → turns_at_step / tool_retries / reasoning_chars / step_ms 집계 → hardest step 선정 score=step_ms×100+reasoning_chars → Haiku 4.5 baseline mode 1회만 호출 (max_tokens 200, ~$0.0002, "AI도 어려웠지만 어떻게 해결했는지" 1~2문장) → solve_step_decomposition.llm_* 5 컬럼 update). 단위 테스트 9 case PASS (callModel/supabase mock + agentic hardest=idx 2 + Haiku 정확 1회 + reasoning_chars 0 skip + 실패 graceful + DB update 5회). G06-12 회귀 30/30 유지 (전체 39/39). `pnpm tsc --noEmit` 무에러. **M4 2/5** (13/25). 다음: G06-14 ⭐ Δ4 (tree-builder — recursive-reasoner trace → ReasoningTree DAG, React Flow 시각화 데이터).
+- Session: 9차 (G-06 진행 중, 13/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 
