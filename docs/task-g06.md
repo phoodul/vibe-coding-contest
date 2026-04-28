@@ -119,7 +119,7 @@
 - **예상 토큰**: 8K
 - **commit**: `feat(g06): Stage 2 probe + escalation-detector + legend-router 통합`
 
-### G06-07: /api/legend/route SSE 라우트 ✅ (commit `__G06_07_HASH__`)
+### G06-07: /api/legend/route SSE 라우트 ✅ (commit `e0a2371`)
 - **선행**: G06-06
 - **변경 파일**:
   - `src/app/api/legend/route/route.ts` (신규, POST 핸들러)
