@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-28 (9차 세션 — M3 진입)
+- Time: 2026-04-29 (9차 세션 — M3 진행)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-09 ✅** — tutor-fallback 매트릭스 (architecture §9.5: 6 튜터 1·2순위 전체 + 1단계 자동만 정책) + classifyError (Gemini 429 RESOURCE_EXHAUSTED / Anthropic 429·529 / OpenAI 429 / generic 분류) + buildFallbackMessage UI 카피 + tutor-orchestrator try/catch 통합 (callTutorInternal 추출 + callTutorWithFallback 래퍼 + call_kind='retry' 전환). TutorCallResult 에 fallback_event? + actual_tutor? optional 필드 추가 (types.ts 인터페이스 호환 보존). 단위 테스트 24/24 PASS (classifyError 7 / getNextFallback 7 / FALLBACK_MATRIX 3 / buildFallbackMessage 1 / callTutor with fallback 6). G06-08 회귀 8/8 유지. `pnpm tsc --noEmit` 무에러. **M3 2/4** (9/25). 다음: G06-10 (quota-manager Δ1 — 5종 quota + 자격 게이트).
-- Session: 9차 (G-06 진행 중, 9/25)
+- Step: **G06-10 ✅** — quota-manager Δ1 5종 통합 (`src/lib/legend/quota-manager.ts`). architecture §4.2 시그니처 그대로: `checkQuota` / `consumeQuota` + `QuotaKind` 5종 (`problem_total_daily` 5 / `legend_call_daily` 3 / `report_per_problem_daily` 1 / `weekly_report` 1 / `monthly_report` 1) + 자격 게이트 (lifetime ≥ 10/20). KST(UTC+9) period 계산 (`getPeriodStart` + `getResetAt` — daily 자정 / weekly 월요일 / monthly 1일 boundary). 한도 외부화 — env LEGEND_BETA_* 5 + LEGEND_*_PROBLEM_GATE 2 (.env.example 갱신). atomic RPC `increment_legend_quota` + 차단 시 RPC 호출 0회 보장. `blocked_reason: 'limit_exceeded' | 'eligibility_gate'` 분리. 단위 테스트 24/24 PASS (checkQuota daily/weekly/monthly 8 + env override 2 + consumeQuota 4 + period boundary 10). G06-08/09 회귀 32/32 유지. `pnpm tsc --noEmit` 무에러. **M3 3/4** (10/25). 다음: G06-11 (/api/legend solve·escalate·retry·quota 4 라우트).
+- Session: 9차 (G-06 진행 중, 10/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 
