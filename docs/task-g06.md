@@ -14,13 +14,13 @@
 | Milestone | 일수 | 진행 | 완료 개수 |
 |---|---|---|---|
 | M1 — DB 마이그레이션 + 호환 검증 | 4일 | ✅ | 3/3 |
-| M2 — 라우팅 모듈 (Stage 0~2) + /api/legend/route | 6일 | 🔄 | 3/4 |
+| M2 — 라우팅 모듈 (Stage 0~2) + /api/legend/route | 6일 | ✅ | 4/4 |
 | M3 — 5-튜터 orchestrator + 5종 quota + fallback | 6일 | 🔄 | 0/4 |
 | M4 — Per-Problem Report 백엔드 (Δ3 + Δ4) | 8일 | 🔄 | 0/5 |
 | M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | 🔄 | 0/5 |
 | M6 — KPI 측정 + 베타 검증 | 4일 | 🔄 | 0/2 |
 | M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | 🔄 | 0/2 |
-| **합계** | **40일** | — | **6/25** |
+| **합계** | **40일** | — | **7/25** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -119,13 +119,14 @@
 - **예상 토큰**: 8K
 - **commit**: `feat(g06): Stage 2 probe + escalation-detector + legend-router 통합`
 
-### G06-07: /api/legend/route SSE 라우트
+### G06-07: /api/legend/route SSE 라우트 ✅ (commit `__G06_07_HASH__`)
 - **선행**: G06-06
 - **변경 파일**:
   - `src/app/api/legend/route/route.ts` (신규, POST 핸들러)
   - `src/lib/legend/sse.ts` (신규, SSE 헬퍼)
-- **변경 내용**: architecture.md §7.2 의 SSE 메시지 형식. `stage_progress` (stage 0/1/2) → `route_decided` 순. 인증 가드 (createClient server) + rate limit (Vercel KV 또는 in-memory 5 req/sec). `consumeQuota('problem_total_daily')` (Tier 2 인 경우 추가 `legend_call_daily`).
-- **검증**: `pnpm dev` 후 `curl -N -X POST http://localhost:3000/api/legend/route -H "Cookie: ..." -d '{"problem_text":"x^2-4=0","input_mode":"text"}'` → SSE 3 메시지 (stage_progress 1, stage_progress 2 또는 route_decided)
+  - `src/app/api/legend/route/__tests__/route.test.ts` (신규)
+- **변경 내용**: architecture.md §7.2 의 SSE 메시지 형식. `stage_progress` (stage 0/1/2) → `route_decided` 순. 인증 가드 (createClient server) + rate limit (in-memory 5 req/sec/user, production 은 Vercel KV TODO). quota check 는 G06-10 quota-manager 완료 후 G06-11 에서 통합 (TODO 주석).
+- **검증**: `pnpm dlx vitest run src/app/api/legend/route/__tests__/` 4 시나리오 (401 / 400 / 정상 SSE / 429 rate limit) 통과 + `pnpm tsc --noEmit` 무에러
 - **위험**: MEDIUM (SSE 스트림 + 인증 + quota 동시 처리)
 - **예상 토큰**: 7K
 - **commit**: `feat(g06): /api/legend/route SSE 라우팅 진입점`
