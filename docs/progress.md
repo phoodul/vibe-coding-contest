@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — M3 ✅ 마킹)
+- Time: 2026-04-29 (9차 세션 — M4 진입)
 - Phase: **Phase G-06** — Legend Tutor 라우터 + R1 Per-Problem Report
-- Step: **G06-11 ✅ (M3 ✅ 4/4)** — `/api/legend` solve·escalate·retry-with-tutor·quota 4 라우트 신규. `/solve` (POST + SSE, runtime nodejs / maxDuration 60): 인증 가드 → routing_decision RLS 보조 검증 (다른 user → 403) → `consumeQuota('problem_total_daily')` + Tier 2 면 `legend_call_daily` 추가 소진 (한도 초과 → 402) → `callTutor` 결과의 trace.turns 순회하며 tutor_turn / tool_call 메시지 + fallback_event 가시화 + final 메시지 emit. `/escalate` (POST): user_chose_escalation 갱신 (escalate=true) + choice 별 next_action 매핑 (call_tutor / retry_probe / hint_only). `/retry-with-tutor` (POST + SSE): 학생이 직접 target_tutor 선택 → TUTOR_CONFIG.tier 기반 quota 동일 소진 (Δ1 #5) + call_kind 기본 second_opinion. `/quota` (GET): checkQuota 5종 병렬 → QuotaStatus[] (UI 헤더용). SSE 타입 `tutor_turn` / `tool_call` / `fallback` / `final` 4 종 추가. 단위 테스트 19/19 PASS (solve 5 + escalate 6 + retry 6 + quota 2) + 기존 G06-07 route 4/4 회귀. `src/lib/legend/__tests__/` 75/75 PASS 회귀 안전. `pnpm tsc --noEmit` 무에러. **M3 ✅ 4/4** (11/25). 다음: G06-12 (M4 첫 task — step-decomposer + 3 provider trace normalizer).
-- Session: 9차 (G-06 진행 중, 11/25)
+- Step: **G06-12 ✅ (M4 1/5)** — step-decomposer + 3 provider trace normalizer 신규. `src/lib/legend/report/trace-normalizer.ts` (Anthropic content blocks / OpenAI tool_calls / Google parts.functionCall 분기, NormalizedTurn[] 통합, is_retry 동일 turn 내 동일 tool_name 두 번째 이상 표시). `src/lib/legend/report/step-decomposer.ts` (decomposeChainSteps: turn → tool_call step + text heuristic step 분류 / matchTriggerByToolName 1차 + matchTriggerByText 2차 ANN ≥0.7 / pivotal max difficulty + tool_call tie-break / solve_step_decomposition insert). 6 fixture (anthropic-baseline·agentic / openai-agentic / google-agentic / chain-depth1·5) + 2 test file (trace-normalizer 13 case + step-decomposer 17 case = 30/30 PASS). 기존 legend 6 file 75/75 회귀 안전. `pnpm tsc --noEmit` 무에러. **M4 1/5** (12/25). 다음: G06-13 (Δ3 llm-struggle-extractor — Haiku 4.5 hardest step resolution 1~2문장 요약).
+- Session: 9차 (G-06 진행 중, 12/25)
 
 ## 8차 세션 핵심 성과 — KPI 85% 게이트 통과 ⭐
 

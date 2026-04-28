@@ -1,0 +1,12 @@
+{
+  "mode": "baseline",
+  "model_id": "claude-opus-4-7",
+  "raw": {
+    "content": [
+      {
+        "type": "text",
+        "text": "주어진 조건에서 바로 도출. 따라서 최종 답: 7"
+      }
+    ]
+  }
+}

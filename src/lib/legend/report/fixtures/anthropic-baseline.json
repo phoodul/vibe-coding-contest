@@ -1,0 +1,17 @@
+{
+  "mode": "baseline",
+  "model_id": "claude-opus-4-7",
+  "raw": {
+    "id": "msg_anthropic_baseline",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "문제 분해: 구해야 할 것은 f(x)의 극값. 조건: f(x) = x^3 - 3x. forward 추론으로 도함수 f'(x)=3x^2-3. f'(x)=0 → x=±1. 검증: f(1)=-2, f(-1)=2. 따라서 최종 답: 극댓값 2, 극솟값 -2."
+      }
+    ],
+    "model": "claude-opus-4-7",
+    "stop_reason": "end_turn"
+  }
+}
