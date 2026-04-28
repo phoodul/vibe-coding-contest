@@ -162,7 +162,7 @@
 - **예상 토큰**: 6K
 - **commit**: `feat(g06): tutor fallback 매트릭스 + Gemini 429 자동 전환`
 
-### G06-10: quota-manager (5종 통합) ⭐ Δ1 ✅ (commit `__G06_10_HASH__`)
+### G06-10: quota-manager (5종 통합) ⭐ Δ1 ✅ (commit `9a8877f`)
 - **선행**: G06-08 (tutor-orchestrator 가 quota 호출)
 - **변경 파일**:
   - `src/lib/legend/quota-manager.ts` (구현)
