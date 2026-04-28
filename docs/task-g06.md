@@ -316,7 +316,7 @@
 
 ## M5. UI + ToT 시각화 (8일, 5 task)
 
-### G06-17: 의존성 추가 + 컴포넌트 stub + /legend layout + 흉상 이미지 3종 ✅ (commit `<TBD>`)
+### G06-17: 의존성 추가 + 컴포넌트 stub + /legend layout + 흉상 이미지 3종 ✅ (commit `00d9684`)
 - **선행**: G06-04 (타입) — M5 첫 task 만 M4 완료 전 진입 가능 (T3 병렬)
 - **변경 파일**:
   - `package.json` (`@xyflow/react@^12`, `dagre@^0.8` 추가)
