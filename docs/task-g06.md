@@ -236,7 +236,7 @@
 - **예상 토큰**: 8K
 - **commit**: `feat(g06): llm-struggle-extractor + Haiku resolution 요약 (Δ3)`
 
-### G06-14: tree-builder ⭐ Δ4 ✅ (commit `__G06_14_HASH__`)
+### G06-14: tree-builder ⭐ Δ4 ✅ (commit `d0d9844`)
 - **선행**: G06-12
 - **변경 파일**:
   - `src/lib/legend/report/tree-builder.ts` (신규)
