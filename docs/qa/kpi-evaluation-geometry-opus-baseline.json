@@ -1,0 +1,267 @@
+{
+  "mode": "full",
+  "run_at": "2026-04-28T01:49:05.531Z",
+  "summary": {
+    "total": 9,
+    "retriever_hit_rate_top3": 0,
+    "retriever_hit_rate_top5": 0,
+    "reasoner_accuracy": 1,
+    "reasoner_accuracy_hard": 1,
+    "why_inclusion_rate": 0.8888888888888888,
+    "manager_classify_rate": 0.3333333333333333,
+    "pass": {
+      "retriever": false,
+      "accuracy": true,
+      "why": false
+    },
+    "chain": {
+      "enabled": false,
+      "executed_count": 0,
+      "avg_depth": 0,
+      "termination_dist": {
+        "reached_conditions": 0,
+        "max_depth": 0,
+        "dead_end": 0,
+        "cycle": 0
+      },
+      "success_rate": 0
+    }
+  },
+  "results": [
+    {
+      "id": "2022-기하-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "도형의 평행이동",
+        "이차방정식의 근의 공식",
+        "벡터의 크기",
+        "선분의 매개변수화",
+        "쌍곡선의 정의와 표준형"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n## 1. 기본 설정\n\n- $\\overrightarrow{OA} \\cdot \\overrightarrow{OB} = \\sqrt{2} \\cdot 2\\sqrt{2} \\cdot \\frac{1}{4} = 1$\n- $|\\overrightarrow{OA}|^2 = 2$, $|\\overrightarrow{OB}|^2 = 8$\n\n## 2. 조건 (나) 정리\n\n$\\overrightarrow{OP} = s\\overrightarrow{OA} + t\\overrightarrow{OB}$, $\\overrightarrow{BP} = \\overrightarrow{OP} - \\overrightarrow{OB} = s\\overrightarrow{OA} + (t-1)\\overrightarrow{OB}$, $\\overrightarrow{BC} = \\overrightarrow{OA}$\n\n**첫 번째 항:**\n$$\\overrightarrow{OP} \\cdot \\overrightarrow{OB} = s(1) + t(8) = s + 8t$$\n\n**두 번째 항:**\n$$\\overrightarrow{BP} \\cdot \\overrightarrow{BC} = s|\\overrightarrow{OA}|^2 + (t-1)\\overrightarrow{OA}\\cdot\\overrightarrow{OB} = 2s + (t-1)$$\n\n**합:** $s + 8t + 2s + t - 1 = 3s + 9t - 1 = 2$\n\n따라서 $3s + 9t = 3$, 즉 $s + 3t = 1$.\n\n## 3. P의 자취\n\n$0 \\le s \\le 1$, $0 \\le t \\le 1$, $s = 1 - 3t$ 이므로 $0 \\le t \\le \\frac{1}{3}$.\n\n$$\\overrightarrow{OP} = (1-3t)\\overrightarrow{OA} + t\\overrightarrow{OB}$$\n\n$t=0$일 때 $P = A$, $t=\\frac{1}{3}$일 때 $\\overrightarrow{OP} = \\frac{1}{3}\\overrightarrow{OB}$ (점 $B'$로 표기).\n\n따라서 P는 $A$에서 $B' = \\frac{1}{3}\\overrightarrow{OB}$까지의 **선분**.\n\n## 4. $3\\overrightarrow{OP}$의 자취\n\n$3\\overrightarrow{OP} = 3(1-3t)\\overrightarrow{OA} + 3t\\overrightarrow{OB}$\n\n$t=0$: $3\\overrightarrow{OA}$ (점 $A_1$)\n$t=\\frac{1}{3}$: $\\overrightarrow{OB}$ (점 $B$)\n\n따라서 $3\\overrightarrow{OP}$는 점 $A_1 = 3A$와 점 $B$를 잇는 선분.\n\n## 5. 좌표 설정\n\n$\\overrightarrow{OA} = (\\sqrt{2}, 0)$, $\\overrightarrow{OB} = (b_1, b_2)$ where $b_1 = \\frac{1}{\\sqrt{2}}$ (since $\\overrightarrow{OA}\\cdot\\overrightarrow{OB}=1$), $b_2 = \\sqrt{8 - 1/2} = \\sqrt{15/2}$.\n\n- $A_1 = 3\\overrightarrow{OA} = (3\\sqrt{2}, 0)$\n- $B = (\\frac{1}{\\sqrt{2}}, \\sqrt{15/2})$\n\n## 6. 원점에서 선분까지의 거리\n\n$|OA_1| = 3\\sqrt{2}$, $|OB| = 2\\sqrt{2}$.\n\n$\\overrightarrow{OA_1} \\cdot \\overrightarrow{OB} = 3\\sqrt{2} \\cdot \\frac{1}{\\sqrt{2}} = 3$\n\n$|A_1B|^2 = |OA_1|^2 + |OB|^2 - 2\\overrightarrow{OA_1}\\cdot\\overrightarrow{OB} = 18 + 8 - 6 = 20$, $|A_1B| = 2\\sqrt{5}$.\n\n선분 $A_1B$ 위의 점 $Q$까지 원점에서의 거리 범위:\n\n선분 위 점: $Q = (1-u)A_1 + uB$, $0 \\le u \\le 1$.\n\n$|OQ|^2 = (1-u)^2 \\cdot 18 + 2u(1-u) \\cdot 3 + u^2 \\cdot 8$\n$= 18 - 36u + 18u^2 + 6u - 6u^2 + 8u^2$\n$= 20u^2 - 30u + 18$\n\n최솟값: $u = \\frac{30}{40} = \\frac{3}{4}$에서 $20 \\cdot \\frac{9}{16} - 30 \\cdot \\frac{3}{4} + 18 = \\frac{45}{4} - \\frac{45}{2} + 18 = \\frac{45 - 90 + 72}{4} = \\frac{27}{4}$\n\n최댓값: $u=0$에서 $18$ (즉 $|OA_1| = 3\\sqrt{2}$).\n\n따라서 $|OQ|_{\\min} = \\frac{3\\sqrt{3}}{2}$, $|OQ|_{\\max} = 3\\sqrt{2}$.\n\n## 7. M, m 계산\n\n$X$는 원점 중심, 반지름 $|OA| = \\sqrt{2}$인 원 위. $|3\\overrightarrow{OP} - \\overrightarrow{OX}| = |Q - X|$.\n\n- $M = |OQ|_{\\max} + \\sqrt{2} = 3\\sqrt{2} + \\sqrt{2} = 4\\sqrt{2}$\n- $m = |OQ|_{\\min} - \\sqrt{2} = \\frac{3\\sqrt{3}}{2} - \\sqrt{2}$\n\n(여기서 $\\frac{3\\sqrt{3}}{2} \\approx 2.598 > \\sqrt{2} \\approx 1.414$이므로 양수 OK)\n\n## 8. M × m\n\n$$M \\times m = 4\\sqrt{2}\\left(\\frac{3\\sqrt{3}}{2} - \\sqrt{2}\\right) = 6\\sqrt{6} - 8$$\n\n따라서 $a = 6$, $b = -8$.\n\n$$a^2 + b^2 = 36 + 64 = 100$$\n\n---\n\n최종 답: $100$\n코칭 한마디: 왜냐하면 $|3\\overrightarrow{OP}-\\overrightarrow{OX}|$ 형태는 점 $Q=3\\overrightarrow{OP}$의 자취(선분)와 원 위의 점 $X$ 사이의 거리이므로, **벡터의 크기**를 기하적 거리로 해석하면 \"선분 위 점에서 원까지 최대·최소 거리\" 문제로 환원되기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 33087,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2022-기하-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me set up. Sphere center C(2,√5,5), radius 5. P(0,0,1) on sphere: check (2)²+(√5)²+(4)²=4+5+16=25. ✓\n\nPlane OPC: contains O, P(0,0,1), C(2,√5,5). \nOP direction: (0,0,1). OC: (2,√5,5).\nNormal: OP × OC = (0·5-1·√5, 1·2-0·5, 0·√5-0·2) = (-√5, 2, 0).\nPlane OPC: -√5 x + 2y = 0, i.e., 2y = √5 x.\n\nDistance from C to this plane: |-√5·2 + 2√5|/√(5+4) = 0. So C is on plane OPC! Therefore the circle of intersection has radius 5 (great circle), center C.\n\nSo Q lies on great circle in plane 2y=√5 x, center C, radius 5.\n\nR lies on sphere S.\n\nQ1, R1 are projections to xy-plane. We want triangle OQ1R1 area maximum.\n\nThen find projection of triangle OQ1R1 onto plane PQR.\n\nHmm, let me think about Q1 first. Q on circle in plane OPC. The plane OPC contains z-axis direction? P=(0,0,1), so OP is z-axis. The plane OPC contains z-axis. So this plane is vertical (contains z-axis).\n\nIn plane OPC, parameterize: this plane contains z-axis and the line 2y=√5 x in xy-plane (direction (2,√5,0)/3).\n\nLet u = (2,√5,0)/3 (unit vector in xy-plane within the plane), v = (0,0,1).\nThen C = 2u·... let's compute: C=(2,√5,5). In terms of u,v: u-component = (2,√5,5)·(2,√5,0)/3 = (4+5)/3 = 3. v-component = 5. So C = 3u + 5v.\n\nQ = C + 5(cos θ · u + sin θ · v) = (3+5cos θ)u + (5+5sin θ)v.\n\nIn 3D: Q = ((3+5cos θ)·2/3, (3+5cos θ)·√5/3, 5+5sin θ).\n\nQ1 = projection to xy-plane: Q1 = ((3+5cos θ)·2/3, (3+5cos θ)·√5/3, 0).\n\n|OQ1| = |3+5cos θ|·|u| = |3+5cos θ| (since u is unit). Wait u has magnitude 1? (2/3)²+(√5/3)² = 4/9+5/9 = 1. Yes.\n\nSo Q1 lies on the line 2y=√5x in xy-plane, at distance |3+5cos θ| from O. Range: 3+5cos θ ∈ [-2, 8].\n\nR on sphere. R1 projection. Sphere projects to disk in xy-plane: center (2,√5), and what radius? The sphere has radius 5, center z=5. Projection of sphere to xy-plane: it's a disk of radius 5 centered at (2,√5)? No wait. Projection of sphere to plane is disk of radius equal to sphere radius if center is far enough... actually projection of sphere is disk of radius 5 centered at (2,√5).\n\nSo R1 is any point in disk D: (x-2)²+(y-√5)² ≤ 25.\n\nTriangle OQ1R1 area: (1/2)|OQ1| · d(R1, line OQ1).\n\nLine OQ1 is the line 2y=√5 x in xy-plane. Distance from R1=(x,y) to line: |√5 x - 2y|/3 (since line is √5 x - 2y = 0, normalize by √(5+4)=3).\n\nMaximize: |OQ1| can be up to 8. Distance from R1 to line: maximize over disk. Distance from center (2,√5) to line: |√5·2 - 2√5|/3 = 0. Center is on the line! So max distance = radius = 5.\n\nArea max = (1/2)·8·5 = 20.\n\nSo we need Q with 3+5cos θ = 8, i.e., cos θ=1, θ=0. Then Q = C + 5u = 3u+5v+5u = 8u+5v.\nQ in 3D: (16/3, 8√5/3, 5).\nQ1 = (16/3, 8√5/3, 0).\n\nR1 must be at distance 5 from line, and the constraint is R on sphere with R1 the projection. R1 = (2,√5) + 5·n where n is unit normal to line in xy-plane. Line direction u_xy=(2,√5)/3, normal: (√5,-2)/3 or (-√5,2)/3.\n\nR1 = (2 ± 5√5/3, √5 ∓ 10/3). For R1 to be valid, R must be on sphere with this xy-projection. Since R1 is on boundary of projection disk, R has unique z = 5 (top of sphere... actually center z).\n\nWait, sphere (x-2)²+(y-√5)²+(z-5)²=25. If (x-2)²+(y-√5)²=25, then (z-5)²=0, z=5.\n\nSo R = (2±5√5/3, √5∓10/3, 5).\n\nBut which one? Either gives same area. Let's pick the one we want — actually the answer might depend. Let's pick R1 = (2+5√5/3, √5-10/3). Then R = (2+5√5/3, √5-10/3, 5).\n\nNow we need projection of triangle OQ1R1 onto plane PQR.\n\nPlane PQR: P=(0,0,1), Q=(16/3, 8√5/3, 5), R=(2+5√5/3, √5-10/3, 5).\n\nProjection of a planar region (triangle in xy-plane) onto plane PQR: area scales by |cos α| where α is angle between xy-plane normal (which is k=(0,0,1)) and normal to PQR.\n\nWait, projection of a region in plane π1 onto plane π2 has area = (area of region) · |cos α| where α is angle between the planes.\n\nSo we need angle between xy-plane and plane PQR.\n\nFind normal to PQR.\nPQ = Q-P = (16/3, 8√5/3, 4)\nPR = R-P = (2+5√5/3, √5-10/3, 4)\n\nLet me compute. Let me use clearer values. Let a = 5√5/3, then R = (2+a, √5 - 10/3, 5).\n\nPR = (2+5√5/3, √5-10/3, 4).\n\nActually let me just compute normal n = PQ × PR.\n\nPQ = (16/3, 8√5/3, 4)\nPR = (2+5√5/3, √5-10/3, 4)\n\nn_x = (8√5/3)(4) - (4)(√5-10/3) = 32√5/3 - 4√5 + 40/3 = 32√5/3 - 12√5/3 + 40/3 = 20√5/3 + 40/3 = (20√5+40)/3 = 20(√5+2)/3.\n\nn_y = (4)(2+5√5/3) - (16/3)(4) = 8 + 20√5/3 - 64/3 = (24 + 20√5 - 64)/3 = (20√5 - 40)/3 = 20(√5-2)/3.\n\nn_z = (16/3)(√5-10/3) - (8√5/3)(2+5√5/3)\n= 16√5/3 - 160/9 - 16√5/3 - 40·5/9\n= -160/9 - 200/9 = -360/9 = -40.\n\nSo n = (20(√5+2)/3, 20(√5-2)/3, -40).\n\n|n|² = 400(√5+2)²/9 + 400(√5-2)²/9 + 1600\n= 400[(√5+2)² + (√5-2)²]/9 + 1600\n= 400[2(5+4)]/9 + 1600\n= 400·18/9 + 1600\n= 800 + 1600 = 2400.\n|n| = √2400 = 20√6.\n\ncos α = |n_z|/|n| = 40/(20√6) = 2/√6.\n\nProjected area = 20 · 2/√6 = 40/√6 = 40√6/6 = 20√6/3.\n\nSo answer = (20/3)√6, p=3, q=20, p+q=23.\n\nWait, but we need to check the other R as well — does it give different result? By symmetry the answer should be same since we have similar magnitudes. Let me verify quickly.\n\nIf R1 = (2-5√5/3, √5+10/3, 5), then PR = (2-5√5/3, √5+10/3, 4).\n\nn_x = (8√5/3)(4) - 4(√5+10/3) = 32√5/3 - 4√5 - 40/3 = 20√5/3 - 40/3.\nn_y = 4(2-5√5/3) - (16/3)(4) = 8 - 20√5/3 - 64/3 = -40/3 - 20√5/3.\nn_z = (16/3)(√5+10/3) - (8√5/3)(2-5√5/3) = 16√5/3 + 160/9 - 16√5/3 + 200/9 = 360/9 = 40.\n\n|n|² = same calculation: (20√5/3-40/3)² + ... \n= 400(√5-2)²/9 + 400(√5+2)²/9 + 1600 = same = 2400.\n|n_z|/|n| = 40/(20√6) = 2/√6. Same.\n\nSo answer is 20√6/3, p+q = 3+20 = 23.\n</think>\n\n주어진 구의 중심 $C(2,\\sqrt5,5)$를 평면 OPC가 지나는지 확인합니다. 평면 OPC의 방정식은 $\\sqrt5\\,x-2y=0$이고, 점 $C$를 대입하면 $0$이므로 $C$가 이 평면 위에 있습니다. 따라서 구와 평면 OPC의 교선은 **반지름 5인 대원**입니다.\n\n**1단계: 삼각형 $OQ_1R_1$ 넓이 최대화**\n\n평면 OPC 내 단위벡터 $u=(2,\\sqrt5,0)/3,\\ v=(0,0,1)$로 두면 $C=3u+5v$, $Q=(3+5\\cos\\theta)u+(5+5\\sin\\theta)v$입니다. 따라서 \n$$Q_1=(3+5\\cos\\theta)u\\ \\text{(xy평면 위)}, \\quad |OQ_1|=|3+5\\cos\\theta|\\le 8$$\n$Q_1$은 직선 $\\sqrt5 x-2y=0$ 위에 놓입니다. 한편 구의 xy평면 위 정사영은 중심 $(2,\\sqrt5)$, 반지름 5인 원판이고 이 중심이 위 직선 위에 있으므로 $R_1$에서 직선까지의 거리 최댓값은 $5$.\n\n$$\\text{최대 넓이}=\\tfrac12\\cdot8\\cdot5=20$$\n\n이때 $\\cos\\theta=1$이므로\n- $Q=(16/3,\\,8\\sqrt5/3,\\,5)$, $Q_1=(16/3,\\,8\\sqrt5/3,\\,0)$\n- $R_1$은 원판 경계 → $R=(2+5\\sqrt5/3,\\,\\sqrt5-10/3,\\,5)$ (대칭 경우 동일)\n\n**2단계: 평면 PQR의 법선**\n\n$\\vec{PQ}=(16/3,\\,8\\sqrt5/3,\\,4),\\ \\vec{PR}=(2+5\\sqrt5/3,\\,\\sqrt5-10/3,\\,4)$\n\n$$\\vec n=\\vec{PQ}\\times\\vec{PR}=\\left(\\tfrac{20(\\sqrt5+2)}{3},\\ \\tfrac{20(\\sqrt5-2)}{3},\\ -40\\right)$$\n\n$$|\\vec n|^2=\\tfrac{400}{9}\\left[(\\sqrt5+2)^2+(\\sqrt5-2)^2\\right]+1600=800+1600=2400$$\n\n$$|\\vec n|=20\\sqrt6$$\n\n**3단계: 정사영 넓이**\n\nxy평면(법선 $k$)과 평면 PQR 사이 각 $\\alpha$에 대해\n$$\\cos\\alpha=\\frac{|n_z|}{|\\vec n|}=\\frac{40}{20\\sqrt6}=\\frac{2}{\\sqrt6}$$\n\n정사영 넓이 $=20\\cdot\\dfrac{2}{\\sqrt6}=\\dfrac{20\\sqrt6}{3}$\n\n따라서 $p=3,\\ q=20$, $p+q=23$.\n\n최종 답: 23  \n코칭 한마디: 왜냐하면 한 평면 위 도형을 다른 평면으로 정사영할 때는 두 평면 법선 사이 각의 코사인만큼 넓이가 줄어든다는 정사영 넓이 공식이 핵심 도구이기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 53223,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2023-기하-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "인수정리",
+        "도형의 평행이동",
+        "여사건의 확률",
+        "평면의 방정식 (법선벡터형)",
+        "기하학적 확률"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "사다리꼴을 좌표로 놓고 풀겠습니다.\n\n**좌표 설정**\n\n사다리꼴 ABCD에서 AB=CD=AD=2, ∠ABC=∠BCD=π/3 (등변사다리꼴).\nBC가 아래변, AD가 위변. ∠ABC=60°이므로 BC=AD+2·(2cos60°)=2+2=4.\n\n- B=(0,0), C=(4,0)\n- A=(1, √3), D=(3, √3)\n\n**벡터 계산**\n\n- $\\vec{AC} = (3, -\\sqrt3)$, $|\\vec{AC}|^2 = 12$\n- $\\vec{AD} = (2, 0)$\n\n**조건 (가)**: $\\vec{AC} = 2(\\vec{AD} + \\vec{BP})$\n$(3,-\\sqrt3) = 2(2,0) + 2\\vec{BP}$\n$2\\vec{BP} = (-1, -\\sqrt3)$, $\\vec{BP} = (-1/2, -\\sqrt3/2)$\n∴ $P = B + \\vec{BP} = (-1/2, -\\sqrt3/2)$\n\n**조건 (나)**: $\\vec{AC}\\cdot\\vec{PQ}=6$\n$\\vec{PQ}$를 구하기 위해 Q=(x,y)로 놓으면\n$\\vec{PQ}=(x+1/2,\\, y+\\sqrt3/2)$\n$3(x+1/2) -\\sqrt3(y+\\sqrt3/2) = 6$\n$3x - \\sqrt3 y + 3/2 - 3/2 = 6$\n$3x - \\sqrt3 y = 6$ … (★)\n\n**조건 (다)**: $2\\angle BQA = \\angle PBQ < \\pi/2$\n\n$\\vec{BP}=(-1/2,-\\sqrt3/2)$, $|\\vec{BP}|=1$. $\\vec{BP}$의 방향각은 $-2\\pi/3$ (또는 $4\\pi/3$).\n$\\vec{BA}=(1,\\sqrt3)$, $|\\vec{BA}|=2$, 방향각 $\\pi/3$.\n\n$\\angle BQA = \\theta$로 두면 $\\angle PBQ = 2\\theta$.\n\n삼각형 ABQ에서 ∠BQA=θ. A,B는 고정. Q의 자취는 호.\n\n원주각 정리 활용: ∠BQA=θ이면 Q는 AB를 현으로 하는 원 위에 있고, 그 원에서 호 AB에 대한 중심각은 2θ.\n\n한편 ∠PBQ=2θ는 B에서의 각. 이는 BA, BP, BQ 사이 관계.\n\n각도 분석을 좌표로:\n- 방향각: $\\vec{BA}$: $60°$, $\\vec{BP}$: $-120°$ (또는 $240°$)\n- $\\vec{BA}$와 $\\vec{BP}$ 사이 각: $180°$ → A, B, P가 일직선!\n\n확인: $\\vec{BA}=(1,\\sqrt3)$, $\\vec{BP}=(-1/2,-\\sqrt3/2)=-\\frac12\\vec{BA}$. 맞음. P는 직선 AB 위, B 기준 A 반대쪽.\n\n따라서 ∠PBQ는 직선 AB에서 BQ까지 각이고, ∠ABQ = π - ∠PBQ = π - 2θ.\n\n삼각형 ABQ에서 내각 합: ∠BAQ + ∠ABQ + ∠AQB = π\n∠BAQ + (π - 2θ) + θ = π\n∠BAQ = θ\n\n따라서 ∠BAQ = ∠BQA = θ → 삼각형 ABQ는 AB=QB인 이등변삼각형!\n즉 **BQ = BA = 2**.\n\n**Q의 위치**\n\nQ는 B 중심 반지름 2인 원 위, 또한 직선 $3x-\\sqrt3 y=6$ 위.\n\n$y = \\frac{3x-6}{\\sqrt3} = \\sqrt3 x - 2\\sqrt3$\n\n$x^2 + y^2 = 4$\n$x^2 + 3(x-2)^2 = 4$\n$x^2 + 3x^2 -12x+12 = 4$\n$4x^2 -12x + 8=0$\n$x^2-3x+2=0$, $x=1$ 또는 $x=2$.\n\n- x=1: y=√3-2√3=-√3, Q=(1,-√3)\n- x=2: y=2√3-2√3=0, Q=(2,0)\n\n각 ∠PBQ < π/2 조건 확인:\n$\\vec{BP}=(-1/2,-\\sqrt3/2)$ 방향 $240°$.\n- Q=(1,-√3): 방향 $-60°=300°$. $\\vec{BP}$와 차이 $60°$. ∠PBQ=60° < 90° ✓\n- Q=(2,0): 방향 $0°$. 차이 $120°$ > 90° ✗\n\n∴ **Q = (1, -√3)**\n\n**최종 계산**\n\n$\\vec{CP} = P - C = (-1/2-4, -\\sqrt3/2) = (-9/2, -\\sqrt3/2)$\n$\\vec{DQ} = Q - D = (1-3, -\\sqrt3-\\sqrt3) = (-2, -2\\sqrt3)$\n\n$\\vec{CP}\\cdot\\vec{DQ} = (-9/2)(-2) + (-\\sqrt3/2)(-2\\sqrt3) = 9 + 3 = 12$\n\n최종 답: 12\n코칭 한마디: 왜냐하면 벡터 조건은 좌표화하면 일차방정식이 되고, 각 조건은 삼각형 내각의 합으로 \"이등변삼각형\"이라는 기하적 정보로 환원되어 Q를 원과 직선의 교점으로 결정할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 29098,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2023-기하-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me set up coordinates. Tetrahedron ABCD with BCD equilateral, circumradius of BCD = 6 (sphere radius through B from circumcenter of BCD).\n\nSo BCD circumradius = 6, meaning side length s satisfies s/√3 = 6, so s = 6√3.\n\nPlace circumcenter O of BCD at origin, BCD in plane z=0.\nB = (6, 0, 0)\nC = (-3, 3√3, 0)\nD = (-3, -3√3, 0)\n\nA is apex above O. For regular tetrahedron with side 6√3, height = 6√3 · √(2/3) = 6√3 · √6/3 = 2√18 = 6√2.\nSo A = (0, 0, 6√2).\n\nSphere S: center O=(0,0,0), radius 6.\n\nFind P on segment AB with P on sphere (P≠B).\nParametrize: point = B + t(A-B) = (6,0,0) + t(-6, 0, 6√2), t∈[0,1].\n|point|² = (6-6t)² + (6√2 t)² = 36(1-t)² + 72t² = 36 - 72t + 36t² + 72t² = 36 - 72t + 108t² = 36.\nSo 108t² - 72t = 0, t(108t-72)=0, t=2/3.\nP = (6 - 4, 0, 4√2) = (2, 0, 4√2).\n\nCheck |P|² = 4 + 32 = 36. ✓\n\nBy symmetry:\nQ on AC: Q = C + (2/3)(A-C) = (1/3)C + (2/3)A... wait t=2/3 from B side means point = B + (2/3)(A-B) = (1/3)B + (2/3)A.\n\nHmm wait, let me recompute. point = B + t(A-B), at t=2/3: (1/3)B + (2/3)A. So P = (1/3)(6,0,0) + (2/3)(0,0,6√2) = (2, 0, 4√2). ✓\n\nSimilarly Q = (1/3)C + (2/3)A = (-1, √3, 4√2).\nR = (1/3)D + (2/3)A = (-1, -√3, 4√2).\n\nPlane α: tangent to sphere at P, so normal is OP direction = (2, 0, 4√2)/6 = (1/3, 0, 2√2/3).\n\nTriangle PQR: \nP = (2, 0, 4√2)\nQ = (-1, √3, 4√2)\nR = (-1, -√3, 4√2)\n\nAll three have z = 4√2, so PQR is in plane z = 4√2 (horizontal plane).\n\nPQ = (-3, √3, 0), PR = (-3, -√3, 0).\nArea = (1/2)|PQ × PR| = (1/2)|(0, 0, 3√3 + 3√3)| = (1/2)(6√3) = 3√3.\n\nNormal of PQR plane: (0,0,1).\nNormal of α: n = (1, 0, 2√2)/3.\n\nAngle between planes = angle between normals.\ncos θ = (0·1 + 0·0 + 1·2√2)/3 / 1 = 2√2/3.\n\nProjection area = original area × cos θ = 3√3 · 2√2/3 = 2√6.\n\nk = 2√6, k² = 24.\n</think>\n\n## 풀이\n\n**좌표 설정**\n\n정삼각형 BCD의 외심을 원점 O로, BCD를 z=0 평면에 놓습니다. 외접원 반지름이 6이므로 BCD의 한 변은 $6\\sqrt{3}$.\n\n- $B=(6,0,0)$, $C=(-3, 3\\sqrt{3}, 0)$, $D=(-3, -3\\sqrt{3}, 0)$\n- 정사면체의 높이는 $6\\sqrt{3}\\cdot\\sqrt{\\tfrac{2}{3}} = 6\\sqrt{2}$이므로 $A=(0,0,6\\sqrt{2})$\n\n**점 P, Q, R 구하기**\n\n선분 AB를 $B+t(A-B)$로 매개화하고 $|점|^2=36$을 풀면 $t=\\dfrac{2}{3}$.\n\n$$P=\\tfrac{1}{3}B+\\tfrac{2}{3}A=(2,0,4\\sqrt{2})$$\n\n대칭으로\n$$Q=(-1,\\sqrt{3},4\\sqrt{2}),\\quad R=(-1,-\\sqrt{3},4\\sqrt{2})$$\n\n**삼각형 PQR의 넓이**\n\n세 점 모두 $z=4\\sqrt{2}$ 평면 위에 있음.\n$\\vec{PQ}=(-3,\\sqrt{3},0)$, $\\vec{PR}=(-3,-\\sqrt{3},0)$\n$$\\text{넓이} = \\tfrac{1}{2}|6\\sqrt{3}|=3\\sqrt{3}$$\n\n**평면 α와의 각**\n\nα의 법선: $\\vec{OP}/6 = (1/3, 0, 2\\sqrt{2}/3)$\nPQR 평면의 법선: $(0,0,1)$\n\n$$\\cos\\theta = \\frac{2\\sqrt{2}}{3}$$\n\n**정사영 넓이**\n\n$$k = 3\\sqrt{3}\\cdot\\frac{2\\sqrt{2}}{3}=2\\sqrt{6}$$\n\n$$k^2 = 24$$\n\n최종 답: 24  \n코칭 한마디: 왜냐하면 정사영 넓이는 \"원래 넓이 × 두 평면 법선이 이루는 각의 코사인\"으로 단번에 구할 수 있고, 좌표를 잡아 법선벡터 두 개만 비교하면 복잡한 입체 계산을 피할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 28763,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2024-기하-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nHyperbola: 2a=6, a=3. Foci at (±c,0), c>3. For point P on right branch (1st quadrant): |PF'| - |PF| = 6.\n\nTriangle PF'F is isosceles. Let |PF|=r, |PF'|=r+6, |FF'|=2c.\n\nCases for isosceles:\n1) |PF'|=|PF|: impossible (differ by 6)\n2) |PF'|=|FF'|: r+6=2c, so r=2c-6\n3) |PF|=|FF'|: r=2c\n\nQ is on line PF', and triangle PQF perimeter is 28.\n\nQ is on the line through P and F'. Q is on hyperbola, distinct from P.\n\nLet me think about Q. Q on line PF', on hyperbola.\n\nCase A: Q on same branch (right) as P, or left branch.\n\nIf Q is on left branch, then line PF' intersects left branch. F' is focus of left branch.\n\nFor Q on left branch: |QF| - |QF'| = 6.\nFor Q on right branch: |QF'| - |QF| = 6.\n\nTriangle PQF perimeter = |PQ| + |QF| + |PF| = 28.\n\n|PQ| = |PF' - QF'| or |PF' + QF'| depending on whether F' between them or not.\n\nSub-case: Q on left branch, F' between P and Q? P is in Q1 (right branch), line to F'(-c,0). Extended through F' hits left branch possibly. So Q on left branch with F' between P and Q: |PQ| = |PF'| + |QF'|.\n\nThen perimeter = |PF'| + |QF'| + |QF| + |PF|\n= (r+6) + |QF'| + (|QF'|+6) + r\n= 2r + 2|QF'| + 12 = 28\nSo r + |QF'| = 8.\n\nSub-case: Q on left branch but on segment between... actually F' is inside left branch region. Line from P through F' to left branch: Q would be on far side, F' between. Or line could hit left branch twice if it's a chord through F'? F' is focus of left branch (for left branch, foci are still F and F'; F' is the closer focus). A line through F' intersects left branch at up to 2 points (focal chord). And intersects right branch possibly.\n\nHmm, P is on right branch. Line through P and F' — does this line also hit right branch again? Generally no if it goes through F' which is inside left branch's \"inside\". Actually a line through F' typically hits each branch... let me think. A line through F' (left focus) intersects the hyperbola at 2 points total generically. Could be both on left branch (focal chord of left branch) or one on each branch.\n\nCase A1: Q on left branch, F' between P and Q, |PQ|=|PF'|+|QF'|.\nr + |QF'| = 8, with r = |PF|.\n\nCase A2: Q on right branch (so line PF' hits right branch twice). Then for Q on right branch: |QF'|-|QF|=6, so |QF|=|QF'|-6.\n|PQ| = ||PF'|-|QF'|| (both on same side of F'? P is on right branch, F' is left focus. Line from F' to right branch extends in one direction to hit right branch — could it hit twice? Only if line is nearly along axis... Actually focal chord from left focus to right branch: line through F' hitting right branch at two points means right branch is convex toward F'... no, right branch opens right, F' is far left. A line through F' hits right branch at most... I think at most 2 points but typically the line crosses right branch in 2 points only if it's \"between\" asymptote slopes. Hmm.\n\nLet me not worry and consider Case A1 first.\n\nCase A1: r + |QF'| = 8.\n\nNow combine with isosceles cases:\nIso case 2: r = 2c-6. Then |QF'| = 8 - (2c-6) = 14-2c. Need >0, so c<7.\nIso case 3: r = 2c. Then |QF'| = 8-2c. Need >0, c<4.\n\nAlso need P in Q1 (so y>0, x>0). For right branch, x≥a=3. P exists with |PF|=r requires r ≥ c-a = c-3 (minimum distance from right vertex to F is c-a... wait F=(c,0), right vertex (3,0), distance c-3). And r ≤ ... no upper bound. Actually for right branch, |PF| ≥ c-a = c-3.\n\nIso case 2: r=2c-6=2(c-3) ≥ c-3 ✓ (since c>3).\nIso case 3: r=2c, certainly ≥ c-3 ✓.\n\nFor P in Q1, not on x-axis, so r > c-3 strictly, and r+6 > c+3 (|PF'| min at right vertex is c+3). \nIso 2: r+6=2c, need 2c>c+3, c>3 ✓.\nIso 3: r=2c, r+6=2c+6, fine. Also r=2c means... |PF|=2c. With c>3, that's >6.\n\nAlso need Q to actually exist on line PF' on left branch with |QF'|=14-2c (case A1, iso 2) or 8-2c (iso 3).\n\nFor Q on left branch, |QF'| ≥ c-3 (distance from left vertex to F').\n\nActually wait, |QF'| for Q on left branch: minimum is c-a=c-3 (at left vertex (-3,0)).\n\nIso 2: |QF'|=14-2c ≥ c-3 → 17 ≥ 3c → c ≤ 17/3.\nCombined with c>3: 3<c≤17/3.\n\nIso 3: |QF'|=8-2c ≥ c-3 → 11≥3c → c≤11/3. With c>3: 3<c≤11/3.\n\nBut we also need specific c values? Wait, we need existence of P,Q. Hmm but the problem asks for sum of all c. So there must be discrete values.\n\nI'm missing constraints. Let me reconsider.\n\nOh — we need Q on the LINE PF', which is determined by P. So given P (determined by isosceles condition up to position), the line is determined, and Q must be the second intersection with hyperbola. So |QF'| is determined by P, not free.\n\nSo given r (from isosceles), P's position is determined (in Q1), line PF' determined, Q is the other intersection, |QF'| determined. Then perimeter condition gives equation in c.\n\nLet me parametrize. P on right branch: |PF|=r, |PF'|=r+6.\n\nUse focal chord property. For a chord through F' with endpoints P₁ on right branch and P₂ on left branch (case A1):\nThere's a formula. Let me use the polar equation.\n\nHyperbola with focus F' at origin (shift). The polar equation with F' as focus:\nr = a(e²-1)/(1 - e cos θ) for one branch... let me recall.\n\nFor hyperbola, with focus at origin, directrix to one side:\nr = (a(e²-1))/(1 + e cos θ) gives right branch (when focus is right focus) or...\n\nLet me set F' at origin, so F at (2c, 0) in new coords. The hyperbola has center at (c,0) in new coords.\n\nPolar form with F' as focus: For left branch (closer to F'), \nr = a(e²-1)/(1 + e cos θ)? Let me derive.\n\nDefinition: distance to focus / distance to directrix = e.\nF' = left focus at (-c,0). Left directrix at x=-a/e=-a²/c.\nDistance from point to F': r. Distance to left directrix: x+a²/c (for points right of directrix).\n\nLeft branch: x ≤ -a, so x+a²/c could be... a²/c < a since c>a, so -a + a²/c < 0. So points on left branch are left of left directrix. |x+a²/c| = -(x+a²/c)... \n\nHmm getting confused. Let me just use:\n\nFor hyperbola, focal chord through F'. Let θ be angle from positive x-axis to line. P at distance r₁ from F' on right branch, Q at distance r₂ from F' on left branch, on opposite side of F' (so F' between them).\n\nIn terms of polar coordinates centered at F', with angle measured from positive x-axis:\n- Left branch (near F'): r = a(e²-1)/(1+e cos θ) when this is positive. For left branch, the formula... I recall for ellipse with focus at origin, r=a(1-e²)/(1-e cos θ) gives the ellipse with center at +ae direction.\n\nLet me just directly compute for hyperbola x²/9 - y²/b² = 1, b²=c²-9.\n\nTake P=(x₀,y₀) on right branch, y₀>0. Line through P and F'=(-c,0). Parametrize: (x,y)=(-c,0)+t(x₀+c, y₀). Plug into hyperbola.\n\nAlternatively use focal distance formulas: |PF'|=a+ex₀=3+ex₀ for right branch (where e=c/3).\nWait standard: for hyperbola, |PF|=|a-ex| or |ex-a|. For right branch x≥a: |PF|=ex-a, |PF'|=ex+a.\n\nSo |PF'|=ex₀+3, |PF|=ex₀-3, e=c/3.\n\nIso 2: |PF'|=2c → ex₀+3=2c → x₀=(2c-3)/e=3(2c-3)/c.\nIso 3: |PF|=2c → ex₀-3=2c → x₀=(2c+3)/e=3(2c+3)/c.\n\nFor Q on left branch x≤-3: |QF|=-ex_Q+3? Let me recompute. |QF|=|ex_Q-a|. For x_Q≤-a<0, ex_Q-a<0, so |QF|=a-ex_Q=3-ex_Q (positive since x_Q<0). |QF'|=|ex_Q+a|=|ex_Q+3|; for x_Q≤-3, ex_Q≤-3 (since e>1), so ex_Q+3≤0, |QF'|=-ex_Q-3.\n\nNow line through P(x₀,y₀) and F'(-c,0) intersects left branch at Q(x_Q,y_Q).\n\nHmm, let's use the chord-through-focus property. The semi-latus rectum is ℓ = b²/a = (c²-9)/3.\n\nPolar form with F' as pole: for the conic, r = ℓ/(1 - e cos φ) where φ is angle from axis pointing toward the other focus? \n\nLet me just set up. F'=(-c,0). For point on hyperbola at angle φ from F' (measured from positive x-direction), its position is (-c + r cos φ, r sin φ). It's on hyperbola iff:\n(-c+r cos φ)²/9 - (r sin φ)²/(c²-9) = 1.\n\nMultiply by 9(c²-9):\n(c²-9)(-c+r cos φ)² - 9 r² sin²φ = 9(c²-9).\n\nExpand (-c+r cos φ)² = c² - 2cr cos φ + r² cos²φ.\n\n(c²-9)[c² - 2cr cos φ + r² cos²φ] - 9r² sin²φ = 9(c²-9).\n\n(c²-9)c² - 2cr(c²-9)cos φ + r²[(c²-9)cos²φ - 9 sin²φ] = 9(c²-9).\n\n(c²-9)cos²φ - 9 sin²φ = (c²-9)cos²φ - 9(1-cos²φ) = c² cos²φ - 9.\n\nSo: r²(c² cos²φ - 9) - 2cr(c²-9)cos φ + (c²-9)c² - 9(c²-9) = 0\nr²(c² cos²φ - 9) - 2c(c²-9)r cos φ + (c²-9)(c²-9) = 0\nr²(c² cos²φ - 9) - 2c(c²-9)r cos φ + (c²-9)² = 0.\n\nLet u = cos φ. Quadratic in r:\n(c²u² - 9)r² - 2c(c²-9)u · r + (c²-9)² = 0.\n\nTwo roots r₁, r₂ correspond to two intersections of line with hyperbola (one direction).\n\nHmm but a line has two opposite directions. Need to be careful: r should be positive, and both intersections may have different φ (φ and φ+π).\n\nActually if we let r be signed, then both intersections on the line have same φ but different r (one positive, one negative), OR one has φ and the other φ+π with both r positive.\n\nLet me allow r∈ℝ. Then the equation gives two solutions for r at given φ. These are the two intersections of the line with hyperbola.\n\nFor P in Q1: x₀=-c+r₁ cos φ > 0, y₀ = r₁ sin φ > 0. So r₁ sin φ > 0 and r₁ cos φ > c, both signs of r₁ and trig functions matter.\n\nLet's say r₁ > 0, sin φ > 0 (φ ∈ (0,π)), and r₁ cos φ > c so cos φ >0, φ ∈ (0,π/2).\n\nThe other root r₂: if r₂ > 0, Q is on same side (P and Q on same ray from F'); if r₂<0, Q is on opposite ray.\n\n|PF'|=r₁, |QF'|=|r₂|, |PQ|=|r₁-r₂|.\n\nBy Vieta:\nr₁ r₂ = (c²-9)²/(c²u²-9)\nr₁ + r₂ = 2c(c²-9)u/(c²u²-9)\n\nNote (c²u²-9): if u=cos φ, when c²u²>9 i.e. cos φ > 3/c=1/e, the line is \"outside\" asymptote direction; when c²u²<9, line is \"between\" asymptotes.\n\nHmm. Asymptote slope is ±b/a, so direction angle has tan = b/a, cos = a/c=3/c. So cos φ = 3/c is asymptote direction.\n\nIf cos φ > 3/c: line is more horizontal than asymptote. Then both intersections... let's see r₁r₂>0 always since (c²-9)²>0 and need denominator sign.\n\nIf c²u²>9 (line more horizontal than asymptotes), denominator positive, r₁r₂>0. So both r same sign. Both roots positive (since sum is positive when u>0). So P and Q on same ray from F'. Both on right branch likely.\n\nIf c²u² < 9 (line more vertical than asymptotes), denominator negative, r₁r₂<0. Roots opposite sign: P and Q on opposite sides of F', i.e., on different branches.\n\nSo Case A1 (Q on left branch, F' between P,Q): cos φ < 3/c, r₁ > 0 (P in Q1), r₂ < 0 (Q at angle φ+π).",
+      "reasoner_answer_correct": false,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 70443,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": true,
+      "model_used": "opus"
+    },
+    {
+      "id": "2024-기하-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me set up coordinates. A=(0,0), B=(4,0), C=(2, 2√3).\n\nD divides AB in 1:3, so D = (1, 0).\nE divides BC in 1:3: E = B + (1/4)(C-B) = (4,0) + (1/4)(-2, 2√3) = (3.5, √3/2).\nF divides CA in 1:3: F = C + (1/4)(A-C) = (2, 2√3) + (1/4)(-2, -2√3) = (1.5, 3√3/2).\n\nP, Q, R are points with |DP|=|EQ|=|FR|=1, so P on circle around D radius 1, etc.\n\nAX = PB + QC + RA = (B-P) + (C-Q) + (A-R) = (A+B+C) - (P+Q+R).\n\nA+B+C = (6, 2√3).\n\nLet P = D + u, Q = E + v, R = F + w where |u|=|v|=|w|=1.\nP+Q+R = D+E+F + u+v+w.\n\nD+E+F = (1+3.5+1.5, 0+√3/2+3√3/2) = (6, 2√3).\n\nSo AX = (6, 2√3) - (6, 2√3) - (u+v+w) = -(u+v+w).\n\n|AX| = |u+v+w|, max when u=v=w same direction, |AX|=3.\n\nThen P, Q, R are D+u, E+u, F+u for some unit vector u. The triangle PQR is congruent to triangle DEF (translated).\n\nWait, but we need maximum of |AX|. The maximum is 3, achieved when u=v=w. But then any direction works? Let me check - we need the area of PQR.\n\nIf u=v=w, then PQR is translation of DEF, so area same as DEF.\n\nHmm, but the problem says \"|AX|의 값이 최대일 때\". If maximum gives a specific configuration up to rotation, but area is invariant, so S = area of DEF.\n\nCompute area of DEF. D=(1,0), E=(7/2, √3/2), F=(3/2, 3√3/2).\nArea = (1/2)|x_D(y_E-y_F) + x_E(y_F-y_D) + x_F(y_D-y_E)|\n= (1/2)|1·(√3/2 - 3√3/2) + 7/2·(3√3/2 - 0) + 3/2·(0 - √3/2)|\n= (1/2)|1·(-√3) + 7/2·(3√3/2) + 3/2·(-√3/2)|\n= (1/2)|-√3 + 21√3/4 - 3√3/4|\n= (1/2)|-4√3/4 + 21√3/4 - 3√3/4|\n= (1/2)|14√3/4|\n= 7√3/4.\n\nS = 7√3/4. S² = 49·3/16 = 147/16. 16S² = 147.\n</think>\n\n주어진 정삼각형에서 좌표를 설정합니다.\n\n**좌표 설정:**\n- A=(0,0), B=(4,0), C=(2, 2√3)\n- D=(1, 0), E=(7/2, √3/2), F=(3/2, 3√3/2)\n\n**핵심 변형:**\n조건 (나)를 다시 쓰면:\n$$\\vec{AX} = (B-P) + (C-Q) + (A-R) = (A+B+C) - (P+Q+R)$$\n\nP=D+**u**, Q=E+**v**, R=F+**w** (|**u**|=|**v**|=|**w**|=1) 로 두면:\n$$P+Q+R = (D+E+F) + (\\mathbf{u}+\\mathbf{v}+\\mathbf{w})$$\n\n계산: $A+B+C = (6, 2\\sqrt{3})$이고 $D+E+F = (6, 2\\sqrt{3})$ → 두 값이 같음!\n\n따라서:\n$$\\vec{AX} = -(\\mathbf{u}+\\mathbf{v}+\\mathbf{w})$$\n\n**최댓값 조건:**\n$|\\vec{AX}|$가 최대가 되려면 **u**=**v**=**w** (같은 단위벡터), 즉 |AX|=3.\n\n이때 P, Q, R은 D, E, F를 같은 벡터로 평행이동한 점이므로,\n**삼각형 PQR ≅ 삼각형 DEF**\n\n**삼각형 DEF의 넓이:**\n$$S = \\frac{1}{2}\\left| 1\\cdot\\left(\\tfrac{\\sqrt3}{2}-\\tfrac{3\\sqrt3}{2}\\right) + \\tfrac{7}{2}\\cdot\\tfrac{3\\sqrt3}{2} + \\tfrac{3}{2}\\cdot\\left(-\\tfrac{\\sqrt3}{2}\\right)\\right| = \\frac{7\\sqrt{3}}{4}$$\n\n**최종 계산:**\n$$16S^2 = 16 \\cdot \\frac{49 \\cdot 3}{16} = 147$$\n\n최종 답: 147  \n코칭 한마디: 왜냐하면 조건의 벡터식을 변형하면 $\\vec{AX}=-(\\vec u+\\vec v+\\vec w)$로 깔끔하게 정리되어, 최댓값 조건이 세 단위벡터가 같은 방향일 때임이 보이고, 이는 곧 PQR이 DEF의 평행이동이라는 강력한 구조를 드러내기 때문이다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 24910,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2025-기하-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nHyperbola: a²=1, b²=35, c²=36, c=6.\n\nP in first quadrant. PF' - PF = ... wait, for hyperbola |PF'-PF|=2a=2. P on right branch (first quadrant), so PF' - PF = 2.\n\nLet PF = r, PF' = r+2. Q on line PF' with PQ = PF = r, and PF' < QF'. So Q is on extension beyond P from F', meaning QF' = PF' + PQ = r+2+r = 2r+2.\n\nTriangle QF'F ~ triangle FF'P. Let's match vertices: Q↔F, F'↔F', F↔P.\n\nSo angle at F' is common (both triangles share angle PF'F = angle QF'F, same angle since Q on line PF'). Good.\n\nRatios: QF'/FF' = F'F/F'P = QF/FP.\n\nQF'/FF' = F'F/F'P\n(2r+2)/(2c) = 2c/(r+2)\n(2r+2)(r+2) = 4c² = 144\n(r+1)(r+2) = 36\nr² + 3r + 2 = 36\nr² + 3r - 34 = 0\nr = (-3+√(9+136))/2 = (-3+√145)/2\n\nHmm, that's ugly. Let me check similarity correspondence.\n\nMaybe correspondence different. Triangles QF'F and FF'P. \n\nTriangle FF'P has vertices F, F', P with sides FF'=2c, F'P=r+2, FP=r.\nTriangle QF'F has vertices Q, F', F with sides QF'=2r+2, F'F=2c, QF=?\n\nAngle at F' in triangle FF'P is angle PF'F.\nAngle at F' in triangle QF'F is angle QF'F. Since Q on line PF' (specifically extension through P), angle QF'F = angle PF'F. Same angle.\n\nSo in similar triangles, angle F' corresponds. Need to determine which vertex corresponds to F' in each: in QF'F, F' is middle; in FF'P, F' is middle. Good, F'↔F'.\n\nThen either Q↔F, F↔P or Q↔P, F↔F.\n\nCase 1: Q↔F, F↔P: QF'/FF' = F'F/F'P, so (2r+2)/(2c)=(2c)/(r+2). Got r²+3r-34=0.\n\nCase 2: Q↔P, F↔F: QF'/PF' = F'F/F'F = 1, so QF'=PF', but PF'<QF', contradiction.\n\nSo Case 1. r = (-3+√145)/2. Ugly... let me reconsider.\n\nWait, maybe Q is on the other side. \"직선 PF' 위에 PQ=PF인 점 Q\". Q could be between F' and P, or beyond P, or beyond F'. Condition PF' < QF'.\n\nIf Q is beyond P (away from F'): QF' = PF' + PQ = (r+2)+r = 2r+2. ✓ PF'<QF'.\nIf Q is on opposite side, beyond F' from P: QF' = PQ - PF' = r - (r+2) <0, impossible unless r>r+2.\nIf Q between F' and P: QF' = PF' - PQ = 2 < PF', so QF'<PF', no.\n\nSo Q beyond P. QF' = 2r+2.\n\nHmm, let me verify problem. Maybe P is on left branch? \"제1사분면 위의 점 P\" - first quadrant. Right branch. PF'-PF=2.\n\nRecheck: c=6, so FF'=12. (2r+2)(r+2)=144, (r+1)(r+2)=72.\nWait, 4c²=144, divide both sides... (2r+2)(r+2)/((2c)(2c)) ... let me redo.\n\n(2r+2)/(2c) = 2c/(r+2)\nCross multiply: (2r+2)(r+2) = (2c)(2c) = 4c² = 144\n2(r+1)(r+2) = 144\n(r+1)(r+2) = 72\nr² + 3r + 2 = 72\nr² + 3r - 70 = 0\nr = (-3+√(9+280))/2 = (-3+17)/2 = 7.\n\nGreat, r=7.\n\nSo PF = 7, PF' = 9, FF' = 12, PQ = 7, QF' = 16, QF = ?\n\nIn triangle PFF': sides 7, 9, 12. \nTriangle QF'F similar to FF'P with ratio QF'/FF' = 16/12 = 4/3. Hmm, or F'F/F'P = 12/9 = 4/3. ✓\n\nSo QF/FP = 4/3, QF = 4/3 · 7 = 28/3.\n\nTriangle PFQ: PF=7, PQ=7, FQ=28/3. Isoceles.\n\nArea: base FQ=28/3, height from P. Half of FQ is 14/3. Height² = 49 - 196/9 = (441-196)/9 = 245/9. Height = √245/3 = 7√5/3.\n\nArea = (1/2)(28/3)(7√5/3) = 196√5/18 = 98√5/9.\n\nSo q/p = 98/9, p=9, q=98, gcd(98,9)=1. p+q=107.\n</think>\n\n주어진 쌍곡선에서 $a^2=1$, $b^2=35$ 이므로 $c^2=36$, 즉 $c=6$ 입니다.\n\n## 풀이 과정\n\n**1단계: 변의 길이 설정**\n\nP가 우측 가지(제1사분면)에 있으므로 쌍곡선 정의에 의해\n$$\\overline{PF'} - \\overline{PF} = 2a = 2$$\n\n$\\overline{PF}=r$ 이라 하면 $\\overline{PF'}=r+2$, $\\overline{FF'}=12$.\n\n조건 $\\overline{PF'}<\\overline{QF'}$ 를 만족하려면 Q는 P 너머의 연장선 위에 있어야 하므로\n$$\\overline{QF'} = \\overline{PF'} + \\overline{PQ} = (r+2)+r = 2r+2$$\n\n**2단계: 닮음 조건 적용**\n\n$\\triangle QF'F \\sim \\triangle FF'P$ 이며 공통각은 $\\angle F'$이므로 대응 변의 비:\n$$\\frac{\\overline{QF'}}{\\overline{FF'}} = \\frac{\\overline{F'F}}{\\overline{F'P}}$$\n\n$$\\frac{2r+2}{12} = \\frac{12}{r+2} \\implies (r+1)(r+2)=72$$\n\n$$r^2+3r-70=0 \\implies r=7$$\n\n**3단계: 각 변 계산**\n\n- $\\overline{PF}=7$, $\\overline{PF'}=9$, $\\overline{PQ}=7$, $\\overline{QF'}=16$\n- 닮음비 $\\dfrac{16}{12}=\\dfrac{4}{3}$, 따라서 $\\overline{QF}=\\dfrac{4}{3}\\cdot \\overline{FP}=\\dfrac{28}{3}$\n\n**4단계: △PFQ의 넓이**\n\n$\\triangle PFQ$ 는 $\\overline{PF}=\\overline{PQ}=7$ 인 이등변삼각형, 밑변 $\\overline{FQ}=\\dfrac{28}{3}$.\n\n높이: $h=\\sqrt{49-\\left(\\dfrac{14}{3}\\right)^2}=\\sqrt{\\dfrac{245}{9}}=\\dfrac{7\\sqrt5}{3}$\n\n넓이: \n$$\\frac{1}{2}\\cdot \\frac{28}{3}\\cdot \\frac{7\\sqrt5}{3}=\\frac{98\\sqrt5}{9}$$\n\n따라서 $p=9$, $q=98$ (서로소), $p+q=107$.\n\n최종 답: $107$\n코칭 한마디: 왜냐하면 쌍곡선 문제에서는 **초점거리 차의 정의**로 변을 매개화하고, **닮음의 대응변 비**로 방정식을 세우는 것이 가장 빠른 길이기 때문이에요.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 36773,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2025-기하-30",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me set coordinates. Let BC be the segment. |XB+XC| = |XB-XC| means with M midpoint of BC, |2XM| = |CB|, so |XM| = |BC|/2 = 2. So S is circle centered at midpoint of BC with radius 2.\n\nLet me set A=(0,4), B=(0,0), C=(4,0), D=(4,4). Midpoint of BC is M=(2,0). S: circle center (2,0) radius 2.\n\nP on S: P = (2+2cosθ, 2sinθ).\n\n4PQ = PB + 2PD, so Q = P + (PB+2PD)/4 = P + (B-P + 2(D-P))/4 = P + (B+2D-3P)/4 = (P + B/4 + 2D/4 - 3P/4) ... wait\n\nQ - P = (PB + 2PD)/4 = ((B-P) + 2(D-P))/4 = (B + 2D - 3P)/4\nQ = P + (B+2D-3P)/4 = (4P + B + 2D - 3P)/4 = (P + B + 2D)/4\n\nB = (0,0), D = (4,4), so B+2D = (8,8).\nQ = (P + (8,8))/4 = ((2+2cosθ+8)/4, (2sinθ+8)/4) = ((10+2cosθ)/4, (8+2sinθ)/4)\n= ((5+cosθ)/2, (4+sinθ)/2)\n\nAC = C - A = (4,-4)\nAQ = Q - A = ((5+cosθ)/2, (4+sinθ)/2 - 4) = ((5+cosθ)/2, (sinθ-4)/2)\n\nAC·AQ = 4·(5+cosθ)/2 + (-4)·(sinθ-4)/2 = 2(5+cosθ) - 2(sinθ-4) = 10+2cosθ - 2sinθ + 8 = 18 + 2cosθ - 2sinθ\n\nRange: 2cosθ - 2sinθ ∈ [-2√2, 2√2]\nM = 18+2√2, m = 18-2√2\nM·m = 324 - 8 = 316\n</think>\n\n**풀이**\n\n**1단계: 도형 S 구하기**\n\nBC의 중점을 M이라 하면\n$$\\overrightarrow{XB}+\\overrightarrow{XC}=2\\overrightarrow{XM}, \\quad \\overrightarrow{XB}-\\overrightarrow{XC}=\\overrightarrow{CB}$$\n\n따라서 $|2\\overrightarrow{XM}|=|\\overrightarrow{CB}|=4$, 즉 $|XM|=2$.  \nS는 **BC의 중점을 중심으로 하고 반지름 2인 원**.\n\n**2단계: 좌표 설정**\n\n$A(0,4),\\ B(0,0),\\ C(4,0),\\ D(4,4)$로 두면 $M(2,0)$.  \n$P=(2+2\\cos\\theta,\\ 2\\sin\\theta)$.\n\n**3단계: Q의 위치**\n\n$4\\overrightarrow{PQ}=\\overrightarrow{PB}+2\\overrightarrow{PD}$에서\n$$Q=P+\\frac{(B-P)+2(D-P)}{4}=\\frac{P+B+2D}{4}$$\n\n$B+2D=(8,8)$이므로\n$$Q=\\left(\\frac{5+\\cos\\theta}{2},\\ \\frac{4+\\sin\\theta}{2}\\right)$$\n\n**4단계: 내적 계산**\n\n$\\overrightarrow{AC}=(4,-4)$, $\\overrightarrow{AQ}=\\left(\\dfrac{5+\\cos\\theta}{2},\\ \\dfrac{\\sin\\theta-4}{2}\\right)$\n\n$$\\overrightarrow{AC}\\cdot\\overrightarrow{AQ}=2(5+\\cos\\theta)-2(\\sin\\theta-4)=18+2\\cos\\theta-2\\sin\\theta$$\n\n$2\\cos\\theta-2\\sin\\theta$의 범위는 $[-2\\sqrt2,\\ 2\\sqrt2]$이므로\n$$M=18+2\\sqrt2,\\quad m=18-2\\sqrt2$$\n\n$$M\\times m=324-8=316$$\n\n최종 답: **316**  \n코칭 한마디: 왜냐하면 벡터식 $\\overrightarrow{XB}+\\overrightarrow{XC}$는 중점벡터, $\\overrightarrow{XB}-\\overrightarrow{XC}$는 변벡터로 분해되어 도형의 정체(원)를 즉시 드러내고, Q를 P의 1차식으로 표현하면 매개변수 $\\theta$ 하나로 내적의 최대·최소를 삼각함수 합성으로 깔끔히 처리할 수 있기 때문입니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 24580,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2026-기하-29",
+      "difficulty": 6,
+      "manager_ok": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "<think>\nLet me set up. Parabola y²=4px (since focus (p,0), directrix x=-p... wait, standard form y²=4ax has focus (a,0) directrix x=-a. So here a=p, parabola y²=4px.\n\nPoint A on parabola in Q1, H=(-p, A_y) is foot on directrix.\n\nAH = A_x + p = AF (parabola property).\n\nEllipse has foci on x-axis, passes through F, A, H. One focus is F'... wait the problem says \"two foci on x-axis\" and \"x좌표가 양수인 초점을 B\". So B is the focus with positive x-coordinate. The other focus is some point on x-axis.\n\nWait, F=(p,0) is given as parabola's focus. Is F also a focus of the ellipse? Let me re-read.\n\n\"두 초점이 x축 위에 있고 세 점 F, A, H를 지나는 타원\" - ellipse passes through F, A, H, with two foci on x-axis. B is the focus with positive x-coordinate.\n\nSo F is a point ON the ellipse (not necessarily focus). The two foci are on x-axis, B has positive x-coord, the other focus call it B'.\n\nFor ellipse: sum of distances from any point to two foci = 2a (constant).\n\nFor point F=(p,0) on ellipse: |FB| + |FB'| = 2a. Since both foci on x-axis and F on x-axis, this means F is between or outside the foci on x-axis. Sum = distance between... actually if F is on x-axis and foci are on x-axis, |FB|+|FB'| = 2a means F is on the major axis. Points on major axis on ellipse are the vertices. So F is a vertex.\n\nSimilarly A and H are on ellipse.\n\nLet foci be B=(c₁, 0) with c₁>0 and B'=(c₂,0). Center is ((c₁+c₂)/2, 0). F is vertex on x-axis, so F is at center ± a.\n\nLet center = (h, 0), semi-major a, c = distance from center to focus.\n\nF=(p,0) is a vertex: p = h+a or p = h-a.\n\nH=(-p, A_y), A=(A_x, A_y). Both have same y-coordinate A_y.\n\n|HB|+|HB'| = 2a, |AB|+|AB'| = 2a.\n\nAlso |AH| = A_x - (-p) = A_x + p.\n\nLet A_x = x₀, A_y = y₀, with y₀² = 4px₀, y₀>0.\n\nAF = x₀+p (focal distance for parabola).\n\nSince A and H have same y, segment AH is horizontal length x₀+p.\n\nTriangle AHB: vertices A=(x₀,y₀), H=(-p,y₀), B=(c₁,0).\n\nHmm, let me think about which vertex F is. Looking at figure, probably F is right vertex... no wait, H is to the left at x=-p, A to the right. The ellipse contains all three. Likely F is the left vertex (since p might be small).\n\nActually let me use ellipse property differently. For point on ellipse, sum to foci = 2a.\n\nLet's denote foci B=(b,0), B'=(b',0) with b>0, b'<b possibly.\n\nFor F=(p,0): |p-b| + |p-b'| = 2a. If F is between foci: (b-p)+(p-b')=b-b'=2c... no that's not 2a unless... Actually if F is on x-axis and on ellipse, F must be vertex. So 2a = |p-b|+|p-b'|, and this equals... if p > b > b': (p-b)+(p-b')=2p-b-b' = 2a, also center=(b+b')/2, a=p-(b+b')/2, so p is right vertex.\n\nLet me just parametrize: let center=(h,0), semi-major a along x-axis, foci at (h±c, 0), c=√(a²-b_minor²).\n\nF=(p,0) vertex: either h+a=p or h-a=p.\n\nCase 1: h+a=p, so h=p-a. Right focus B=(h+c,0)=(p-a+c,0). For B to have positive x: p-a+c>0.\n\nFor H=(-p, y₀): (-p-h)²/a² + y₀²/b² = 1, where b is semi-minor.\nFor A=(x₀,y₀): (x₀-h)²/a² + y₀²/b²=1.\n\nSubtract: [(x₀-h)²-(-p-h)²]/a² = 0, so (x₀-h)² = (p+h)².\nSo x₀-h = ±(p+h). \nIf x₀-h = p+h: x₀=p+2h=p+2(p-a)=3p-2a.\nIf x₀-h = -(p+h): x₀=-p, but x₀>0, contradiction unless... so x₀=3p-2a.\n\nHmm, then need x₀>0: 3p>2a.\n\nAlso y₀²=4px₀=4p(3p-2a).\n\nNow use ellipse equation at A: (x₀-h)²/a² + y₀²/b_m² = 1 where b_m is semi-minor.\n(p+h)²/a² + y₀²/b_m² =1\n(p+h)² = (2p-a)², so (2p-a)²/a² + 4p(3p-2a)/b_m² = 1\nb_m² = 4p(3p-2a)/[1-(2p-a)²/a²] = 4p(3p-2a)a²/[a²-(2p-a)²]\na²-(2p-a)² = (a-(2p-a))(a+(2p-a)) = (2a-2p)(2p) = 4p(a-p)\nSo b_m² = 4p(3p-2a)a²/[4p(a-p)] = a²(3p-2a)/(a-p)\n\nNeed b_m²>0: (3p-2a)/(a-p)>0. So either both positive (a>p and a<3p/2) or both negative.\n\nc² = a² - b_m² = a² - a²(3p-2a)/(a-p) = a²[(a-p)-(3p-2a)]/(a-p) = a²(3a-4p)/(a-p)\n\nHmm, getting complex. Let me use the focal chord properties.\n\nActually for ellipse, |HB|+|HB'|=2a and |AB|+|AB'|=2a.\n\nLet me use another approach. Triangle AHB with given perimeter and area.\n\nAH = x₀+p (horizontal).\nThe height from B to line AH (which is y=y₀) is y₀ (since B is on x-axis).\nArea = (1/2)(x₀+p)(y₀) = 2p+12.\nSo (x₀+p)y₀ = 4p+24.\n\nPerimeter: AH + HB + AB = p+27.\nAH = x₀+p, so HB+AB = p+27-(x₀+p) = 27-x₀.\n\nWe need more relations. From ellipse: AB+AB' = 2a, HB+HB'=2a.\n\nFor the parabola, AF = x₀+p = AH. So triangle AHF has AF=AH, F=(p,0), H=(-p,y₀), A=(x₀,y₀). Note FH from F=(p,0) to H=(-p,y₀): distance = √(4p²+y₀²).\n\nWe want k = HF, k² = 4p²+y₀².\n\nHmm. Now I need to find relations to determine y₀, p.\n\nIn Case 1, F=(p,0) is right vertex of ellipse. Then x₀=3p-2a.\n\nB = (p-a+c, 0), B' = (p-a-c, 0).\n\n|AB| where A=(x₀,y₀): distance to B.\nThis is getting complex. Let me try Case 2: F is left vertex, h-a=p... wait h-a means left vertex. If F is left vertex: h-a=p, h=p+a. Then center is to right of F.\n\nRight focus B=(h+c,0)=(p+a+c,0), positive ✓.\n\nSubtracting ellipse equations for A,H gives same: (x₀-h)²=(-p-h)², so x₀-h = ±(p+h).\nx₀ = h+(p+h) = p+2h = p+2(p+a)=3p+2a, or x₀=-p (rejected).\n\nSo x₀=3p+2a. y₀²=4px₀=4p(3p+2a).\n\nHmm, but then x₀ > p, A is to right of F. Looking at typical figure, this seems reasonable.\n\n(x₀-h)² = (3p+2a-(p+a))² = (2p+a)²\n(-p-h)² = (-p-p-a)² = (2p+a)² ✓\n\nEllipse: (2p+a)²/a² + y₀²/b_m² = 1\nb_m² = y₀²/(1-(2p+a)²/a²) = y₀²a²/(a²-(2p+a)²)\n\na² - (2p+a)² = (a-2p-a)(a+2p+a) = -2p(2a+2p) = -4p(a+p) <0.\n\nSo b_m² <0, impossible. So Case 2 doesn't work directly. Unless I have wrong vertex.\n\nWait, maybe F is right vertex but A is between H and F or something. Let me reconsider Case 1.\n\nCase 1: F=(p,0) right vertex, x₀=3p-2a. For A to be in Q1, x₀>0, so a<3p/2. Also for H,A to be inside ellipse range, x must be in [h-a, h+a]=[p-2a, p]. So x₀=3p-2a ≤ p means a≥p. And H_x=-p ≥ p-2a means a≥p. So a≥p.\n\nSo p ≤ a < 3p/2.\n\nNow compute distances. B=(p-a+c, 0), B'=(p-a-c, 0).\n\nFor point A on ellipse, focal radii: r₁ = a + e·(x₀-h) where e=c/a... wait standard formula: for ellipse centered at (h,0), distance from (x,y) on ellipse to focus (h+c,0) is a - e(x-h)... let me recall. For ellipse x²/a²+y²/b²=1 with focus (c,0): distance = a - ex where e=c/a. Distance to (-c,0) focus = a+ex.\n\nSo distance from A=(x₀,y₀) to B=(h+c,0): a - e(x₀-h) = a - e(p+h-... wait x₀-h = 3p-2a-(p-a)=2p-a. So |AB|=a-e(2p-a).\n|AB'|=a+e(2p-a).\n|HB|: H_x - h = -p-(p-a)=a-2p. |HB|=a-e(a-2p)=a+e(2p-a).\n|HB'|=a-e(2p-a).\n\nInteresting: |AB|=|HB'| and |AB'|=|HB|.\n\nPerimeter: AH + AB + HB = (x₀+p) + [a-e(2p-a)] + [a+e(2p-a)] = (3p-2a+p) + 2a = 4p-2a+2a = 4p.\n\nWait! So perimeter = 4p. Given perimeter = p+27. So 4p = p+27, 3p=27, p=9.\n\nLet me verify: AH = x₀+p = 3p-2a+p = 4p-2a.\nAB+HB = a-e(2p-a)+a+e(2p-a)=2a.\nTotal = 4p-2a+2a=4p. ✓\n\nSo p=9.\n\nNow area: (x₀+p)y₀ = 4p+24 = 36+24=60. So (4p-2a)y₀ = 60, (36-2a)y₀=60, (18-a)y₀=30.\n\nAlso y₀² = 4p·x₀ = 36(3p-2a)=36(27-2a).\n\nWe have one more constraint? We have two unknowns a, y₀ and one equation y₀²=36(27-2a) and (18-a)y₀=30.\n\nHmm, we need another. Wait, maybe I'm missing something. Let me recount the unknowns: p, a, x₀, y₀. We have x₀=3p-2a, y₀²=4px₀=4p(3p-2a). So really p and a are free, two unknowns. Two equations (perimeter, area). Good.\n\np=9. (18-a)y₀=30, y₀²=36(27-2a).\n\nFrom first: y₀=30/(18-a). Then 900/(18-a)² = 36(27-2a).\n25/(18-a)² = 27-2a\n25 = (27-2a)(18-a)²\n\nLet u=18-a, then 27-2a = 27-2(18-u)=27-36+2u=2u-9.\n25 = (2u-9)u²\n2u³ - 9u² - 25 = 0.\n\nTry u=... rational roots: u=5: 250-225-25=0 ✓!\nSo u=5, a=13.\n\nCheck: 27-2a=27-26=1>0 ✓. a=13, p=9, p≤a<3p/2=13.5 ✓.\n\ny₀=30/5=6. y₀²=36 = 36·1 ✓.\n\nx₀ = 3p-2a = 27-26=1. y₀²=4·9·1=36 ✓.\n\nk = HF, k² = 4p² + y₀² = 4·81+36 = 324+36=360.\n\nWait, HF distance: H=(-p,y₀)=(-9,6), F=(p,0)=(9,0). Distance² = 18²+6² = 324+36=360.\n\nSo k²=360.\n</think>\n\n주어진 정보를 정리하면:\n- 포물선: $y^2 = 4px$, 초점 $F(p,0)$, 준선 $x=-p$\n- $A(x_0, y_0)$가 제1사분면 위의 점이고, $H(-p, y_0)$\n- 타원은 $F, A, H$를 지나고, $x$축 위에 두 초점\n\n## 타원 분석\n\n세 점 $F, A, H$가 타원 위에 있고, $F$는 $x$축 위 점이므로 **$F$는 타원의 꼭짓점**입니다.\n\n$F$를 오른쪽 꼭짓점으로 놓고, 타원의 중심 $(h, 0)$, 장반축 $a$라 하면 $h = p - a$.\n\n$A$와 $H$가 같은 $y$좌표를 가지므로 타원식에서:\n$$(x_0-h)^2 = (-p-h)^2 \\Rightarrow x_0 = 3p - 2a$$\n\n## 둘레 계산\n\n이심률 $e = c/a$를 이용한 초점거리 공식으로:\n- $|AB| = a - e(2p-a)$, $|HB| = a + e(2p-a)$\n- $|AH| = x_0 + p = 4p - 2a$\n\n**둘레** $= |AH| + |AB| + |HB| = (4p-2a) + 2a = 4p$\n\n따라서 $4p = p + 27 \\Rightarrow p = 9$\n\n## 넓이 계산\n\n$B$에서 직선 $AH$ ($y=",
+      "reasoner_answer_correct": true,
+      "why_included": false,
+      "errors": [
+        "Manager JSON parse failed"
+      ],
+      "duration_ms": 69995,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    },
+    {
+      "id": "2026-기하-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 5,
+      "retrieved_tools": [
+        "일차함수의 그래프",
+        "산술-기하 평균 부등식",
+        "조건부확률",
+        "유리함수 y=k/(x-p)+q",
+        "평면의 방정식 (법선벡터형)"
+      ],
+      "expected_tools": [],
+      "hit_top3": false,
+      "hit_top5": false,
+      "reasoner_text": "풀이를 시작하겠습니다.\n\n**좌표 설정**\n\n원의 중심을 M이라 하면, AB는 지름이고 |AB| = 10√2이므로 반지름은 5√2.\n\nP가 원 위의 점이므로 ∠APB = 90°.\n|PB| = 14, |AB| = 10√2 = √200이므로\n|PA|² = 200 - 196 = 4, 즉 |PA| = 2.\n\n**조건식 변형**\n\nPA + PB = 2PM (M은 AB의 중점)\n\nPQ + PB에서 Q도 원 위에 있으므로 ∠AQB = 90°. QB의 중점을 N이라 하면 PQ + PB = 2PN... 보다는 다른 방법으로.\n\n좌표로 설정: P를 원점에 두고, PA·PB = 0 이용.\n- P = (0, 0)\n- A 방향과 B 방향이 수직이 되도록: A = (2, 0), B = (0, 14)\n- M = (1, 7) (AB 중점, 원의 중심)\n\n**Q 좌표 설정**\n\nQ = (x, y), 원 위 조건: (x-1)² + (y-7)² = 50\n\nPA + PB = (2, 14)\nPQ + PB = (x, y+14)\n\n좌변: (2, 14)·(x, y+14) = 2x + 14(y+14) = 2x + 14y + 196\n\n우변: 2(x² + y²)\n\n방정식: 2x + 14y + 196 = 2(x² + y²)\n즉, x² + y² - x - 7y - 98 = 0  ... (*)\n\n원의 방정식 전개: x² - 2x + 1 + y² - 14y + 49 = 50\nx² + y² = 2x + 14y  ... (**)\n\n(*)에 대입: 2x + 14y - x - 7y - 98 = 0\n→ x + 7y = 98  ... (Q가 만족하는 직선)\n\n**Q 좌표 구하기**\n\nx = 98 - 7y를 (**)에 대입:\n(98-7y)² + y² = 2(98-7y) + 14y\n9604 - 1372y + 49y² + y² = 196 - 14y + 14y\n50y² - 1372y + 9604 = 196\n50y² - 1372y + 9408 = 0\n25y² - 686y + 4704 = 0\n\ny = [686 ± √(686² - 4·25·4704)]/50\n= [686 ± √(470596 - 470400)]/50\n= [686 ± √196]/50\n= [686 ± 14]/50\n\ny = 14 또는 y = 672/50 = 336/25\n\ny = 14이면 x = 98 - 98 = 0, Q = (0, 14) = B (제외, |QB|>0)\n따라서 y = 336/25, x = 98 - 7·336/25 = (2450 - 2352)/25 = 98/25\n\nQ = (98/25, 336/25)\n\n**|PA · QB| 계산**\n\nPA = (2, 0)\nQB = B - Q = (0 - 98/25, 14 - 336/25) = (-98/25, 14/25)\n\nPA · QB = 2·(-98/25) + 0 = -196/25\n\n|PA · QB| = 196/25\n\n**답**\n\np = 25, q = 196, 서로소 확인 OK\np + q = 221\n\n최종 답: 221\n코칭 한마디: 왜냐하면 PA+PB가 중점벡터(2PM)로 정리되고 ∠APB=∠AQB=90°라는 원의 성질이 핵심이므로, P를 원점에 둔 직교좌표로 벡터 내적 조건을 직선의 방정식으로 환원하면 깔끔하게 풀립니다.",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 23013,
+      "chain": {
+        "enabled": false
+      },
+      "area_label": "기하(2022~2026)",
+      "parse_error": false,
+      "model_used": "opus"
+    }
+  ]
+}

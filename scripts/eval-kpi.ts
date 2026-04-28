@@ -162,13 +162,22 @@ const MODEL_NAME: ModelName = (() => {
   return "sonnet";
 })();
 
-const EVAL_FILE = KILLER_ON
-  ? path.join(REPO_ROOT, "user_docs", "suneung-math", "eval", "killer-eval.json")
-  : path.join(REPO_ROOT, "data", "kpi-eval-problems.json");
+// G-06: --eval-file <path> 로 평가셋 override (기하 등 별도 셋 측정용)
+const EVAL_FILE_OVERRIDE = (() => {
+  const i = process.argv.indexOf("--eval-file");
+  return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : null;
+})();
+const EVAL_FILE = EVAL_FILE_OVERRIDE
+  ? path.resolve(REPO_ROOT, EVAL_FILE_OVERRIDE)
+  : KILLER_ON
+    ? path.join(REPO_ROOT, "user_docs", "suneung-math", "eval", "killer-eval.json")
+    : path.join(REPO_ROOT, "data", "kpi-eval-problems.json");
 
-const RESULT_SUFFIX = KILLER_ON
-  ? `killer-${MODEL_NAME}-${RUN_MODE}`
-  : CHAIN_ON ? "chain" : "baseline";
+const RESULT_SUFFIX = EVAL_FILE_OVERRIDE
+  ? `geometry-${MODEL_NAME}-${RUN_MODE}`
+  : KILLER_ON
+    ? `killer-${MODEL_NAME}-${RUN_MODE}`
+    : CHAIN_ON ? "chain" : "baseline";
 const RESULT_FILE = path.join(
   RESULT_DIR,
   MODE === "mock"
