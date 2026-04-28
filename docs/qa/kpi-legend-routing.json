@@ -1,0 +1,105 @@
+{
+  "run_at": "2026-04-28T16:39:32.568Z",
+  "eval_file": "C:\\Users\\JSS\\vibe-coding-contest\\user_docs\\suneung-math\\eval\\killer-eval.json",
+  "results": [
+    {
+      "problem_id": "2017-가형-21",
+      "year": 2017,
+      "type": "가형",
+      "number": 21,
+      "area_label": "가형(2017~2021)",
+      "routing": {
+        "stage_reached": 1,
+        "routed_tier": 2,
+        "routed_tutor": "gauss",
+        "classified_difficulty": 5,
+        "classified_area": "calculus",
+        "classified_confidence": 0.85,
+        "duration_ms": 933
+      },
+      "tutor_call": {
+        "actual_tutor": "gauss",
+        "final_answer": "4",
+        "duration_ms": 72790
+      },
+      "is_correct": true,
+      "is_parse_error": false,
+      "judge_via": "regex",
+      "r1_approx": {
+        "turn_count": 5,
+        "response_total_chars": 5609,
+        "avg_step_ms": 14558,
+        "approx_node_count": 8,
+        "approx_depth_max": 5,
+        "has_llm_struggle": true
+      },
+      "errors": []
+    },
+    {
+      "problem_id": "2017-가형-28",
+      "year": 2017,
+      "type": "가형",
+      "number": 28,
+      "area_label": "가형(2017~2021)",
+      "routing": {
+        "stage_reached": 1,
+        "routed_tier": 1,
+        "routed_tutor": "ramanujan_intuit",
+        "classified_difficulty": 4,
+        "classified_area": "geometry",
+        "classified_confidence": 0.85,
+        "duration_ms": 797
+      },
+      "tutor_call": {
+        "actual_tutor": "ramanujan_intuit",
+        "final_answer": "12",
+        "duration_ms": 6760
+      },
+      "is_correct": true,
+      "is_parse_error": false,
+      "judge_via": "regex",
+      "r1_approx": {
+        "turn_count": 1,
+        "response_total_chars": 429,
+        "avg_step_ms": 6760,
+        "approx_node_count": 1,
+        "approx_depth_max": 1,
+        "has_llm_struggle": false
+      },
+      "errors": []
+    },
+    {
+      "problem_id": "2017-가형-29",
+      "year": 2017,
+      "type": "가형",
+      "number": 29,
+      "area_label": "가형(2017~2021)",
+      "routing": {
+        "stage_reached": 1,
+        "routed_tier": 2,
+        "routed_tutor": "von_neumann",
+        "classified_difficulty": 5,
+        "classified_area": "geometry",
+        "classified_confidence": 0.85,
+        "duration_ms": 710
+      },
+      "tutor_call": {
+        "actual_tutor": "von_neumann",
+        "final_answer": "19",
+        "duration_ms": 81072
+      },
+      "is_correct": true,
+      "is_parse_error": false,
+      "judge_via": "regex",
+      "r1_approx": {
+        "turn_count": 5,
+        "response_total_chars": 6146,
+        "avg_step_ms": 16214,
+        "approx_node_count": 8,
+        "approx_depth_max": 5,
+        "has_llm_struggle": true
+      },
+      "errors": []
+    }
+  ]
+}
