@@ -325,13 +325,14 @@ export async function buildReport(
     console.warn('[report-builder] aggregateStuck failed:', (e as Error).message);
   }
 
-  // 9.5 풀이 정리 (G06-28, Δ7) — Haiku 1회, ~$0.001/문제
+  // 9.5 풀이 정리 (G06-28, Δ7 + G06-33 trigger_motivation) — Haiku 1회, ~$0.001/문제
   const solutionSummary = await summarizeSolution({
     problem_text: args.problem_text,
     steps: stepsWithStruggle,
     pivotal_step_index: pivotalIndex,
     reasoning_tree: tree,
     hardest_resolution_text: llmStruggle.resolution_narrative,
+    primary_trigger: primaryCard ?? undefined,
   });
 
   // 10. PerProblemReport 조립
@@ -340,7 +341,7 @@ export async function buildReport(
     pivotalStep?.difficulty ?? difficultyHint ?? 4;
 
   const report: PerProblemReport = {
-    schema_version: '1.2',
+    schema_version: '1.3',
     problem_summary: {
       text_short: args.problem_text.slice(0, 80),
       area,

@@ -1,17 +1,18 @@
 /**
- * Phase G-06 G06-28 — R1 풀이 정리 섹션 (Δ7).
+ * Phase G-06 G06-28 + G06-33 — R1 풀이 정리 섹션 (Δ7).
  *
- * 베이스: docs/project-decisions.md Δ7.
+ * 베이스: docs/project-decisions.md Δ7 + Δ10 (G06-33 trigger_motivation).
  *
  * 차원 분리:
  *   - LLMStruggleSection (Δ3) = "AI도 어려웠다" 정직성
  *   - SolutionSummarySection (Δ7) = "이렇게 정리해두면" 학습 코치 ⭐ 본 컴포넌트
  *
- * 4 필드 노출:
+ * 5 필드 노출 (schema 1.3):
  *   1. core_insight — 💡 핵심 통찰 1문장
  *   2. step_flow_narrative — 단계 흐름 2~3문장
  *   3. hardest_resolution — 🎯 가장 어려운 부분 통찰 1문장 (italic, accent border)
- *   4. generalization — 💭 비슷한 문제 적용 일반 원칙 1문장 (footer 톤)
+ *   4. trigger_motivation — 💡 그 생각을 떠올린 이유 1문장 (G06-33, blue accent border)
+ *   5. generalization — 💭 비슷한 문제 적용 일반 원칙 1문장 (footer 톤)
  */
 'use client';
 
@@ -63,7 +64,17 @@ export function SolutionSummarySection({
           </div>
         )}
 
-        {/* 4. 일반 원칙 (footer 톤) */}
+        {/* 4. 그 생각을 떠올린 이유 (G06-33, schema 1.3) — blue accent */}
+        {summary.trigger_motivation && (
+          <div className="border-l-2 border-blue-400/50 pl-3 text-blue-100/90">
+            <span className="mr-1.5" aria-hidden>
+              💡
+            </span>
+            떠올린 이유: {summary.trigger_motivation}
+          </div>
+        )}
+
+        {/* 5. 일반 원칙 (footer 톤) */}
         {summary.generalization && (
           <div className="border-t border-emerald-400/20 pt-2.5 text-xs text-white/55">
             <span className="mr-1.5" aria-hidden>

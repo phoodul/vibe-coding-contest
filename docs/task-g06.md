@@ -24,7 +24,8 @@
 | M9 — R1 UX 개선 (풀이 정리 Δ7) | 1일 | ✅ | 1/1 |
 | M10 — Tier 1 = Gemini baseline + Sonnet fallback | 0.5일 | ✅ | 1/1 |
 | M11 — Trial/Beta Access Tier + Legend 메인 채팅 (Δ9) | 1일 | ✅ | 1/1 |
-| **합계** | **44.5일** | — | **30/30 (G06-23 deferred)** |
+| M12 — 풀이 정리 진입 + trigger_motivation + UX (Δ10, Night mode) | 0.5일 | ✅ | 1/1 |
+| **합계** | **45일** | — | **31/31 (G06-23 deferred)** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -639,3 +640,44 @@ G06-01 → G06-02 → G06-03 (M1)
   - Supabase MCP `apply_migration` ✅ (`trial_ramanujan_quota` 적용 성공)
 - **위험**: LOW (회귀 0, 마이그레이션 idempotent)
 - **commit**: `feat(g06): Trial/Beta Access Tier + Legend 메인 채팅 통합 (G06-32, Δ9)`
+
+---
+
+## M12. 풀이 정리 진입 + trigger_motivation + UX (Δ10, Night mode) (0.5일, 1 task)
+
+> 추가일: 2026-04-29 (Night mode, Δ10 사용자 결정)
+> 목적: 베타 모집 직전. BetaChat 발견 UX 결함 4종 통합 fix.
+> 사용자 핵심 요구: "고난도 문제 풀이 후 풀이 정리 + ToT + 그 생각 떠올린 이유" 자동 노출.
+
+### G06-33: R1 풀이 정리 진입 + Solution motivation + LaTeX·typewriter UX (Δ10)
+- **선행**: G06-32 (M11 완료)
+- **변경 파일** (4 sub-task 통합):
+  - **G06-33a (풀이 정리 진입)**:
+    - `src/app/api/legend/build-summary/route.ts` (신규, POST 90s)
+    - `src/components/legend/SolutionSummaryButton.tsx` (신규)
+    - `src/components/legend/BetaChat.tsx` (수정 — 마지막 assistant 직후 버튼 + 인라인 PerProblemReportCard)
+    - `src/app/api/legend/build-summary/__tests__/route.test.ts` (신규, +10 테스트)
+  - **G06-33b (trigger_motivation)**:
+    - `src/lib/legend/types.ts` (수정 — schema 1.2 → 1.3, `SolutionSummary.trigger_motivation` 옵셔널 추가)
+    - `src/lib/legend/report/solution-summarizer.ts` (수정 — 시스템 프롬프트 5필드 / FALLBACK +1필드 / parseSummaryJson +1필드 / `primary_trigger` args 추가)
+    - `src/lib/legend/report/report-builder.ts` (수정 — `primary_trigger: primaryCard ?? undefined` 전달 + schema_version '1.3')
+    - `src/components/legend/SolutionSummarySection.tsx` (수정 — "💡 떠올린 이유" 섹션 추가, blue accent)
+    - `src/lib/legend/report/__tests__/report-builder.test.ts` (수정 — schema 1.3 + trigger_motivation 검증)
+  - **G06-33c (LaTeX 깜빡임 fix)** + **G06-33d (typewriter throttle)**:
+    - `src/components/legend/StreamingMarkdown.tsx` (신규 — useDeferredValue + safeStreamMarkdown + KaTeX 옵션)
+    - `src/components/legend/BetaChat.tsx` (수정 — ReactMarkdown → StreamingMarkdown)
+    - `src/components/legend/TrialChat.tsx` (수정 — 동일 패턴 적용)
+  - **회귀 fix (Δ9 admin 가드 추가 후 누락)**:
+    - `src/lib/legend/__tests__/quota-manager.test.ts` (수정 — supabase mock 에 `auth.getUser` 추가)
+    - `src/lib/legend/__tests__/access-tier.test.ts` (수정 — 동일)
+- **변경 내용**:
+  - **풀이 정리 흐름**: BetaChat 마지막 assistant 메시지 직후 "📝 풀이 정리 보기" 버튼 → POST `/api/legend/build-summary` → routeProblem (Stage 0~2) → callTutor (Tier 0/1 라우팅 시 가우스 강제 — 정리 품질 ↑) → buildReport (Δ3 + Δ4 + Δ7 + Δ10 통합) → 인라인 PerProblemReportCard 노출
+  - **권한 게이트**: trial 사용자 거부 (402 `beta_only` + `apply_url`), 베타 quota 2종 소진 (legend_call_daily + report_per_problem_daily)
+  - **trigger_motivation**: solution-summarizer 가 primary_trigger 카드 (tool_name + pattern_short + why_text) 컨텍스트 받아 학생 친화 톤 동기 문장 생성. JSON 파싱 실패 시 fallback (5번째 필드도 안전 기본 문구)
+  - **UX**: rehypeKatex `{ throwOnError:false, errorColor:'#888888', strict:'ignore' }` + 홀수 `$` 감지 시 escape + useDeferredValue (마지막 assistant 메시지 + 스트리밍 중에만 활성)
+- **검증**:
+  - `pnpm tsc --noEmit` ✅ (무에러)
+  - `pnpm dlx vitest run` ✅ (**327/327 PASS**, +10 신규 build-summary 테스트 + 회귀 22건 fix)
+  - `pnpm next build` ✅ (모든 라우트 정상)
+- **위험**: MEDIUM → LOW (DB 스키마 무변경, schema 1.2 캐시 호환, 의존성 추가 X)
+- **commit**: `feat(g06): G06-33 풀이 정리 진입 + Solution motivation + LaTeX·typewriter UX (Night mode)`

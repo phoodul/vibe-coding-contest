@@ -16,14 +16,11 @@ import { useChat } from 'ai/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
 import { useEffect, useRef, useState } from 'react';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
 import { PORTRAITS } from '@/lib/legend/portraits';
 import type { TutorName } from '@/lib/legend/types';
+import { StreamingMarkdown } from './StreamingMarkdown';
 
 interface User {
   id: string;
@@ -176,42 +173,44 @@ export function TrialChat({ user: _user }: { user: User }) {
           )}
 
           <AnimatePresence initial={false}>
-            {messages.map((m) => (
-              <motion.div
-                key={m.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start gap-2'}`}
-              >
-                {m.role === 'assistant' && (
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-violet-400/30 flex-shrink-0 mt-1">
-                    <Image
-                      src="/ramanujan-portrait.jpg"
-                      alt="라마누잔"
-                      width={32}
-                      height={32}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                )}
-                <div
-                  className={`max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                    m.role === 'user'
-                      ? 'bg-violet-500/20 border border-violet-400/30 text-white'
-                      : 'bg-white/5 border border-white/10 text-white'
-                  }`}
+            {messages.map((m, idx) => {
+              const isLast = idx === messages.length - 1;
+              const isStreamingNow =
+                isLast &&
+                m.role === 'assistant' &&
+                (status === 'streaming' || status === 'submitted');
+              return (
+                <motion.div
+                  key={m.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start gap-2'}`}
                 >
-                  <div className="prose prose-invert prose-sm max-w-none">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm, remarkMath]}
-                      rehypePlugins={[rehypeKatex]}
-                    >
-                      {m.content}
-                    </ReactMarkdown>
+                  {m.role === 'assistant' && (
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-violet-400/30 flex-shrink-0 mt-1">
+                      <Image
+                        src="/ramanujan-portrait.jpg"
+                        alt="라마누잔"
+                        width={32}
+                        height={32}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                      m.role === 'user'
+                        ? 'bg-violet-500/20 border border-violet-400/30 text-white'
+                        : 'bg-white/5 border border-white/10 text-white'
+                    }`}
+                  >
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      <StreamingMarkdown content={m.content} streaming={isStreamingNow} />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
 
           {(status === 'streaming' || status === 'submitted') &&

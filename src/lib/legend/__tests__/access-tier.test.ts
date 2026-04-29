@@ -50,6 +50,11 @@ function makeQueryChain(table: string) {
 }
 
 const supabaseMock = {
+  // G06-32 (Δ9) — access-tier 자체가 admin 이메일 가드용 auth.getUser 호출.
+  // 기본은 비-관리자 (정상 tier 흐름).
+  auth: {
+    getUser: vi.fn(async () => ({ data: { user: { email: 'student@example.com' } } })),
+  },
   from: vi.fn((table: string) => makeQueryChain(table)),
 };
 

@@ -65,6 +65,11 @@ function makeFromChain() {
 }
 
 const supabaseMock = {
+  // G06-32 (Δ9) — quota-manager 가 admin 이메일 가드용 auth.getUser 호출.
+  // 기본은 비-관리자 사용자 (정상 quota 흐름).
+  auth: {
+    getUser: vi.fn(async () => ({ data: { user: { id: 'u-test', email: 'student@example.com' } } })),
+  },
   from: (_table: string) => makeFromChain(),
   rpc: vi.fn(async (name: string, params: Record<string, unknown>) => {
     state.rpcCalls.push({ name, params });

@@ -1,10 +1,19 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — **G06-30 ✅ Tier 1 라마누잔 = Gemini baseline + Sonnet 429 fallback (Δ8)**)
-- Phase: **Phase G-06 ✅ + G06-30 (Δ8)** → G-07 진입 대기
-- Step: **G06-30 ✅ commit `3048b46`** — Tier 1 라마누잔 모델 변경: Opus 4.7 → **Gemini 3.1 Pro baseline** (비용 17배 절감, 베타 50명 월 $3,180 절감). 250 RPD 한도 도달 시 페르소나 유지하면서 model_id/provider 만 **Sonnet 4.6 baseline** 으로 동적 swap. `tutor-orchestrator.ts` TUTOR_CONFIG.ramanujan_intuit = google + gemini-3-1-pro + callTutorInternal 에 modelOverride 인자 + callTutorWithFallback 의 catch 블록에 라마누잔 분기 (FALLBACK_MATRIX 분기 전에 처리). `tutor-fallback.ts` `getRamanujanIntuitSwap()` 신규 + `FALLBACK_MATRIX.ramanujan_intuit = []` (model swap 으로 처리) + `buildFallbackMessage` "라마누잔 (Gemini) → Sonnet" 카피 분기. DB `legend_tutor_sessions.mode = 'baseline_sonnet_fallback'` 통계 분리. `.env.example` + `docs/qa/g06-vercel-env-import.md` env 2종 추가 (`LEGEND_RAMANUJAN_MODEL` / `LEGEND_RAMANUJAN_FALLBACK_MODEL`). 아키텍처 §1.2 / §4.3 / §9.1 / §9.5 갱신 (Δ8 라마누잔 + 가우스 quota 공유 정책 명문화). project-decisions Δ8 추가. 검증: tsc 무에러 + vitest **252/252 PASS** (+4 신규 / 기존 248 회귀 0).
-- Session: 9차 (**G-06 + G06-30 ✅**, 다음 단계: 베타 모집 시작 + GEMINI_API_KEY Vercel env 등록 확인)
+- Time: 2026-04-29 (10차 세션 Night mode — **G06-33 ✅ 풀이 정리 진입 + trigger_motivation + LaTeX·typewriter UX (Δ10)**)
+- Phase: **Phase G-06 ✅ + G06-33 (Δ10)** → 베타 모집 시작 가능
+- Step: **G06-33 ✅ Night mode** — 메인 채팅 (`/legend` BetaChat) UX 결함 4종 통합 fix.
+  - **(a) 풀이 정리 진입**: 신규 `/api/legend/build-summary` + `SolutionSummaryButton` + 인라인 `PerProblemReportCard` (마지막 assistant 메시지 직후 자동 노출 가능, 클릭 → routeProblem → callTutor → buildReport → 인라인 R1)
+  - **(b) trigger_motivation**: schema 1.2 → 1.3, "💡 떠올린 이유" 차원 신규 (어떤 조건·패턴이 이 도구를 떠올리게 했는가). solution-summarizer 가 primary_trigger 카드 컨텍스트 받아 학생 친화 톤 생성
+  - **(c) LaTeX 깜빡임 fix**: rehypeKatex `{ throwOnError:false, errorColor:#888888, strict:'ignore' }` + 홀수 `$` 감지 시 마지막 `$` escape (incomplete inline math 안전)
+  - **(d) Typewriter throttle**: 신규 `StreamingMarkdown` 컴포넌트 + useDeferredValue (마지막 assistant + 스트리밍 중일 때만, 종료 시 즉시 동기화)
+  - **회귀 fix**: 기존 quota-manager 17건 + access-tier 5건 (Δ9 admin 가드 추가 후 supabase mock auth.getUser 누락) → mock 에 admin 가드 stub 추가
+  - 검증: tsc ✅ + vitest **327/327 PASS** (+10 신규 build-summary + 회귀 22건 fix) + next build ✅
+- Session: 10차 Night mode (**G-06 + G06-33 ✅**, 다음 단계: **베타 모집 시작 가능** + git push origin main)
+
+## 이전 Checkpoint (G06-30)
+- G06-30 ✅ Tier 1 라마누잔 = Gemini 3.1 Pro baseline + Sonnet 429 fallback (Δ8). commit `3048b46`. vitest 252/252.
 
 ## 이전 Checkpoint (G06-28)
 - G06-28 ✅ R1 풀이 정리 섹션 (Δ7) — schema 1.2 + SolutionSummary 4 필드 + Haiku ~$0.001/문제 + 차원 분리 (정직성 vs 학습 코치). commit `081c5d0`.

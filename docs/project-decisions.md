@@ -405,6 +405,48 @@ Stage 2: 라마누잔 baseline probe + 자가평가 → escalation 권유
 
 ---
 
+## [2026-04-29] Δ10. R1 풀이 정리 진입 + trigger_motivation + LaTeX·typewriter UX (G06-33, Night mode)
+
+- **배경**: 베타 모집 직전. 메인 채팅 (`/legend` BetaChat) 발견된 UX 결함 4가지 통합 fix.
+- **사용자 핵심 요구**: "고난도 문제 풀이 후 풀이 정리 + ToT + 그 생각 떠올린 이유" 자동 노출 + 채팅 UI 매끄러움.
+
+### 4 sub-task
+
+1. **G06-33a — 풀이 정리 진입 버튼 + 인라인 R1 카드**
+   - 신규 라우트 `POST /api/legend/build-summary` (베타 전용 + legend_call + report_per_problem 둘 다 소진 + Tier 0/1 라우팅 시 가우스 강제 — 정리 품질 ↑)
+   - 신규 컴포넌트 `SolutionSummaryButton` (마지막 assistant 메시지 직후, hover lift + Framer Motion fadeUp)
+   - `BetaChat` 통합 — 클릭 → `PerProblemReportCard` 인라인 노출 (ToT 트리 + AI 어려운 순간 + 떠올린 이유)
+
+2. **G06-33b — SolutionSummary `trigger_motivation` 5번째 필드**
+   - schema 1.2 → 1.3 (jsonb 안의 신규 필드, DB 스키마 무변경, backward-compat 유지)
+   - "그 생각을 떠올려야 하는 이유": 어떤 조건·패턴이 이 도구·접근법을 떠올리게 했는가
+   - solution-summarizer 시스템 프롬프트 강화 (4 → 5 필드, 4~6 → 5~7 문장)
+   - report-builder 가 primary_trigger 카드 정보 (tool_name + pattern_short + why_text) 를 summarizer 에 전달 — trigger 발동 동기 정확도 ↑
+   - `SolutionSummarySection` 에 "💡 떠올린 이유" 신규 섹션 (blue accent border)
+
+3. **G06-33c — LaTeX 스트리밍 깜빡임 fix**
+   - `rehypeKatex` 옵션 `{ throwOnError:false, errorColor:'#888888', strict:'ignore' }`
+   - 홀수 `$` 감지 시 마지막 `$` 임시 escape (incomplete inline math → 다음 chunk 도착 시 자동 정상 LaTeX 복귀)
+   - BetaChat / TrialChat 둘 다 적용
+
+4. **G06-33d — Typewriter throttle (chunk 부드럽게)**
+   - 신규 `StreamingMarkdown` 컴포넌트 분리 — `useDeferredValue` 로 한 프레임 지연 (React idle 시간 활용)
+   - 마지막 assistant 메시지 + 스트리밍 중일 때만 적용 (종료 시 즉시 동기화)
+   - safeStreamMarkdown + KaTeX 옵션 통합
+
+### 결과
+
+- types.ts `SolutionSummary` schema 1.3 → `trigger_motivation: string | undefined` (옵셔널 — 기존 1.2 캐시 호환)
+- 단위 테스트 +10 (build-summary route 9 + report-builder trigger_motivation 1)
+- 회귀 fix: 기존 quota-manager 17건 + access-tier 5건 (Δ9 admin 가드 추가 후 supabase mock 의 `auth.getUser` 누락) — supabase mock 에 admin 가드용 `auth.getUser` 추가
+- vitest 317 → **327 PASS** (회귀 0)
+- TypeScript / Next.js build 무에러
+- 영향 격리: `src/components/legend/`, `src/app/api/legend/build-summary/`, `src/lib/legend/types.ts` + report-builder/solution-summarizer 4 파일
+- DB 스키마 무변경 (jsonb 안 신규 필드, 마이그레이션 X)
+- 의존성 추가 X (기존 framer-motion + react + rehype-katex 활용)
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부

@@ -1,9 +1,15 @@
 'use client';
 
 /**
- * Phase G-06 G06-32 (Δ9) — Beta (베타 사용자) 메인 채팅.
+ * Phase G-06 G06-32 (Δ9) + G06-33 (Δ10) — Beta (베타 사용자) 메인 채팅.
  *
  * 베타 사용자 진입 화면. 5 거장 카드 활성화 + R1/R2 리포트 + Δ1 5종 quota.
+ *
+ * G06-33 추가:
+ *   - 마지막 assistant 메시지 직후 SolutionSummaryButton (📝 풀이 정리 보기)
+ *   - 클릭 → /api/legend/build-summary POST → 인라인 PerProblemReportCard
+ *   - LaTeX 스트리밍 깜빡임 fix (rehypeKatex throwOnError:false + errorColor 회색)
+ *   - 홀수 $ 감지 시 KaTeX 렌더 보류 (incomplete LaTeX raw 출력)
  *
  * 본 컴포넌트는 베타 사용자 우선 진입점이지만, 본격적인 5튜터 SSE + 라우팅 분기 통합은
  * G-07 callTutor 위임 시점에 진입한다 (architecture §8.1, G06-26 코멘트).
@@ -15,14 +21,13 @@ import { useChat } from 'ai/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
-import { useEffect, useRef, useState } from 'react';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import 'katex/dist/katex.min.css';
 import { PORTRAITS } from '@/lib/legend/portraits';
-import type { TutorName } from '@/lib/legend/types';
+import type { PerProblemReport, TutorName } from '@/lib/legend/types';
+import { SolutionSummaryButton } from './SolutionSummaryButton';
+import { PerProblemReportCard } from './PerProblemReportCard';
+import { StreamingMarkdown } from './StreamingMarkdown';
 
 interface User {
   id: string;
@@ -37,10 +42,21 @@ const ALL_TUTORS: TutorName[] = [
   'leibniz',
 ];
 
+/** G06-33a — 마지막 user 메시지의 텍스트 추출 (build-summary 입력용). */
+function extractLastUserText(messages: Array<{ role: string; content: string }>): string {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].role === 'user') return messages[i].content;
+  }
+  return '';
+}
+
 export function BetaChat({ user: _user }: { user: User }) {
   const [useGpt, setUseGpt] = useState(false);
   const [selectedTutor, setSelectedTutor] = useState<TutorName>('ramanujan_intuit');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // G06-33: 풀이 정리 인라인 카드 상태 (마지막 assistant 메시지 1개만 유지)
+  const [inlineReport, setInlineReport] = useState<PerProblemReport | null>(null);
 
   // 라마누잔 (Tier 1) = useGpt=false → Sonnet 4.6 (G-05 격상 적용)
   // 가우스 / 폰 노이만 등 거장 = useGpt=true → GPT-5.5 (G-05 격상 적용)
@@ -54,6 +70,22 @@ export function BetaChat({ user: _user }: { user: User }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
+
+  // 새 메시지가 시작되면 이전 inline report 숨김 (메시지당 1 정리)
+  useEffect(() => {
+    if (status === 'submitted') {
+      setInlineReport(null);
+    }
+  }, [status]);
+
+  // 마지막 메시지가 assistant 인지 + 풀이 정리 버튼 노출 가능 시점 판정
+  const lastMsg = messages.length > 0 ? messages[messages.length - 1] : null;
+  const canShowSummaryButton =
+    lastMsg?.role === 'assistant' &&
+    !isLoading &&
+    status !== 'streaming' &&
+    status !== 'submitted';
+  const lastUserText = useMemo(() => extractLastUserText(messages), [messages]);
 
   function handleTutorClick(tutor: TutorName) {
     setSelectedTutor(tutor);
@@ -175,42 +207,45 @@ export function BetaChat({ user: _user }: { user: User }) {
           )}
 
           <AnimatePresence initial={false}>
-            {messages.map((m) => (
-              <motion.div
-                key={m.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start gap-2'}`}
-              >
-                {m.role === 'assistant' && (
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400/30 flex-shrink-0 mt-1">
-                    <Image
-                      src={PORTRAITS[selectedTutor].src}
-                      alt={PORTRAITS[selectedTutor].alt}
-                      width={32}
-                      height={32}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                )}
-                <div
-                  className={`max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                    m.role === 'user'
-                      ? 'bg-amber-500/20 border border-amber-400/30 text-white'
-                      : 'bg-white/5 border border-white/10 text-white'
-                  }`}
+            {messages.map((m, idx) => {
+              // 스트리밍 중인 마지막 assistant 메시지에만 deferred 렌더 (typewriter throttle)
+              const isLast = idx === messages.length - 1;
+              const isStreamingNow =
+                isLast &&
+                m.role === 'assistant' &&
+                (status === 'streaming' || status === 'submitted');
+              return (
+                <motion.div
+                  key={m.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start gap-2'}`}
                 >
-                  <div className="prose prose-invert prose-sm max-w-none">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm, remarkMath]}
-                      rehypePlugins={[rehypeKatex]}
-                    >
-                      {m.content}
-                    </ReactMarkdown>
+                  {m.role === 'assistant' && (
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400/30 flex-shrink-0 mt-1">
+                      <Image
+                        src={PORTRAITS[selectedTutor].src}
+                        alt={PORTRAITS[selectedTutor].alt}
+                        width={32}
+                        height={32}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                      m.role === 'user'
+                        ? 'bg-amber-500/20 border border-amber-400/30 text-white'
+                        : 'bg-white/5 border border-white/10 text-white'
+                    }`}
+                  >
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      <StreamingMarkdown content={m.content} streaming={isStreamingNow} />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
 
           {(status === 'streaming' || status === 'submitted') &&
@@ -236,6 +271,26 @@ export function BetaChat({ user: _user }: { user: User }) {
                 </div>
               </motion.div>
             )}
+
+          {/* G06-33 — 풀이 정리 버튼 (마지막 assistant 직후, 스트리밍 종료 시) */}
+          {canShowSummaryButton && lastUserText && !inlineReport && (
+            <SolutionSummaryButton
+              problemText={lastUserText}
+              onSummaryReady={(report) => setInlineReport(report)}
+            />
+          )}
+
+          {/* G06-33 — 인라인 PerProblemReportCard (ToT + AI 어려움 + 떠올린 이유) */}
+          {inlineReport && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-4"
+            >
+              <PerProblemReportCard report={inlineReport} />
+            </motion.div>
+          )}
 
           <div ref={messagesEndRef} />
         </div>

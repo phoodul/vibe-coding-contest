@@ -133,7 +133,7 @@ export interface QuotaStatus {
 // ────────────────────────────────────────────────────────────────────────────
 
 export interface PerProblemReport {
-  schema_version: '1.2';
+  schema_version: '1.3';
   problem_summary: {
     /** 80자 발췌 */
     text_short: string;
@@ -192,6 +192,10 @@ export interface PerProblemReport {
  *
  * LLMStruggleSection (정직성 차원) 과 분리된 학습 코치 차원.
  * 합산 4~6 문장. 학생이 이 문제를 다시 보면 어떻게 접근할지 시각.
+ *
+ * G06-33 (schema 1.3): trigger_motivation 신규 — "그 생각을 떠올린 이유"
+ * 차원. trigger 발동의 핵심 동기 (어떤 조건·패턴이 이 도구·접근법을 떠올리게
+ * 했는가) 를 학생 친화 문장으로.
  */
 export interface SolutionSummary {
   /** 1문장 핵심 통찰 */
@@ -202,6 +206,14 @@ export interface SolutionSummary {
   hardest_resolution: string;
   /** 1문장 비슷한 문제 적용 일반 원칙 */
   generalization: string;
+  /**
+   * G06-33 — 1문장 "그 생각을 떠올려야 하는 이유" (motivation).
+   * 어떤 조건·패턴이 이 도구·접근법을 떠올리게 했는지.
+   * trigger 발동의 핵심 동기 → 학생 친화 톤.
+   *
+   * schema 1.2 호환: 본 필드 없는 캐시 row 도 안전 (UI 가 falsy 체크 후 숨김).
+   */
+  trigger_motivation?: string;
 }
 
 export interface PerProblemStep {

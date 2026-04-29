@@ -1,5 +1,54 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-29 Night (10차 세션 Night mode — G06-33 풀이 정리 진입 + trigger_motivation + UX, Δ10)
+
+### 배경
+베타 모집 직전 단계. 메인 채팅 (`/legend` BetaChat) 테스트 중 발견된 UX 결함 4가지 통합 fix. Night mode 자율 권한.
+
+### 4 sub-task 통합
+
+#### G06-33a — 풀이 정리 진입 버튼 + 인라인 R1 카드 ⭐
+- 신규 라우트 `POST /api/legend/build-summary` (90s, 베타 전용 + legend_call + report_per_problem 둘 다 quota 소진)
+- routeProblem (Stage 0~2) → callTutor (Tier 0/1 라우팅 시 가우스 강제 — 정리 품질 ↑) → buildReport
+- 신규 컴포넌트 `SolutionSummaryButton` (마지막 assistant 메시지 직후, hover lift + Framer Motion fadeUp)
+- BetaChat 통합 — 클릭 → PerProblemReportCard 인라인 노출 (ToT 트리 + AI 어려운 순간 + 떠올린 이유)
+
+#### G06-33b — SolutionSummary trigger_motivation 5번째 필드
+- types.ts schema 1.2 → 1.3 (`SolutionSummary.trigger_motivation` 옵셔널 — 기존 1.2 캐시 호환)
+- solution-summarizer 시스템 프롬프트 5필드 강화 + parseSummaryJson 5필드 추출 + FALLBACK 5필드 안전 기본값
+- report-builder가 primary_trigger 카드 (tool_name + pattern_short + why_text) 컨텍스트 전달
+- SolutionSummarySection에 "💡 떠올린 이유" 섹션 신규 (blue accent border)
+
+#### G06-33c — LaTeX 스트리밍 깜빡임 fix
+- rehypeKatex 옵션: `{ throwOnError:false, errorColor:'#888888', strict:'ignore' }`
+- 홀수 `$` 감지 시 마지막 `$` 임시 escape (incomplete inline math → 다음 chunk 도착 시 자동 정상 LaTeX 복귀)
+
+#### G06-33d — Typewriter throttle (chunk 부드럽게)
+- 신규 StreamingMarkdown 컴포넌트 분리 (useDeferredValue + safeStreamMarkdown + KaTeX 옵션 통합)
+- 마지막 assistant 메시지 + 스트리밍 중일 때만 deferred 렌더 (종료 시 즉시 동기화)
+- BetaChat / TrialChat 둘 다 적용
+
+### 회귀 fix (Δ9 admin 가드 추가 후 누락)
+- 기존 main의 quota-manager 17건 + access-tier 5건 vitest fail 발견 (Δ9에서 admin 이메일 가드 추가하면서 supabase mock의 `auth.getUser` 누락)
+- mock에 admin 가드용 stub 추가 → 22건 fix
+
+### 검증
+- `pnpm tsc --noEmit` ✅ (무에러)
+- `pnpm dlx vitest run` ✅ — **327/327 PASS** (+10 신규 build-summary route + 회귀 22건 fix, 회귀 0)
+- `pnpm next build` ✅ (모든 라우트 정상)
+
+### 영향 격리
+- `src/components/legend/` (BetaChat / TrialChat / SolutionSummaryButton 신규 / StreamingMarkdown 신규 / SolutionSummarySection)
+- `src/app/api/legend/build-summary/` (신규)
+- `src/lib/legend/types.ts` + `src/lib/legend/report/{solution-summarizer,report-builder}.ts`
+- DB 스키마 무변경 (jsonb 안 신규 필드)
+- 의존성 추가 X (기존 react + framer-motion + rehype-katex 활용)
+
+### commit
+- `feat(g06): G06-33 풀이 정리 진입 + Solution motivation + LaTeX·typewriter UX (Night mode)`
+
+---
+
 ## 2026-04-28~29 (9차 세션 — Phase G-06 Legend Tutor + R1 Per-Problem Report ⭐ 완결)
 
 ### 핵심 성과

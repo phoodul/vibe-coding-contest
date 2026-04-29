@@ -124,6 +124,7 @@ const MOCK_SOLUTION_SUMMARY = {
   step_flow_narrative: '단계 흐름 설명.',
   hardest_resolution: '어려운 부분 해결.',
   generalization: '일반 원칙.',
+  trigger_motivation: '미분 = 0 패턴이 보여 sympy_diff 를 떠올렸습니다.',
 };
 
 const MOCK_TREE = {
@@ -222,7 +223,7 @@ describe('TUTOR_LABELS_KO', () => {
 describe('buildReport — 캐시 hit', () => {
   it('per_problem_reports 캐시 있으면 즉시 반환, 4 모듈 호출 없음', async () => {
     const cached: PerProblemReport = {
-      schema_version: '1.2',
+      schema_version: '1.3',
       problem_summary: { text_short: 'cached', area: 'common', difficulty: 4 },
       tutor: { name: 'gauss', label_ko: '가우스', model_short: 'Gemini 3.1 Pro' },
       steps: [],
@@ -333,8 +334,8 @@ describe('buildReport — 캐시 miss', () => {
     expect(aggregateStuck).toHaveBeenCalledTimes(1);
     expect(summarizeSolution).toHaveBeenCalledTimes(1);
 
-    // schema 검증 (1.2 — Δ7 solution_summary 추가)
-    expect(report.schema_version).toBe('1.2');
+    // schema 검증 (1.3 — G06-33 trigger_motivation 추가)
+    expect(report.schema_version).toBe('1.3');
     expect(report.tutor.name).toBe('gauss');
     expect(report.tutor.label_ko).toBe('가우스');
     expect(report.tutor.model_short).toContain('Gemini');
@@ -364,18 +365,22 @@ describe('buildReport — 캐시 miss', () => {
     // tree
     expect(report.reasoning_tree.root_id).toBe('answer');
 
-    // solution_summary (Δ7) — 4 필드 모두 포함
+    // solution_summary (Δ7 + G06-33 trigger_motivation) — 5 필드 모두 포함
     expect(report.solution_summary).toBeDefined();
     expect(report.solution_summary.core_insight).toBe('핵심 통찰');
     expect(report.solution_summary.step_flow_narrative).toBe('단계 흐름 설명.');
     expect(report.solution_summary.hardest_resolution).toBe('어려운 부분 해결.');
     expect(report.solution_summary.generalization).toBe('일반 원칙.');
+    expect(report.solution_summary.trigger_motivation).toContain('미분');
 
-    // summarizeSolution 호출 인자 — pivotal_step_index + hardest_resolution_text 전달
+    // summarizeSolution 호출 인자 — pivotal_step_index + hardest_resolution_text + primary_trigger 전달
     const summarizeArgs = vi.mocked(summarizeSolution).mock.calls[0][0];
     expect(summarizeArgs.pivotal_step_index).toBe(1);
     expect(summarizeArgs.hardest_resolution_text).toContain('sympy_diff');
     expect(summarizeArgs.steps).toHaveLength(3);
+    // G06-33: primary_trigger 가 트리거 정보 그대로 전달되는지 검증
+    expect(summarizeArgs.primary_trigger).toBeDefined();
+    expect(summarizeArgs.primary_trigger?.tool_name).toBe('미분');
 
     // upsert 호출됨
     expect(upsertSpy).toHaveBeenCalledTimes(1);
