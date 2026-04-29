@@ -27,6 +27,7 @@ import { extractLLMStruggle } from './llm-struggle-extractor';
 import { buildReasoningTree } from './tree-builder';
 import { expandTrigger } from './trigger-expander';
 import { aggregateStuck, type StuckReason } from './stuck-tracker';
+import { summarizeSolution } from './solution-summarizer';
 import type { Provider } from './trace-normalizer';
 import type {
   PerProblemReport,
@@ -325,13 +326,22 @@ export async function buildReport(
     console.warn('[report-builder] aggregateStuck failed:', (e as Error).message);
   }
 
+  // 9.5 풀이 정리 (G06-28, Δ7) — Haiku 1회, ~$0.001/문제
+  const solutionSummary = await summarizeSolution({
+    problem_text: args.problem_text,
+    steps: stepsWithStruggle,
+    pivotal_step_index: pivotalIndex,
+    reasoning_tree: tree,
+    hardest_resolution_text: llmStruggle.resolution_narrative,
+  });
+
   // 10. PerProblemReport 조립
   const labelInfo = TUTOR_LABELS_KO[session.tutor_name] ?? { label: session.tutor_name, model: '' };
   const difficulty =
     pivotalStep?.difficulty ?? difficultyHint ?? 4;
 
   const report: PerProblemReport = {
-    schema_version: '1.1',
+    schema_version: '1.2',
     problem_summary: {
       text_short: args.problem_text.slice(0, 80),
       area,
@@ -357,6 +367,7 @@ export async function buildReport(
       resolution_narrative: llmStruggle.resolution_narrative,
     },
     reasoning_tree: tree,
+    solution_summary: solutionSummary,
   };
 
   // 11. per_problem_reports upsert

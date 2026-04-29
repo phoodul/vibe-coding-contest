@@ -1,10 +1,10 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — **G-06 ✅ 진정 완결, M8 포함 27/27**)
-- Phase: **Phase G-06 ✅ (M8 포함)** → G-07 진입 대기
-- Step: **G06-27 ✅ (M8 2/2 ✅, G-06 27/27 + G06-23 deferred)** — 베타 신청·승인 시스템. `supabase/migrations/20260609_beta_applications.sql` 신규 (테이블 + RLS + SECURITY DEFINER RPC `list_beta_applications` / `review_beta_application` — admin email 검증 + 승인 시 `euler_beta_invites` 자동 발급 + 50명 cap). MCP `apply_migration` 적용 완료. 신청 폼 (`/legend/beta/apply`) + 관리자 페이지 (`/admin/beta-applications`) + API 3종 (POST/GET apply / GET admin list / POST admin approve). motivation 50자+ CHECK / feedback_consent=true CHECK / 1 user 1 신청. 기존 `EULER2026` 페이지에 "신청서 작성" 링크 추가 (deprecate 보수적). 검증: tsc 무에러 + vitest **230/230 PASS** (+17 신규, 회귀 0). commit `37c9714`.
-- Session: 9차 (**G-06 ✅ 진정 완결**, 다음 단계: 베타 모집 시작 + 피드백 수집)
+- Time: 2026-04-29 (9차 세션 — **G-06 ✅ 진정 완결 + M9 추가, 28/28**)
+- Phase: **Phase G-06 ✅ (M8 + M9 포함)** → G-07 진입 대기
+- Step: **G06-28 ✅ (M9 1/1 ✅, G-06 28/28 + G06-23 deferred)** — R1 풀이 정리 섹션 (Δ7). `src/lib/legend/types.ts` schema 1.1 → **1.2** + `SolutionSummary` 타입 신규 (4 필드: core_insight / step_flow_narrative / hardest_resolution / generalization). `solution-summarizer.ts` 신규 (Haiku 4.5 1회, max_tokens 500, ~$0.001/문제 + JSON 파싱 실패/throw/빈 입력 시 fallback). `report-builder.ts` 에 summarizeSolution 단계 추가 + schema_version 1.2 bump. `SolutionSummarySection.tsx` 신규 (📝 emerald accent + 4 필드 노출 + 🎯 어려운 부분 italic + 💭 일반 원칙 footer 톤). `PerProblemReportCard.tsx` 에 steps 직후 + trigger 직전 위치 통합. **차원 분리 명문화**: LLMStruggleSection (정직성) vs SolutionSummarySection (학습 코치). 검증: tsc 무에러 + vitest **248/248 PASS** (+18 신규 / 기존 230 회귀 0). commit `<HASH>`.
+- Session: 9차 (**G-06 ✅ 28/28 진정 완결**, 다음 단계: 베타 모집 시작 + 피드백 수집)
 
 ## G-06 완결 — 핵심 성과
 - **브랜드 변경**: Euler Tutor → Legend Tutor (5 거장 튜터)
@@ -14,7 +14,8 @@
 - **5종 quota 통합 (Δ1)**: 베타 5문제/일·레전드 3회/일·R1 1회/일·주간 1회·월간 1회 + 자격 게이트 (10/20)
 - **흉상 이미지 5종**: 오일러·가우스 (기존) + 폰 노이만·라마누잔·라이프니츠 (신규, Wikimedia PD)
 - **M8 베타 모집 준비 ✅**: TutorChoicePrompt 격 차별화 (G06-26) + 베타 신청·승인 시스템 + 피드백 동의 필수 (G06-27)
-- 25 commits / 27 tasks (G06-23 deferred — 베타 모집 후 별도) / **230 vitest PASS** / 회귀 0
+- **M9 R1 UX 개선 ✅**: SolutionSummarySection 풀이 정리 (G06-28, Δ7) — schema 1.2 + Haiku ~$0.001/문제 + 차원 분리 (정직성 vs 학습 코치)
+- 26 commits / 28 tasks (G06-23 deferred — 베타 모집 후 별도) / **248 vitest PASS** / 회귀 0
 
 ## Next Action (10차 세션 G-07)
 1. 베타 사용자 모집 및 G06-23 인터뷰 (5명 1주)

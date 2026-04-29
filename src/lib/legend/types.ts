@@ -131,7 +131,7 @@ export interface QuotaStatus {
 // ────────────────────────────────────────────────────────────────────────────
 
 export interface PerProblemReport {
-  schema_version: '1.1';
+  schema_version: '1.2';
   problem_summary: {
     /** 80자 발췌 */
     text_short: string;
@@ -181,6 +181,25 @@ export interface PerProblemReport {
   };
   /** Δ4 — 추론 트리 */
   reasoning_tree: ReasoningTree;
+  /** Δ7 — 풀이 정리 (학습 코치 톤, 4~6 문장) */
+  solution_summary: SolutionSummary;
+}
+
+/**
+ * Δ7 — R1 카드 "📝 풀이 정리" 섹션.
+ *
+ * LLMStruggleSection (정직성 차원) 과 분리된 학습 코치 차원.
+ * 합산 4~6 문장. 학생이 이 문제를 다시 보면 어떻게 접근할지 시각.
+ */
+export interface SolutionSummary {
+  /** 1문장 핵심 통찰 */
+  core_insight: string;
+  /** 2~3문장 단계 흐름 ("1단계에서 X, 2단계에서 Y로...") */
+  step_flow_narrative: string;
+  /** 1문장 가장 어려운 부분 통찰 */
+  hardest_resolution: string;
+  /** 1문장 비슷한 문제 적용 일반 원칙 */
+  generalization: string;
 }
 
 export interface PerProblemStep {

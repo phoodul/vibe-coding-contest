@@ -26,6 +26,9 @@ vi.mock('../trigger-expander', () => ({
 vi.mock('../stuck-tracker', () => ({
   aggregateStuck: vi.fn(),
 }));
+vi.mock('../solution-summarizer', () => ({
+  summarizeSolution: vi.fn(),
+}));
 
 // supabase 모킹: 동적 chain 빌더
 const cacheRow: { value: { report_jsonb: unknown; generated_at: string } | null } = { value: null };
@@ -113,7 +116,15 @@ import { extractLLMStruggle } from '../llm-struggle-extractor';
 import { buildReasoningTree } from '../tree-builder';
 import { expandTrigger } from '../trigger-expander';
 import { aggregateStuck } from '../stuck-tracker';
+import { summarizeSolution } from '../solution-summarizer';
 import type { PerProblemReport, PerProblemStep } from '@/lib/legend/types';
+
+const MOCK_SOLUTION_SUMMARY = {
+  core_insight: '핵심 통찰',
+  step_flow_narrative: '단계 흐름 설명.',
+  hardest_resolution: '어려운 부분 해결.',
+  generalization: '일반 원칙.',
+};
 
 const MOCK_TREE = {
   schema_version: '1.0' as const,
@@ -159,6 +170,8 @@ beforeEach(() => {
   vi.mocked(buildReasoningTree).mockResolvedValue(MOCK_TREE);
   vi.mocked(expandTrigger).mockResolvedValue([]);
   vi.mocked(aggregateStuck).mockResolvedValue([]);
+  vi.mocked(summarizeSolution).mockReset();
+  vi.mocked(summarizeSolution).mockResolvedValue(MOCK_SOLUTION_SUMMARY);
 });
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -209,7 +222,7 @@ describe('TUTOR_LABELS_KO', () => {
 describe('buildReport — 캐시 hit', () => {
   it('per_problem_reports 캐시 있으면 즉시 반환, 4 모듈 호출 없음', async () => {
     const cached: PerProblemReport = {
-      schema_version: '1.1',
+      schema_version: '1.2',
       problem_summary: { text_short: 'cached', area: 'common', difficulty: 4 },
       tutor: { name: 'gauss', label_ko: '가우스', model_short: 'Gemini 3.1 Pro' },
       steps: [],
@@ -227,6 +240,7 @@ describe('buildReport — 캐시 hit', () => {
         resolution_narrative: '',
       },
       reasoning_tree: MOCK_TREE,
+      solution_summary: MOCK_SOLUTION_SUMMARY,
     };
     cacheRow.value = { report_jsonb: cached, generated_at: '2026-04-28T00:00:00Z' };
 
@@ -241,6 +255,7 @@ describe('buildReport — 캐시 hit', () => {
     expect(extractLLMStruggle).not.toHaveBeenCalled();
     expect(buildReasoningTree).not.toHaveBeenCalled();
     expect(expandTrigger).not.toHaveBeenCalled();
+    expect(summarizeSolution).not.toHaveBeenCalled();
     expect(upsertSpy).not.toHaveBeenCalled();
   });
 });
@@ -310,15 +325,16 @@ describe('buildReport — 캐시 miss', () => {
       problem_text: 'f(x)=x^2 의 최솟값을 구하시오. 길이 80자가 넘는 문제라고 가정합니다.'.repeat(2),
     });
 
-    // 4 모듈 모두 호출
+    // 5 모듈 모두 호출 (Δ7 summarizeSolution 추가)
     expect(decomposeChainSteps).toHaveBeenCalledTimes(1);
     expect(extractLLMStruggle).toHaveBeenCalledTimes(1);
     expect(buildReasoningTree).toHaveBeenCalledTimes(1);
     expect(expandTrigger).toHaveBeenCalledTimes(1);
     expect(aggregateStuck).toHaveBeenCalledTimes(1);
+    expect(summarizeSolution).toHaveBeenCalledTimes(1);
 
-    // schema 검증
-    expect(report.schema_version).toBe('1.1');
+    // schema 검증 (1.2 — Δ7 solution_summary 추가)
+    expect(report.schema_version).toBe('1.2');
     expect(report.tutor.name).toBe('gauss');
     expect(report.tutor.label_ko).toBe('가우스');
     expect(report.tutor.model_short).toContain('Gemini');
@@ -347,6 +363,19 @@ describe('buildReport — 캐시 miss', () => {
 
     // tree
     expect(report.reasoning_tree.root_id).toBe('answer');
+
+    // solution_summary (Δ7) — 4 필드 모두 포함
+    expect(report.solution_summary).toBeDefined();
+    expect(report.solution_summary.core_insight).toBe('핵심 통찰');
+    expect(report.solution_summary.step_flow_narrative).toBe('단계 흐름 설명.');
+    expect(report.solution_summary.hardest_resolution).toBe('어려운 부분 해결.');
+    expect(report.solution_summary.generalization).toBe('일반 원칙.');
+
+    // summarizeSolution 호출 인자 — pivotal_step_index + hardest_resolution_text 전달
+    const summarizeArgs = vi.mocked(summarizeSolution).mock.calls[0][0];
+    expect(summarizeArgs.pivotal_step_index).toBe(1);
+    expect(summarizeArgs.hardest_resolution_text).toContain('sympy_diff');
+    expect(summarizeArgs.steps).toHaveLength(3);
 
     // upsert 호출됨
     expect(upsertSpy).toHaveBeenCalledTimes(1);

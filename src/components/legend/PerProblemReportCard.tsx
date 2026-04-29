@@ -24,6 +24,7 @@ import { StepDecompositionView } from './StepDecompositionView';
 import { TriggerExpansionCard } from './TriggerExpansionCard';
 import { ReasoningTreeView } from './ReasoningTreeView';
 import { LLMStruggleSection } from './LLMStruggleSection';
+import { SolutionSummarySection } from './SolutionSummarySection';
 import type { PerProblemReport } from '@/lib/legend/types';
 
 export interface PerProblemReportCardProps {
@@ -112,6 +113,11 @@ export function PerProblemReportCard({
             onExpandStep={onExpandStep}
           />
         </section>
+
+        {/* 3.5 Solution Summary (Δ7) — 풀이 정리. core_insight 비어있으면 섹션 자체 숨김 */}
+        {report.solution_summary && report.solution_summary.core_insight && (
+          <SolutionSummarySection summary={report.solution_summary} />
+        )}
 
         {/* 4. Trigger Expansion */}
         <section>

@@ -346,6 +346,25 @@ Stage 2: 라마누잔 baseline probe + 자가평가 → escalation 권유
 
 ---
 
+## [2026-04-29] Δ7. R1 풀이 정리 섹션 (SolutionSummarySection)
+
+- **결정**: R1 카드에 "📝 풀이 정리" 신규 섹션 — 4~6 문장 코칭 톤 풀이 정리.
+- **차원 분리**:
+  - LLMStruggleSection (Δ3) = "AI도 어려웠다" **정직성** 차원 (학생 동질감)
+  - SolutionSummarySection (Δ7) = "이렇게 정리해두면" **학습 코치** 차원 (학습 효과)
+- **구조 (4 필드 합산 4~6 문장)**:
+  - `core_insight` — 1문장 핵심 통찰
+  - `step_flow_narrative` — 2~3문장 단계 흐름 ("1단계에서 X, 2단계에서 Y로...")
+  - `hardest_resolution` — 1문장 가장 어려운 부분 통찰
+  - `generalization` — 1문장 비슷한 문제 적용 일반 원칙
+- **비용**: Haiku 4.5 1회 추가 호출, max_tokens 500, ~$0.001/문제 (무시 가능)
+- **schema**: `PerProblemReport` schema_version 1.1 → **1.2**, `solution_summary` 필드 추가
+- **DB**: 스키마 변경 X (`per_problem_reports.report_jsonb` 안의 신규 필드)
+- **반영**: `src/lib/legend/report/solution-summarizer.ts` (신규) + `report-builder.ts` 단계 추가 + `src/components/legend/SolutionSummarySection.tsx` (신규) + `PerProblemReportCard.tsx` 통합 (steps 직후 + trigger 직전 위치)
+- **위치 결정**: trigger 직전 — 학생이 풀이 정리 → 같은 발동 조건 도구 추천 흐름이 자연스러움
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부

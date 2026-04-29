@@ -21,7 +21,8 @@
 | M6 — KPI 측정 + 베타 검증 | 4일 | ⏸ 1/2 | G06-23 보류 (베타 모집 후 별도) |
 | M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | ✅ | 2/2 |
 | M8 — 베타 모집 준비 (격 차별화 + 신청·승인) | 2일 | ✅ | 2/2 |
-| **합계** | **42일** | — | **27/27 (G06-23 deferred)** |
+| M9 — R1 UX 개선 (풀이 정리 Δ7) | 1일 | ✅ | 1/1 |
+| **합계** | **43일** | — | **28/28 (G06-23 deferred)** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -562,3 +563,33 @@ G06-01 → G06-02 → G06-03 (M1)
 - **위험**: MEDIUM (RLS + 관리자 권한 + 이메일 알림)
 - **예상 토큰**: 12K
 - **commit**: `feat(g06): 베타 신청·승인 시스템 + 피드백 동의 필수`
+
+---
+
+## M9. R1 UX 개선 — 풀이 정리 섹션 (1일, 1 task)
+
+> 추가일: 2026-04-29 (Δ7 사용자 결정)
+> 목적: R1 카드에 학습 코치 차원의 "📝 풀이 정리" 섹션 신규 추가. LLMStruggleSection (정직성 차원) 과 분리.
+
+### G06-28: SolutionSummarySection 풀이 정리 (옵션 B, Δ7) ✅ (commit `<HASH>`)
+- **선행**: G06-27 (M8 완료)
+- **변경 파일**:
+  - `src/lib/legend/types.ts` (수정 — `SolutionSummary` 타입 신규, `PerProblemReport` schema_version 1.1 → 1.2 + `solution_summary` 필드)
+  - `src/lib/legend/report/solution-summarizer.ts` (신규)
+  - `src/lib/legend/report/report-builder.ts` (수정 — buildReport 에 summarizeSolution 단계 추가)
+  - `src/components/legend/SolutionSummarySection.tsx` (신규)
+  - `src/components/legend/PerProblemReportCard.tsx` (수정 — steps 직후 + trigger 직전 위치에 SolutionSummarySection 삽입)
+  - `src/lib/legend/report/__tests__/solution-summarizer.test.ts` (신규, +18 테스트)
+  - `src/lib/legend/report/__tests__/report-builder.test.ts` (수정 — schema 1.2 + solution_summary 필드 검증)
+- **변경 내용**:
+  - Haiku 4.5 1회 호출 (max_tokens 500, ~$0.001/문제)
+  - 4 필드 JSON 강제 (core_insight / step_flow_narrative / hardest_resolution / generalization)
+  - JSON 파싱 실패 / callModel throw / 빈 problem / 빈 steps → fallback (4 필드 모두 안전)
+  - LLMStruggleSection 의 resolution_narrative 를 hardest_resolution_text 로 참고 주입 (정확도 ↑)
+  - DB 스키마 변경 X (jsonb 안의 신규 필드)
+  - UI 차원 분리: 🎯 어려운 부분 (italic + emerald accent border) / 💭 일반 원칙 (footer 톤)
+- **검증**:
+  - `pnpm tsc --noEmit` ✅ (무에러)
+  - `pnpm dlx vitest run` ✅ (**248/248 PASS**, +18 신규 / 기존 230 회귀 0)
+- **위험**: LOW (R1 카드 신규 섹션 추가 + LLM struggle 와 차원 분리)
+- **commit**: `feat(g06): SolutionSummarySection 풀이 정리 (옵션 B, Δ7)`
