@@ -602,7 +602,7 @@ ${cc.verified
 - 합·곱·적분: SS(k=1,n) f, PP(k=1,n) f, II(0,1) f(x) dx
 - 그리스: pi=π, phi=φ, th=θ, al/be/ga/de/la/mu/si/om
 - 확률·통계: bar(X), N(mu, si^2), nCr, nPr, P(B|A)
-- 벡터: vec(OA), OA->, abs(a), dot(a,b), cross(a,b), AB LL CD (수직)
+- 벡터: vec(OA), OA(->), abs(a), dot(a,b), cross(a,b), AB LL CD (수직)
 - 함수: f@g (합성), f^-1, lim(x->a), frac(a,b)
 응답은 **항상 표준 LaTeX** 로 작성하세요 (학생이 다른 도구·교재와 일관되도록).`;
 

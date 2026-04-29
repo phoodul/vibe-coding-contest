@@ -81,7 +81,7 @@ const SECTIONS: Section[] = [
     title: "기하·벡터",
     items: [
       { input: "vec(OA)", latex: "\\vec{OA}" },
-      { input: "OA-> + OB->", latex: "\\vec{OA} + \\vec{OB}" },
+      { input: "OA(->) + OB(->)", latex: "\\vec{OA} + \\vec{OB}" },
       { input: "abs(a)", latex: "\\lvert a \\rvert" },
       { input: "dot(a, b)", latex: "\\vec{a} \\cdot \\vec{b}" },
       { input: "cross(a, b)", latex: "\\vec{a} \\times \\vec{b}" },

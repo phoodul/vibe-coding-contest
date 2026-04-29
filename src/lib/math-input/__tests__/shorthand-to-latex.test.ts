@@ -114,8 +114,8 @@ describe('shorthandToLatex — 기하·벡터', () => {
   it('vec(OA) → \\vec{OA}', () => {
     expect(shorthandToLatex('vec(OA)')).toBe('\\vec{OA}');
   });
-  it('OA-> → \\vec{OA}', () => {
-    expect(shorthandToLatex('OA-> + OB-> ')).toBe('\\vec{OA} + \\vec{OB} ');
+  it('OA(->) → \\vec{OA} (사용자 결정 2026-04-30)', () => {
+    expect(shorthandToLatex('OA(->) + OB(->)')).toBe('\\vec{OA} + \\vec{OB}');
   });
   it('abs(a) → \\lvert a \\rvert', () => {
     expect(shorthandToLatex('abs(a)')).toBe('\\lvert a \\rvert');
