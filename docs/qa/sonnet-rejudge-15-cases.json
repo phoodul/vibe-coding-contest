@@ -1,0 +1,134 @@
+{
+  "run_at": "2026-04-29T07:12:47.498Z",
+  "source_report": "docs/qa/kpi-evaluation-geometry-sonnet-baseline.json",
+  "eval_set": "user_docs/suneung-math/eval/sub-killer-eval.json",
+  "judge_model": "claude-haiku-4-5-20251001",
+  "rejudged": [
+    {
+      "id": "2022-공통-12",
+      "expected": "3",
+      "sonnet_answer": "3/2",
+      "matched_choice": "3",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 3/2는 보기 (3) $\\frac{3}{2}$와 일치합니다."
+    },
+    {
+      "id": "2022-공통-9",
+      "expected": "4",
+      "sonnet_answer": "17/3",
+      "matched_choice": "4",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 17/3이 보기 (4) 17/3과 일치함"
+    },
+    {
+      "id": "2022-미적분-24",
+      "expected": "4",
+      "sonnet_answer": "e/4",
+      "matched_choice": "4",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 e/4는 보기 (4)번과 일치합니다."
+    },
+    {
+      "id": "2022-미적분-26",
+      "expected": "3",
+      "sonnet_answer": "ln 5/3",
+      "matched_choice": "3",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 ln 5/3은 보기 (3)과 정확히 일치"
+    },
+    {
+      "id": "2023-공통-12",
+      "expected": "2",
+      "sonnet_answer": "1/2",
+      "matched_choice": "3",
+      "is_correct": false,
+      "reasoning": "학생이 도출한 최종 답 1/2는 보기 (3) 1/2와 일치합니다."
+    },
+    {
+      "id": "2023-미적분-26",
+      "expected": "4",
+      "sonnet_answer": "√3 + ln 2",
+      "matched_choice": "4",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 √3 + ln 2는 보기 (4)번과 정확히 일치합니다."
+    },
+    {
+      "id": "2023-확률과통계-27",
+      "expected": "2",
+      "sonnet_answer": "7",
+      "matched_choice": "4",
+      "is_correct": false,
+      "reasoning": "학생이 명시한 최종 답 a+b+c = 4+5/2+1/2 = 7은 보기 ④번과 일치합니다."
+    },
+    {
+      "id": "2024-공통-12",
+      "expected": "3",
+      "sonnet_answer": "129/4",
+      "matched_choice": "3",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 129/4는 보기 ③번과 일치합니다."
+    },
+    {
+      "id": "2024-공통-14",
+      "expected": "1",
+      "sonnet_answer": "51",
+      "matched_choice": "1",
+      "is_correct": true,
+      "reasoning": "학생이 명시한 최종 답 51은 보기 ①번과 일치합니다."
+    },
+    {
+      "id": "2024-공통-9",
+      "expected": "4",
+      "sonnet_answer": "5/3",
+      "matched_choice": "4",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 5/3은 보기 (4)번과 일치합니다."
+    },
+    {
+      "id": "2024-기하-27",
+      "expected": "3",
+      "sonnet_answer": "108√2",
+      "matched_choice": "3",
+      "is_correct": true,
+      "reasoning": "학생이 최종적으로 명시한 답은 108√2 이며, 이는 보기 ③번과 일치합니다."
+    },
+    {
+      "id": "2025-공통-14",
+      "expected": "4",
+      "sonnet_answer": "36 + 30√3",
+      "matched_choice": "4",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 36 + 30√3는 보기 (4)번과 일치합니다."
+    },
+    {
+      "id": "2025-미적분-26",
+      "expected": "1",
+      "sonnet_answer": "ln(e+1)",
+      "matched_choice": "1",
+      "is_correct": true,
+      "reasoning": "학생의 최종 답 ln(e+1)은 보기 (1)번과 정확히 일치함"
+    },
+    {
+      "id": "2026-공통-14",
+      "expected": "4",
+      "sonnet_answer": "6√15/5",
+      "matched_choice": "1",
+      "is_correct": false,
+      "reasoning": "학생이 명시한 최종 답 6√15/5는 보기 (1)과 정확히 일치합니다."
+    },
+    {
+      "id": "2026-기하-27",
+      "expected": "4",
+      "sonnet_answer": "√21",
+      "matched_choice": "4",
+      "is_correct": true,
+      "reasoning": "학생이 도출한 최종 답 √21은 보기 (4)번과 일치합니다."
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "correct": 12,
+    "ambiguous": 0,
+    "rate_percent": 80
+  }
+}
