@@ -88,7 +88,6 @@ interface TriggerLookupRow {
 // ────────────────────────────────────────────────────────────────────────────
 
 async function fetchPrimaryTriggerCard(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   trigger_id: string,
 ): Promise<TriggerCard | null> {

@@ -27,9 +27,7 @@
 
 export interface NormalizedToolCall {
   tool_name: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tool_input: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tool_output?: any;
   /** 같은 tool_name 이 같은 turn 내 두 번째 이상 호출일 때 true */
   is_retry: boolean;
@@ -55,7 +53,6 @@ interface AnthropicContentBlock {
   type: string;
   text?: string;
   name?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   input?: any;
 }
 
@@ -106,7 +103,6 @@ export function normalizeAnthropicTrace(trace: unknown): NormalizedTurn[] {
   const t = trace as {
     mode?: string;
     raw?: AnthropicRaw;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     turns?: any[];
   };
 
@@ -143,7 +139,6 @@ interface OpenAIRaw {
   choices?: OpenAIChoice[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseJsonArgs(args: string | undefined): any {
   if (!args) return {};
   try {
@@ -190,7 +185,6 @@ export function normalizeOpenAITrace(trace: unknown): NormalizedTurn[] {
   const t = trace as {
     mode?: string;
     raw?: OpenAIRaw;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     turns?: any[];
   };
 
@@ -211,7 +205,6 @@ export function normalizeOpenAITrace(trace: unknown): NormalizedTurn[] {
 
 interface GeminiPart {
   text?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   functionCall?: { name?: string; args?: any };
 }
 
@@ -263,7 +256,6 @@ export function normalizeGoogleTrace(trace: unknown): NormalizedTurn[] {
   const t = trace as {
     mode?: string;
     raw?: GeminiRaw;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     turns?: any[];
   };
 

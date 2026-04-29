@@ -129,7 +129,6 @@ export function getNextFallback(
  * - Anthropic 429 또는 529 (overload) → anthropic_rate_limit
  * - 그 외 → generic_error
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function classifyError(error: any): FallbackEvent['reason'] {
   const msg = String(error?.message ?? error ?? '');
   const status = error?.status ?? error?.statusCode;

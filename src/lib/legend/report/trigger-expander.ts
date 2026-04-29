@@ -55,7 +55,6 @@ interface RpcRow {
 // ────────────────────────────────────────────────────────────────────────────
 
 async function fetchPrimary(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   primary_trigger_id: string,
 ): Promise<TriggerRow | null> {
@@ -77,7 +76,6 @@ async function fetchPrimary(
  * 같은 why_text + (tool_hint == tool_id) 보유한 가장 신선한 1건을 example 로 채택.
  */
 async function fetchExampleProblem(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   why_text: string,
   tool_id: string,

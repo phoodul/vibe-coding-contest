@@ -35,7 +35,6 @@ export interface CallModelInput {
   /** baseline 1회 또는 agentic 매 turn 의 max_tokens. default 5000 (G-05 응답 잘림 방지) */
   max_tokens?: number;
   /** calc_haiku 모드에서 SymPy tool 정의 전달용 (현 G06-08 단계에서는 미사용) */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tools?: any[];
 }
 
@@ -49,7 +48,6 @@ export interface CallModelTurn {
    * 추출해 step 분해의 정확도를 높이는 데 사용.
    * 누락(undefined) 시에도 기존 string-only 소비 코드와 호환됨.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   raw?: any;
 }
 
@@ -57,10 +55,8 @@ export interface CallModelResult {
   /** 최종 응답 텍스트 (agentic_5step 시 마지막 turn) */
   text: string;
   /** turn-by-turn raw trace. agentic_5step 시 turns[] 5개. baseline/calc_haiku 시 1개 */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   trace: any;
   /** Anthropic tool_use blocks (calc_haiku 전용 — G06-08 에선 빈 배열) */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tool_calls: any[];
   duration_ms: number;
   model_id: string;
