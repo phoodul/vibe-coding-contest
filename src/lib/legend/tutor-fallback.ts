@@ -10,9 +10,15 @@
  *   - silent fallback 금지: 모든 fallback 은 FallbackEvent 로 가시화 (console.warn + stream payload).
  *   - retry 호출은 call_kind='retry' 로 DB insert 되어 legend_tutor_sessions check 규칙 준수.
  *
+ * G06-30 (Δ8): Tier 1 라마누잔 = Gemini 3.1 Pro baseline.
+ *   - 250 RPD 한도 도달 → 라마누잔 페르소나 유지하면서 model_id/provider 만 Sonnet 4.6 baseline 으로 swap.
+ *   - 가우스 (Tier 2) 의 Gemini quota 양보 + 라마누잔 페르소나 보존.
+ *   - 다른 튜터 (가우스→폰 노이만 등) fallback 정책은 그대로.
+ *
  * 영향 격리: src/lib/legend/ 전용. 외부 의존 없음.
  */
 import type { TutorName } from './types';
+import type { ModelMode, ModelProvider } from './call-model';
 
 // ────────────────────────────────────────────────────────────────────────────
 // 1단계 fallback 매트릭스 (architecture §9.5 표 그대로)
@@ -25,18 +31,52 @@ import type { TutorName } from './types';
 // | 오일러 (Opus)       | 라이프니츠      | 가우스               |
 // | 라이프니츠 (Sonnet) | 오일러          | 폰 노이만            |
 // | 라마누잔 calc       | 라마누잔 intuit | —                    |
-// | 라마누잔 intuit     | 라이프니츠      | —                    |
+// | 라마누잔 intuit     | (model swap*)   | —                    |
 //
 // 자동 fallback 은 1순위 (배열의 [0]) 까지만 사용. 2순위는 EscalationPrompt 후보.
+//
+// (*) G06-30 (Δ8): 라마누잔 intuit 의 1순위 fallback 은 "다른 튜터" 가 아닌
+//     "같은 라마누잔 intuit + 다른 model" 동적 swap (페르소나 유지). RAMANUJAN_INTUIT_MODEL_SWAP
+//     상수가 정의하며 callTutorWithFallback 의 catch 가 분기 처리한다.
 
 export const FALLBACK_MATRIX: Record<TutorName, TutorName[]> = {
   ramanujan_calc: ['ramanujan_intuit'],
-  ramanujan_intuit: ['leibniz'],
+  // G06-30: 라마누잔 intuit 은 model swap 으로 처리 (RAMANUJAN_INTUIT_MODEL_SWAP).
+  // FALLBACK_MATRIX 항목은 "튜터→튜터" 시멘틱이라 빈 배열로 두고, getNextFallback 도 null 반환.
+  ramanujan_intuit: [],
   gauss: ['von_neumann', 'leibniz'],
   von_neumann: ['gauss', 'euler'],
   euler: ['leibniz', 'gauss'],
   leibniz: ['euler', 'von_neumann'],
 };
+
+// ────────────────────────────────────────────────────────────────────────────
+// G06-30 (Δ8) — 라마누잔 intuit 전용 model swap 정의
+// ────────────────────────────────────────────────────────────────────────────
+//
+// Gemini 3.1 Pro baseline 250 RPD 한도 도달 시 페르소나 유지하면서
+// model_id/provider 만 Sonnet 4.6 baseline 으로 swap.
+// orchestrator 의 callTutorWithFallback catch 블록이 이 상수를 읽어 직접 callModel 호출.
+
+export interface RamanujanIntuitSwap {
+  model_id: string;
+  provider: ModelProvider;
+  mode: ModelMode;
+  /** legend_tutor_sessions.mode 컬럼에 기록되는 명시적 라벨 */
+  mode_label: string;
+}
+
+export function getRamanujanIntuitSwap(): RamanujanIntuitSwap {
+  return {
+    model_id:
+      process.env.LEGEND_RAMANUJAN_FALLBACK_MODEL ??
+      process.env.ANTHROPIC_SONNET_MODEL_ID ??
+      'claude-sonnet-4-6-20260101',
+    provider: 'anthropic',
+    mode: 'baseline',
+    mode_label: 'baseline_sonnet_fallback',
+  };
+}
 
 // ────────────────────────────────────────────────────────────────────────────
 // Fallback 이벤트 타입
@@ -140,6 +180,13 @@ const TUTOR_LABEL_KO: Record<TutorName, string> = {
 };
 
 export function buildFallbackMessage(event: FallbackEvent): string {
+  // G06-30 (Δ8): 라마누잔 intuit → ramanujan_intuit (model swap) 인 경우 별도 카피.
+  if (
+    event.primary === 'ramanujan_intuit' &&
+    event.fallback_to === 'ramanujan_intuit'
+  ) {
+    return '라마누잔 (Gemini) 가 잠시 쉬어요. Sonnet 모드로 전환합니다.';
+  }
   const primary = TUTOR_LABEL_KO[event.primary];
   const fallback = TUTOR_LABEL_KO[event.fallback_to];
   return `${primary}이 잠시 휴식 중, ${fallback}이 응답합니다.`;

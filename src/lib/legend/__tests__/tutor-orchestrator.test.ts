@@ -57,9 +57,10 @@ describe('TUTOR_CONFIG', () => {
     expect(TUTOR_CONFIG.ramanujan_calc.mode).toBe('calc_haiku');
     expect(TUTOR_CONFIG.ramanujan_calc.provider).toBe('anthropic');
 
+    // G06-30 (Δ8): Tier 1 라마누잔 = Gemini 3.1 Pro baseline.
     expect(TUTOR_CONFIG.ramanujan_intuit.tier).toBe(1);
     expect(TUTOR_CONFIG.ramanujan_intuit.mode).toBe('baseline');
-    expect(TUTOR_CONFIG.ramanujan_intuit.provider).toBe('anthropic');
+    expect(TUTOR_CONFIG.ramanujan_intuit.provider).toBe('google');
 
     expect(TUTOR_CONFIG.gauss.tier).toBe(2);
     expect(TUTOR_CONFIG.gauss.provider).toBe('google');

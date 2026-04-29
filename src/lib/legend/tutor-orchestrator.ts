@@ -17,6 +17,10 @@
  *
  * 환경변수: ANTHROPIC_HAIKU_MODEL_ID / ANTHROPIC_OPUS_MODEL_ID / ANTHROPIC_SONNET_MODEL_ID /
  *           GEMINI_MODEL_ID / OPENAI_MODEL_ID — 미설정 시 default 모델 ID 사용 (HIGH 위험).
+ *
+ * G06-30 (Δ8): Tier 1 라마누잔 = Gemini 3.1 Pro baseline. 250 RPD 한도 도달 시
+ *              tutor-fallback.ts 의 라마누잔 전용 swap (Sonnet 4.6 baseline + 동일 페르소나)
+ *              으로 자동 전환 — 가우스 (Tier 2) 의 Gemini quota 와 양보·공유.
  */
 import { createHash } from 'node:crypto';
 import { createClient } from '@/lib/supabase/server';
@@ -32,7 +36,9 @@ import {
   buildFallbackMessage,
   classifyError,
   getNextFallback,
+  getRamanujanIntuitSwap,
   type FallbackEvent,
+  type RamanujanIntuitSwap,
 } from './tutor-fallback';
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -54,10 +60,15 @@ export const TUTOR_CONFIG: Record<TutorName, TutorConfigEntry> = {
     provider: 'anthropic',
   },
   ramanujan_intuit: {
+    // G06-30 (Δ8): Opus 4.7 → Gemini 3.1 Pro baseline. 250 RPD 한도 도달 시
+    // tutor-fallback.ts 의 ramanujan_intuit 전용 swap (Sonnet 4.6 baseline) 으로 전환.
     tier: 1,
-    model: process.env.ANTHROPIC_OPUS_MODEL_ID ?? 'claude-opus-4-7-20260201',
+    model:
+      process.env.LEGEND_RAMANUJAN_MODEL ??
+      process.env.GEMINI_MODEL_ID ??
+      'gemini-3-1-pro',
     mode: 'baseline',
-    provider: 'anthropic',
+    provider: 'google',
   },
   gauss: {
     tier: 2,
@@ -146,6 +157,11 @@ function extractFinalAnswer(text: string): string {
 
 async function callTutorInternal(
   input: TutorCallInput,
+  /**
+   * G06-30 (Δ8): 라마누잔 intuit 의 model swap 시 TUTOR_CONFIG 를 무시하고
+   * 주어진 model_id/provider/mode 로 호출. 페르소나는 그대로 input.tutor 의 시스템 프롬프트.
+   */
+  modelOverride?: RamanujanIntuitSwap,
 ): Promise<TutorCallResult> {
   const t0 = Date.now();
 
@@ -160,12 +176,18 @@ async function callTutorInternal(
 
   const system = buildSystemPrompt(input.tutor);
 
+  // override 가 있으면 swap 모델/provider/mode 로 호출. 없으면 TUTOR_CONFIG.
+  const effectiveModelId = modelOverride?.model_id ?? config.model;
+  const effectiveProvider = modelOverride?.provider ?? config.provider;
+  const effectiveMode = modelOverride?.mode ?? config.mode;
+  const dbModeLabel = modelOverride?.mode_label ?? config.mode;
+
   // 1) 모델 호출 (mode × provider 5 분기는 callModel 내부)
   //    여기서 throw 되면 callTutorWithFallback 의 catch 가 1단계 fallback 시도.
   const result = await callModel({
-    model_id: config.model,
-    provider: config.provider,
-    mode: config.mode,
+    model_id: effectiveModelId,
+    provider: effectiveProvider,
+    mode: effectiveMode,
     problem: input.problem_text,
     system_prompt: system,
   });
@@ -184,8 +206,8 @@ async function callTutorInternal(
       tutor_name: input.tutor,
       tier: config.tier,
       call_kind: input.call_kind,
-      model_id: config.model,
-      mode: config.mode,
+      model_id: effectiveModelId,
+      mode: dbModeLabel,
       trace_jsonb: result.trace,
       final_answer: finalAnswer,
       duration_ms: totalDuration,
@@ -235,14 +257,49 @@ async function callTutorWithFallback(
     const result = await callTutorInternal(input);
     return { ...result, actual_tutor: input.tutor };
   } catch (err) {
-    // 1단계 자동 fallback 후보 결정
+    const reason = classifyError(err);
+
+    // ── G06-30 (Δ8): 라마누잔 intuit 전용 model swap ────────────────────
+    // Gemini baseline 429 시 페르소나 유지하면서 Sonnet baseline 으로 swap.
+    // attempt === 0 일 때만 (1단계 자동 fallback 1회 정책) 시도.
+    if (
+      primaryTutor === 'ramanujan_intuit' &&
+      input.tutor === 'ramanujan_intuit' &&
+      attempt === 0
+    ) {
+      const swap = getRamanujanIntuitSwap();
+      const fallbackEvent: FallbackEvent = {
+        primary: 'ramanujan_intuit',
+        fallback_to: 'ramanujan_intuit', // 페르소나 유지 — 동일 튜터, 다른 model
+        reason,
+        error_message:
+          err instanceof Error ? err.message : String(err ?? 'unknown'),
+        attempt: 1,
+      };
+      console.warn(
+        `[legend-tutor-fallback] ${buildFallbackMessage(fallbackEvent)}`,
+        { ...fallbackEvent, swap_model_id: swap.model_id },
+      );
+
+      // call_kind='retry' 로 DB insert (check 규칙 준수)
+      const result = await callTutorInternal(
+        { ...input, call_kind: 'retry' },
+        swap,
+      );
+      return {
+        ...result,
+        fallback_event: fallbackEvent,
+        actual_tutor: 'ramanujan_intuit',
+      };
+    }
+
+    // ── 일반 1단계 자동 fallback (가우스 → 폰 노이만 등) ─────────────────
     const fallback = getNextFallback(primaryTutor, attempt);
     if (!fallback) {
       // 매트릭스에 1순위가 없거나 이미 1단계 시도했음 → 상위 호출자에게 throw.
       throw err;
     }
 
-    const reason = classifyError(err);
     const fallbackEvent: FallbackEvent = {
       primary: primaryTutor,
       fallback_to: fallback,

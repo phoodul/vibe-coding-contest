@@ -38,6 +38,7 @@ import {
   FALLBACK_MATRIX,
   classifyError,
   getNextFallback,
+  getRamanujanIntuitSwap,
   buildFallbackMessage,
 } from '../tutor-fallback';
 
@@ -133,8 +134,10 @@ describe('getNextFallback', () => {
     expect(getNextFallback('ramanujan_calc', 0)).toBe('ramanujan_intuit');
   });
 
-  it('라마누잔_intuit 1단계 fallback = 라이프니츠', () => {
-    expect(getNextFallback('ramanujan_intuit', 0)).toBe('leibniz');
+  it('라마누잔_intuit 1단계 fallback = null (model swap 으로 처리, G06-30)', () => {
+    // 라마누잔 intuit 은 페르소나 유지 model swap 으로 처리하므로
+    // FALLBACK_MATRIX 의 "튜터→튜터" 시멘틱에서는 빈 배열.
+    expect(getNextFallback('ramanujan_intuit', 0)).toBeNull();
   });
 
   it('1단계 초과 시 null (자동 fallback X) — attempt=1', () => {
@@ -167,9 +170,27 @@ describe('FALLBACK_MATRIX', () => {
     expect(FALLBACK_MATRIX.leibniz).toEqual(['euler', 'von_neumann']);
   });
 
-  it('라마누잔 2종은 1순위만', () => {
+  it('라마누잔_calc 1순위 = 라마누잔_intuit', () => {
     expect(FALLBACK_MATRIX.ramanujan_calc).toEqual(['ramanujan_intuit']);
-    expect(FALLBACK_MATRIX.ramanujan_intuit).toEqual(['leibniz']);
+  });
+
+  it('라마누잔_intuit (G06-30) 매트릭스 항목 = 빈 배열 (model swap 으로 처리)', () => {
+    expect(FALLBACK_MATRIX.ramanujan_intuit).toEqual([]);
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+// C-2. getRamanujanIntuitSwap (G06-30 Δ8)
+// ────────────────────────────────────────────────────────────────────────────
+
+describe('getRamanujanIntuitSwap (G06-30)', () => {
+  it('Sonnet baseline 으로 swap (페르소나 유지)', () => {
+    const swap = getRamanujanIntuitSwap();
+    expect(swap.provider).toBe('anthropic');
+    expect(swap.mode).toBe('baseline');
+    expect(swap.mode_label).toBe('baseline_sonnet_fallback');
+    // model_id 는 env 또는 default — sonnet 명시
+    expect(swap.model_id).toMatch(/sonnet/);
   });
 });
 
@@ -189,6 +210,19 @@ describe('buildFallbackMessage', () => {
     expect(msg).toContain('가우스');
     expect(msg).toContain('폰 노이만');
     expect(msg).toMatch(/잠시 휴식/);
+  });
+
+  it('라마누잔_intuit → 라마누잔_intuit (model swap) 메시지 (G06-30 Δ8)', () => {
+    const msg = buildFallbackMessage({
+      primary: 'ramanujan_intuit',
+      fallback_to: 'ramanujan_intuit',
+      reason: 'gemini_429',
+      error_message: 'quota',
+      attempt: 1,
+    });
+    expect(msg).toContain('라마누잔');
+    expect(msg).toContain('Gemini');
+    expect(msg).toContain('Sonnet');
   });
 });
 
@@ -321,19 +355,22 @@ describe('callTutor with fallback', () => {
     expect(result.fallback_event?.reason).toBe('anthropic_rate_limit');
   });
 
-  it('라마누잔_intuit 실패 → 라이프니츠 fallback', async () => {
+  it('라마누잔_intuit (Gemini 429) → Sonnet baseline model swap (G06-30 Δ8)', async () => {
+    // 1번째: Gemini baseline 429
     callModelMock
       .mockRejectedValueOnce(
-        Object.assign(new Error('[call-model] Anthropic 529'), {
-          status: 529,
-        }),
+        Object.assign(
+          new Error('[call-model] Gemini 429: RESOURCE_EXHAUSTED'),
+          { status: 429 },
+        ),
       )
+      // 2번째: Sonnet baseline swap 성공
       .mockResolvedValueOnce({
-        text: '라이프니츠 풀이...\n최종 답: 3',
-        trace: { mode: 'agentic_5step' },
+        text: 'Sonnet 풀이...\n최종 답: 3',
+        trace: { mode: 'baseline' },
         tool_calls: [],
-        duration_ms: 6000,
-        model_id: TUTOR_CONFIG.leibniz.model,
+        duration_ms: 4000,
+        model_id: 'claude-sonnet-4-6-20260101',
       });
 
     const result = await callTutor({
@@ -344,9 +381,57 @@ describe('callTutor with fallback', () => {
       routing_decision_id: 'r3',
     });
 
-    expect(result.actual_tutor).toBe('leibniz');
+    // 페르소나 유지 — actual_tutor 는 ramanujan_intuit 그대로
+    expect(result.actual_tutor).toBe('ramanujan_intuit');
     expect(result.fallback_event?.primary).toBe('ramanujan_intuit');
-    expect(result.fallback_event?.fallback_to).toBe('leibniz');
+    expect(result.fallback_event?.fallback_to).toBe('ramanujan_intuit');
+    expect(result.fallback_event?.reason).toBe('gemini_429');
+    expect(result.final_answer).toBe('3');
+
+    // callModel 2회: 1차 google baseline 실패, 2차 anthropic baseline 성공
+    expect(callModelMock).toHaveBeenCalledTimes(2);
+    const firstCall = callModelMock.mock.calls[0][0];
+    expect(firstCall.provider).toBe('google');
+    expect(firstCall.mode).toBe('baseline');
+    const secondCall = callModelMock.mock.calls[1][0];
+    expect(secondCall.provider).toBe('anthropic');
+    expect(secondCall.mode).toBe('baseline');
+    expect(secondCall.model_id).toMatch(/sonnet/);
+    // 페르소나 prompt 는 라마누잔 그대로 유지
+    expect(secondCall.system_prompt).toContain('라마누잔');
+
+    // DB insert: swap 시도 1건 — call_kind='retry', mode='baseline_sonnet_fallback'
+    expect(insertedRows.length).toBe(1);
+    const inserted = insertedRows[0] as Record<string, unknown>;
+    expect(inserted.tutor_name).toBe('ramanujan_intuit');
+    expect(inserted.tier).toBe(1);
+    expect(inserted.call_kind).toBe('retry');
+    expect(inserted.mode).toBe('baseline_sonnet_fallback');
+  });
+
+  it('라마누잔_intuit swap 도 실패 → throw (자동 2단계 X)', async () => {
+    callModelMock
+      .mockRejectedValueOnce(
+        Object.assign(new Error('[call-model] Gemini 429'), { status: 429 }),
+      )
+      .mockRejectedValueOnce(
+        Object.assign(new Error('[call-model] Anthropic 529: overloaded'), {
+          status: 529,
+        }),
+      );
+
+    await expect(
+      callTutor({
+        user_id: 'u3b',
+        problem_text: '간단 추론 문제',
+        tutor: 'ramanujan_intuit',
+        call_kind: 'primary',
+        routing_decision_id: 'r3b',
+      }),
+    ).rejects.toThrow();
+
+    // 정확히 2회 (primary Gemini + swap Sonnet) — 추가 시도 X
+    expect(callModelMock).toHaveBeenCalledTimes(2);
   });
 
   it('알 수 없는 튜터 throw 는 fallback 없이 즉시 전파', async () => {

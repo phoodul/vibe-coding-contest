@@ -1,10 +1,13 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-29 (9차 세션 — **G-06 ✅ 진정 완결 + M9 추가, 28/28**)
-- Phase: **Phase G-06 ✅ (M8 + M9 포함)** → G-07 진입 대기
-- Step: **G06-28 ✅ (M9 1/1 ✅, G-06 28/28 + G06-23 deferred)** — R1 풀이 정리 섹션 (Δ7). `src/lib/legend/types.ts` schema 1.1 → **1.2** + `SolutionSummary` 타입 신규 (4 필드: core_insight / step_flow_narrative / hardest_resolution / generalization). `solution-summarizer.ts` 신규 (Haiku 4.5 1회, max_tokens 500, ~$0.001/문제 + JSON 파싱 실패/throw/빈 입력 시 fallback). `report-builder.ts` 에 summarizeSolution 단계 추가 + schema_version 1.2 bump. `SolutionSummarySection.tsx` 신규 (📝 emerald accent + 4 필드 노출 + 🎯 어려운 부분 italic + 💭 일반 원칙 footer 톤). `PerProblemReportCard.tsx` 에 steps 직후 + trigger 직전 위치 통합. **차원 분리 명문화**: LLMStruggleSection (정직성) vs SolutionSummarySection (학습 코치). 검증: tsc 무에러 + vitest **248/248 PASS** (+18 신규 / 기존 230 회귀 0). commit `081c5d0`.
-- Session: 9차 (**G-06 ✅ 28/28 진정 완결**, 다음 단계: 베타 모집 시작 + 피드백 수집)
+- Time: 2026-04-29 (9차 세션 — **G06-30 ✅ Tier 1 라마누잔 = Gemini baseline + Sonnet 429 fallback (Δ8)**)
+- Phase: **Phase G-06 ✅ + G06-30 (Δ8)** → G-07 진입 대기
+- Step: **G06-30 ✅** — Tier 1 라마누잔 모델 변경: Opus 4.7 → **Gemini 3.1 Pro baseline** (비용 17배 절감, 베타 50명 월 $3,180 절감). 250 RPD 한도 도달 시 페르소나 유지하면서 model_id/provider 만 **Sonnet 4.6 baseline** 으로 동적 swap. `tutor-orchestrator.ts` TUTOR_CONFIG.ramanujan_intuit = google + gemini-3-1-pro + callTutorInternal 에 modelOverride 인자 + callTutorWithFallback 의 catch 블록에 라마누잔 분기 (FALLBACK_MATRIX 분기 전에 처리). `tutor-fallback.ts` `getRamanujanIntuitSwap()` 신규 + `FALLBACK_MATRIX.ramanujan_intuit = []` (model swap 으로 처리) + `buildFallbackMessage` "라마누잔 (Gemini) → Sonnet" 카피 분기. DB `legend_tutor_sessions.mode = 'baseline_sonnet_fallback'` 통계 분리. `.env.example` + `docs/qa/g06-vercel-env-import.md` env 2종 추가 (`LEGEND_RAMANUJAN_MODEL` / `LEGEND_RAMANUJAN_FALLBACK_MODEL`). 아키텍처 §1.2 / §4.3 / §9.1 / §9.5 갱신 (Δ8 라마누잔 + 가우스 quota 공유 정책 명문화). project-decisions Δ8 추가. 검증: tsc 무에러 + vitest **252/252 PASS** (+4 신규 / 기존 248 회귀 0).
+- Session: 9차 (**G-06 + G06-30 ✅**, 다음 단계: 베타 모집 시작 + GEMINI_API_KEY Vercel env 등록 확인)
+
+## 이전 Checkpoint (G06-28)
+- G06-28 ✅ R1 풀이 정리 섹션 (Δ7) — schema 1.2 + SolutionSummary 4 필드 + Haiku ~$0.001/문제 + 차원 분리 (정직성 vs 학습 코치). commit `081c5d0`.
 
 ## G-06 완결 — 핵심 성과
 - **브랜드 변경**: Euler Tutor → Legend Tutor (5 거장 튜터)

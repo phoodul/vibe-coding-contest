@@ -36,7 +36,7 @@ flowchart TB
     Prompt -->|학생: 힌트만| Hint[Tier 0 Haiku 힌트]
     Route{Tier 분기}
     Route -->|Tier 0 단순계산| T0[라마누잔<br/>Haiku + SymPy]
-    Route -->|Tier 1 중등| T1[라마누잔<br/>Opus 4.7 baseline]
+    Route -->|Tier 1 중등| T1[라마누잔<br/>Gemini 3.1 Pro baseline<br/>Δ8: 429 시 Sonnet swap]
     Route -->|Tier 2 고난도| T2{영역}
     T2 -->|공통·미적분| G[가우스<br/>Gemini 3.1 Pro agentic]
     T2 -->|기하·미적분| N[폰 노이만<br/>GPT-5.5 agentic]
@@ -492,11 +492,13 @@ export async function consumeQuota(user_id: string, kind: QuotaKind): Promise<Qu
 ### 4.3 모델·모드 매핑 테이블 (orchestrator 내장)
 
 ```ts
+// G06-30 (Δ8): Tier 1 라마누잔 = Gemini 3.1 Pro baseline (Opus 4.7 → Gemini 변경, 비용 17배 절감).
+//              250 RPD 한도 도달 시 동적 swap (Sonnet 4.6 baseline + 페르소나 유지).
 const TUTOR_CONFIG: Record<TutorName, { tier: Tier; model: string; mode: string; provider: string }> = {
   ramanujan_calc:   { tier: 0, model: 'claude-haiku-4-5-20251201',  mode: 'calc_haiku',     provider: 'anthropic' },
-  ramanujan_intuit: { tier: 1, model: 'claude-opus-4-7-20260201',   mode: 'baseline',       provider: 'anthropic' },
-  gauss:            { tier: 2, model: 'gemini-3-1-pro',             mode: 'agentic_5step',  provider: 'google'   },
-  von_neumann:      { tier: 2, model: 'gpt-5-5',                    mode: 'agentic_5step',  provider: 'openai'   },
+  ramanujan_intuit: { tier: 1, model: 'gemini-3-1-pro',             mode: 'baseline',       provider: 'google'    }, // Δ8
+  gauss:            { tier: 2, model: 'gemini-3-1-pro',             mode: 'agentic_5step',  provider: 'google'    },
+  von_neumann:      { tier: 2, model: 'gpt-5-5',                    mode: 'agentic_5step',  provider: 'openai'    },
   euler:            { tier: 2, model: 'claude-opus-4-7-20260201',   mode: 'agentic_5step',  provider: 'anthropic' },
   leibniz:          { tier: 2, model: 'claude-sonnet-4-6-20260101', mode: 'agentic_5step',  provider: 'anthropic' },
 };
@@ -891,6 +893,12 @@ const EULER_TO_LEGEND: Record<string, string> = {
 - 폰 노이만도 한도 시 → 라이프니츠 (Sonnet 4.6) → 오일러 (Opus 4.7) 순.
 - fallback 통계 로깅 → 일 fallback 비중 > 20% 시 Vertex AI 마이그 trigger 알림.
 
+**G06-30 (Δ8) — 라마누잔 + 가우스 quota 공유**:
+- Tier 1 라마누잔 (베타 50명 기준 ~250 RPD) + Tier 2 가우스 (~45 RPD) 합계 ~295 RPD → 250 RPD 한도 초과 가능.
+- **라마누잔이 먼저 양보**: 429 시 페르소나 유지하면서 Sonnet 4.6 baseline 으로 동적 swap. 가우스 (KPI 89.5% 1위) 는 Gemini 보존.
+- UI: "라마누잔 (Gemini) 가 잠시 쉬어요. Sonnet 모드로 전환합니다."
+- swap 후 DB 의 `legend_tutor_sessions.mode = 'baseline_sonnet_fallback'` 명시 — 통계 분리 가능.
+
 ### 9.2 Per-Problem Report 비용 vs 캐시
 
 - 1 session 당 builder 비용 ≈ $0.001 (text-embedding-3-small 5~6회). 캐시 적용 시 동일 session 재호출 무비용.
@@ -918,10 +926,12 @@ const EULER_TO_LEGEND: Record<string, string> = {
 | 폰 노이만 (GPT-5.5) | 가우스 (Gemini) | 오일러 (Opus 4.7) |
 | 오일러 (Opus 4.7) | 라이프니츠 (Sonnet 4.6) | 가우스 (Gemini) |
 | 라이프니츠 (Sonnet 4.6) | 오일러 (Opus 4.7) | 폰 노이만 (GPT-5.5) |
-| 라마누잔 calc (Haiku) | 라마누잔 intuit (Opus 4.7) | — |
-| 라마누잔 intuit (Opus 4.7) | 라이프니츠 (Sonnet 4.6) | — |
+| 라마누잔 calc (Haiku) | 라마누잔 intuit (Gemini, Δ8) | — |
+| 라마누잔 intuit (Gemini, Δ8) | 라마누잔 intuit + Sonnet 4.6 baseline (model swap, Δ8) | — |
 
 `tutor-orchestrator.callTutor` 내부 try/catch + fallback 한 단계까지 자동, 두 단계 이후는 명시적 EscalationPrompt 로 학생 권유.
+
+**G06-30 (Δ8) 특이 케이스**: 라마누잔 intuit 의 1단계 fallback 은 다른 튜터가 아닌 **같은 라마누잔 intuit + 다른 model (Sonnet 4.6 baseline)** — 페르소나 유지를 위해 model_id/provider 만 동적 swap. `tutor-fallback.getRamanujanIntuitSwap()` 가 swap 정의를 제공하고, `callTutorWithFallback` 의 catch 블록이 분기 처리한다 (FALLBACK_MATRIX.ramanujan_intuit = []).
 
 ### 9.6 R1 의 step kind 분류 정확도
 

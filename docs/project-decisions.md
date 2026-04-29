@@ -365,6 +365,23 @@ Stage 2: 라마누잔 baseline probe + 자가평가 → escalation 권유
 
 ---
 
+## [2026-04-29] Δ8. Tier 1 라마누잔 모델 변경 — Gemini baseline + Sonnet fallback (G06-30)
+
+- **결정**: Tier 1 라마누잔 (직관 모드) 모델 = Opus 4.7 → **Gemini 3.1 Pro baseline**
+- **fallback**: 250 RPD 한도 도달 시 자동 Sonnet 4.6 baseline 으로 swap (라마누잔 페르소나 유지). 동적 model swap — tutor 자체는 ramanujan_intuit 그대로.
+- **이유**: 비용 17배 절감 ($0.45 → $0.026/문제). 베타 50명 월 $3,375 → $195 (월 $3,180 절감).
+- **Gemini quota 충돌**: 라마누잔 (~250 RPD) + 가우스 (~45 RPD) = ~295 RPD 일 한도 250 초과. 라마누잔이 먼저 Sonnet swap 으로 quota 양보, 가우스 (Tier 2) 는 Gemini 보존 (정답률 89.5% 1위).
+- **Sonnet baseline 정답률 검증**: 우리 측정 ~92% (재정정 후), 신뢰성 보강은 Critic 옵션 G-07 검토.
+- **장기**: 사용자 100명+ 시점에 Vertex AI 마이그레이션 검토 (Preview → GA + RPD 한도 완화).
+- **반영**:
+  - `src/lib/legend/tutor-orchestrator.ts` TUTOR_CONFIG.ramanujan_intuit = google + gemini-3-1-pro
+  - `src/lib/legend/tutor-fallback.ts` getRamanujanIntuitSwap() + buildFallbackMessage 분기 + FALLBACK_MATRIX.ramanujan_intuit = [] (model swap 으로 처리)
+  - `callTutorWithFallback` catch 블록 — 라마누잔 intuit + 1단계 시 swap 분기, DB mode='baseline_sonnet_fallback'
+  - env: `LEGEND_RAMANUJAN_MODEL` / `LEGEND_RAMANUJAN_FALLBACK_MODEL` 추가
+  - 단위 테스트 회귀 0 + Δ8 시나리오 신규
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부

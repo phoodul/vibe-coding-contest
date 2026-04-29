@@ -27,9 +27,11 @@ GEMINI_MODEL_ID=gemini-3-1-pro
 NEXT_PUBLIC_LEGEND_TREE_DEPTH_PREVIEW=3
 NEXT_PUBLIC_LEGEND_TREE_COLLAPSE_NODE_THRESHOLD=30
 LEGEND_DELEGATION_ENABLED=false
+LEGEND_RAMANUJAN_MODEL=gemini-3-1-pro
+LEGEND_RAMANUJAN_FALLBACK_MODEL=claude-sonnet-4-6-20260101
 ```
 
-(16개 — 13종 + Δ4 NEXT_PUBLIC 2종 + kill switch)
+(18개 — 16종 + G06-30 Δ8 라마누잔 모델 swap 2종)
 
 ### 2. Vercel 대시보드에서 Import
 
@@ -59,6 +61,8 @@ vercel env ls
 | GEMINI_MODEL_ID | `gemini-3-1-pro` (모델 ID) | 0 |
 | NEXT_PUBLIC_* (2종) | 트리 시각화 임계값 | 0 (어차피 클라이언트 노출 의도) |
 | LEGEND_DELEGATION_ENABLED | `false` (kill switch) | 0 |
+| LEGEND_RAMANUJAN_MODEL | `gemini-3-1-pro` (Tier 1 baseline) | 0 |
+| LEGEND_RAMANUJAN_FALLBACK_MODEL | `claude-sonnet-4-6-20260101` (429 swap) | 0 |
 
 **API 키 시크릿 아님** — `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `SUPABASE_*` 등 **기존에 등록된** 시크릿은 본 import에 포함하지 않습니다.
 
@@ -84,5 +88,7 @@ git push origin main
 - `LEGEND_BETA_*` 5종 누락 → 베타 한도 5/3/1/1/1 default 적용 (영향 X)
 - `GEMINI_MODEL_ID` 누락 → `gemini-3-1-pro` default
 - `LEGEND_DELEGATION_ENABLED` 누락 → false (점진적 위임 OFF)
+- `LEGEND_RAMANUJAN_MODEL` 누락 → `GEMINI_MODEL_ID` 또는 `gemini-3-1-pro` default
+- `LEGEND_RAMANUJAN_FALLBACK_MODEL` 누락 → `ANTHROPIC_SONNET_MODEL_ID` 또는 `claude-sonnet-4-6-20260101` default
 
 → **import 안 해도 production 정상 작동**. 다만 quota 한도 변경 시 코드 재배포 vs env 변경 선택지 보존을 위해 등록 권장.
