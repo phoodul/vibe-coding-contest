@@ -571,7 +571,7 @@ G06-01 → G06-02 → G06-03 (M1)
 > 추가일: 2026-04-29 (Δ7 사용자 결정)
 > 목적: R1 카드에 학습 코치 차원의 "📝 풀이 정리" 섹션 신규 추가. LLMStruggleSection (정직성 차원) 과 분리.
 
-### G06-28: SolutionSummarySection 풀이 정리 (옵션 B, Δ7) ✅ (commit `<HASH>`)
+### G06-28: SolutionSummarySection 풀이 정리 (옵션 B, Δ7) ✅ (commit `081c5d0`)
 - **선행**: G06-27 (M8 완료)
 - **변경 파일**:
   - `src/lib/legend/types.ts` (수정 — `SolutionSummary` 타입 신규, `PerProblemReport` schema_version 1.1 → 1.2 + `solution_summary` 필드)

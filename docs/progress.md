@@ -3,7 +3,7 @@
 ## Last Checkpoint
 - Time: 2026-04-29 (9차 세션 — **G-06 ✅ 진정 완결 + M9 추가, 28/28**)
 - Phase: **Phase G-06 ✅ (M8 + M9 포함)** → G-07 진입 대기
-- Step: **G06-28 ✅ (M9 1/1 ✅, G-06 28/28 + G06-23 deferred)** — R1 풀이 정리 섹션 (Δ7). `src/lib/legend/types.ts` schema 1.1 → **1.2** + `SolutionSummary` 타입 신규 (4 필드: core_insight / step_flow_narrative / hardest_resolution / generalization). `solution-summarizer.ts` 신규 (Haiku 4.5 1회, max_tokens 500, ~$0.001/문제 + JSON 파싱 실패/throw/빈 입력 시 fallback). `report-builder.ts` 에 summarizeSolution 단계 추가 + schema_version 1.2 bump. `SolutionSummarySection.tsx` 신규 (📝 emerald accent + 4 필드 노출 + 🎯 어려운 부분 italic + 💭 일반 원칙 footer 톤). `PerProblemReportCard.tsx` 에 steps 직후 + trigger 직전 위치 통합. **차원 분리 명문화**: LLMStruggleSection (정직성) vs SolutionSummarySection (학습 코치). 검증: tsc 무에러 + vitest **248/248 PASS** (+18 신규 / 기존 230 회귀 0). commit `<HASH>`.
+- Step: **G06-28 ✅ (M9 1/1 ✅, G-06 28/28 + G06-23 deferred)** — R1 풀이 정리 섹션 (Δ7). `src/lib/legend/types.ts` schema 1.1 → **1.2** + `SolutionSummary` 타입 신규 (4 필드: core_insight / step_flow_narrative / hardest_resolution / generalization). `solution-summarizer.ts` 신규 (Haiku 4.5 1회, max_tokens 500, ~$0.001/문제 + JSON 파싱 실패/throw/빈 입력 시 fallback). `report-builder.ts` 에 summarizeSolution 단계 추가 + schema_version 1.2 bump. `SolutionSummarySection.tsx` 신규 (📝 emerald accent + 4 필드 노출 + 🎯 어려운 부분 italic + 💭 일반 원칙 footer 톤). `PerProblemReportCard.tsx` 에 steps 직후 + trigger 직전 위치 통합. **차원 분리 명문화**: LLMStruggleSection (정직성) vs SolutionSummarySection (학습 코치). 검증: tsc 무에러 + vitest **248/248 PASS** (+18 신규 / 기존 230 회귀 0). commit `081c5d0`.
 - Session: 9차 (**G-06 ✅ 28/28 진정 완결**, 다음 단계: 베타 모집 시작 + 피드백 수집)
 
 ## G-06 완결 — 핵심 성과
