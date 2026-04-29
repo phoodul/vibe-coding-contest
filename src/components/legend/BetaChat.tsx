@@ -127,12 +127,20 @@ export function BetaChat({ user: _user }: { user: User }) {
               </p>
             </div>
           </div>
-          <Link
-            href="/euler/report"
-            className="text-[11px] px-2.5 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors font-semibold"
-          >
-            📊 리포트
-          </Link>
+          <div className="flex items-center gap-1.5">
+            <Link
+              href="/legend/beta/review"
+              className="text-[11px] px-2.5 py-1 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 transition-colors font-semibold"
+            >
+              📝 후기
+            </Link>
+            <Link
+              href="/euler/report"
+              className="text-[11px] px-2.5 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors font-semibold"
+            >
+              📊 리포트
+            </Link>
+          </div>
         </div>
       </header>
 

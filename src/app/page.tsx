@@ -314,6 +314,12 @@ const studentFeatures = [
     href: "/legend",
   },
   {
+    title: "베타 후기",
+    description: "5 명의 거장 튜터를 직접 사용한 베타 사용자들의 솔직한 별점·구매 의향·추천 튜터 후기 모음.",
+    icon: "⭐",
+    href: "/legend/reviews",
+  },
+  {
     title: "마인드 맵",
     description: "교과서 전체 구조를 인터랙티브 마인드 맵으로 탐색하며 핵심 내용을 한눈에 파악합니다.",
     icon: "🧠",

@@ -1,6 +1,18 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
+- Time: 2026-04-30 (11차 세션 Night mode — **G06-34 ✅ 베타 리뷰 시스템 — 5 항목 자율 후기 + 공개 페이지 (Δ11)**)
+- Phase: **Phase G-06 ✅ + G06-33 (Δ10) + G06-34 (Δ11)** → 베타 모집 + 출시 마케팅 자산 확보
+- Step: **G06-34 ✅ Night mode** — 기존 G06-23 인터뷰 폐기 → 자율 글 후기 시스템.
+  - **(a) DB**: `beta_reviews` 테이블 + RLS 4종 (본인 read/insert/update + 공개 anon read) + `get_beta_review_stats()` RPC (anon, public 만 집계)
+  - **(b) API**: POST/GET `/api/legend/beta/review` (인증 + access_tier='beta' 가드, 5 항목 검증, upsert) + GET `/api/legend/reviews` (anon 가능, 통계 + 페이지네이션 10건/page, sort=latest|rating)
+  - **(c) UI**: `/legend/beta/review` (Server + redirect 가드 + 본인 기존 리뷰 fetch) + `BetaReviewForm` (5 항목 Framer Motion: 별점·튜터 카드·구매 의향 토글·글자수 카운터·공개 토글) + `/legend/reviews` (공개 페이지) + `ReviewStatsHero` + `ReviewsList`
+  - **(d) 진입점**: `BetaChat` 헤더 "📝 후기" 버튼 + 메인 홈 student 카드 "베타 후기" 추가
+  - **(e) 회귀**: 기존 327 → **344 PASS** (+17 신규 review 테스트, 회귀 0)
+  - 검증: tsc ✅ + vitest 344/344 PASS + next build ✅ (`/legend/beta/review` 3.79kB + `/legend/reviews` 2.36kB + API 2 라우트)
+- Session: 11차 Night mode (**G06-34 ✅**, 다음 단계: 베타 모집 시작 + 베타 사용자 후기 누적 → 출시 시점 마케팅)
+
+## 이전 Checkpoint (G06-33, 2026-04-29)
 - Time: 2026-04-29 (10차 세션 Night mode — **G06-33 ✅ 풀이 정리 진입 + trigger_motivation + LaTeX·typewriter UX (Δ10)**)
 - Phase: **Phase G-06 ✅ + G06-33 (Δ10)** → 베타 모집 시작 가능
 - Step: **G06-33 ✅ Night mode** — 메인 채팅 (`/legend` BetaChat) UX 결함 4종 통합 fix.

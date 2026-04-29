@@ -297,3 +297,33 @@ export interface ReasoningTreeEdge {
   to: string;
   kind: 'requires' | 'derived_from';
 }
+
+// ────────────────────────────────────────────────────────────────────────────
+// G06-34 (Δ11) — 베타 리뷰 시스템
+// ────────────────────────────────────────────────────────────────────────────
+
+export type RecommendedTutor =
+  | 'ramanujan'
+  | 'gauss'
+  | 'von_neumann'
+  | 'euler'
+  | 'leibniz';
+
+export interface BetaReview {
+  id: string;
+  pros: string;
+  cons: string;
+  purchase_intent: boolean;
+  recommended_tutor: RecommendedTutor;
+  star_rating: number;
+  free_comment?: string | null;
+  is_public: boolean;
+  submitted_at: string;
+}
+
+export interface BetaReviewStats {
+  total: number;
+  avg_rating: number;
+  purchase_intent_rate: number;
+  tutor_distribution: Record<string, number>;
+}

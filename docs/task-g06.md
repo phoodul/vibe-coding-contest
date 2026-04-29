@@ -18,14 +18,15 @@
 | M3 — 5-튜터 orchestrator + 5종 quota + fallback | 6일 | ✅ | 4/4 |
 | M4 — Per-Problem Report 백엔드 (Δ3 + Δ4) | 8일 | ✅ | 5/5 |
 | M5 — UI + ToT 시각화 + /euler→/legend redirect | 8일 | ✅ | 5/5 |
-| M6 — KPI 측정 + 베타 검증 | 4일 | ⏸ 1/2 | G06-23 보류 (베타 모집 후 별도) |
+| M6 — KPI 측정 + 베타 검증 | 4일 | ⏸ 1/2 | G06-23 인터뷰 폐기 → G06-34 리뷰 시스템 으로 대체 |
 | M7 — 내부 위임 + 301 영구 redirect + 배포 | 4일 | ✅ | 2/2 |
 | M8 — 베타 모집 준비 (격 차별화 + 신청·승인) | 2일 | ✅ | 2/2 |
 | M9 — R1 UX 개선 (풀이 정리 Δ7) | 1일 | ✅ | 1/1 |
 | M10 — Tier 1 = Gemini baseline + Sonnet fallback | 0.5일 | ✅ | 1/1 |
 | M11 — Trial/Beta Access Tier + Legend 메인 채팅 (Δ9) | 1일 | ✅ | 1/1 |
 | M12 — 풀이 정리 진입 + trigger_motivation + UX (Δ10, Night mode) | 0.5일 | ✅ | 1/1 |
-| **합계** | **45일** | — | **31/31 (G06-23 deferred)** |
+| M13 — 베타 리뷰 시스템 (Δ11, Night mode) | 0.5일 | ✅ | 1/1 |
+| **합계** | **45.5일** | — | **32/32 (G06-23 → G06-34 대체)** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -424,17 +425,10 @@
 - **예상 토큰**: 10K
 - **commit**: `test(g06): legend 라우팅 + R1 38 평가셋 KPI 측정`
 
-### G06-23: 베타 5명 1주 만족도 인터뷰 + 결함 수정
-- **선행**: G06-22
-- **변경 파일**:
-  - `docs/qa/g06-beta-feedback.md` (신규)
-  - `docs/qa/g06-checklist.md` (체크리스트, 통과 95%+)
-  - 발견된 P0/P1 결함은 별도 fix 커밋
-- **변경 내용**: 4 질문 (트리 시각화 도움 / LLM struggle 동질감 / trigger expansion 유용 / 전체 만족도) → 5점 척도 + 자유 코멘트. ≥ 80% "도움됨" + 만족도 ≥ 4/5 목표.
-- **검증**: 인터뷰 결과 보고서 + 발견 결함 0 미해결 (P0)
-- **위험**: HIGH (사용자 피드백에 따라 UI 재작업 가능 — 1~2일 버퍼)
-- **예상 토큰**: 6K
-- **commit**: `docs(g06): 베타 5명 1주 인터뷰 + 결함 수정 보고`
+### G06-23: 베타 5명 1주 만족도 인터뷰 (deferred → G06-34 리뷰 시스템 으로 대체)
+- **상태**: ❌ 폐기 (2026-04-30, Δ11)
+- **대체**: G06-34 (M13) — 베타 사용자가 자율적으로 5 항목 리뷰 글 작성. 인터뷰 약속 부담 제거 + 마케팅 활용도 ↑.
+- **이유**: 1주 사용 후 인터뷰 일정 조율 비효율. 자율 리뷰 글이 실제 사용자 voice + 출시 시점 마케팅 자료로 그대로 활용 가능.
 
 ---
 
@@ -681,3 +675,44 @@ G06-01 → G06-02 → G06-03 (M1)
   - `pnpm next build` ✅ (모든 라우트 정상)
 - **위험**: MEDIUM → LOW (DB 스키마 무변경, schema 1.2 캐시 호환, 의존성 추가 X)
 - **commit**: `feat(g06): G06-33 풀이 정리 진입 + Solution motivation + LaTeX·typewriter UX (Night mode)`
+
+---
+
+## M13. 베타 리뷰 시스템 (Δ11, Night mode) (0.5일, 1 task)
+
+> 추가일: 2026-04-30 (Night mode, Δ11 사용자 결정)
+> 목적: 기존 G06-23 인터뷰 폐기 → 베타 사용자 자율 글 후기 시스템.
+> 사용자 핵심 요구: "5 항목 (장점·단점·구매 의향·추천 튜터·별점) 자율 리뷰 + 출시 시점 마케팅 활용".
+
+### G06-34: 베타 리뷰 시스템 — 5 항목 자율 후기 + 공개 페이지 (Δ11)
+- **선행**: G06-32 (M11 access_tier 가드 활용)
+- **변경 파일**:
+  - **DB**:
+    - `supabase/migrations/20260611_beta_reviews.sql` (신규 — `beta_reviews` 테이블 + RLS 4종 + `get_beta_review_stats()` RPC)
+  - **API**:
+    - `src/app/api/legend/beta/review/route.ts` (신규 — POST 작성·수정 + GET 본인 조회, 인증 + access_tier='beta' 가드, 5 항목 검증, upsert)
+    - `src/app/api/legend/beta/review/__tests__/route.test.ts` (신규 — 12 시나리오)
+    - `src/app/api/legend/reviews/route.ts` (신규 — GET 공개 anon 가능, 통계 + 페이지네이션 10건/page, sort=latest|rating)
+    - `src/app/api/legend/reviews/__tests__/route.test.ts` (신규 — 4 시나리오)
+  - **UI**:
+    - `src/app/legend/beta/review/page.tsx` (신규 — Server Component + redirect 가드 + 본인 기존 리뷰 fetch)
+    - `src/app/legend/reviews/page.tsx` (신규 — 공개 페이지, 통계 hero + 정렬 + 페이지네이션)
+    - `src/components/legend/BetaReviewForm.tsx` (신규 — 5 항목 인터랙티브 폼, Framer Motion 별점·튜터 카드·구매 의향 토글, 글자 수 카운터)
+    - `src/components/legend/ReviewStatsHero.tsx` (신규 — 평균 별점·구매 의향·추천 튜터 분포 막대)
+    - `src/components/legend/ReviewsList.tsx` (신규 — 카드 그리드, 가나다 line-clamp 처리)
+    - `src/components/legend/BetaChat.tsx` (수정 — 헤더에 "📝 후기" 버튼 추가)
+    - `src/app/page.tsx` (수정 — Legend Tutor 카드 옆에 "베타 후기" 카드 추가)
+  - **타입**:
+    - `src/lib/legend/types.ts` (수정 — `BetaReview`, `BetaReviewStats`, `RecommendedTutor` 추가)
+- **변경 내용**:
+  - **5 항목**: 장점 30자+ / 단점 20자+ / 구매 의향 boolean / 추천 튜터 enum (5종) / 별점 1~5 / (옵션) 자유 코멘트 / (옵션) 공개·비공개 토글 default 공개
+  - **권한 게이트**: 베타 사용자만 작성 (`getUserAccessTier === 'beta'`). trial 거부 → 402 + `/legend/beta` redirect
+  - **수정 가능**: `unique (user_id)` + upsert. 베타 사용자는 언제든 후기 갱신 가능
+  - **공개 페이지**: anon 가능. RLS `is_public=true` 자동 필터. `get_beta_review_stats()` RPC 로 통계 (anon 가능, security stable)
+  - **마케팅 활용**: `/legend/reviews` 가 SNS 공유 URL — 출시 시점 핵심 마케팅 자산
+- **검증**:
+  - `pnpm tsc --noEmit` ✅ (무에러)
+  - `pnpm dlx vitest run` ✅ (**344/344 PASS**, +17 신규 review 테스트, 회귀 0)
+  - `pnpm next build` ✅ (`/legend/beta/review` 3.79kB + `/legend/reviews` 2.36kB + API 2 라우트 정상)
+- **위험**: LOW (신규 테이블·신규 라우트, 기존 무영향, 의존성 추가 X)
+- **commit**: `feat(g06): 베타 리뷰 시스템 — 5 항목 자율 후기 + 공개 페이지 (G06-34, Δ11)`

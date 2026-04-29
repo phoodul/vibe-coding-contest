@@ -1,5 +1,54 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-30 Night (11차 세션 Night mode — G06-34 베타 리뷰 시스템, Δ11)
+
+### 배경
+기존 G06-23 (베타 5명 1주 인터뷰) 폐기 결정. 인터뷰 일정 조율 부담 + 마케팅 활용도 미흡 → 자율 글 후기 시스템으로 대체.
+사용자가 5 항목 (장점·단점·구매 의향·추천 튜터·별점) 리뷰를 작성하면, 출시 시점에 그대로 마케팅 자산으로 활용.
+
+### 산출물
+
+#### (a) DB
+- `supabase/migrations/20260611_beta_reviews.sql` 신규
+- 테이블 `beta_reviews` — pros (≥30) / cons (≥20) / purchase_intent (bool) / recommended_tutor (5 enum) / star_rating (1~5) / free_comment (옵션) / is_public (default true) / submitted_at / unique(user_id)
+- RLS 4종: 본인 read/insert/update + 공개 anon read (`is_public=true`)
+- RPC `get_beta_review_stats()` (anon 가능, public 만 집계 → total / avg_rating / purchase_intent_rate / tutor_distribution)
+- Supabase MCP `apply_migration` 으로 직접 적용
+
+#### (b) API 2 라우트
+- `POST /api/legend/beta/review` — 인증 401 + `access_tier === 'beta'` 가드 (trial 시 402 + beta_only) + 5 항목 검증 (pros/cons 길이, intent boolean, tutor enum, star 1~5) + upsert (재제출 시 갱신)
+- `GET /api/legend/beta/review` — 본인 리뷰 조회
+- `GET /api/legend/reviews` (공개) — anon 가능, RPC 통계 + RLS 자동 필터, 페이지네이션 10건/page, sort=latest|rating
+
+#### (c) UI
+- `/legend/beta/review/page.tsx` — Server Component, 인증·tier 가드 → trial 시 `/legend/beta` redirect
+- `BetaReviewForm.tsx` — 5 항목 인터랙티브 (Framer Motion): 별점 5개 ★ + 추천 튜터 5 카드 (TutorBadge 패턴 + Image priority) + 구매 의향 Y/N 토글 + 장점·단점 textarea + 글자수 카운터 + 공개 토글
+- `/legend/reviews/page.tsx` (공개) — 통계 hero + 정렬 (최신/별점) + 리뷰 카드 그리드 + 페이지네이션
+- `ReviewStatsHero.tsx` — 평균 별점 / 구매 의향 / 추천 튜터 분포 막대 차트 (Framer Motion staggered)
+- `ReviewsList.tsx` — 카드 그리드 (line-clamp 처리, 별점·구매 의향 배지)
+- `BetaChat.tsx` 헤더 — "📝 후기" 버튼 추가 (amber tone, `/legend/beta/review`)
+- `src/app/page.tsx` 메인 홈 — Legend Tutor 카드 옆 "베타 후기" 카드 추가
+
+#### (d) 타입
+- `src/lib/legend/types.ts` — `BetaReview`, `BetaReviewStats`, `RecommendedTutor` 추가
+
+### 검증
+- `pnpm tsc --noEmit` ✅ (무에러)
+- `pnpm dlx vitest@latest run` ✅ — **32 파일 / 344 테스트 PASS** (기존 327 + 신규 17, 회귀 0)
+  - 신규 review POST: 9 (401 미인증 / 402 trial / 400 invalid_json / 400 pros_too_short / 400 cons_too_short / 400 purchase_intent_required / 400 invalid_recommended_tutor / 400 invalid_star_rating / 201 정상 + is_public default)
+  - 신규 review GET: 3 (401 / 본인 / null)
+  - 신규 reviews 공개: 5 (anon 정상 / sort=rating / has_next / 500)
+- `npm run build` ✅ — `/legend/beta/review` 3.79kB + `/legend/reviews` 2.36kB + API 2 라우트 모두 정상 등록
+
+### 영향 격리 + 의존성
+- 신규 파일 8개 + 기존 수정 3개 (BetaChat 헤더 / page.tsx 카드 / types.ts 타입). 기존 라우트·API·DB 무수정.
+- 의존성 추가 X (기존 react + framer-motion + Next.js Image 활용)
+
+### 다음 단계
+베타 모집 시작 → 베타 사용자 후기 누적 → 출시 시점 `/legend/reviews` SNS 마케팅. (G06-23 인터뷰 부담 ↓, 자율성 ↑)
+
+---
+
 ## 2026-04-29 Night (10차 세션 Night mode — G06-33 풀이 정리 진입 + trigger_motivation + UX, Δ10)
 
 ### 배경

@@ -447,6 +447,37 @@ Stage 2: 라마누잔 baseline probe + 자가평가 → escalation 권유
 
 ---
 
+## [2026-04-30] Δ11. 베타 리뷰 시스템 (인터뷰 → 자율 글 후기, G06-34, Night mode)
+
+### 결정
+
+- **결정**: 기존 G06-23 인터뷰 (5명 1주 사용 후 인터뷰) 폐기 → 베타 사용자 자율 리뷰 글 작성 시스템.
+- **5 항목**: 장점 (30자+) / 단점 (20자+) / 구매 의향 (Y/N) / 추천 튜터 (5 enum 중 1) / 별점 (1~5).
+- **옵션**: 자유 코멘트 / 공개·비공개 토글 (default 공개).
+- **마케팅 활용**: 출시 시점 `/legend/reviews` 공개 페이지에서 통계 (평균 별점·구매 의향·튜터 분포) + 리뷰 카드 인용.
+- **권한**: 베타 사용자만 작성 (`access_tier === 'beta'`). trial 거부 → 402 + `/legend/beta` redirect.
+- **RLS**: 본인 read/insert/update + 공개 리뷰 (is_public=true) 누구나 read (anon 포함).
+- **수정 가능**: `unique (user_id)` + upsert — 베타 사용자는 언제든 후기 갱신 가능.
+
+### 산출물
+
+- DB: `supabase/migrations/20260611_beta_reviews.sql` — `beta_reviews` 테이블 + `get_beta_review_stats()` RPC + RLS 4종.
+- API: `POST/GET /api/legend/beta/review` (인증·beta 가드·5 항목 검증·upsert), `GET /api/legend/reviews` (anon 가능, 통계+페이지네이션 10건/page, sort=latest|rating).
+- UI: `src/app/legend/beta/review/page.tsx` (server component + redirect 가드), `BetaReviewForm` (5 항목 + Framer Motion 별점·튜터 카드·구매 의향 토글), `src/app/legend/reviews/page.tsx` (공개), `ReviewStatsHero` + `ReviewsList` 컴포넌트.
+- 진입점: `BetaChat` 헤더에 `📝 후기` 버튼 추가, 메인 홈 student 카드에 "베타 후기" 카드 추가.
+- 타입: `src/lib/legend/types.ts` — `BetaReview`, `BetaReviewStats`, `RecommendedTutor` 추가.
+
+### 결과
+
+- 단위 테스트 +17 (POST 9 + GET 3 + 공개 list 4 + has_next 1)
+- 신규 vitest 17/17 PASS, 기존 회귀 327 → **344 PASS** (회귀 0)
+- TypeScript / Next.js build 무에러
+- 영향 격리: 신규 파일 8개 (mig 1 + API 2 + page 2 + 컴포넌트 3) + 기존 수정 3 (BetaChat 헤더 / page.tsx 카드 / types.ts 타입)
+- DB: 신규 테이블 + 신규 RPC, 기존 테이블 무수정
+- 의존성 추가 X (기존 react + framer-motion + Next.js Image 활용)
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부
