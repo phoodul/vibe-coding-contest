@@ -382,6 +382,29 @@ Stage 2: 라마누잔 baseline probe + 자가평가 → escalation 권유
 
 ---
 
+## [2026-04-29] Δ9. Production 권한 게이트 — Trial / Beta Access Tier (G06-32)
+
+- **결정**: 모든 Legend 기능 production 배포. **베타 승인자만** 5튜터 + R1 + R2 + Δ1 5종 quota 모든 기능 사용. **비-베타 (체험판)** = 라마누잔 일 3회 (Gemini baseline + Sonnet fallback). **신청 대기자** = 체험과 동일.
+- **이유**: 베타 모집 + 신청·승인 인증 = 기능 unlock 게이트. 마케팅·전환에 직접 효과. Tier 1 라마누잔 비용 ($0.026/문제) 이라 체험 무료 운영 부담 적음.
+- **판정 기준** (`src/lib/legend/access-tier.ts`):
+  1. `beta_applications.status='approved'` → 'beta'
+  2. `euler_beta_invites.redeemed_by` 매칭 → 'beta' (기존 EULER2026 코드 사용자 호환)
+  3. 위 모두 미해당 → 'trial'
+- **신규 quota**: `trial_ramanujan_daily` (default 3, env `LEGEND_TRIAL_RAMANUJAN_DAILY`). `legend_quota_counters_quota_kind_check` enum 확장 (마이그레이션 `20260610_trial_ramanujan_quota.sql`).
+- **API 가드**:
+  - `/api/legend/solve` + `/retry-with-tutor` — trial Tier 2 호출 거부 (402 `beta_only`) / 라마누잔만 `trial_ramanujan_daily` 소진
+  - `/api/legend/report/weekly` + `/monthly` — trial 즉시 거부 (402 `beta_only`)
+  - 모든 거부 응답 `apply_url: '/legend/beta/apply'` 포함
+- **메인 채팅 분기** (`/legend/page.tsx`):
+  - re-export 폐지 → Server Component access-tier 분기
+  - `TrialChat`: 라마누잔만 + 5 거장 카드 잠금 + 베타 신청 CTA
+  - `BetaChat`: 5 튜터 카드 자유 선택 + 격 차별화
+- **모델 격상 (G-05 적용)**: `/api/euler-tutor` Sonnet 4.5 → 4.6 (`ANTHROPIC_SONNET_MODEL_ID`), GPT-5.1 → GPT-5.5 (`OPENAI_MODEL_ID`).
+- **메인 홈 진입**: `/` 학생 도구 카드에 "🏛️ Legend Tutor" 추가.
+- **회귀 안전**: 기존 베타 사용자 60명 (`euler_beta_invites.redeemed_by`) 모두 자동 'beta' 판정 → 회귀 0. 252+ vitest → 317 PASS (+6 access-tier + +3 trial quota + +3 trial 시나리오).
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부

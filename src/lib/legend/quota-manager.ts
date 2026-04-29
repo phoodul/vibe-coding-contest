@@ -57,6 +57,13 @@ const QUOTA_LIMITS: Record<QuotaKind, QuotaLimitConfig> = {
     default: 1,
     periodKind: 'monthly',
   },
+  // Δ9 (G06-32): 비-베타 (체험판) 사용자의 라마누잔 일 3회 quota.
+  // 베타 사용자는 본 quota 미사용 (problem_total_daily 5 + legend_call_daily 3 으로 충분).
+  trial_ramanujan_daily: {
+    envKey: 'LEGEND_TRIAL_RAMANUJAN_DAILY',
+    default: 3,
+    periodKind: 'daily',
+  },
 };
 
 interface EligibilityGateConfig {

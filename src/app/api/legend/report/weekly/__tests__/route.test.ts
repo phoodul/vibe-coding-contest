@@ -29,6 +29,12 @@ vi.mock('@/lib/euler/weakness-aggregator', () => ({
   aggregateWeakness: (...args: unknown[]) => aggregateWeaknessMock(...args),
 }));
 
+// G06-32 (Δ9) — Access Tier 게이트. 기존 테스트는 'beta' 사용자 시나리오.
+const getUserAccessTierMock = vi.fn(async () => 'beta' as const);
+vi.mock('@/lib/legend/access-tier', () => ({
+  getUserAccessTier: (...args: unknown[]) => getUserAccessTierMock(...args),
+}));
+
 import { POST } from '../route';
 
 beforeEach(() => {
@@ -36,6 +42,8 @@ beforeEach(() => {
   checkQuotaMock.mockReset();
   consumeQuotaMock.mockReset();
   aggregateWeaknessMock.mockReset();
+  getUserAccessTierMock.mockReset();
+  getUserAccessTierMock.mockResolvedValue('beta');
 });
 
 describe('POST /api/legend/report/weekly', () => {

@@ -35,6 +35,12 @@ vi.mock('@/lib/legend/quota-manager', () => ({
   consumeQuota: (...args: unknown[]) => consumeQuotaMock(...args),
 }));
 
+// G06-32 (Δ9) — Access Tier 게이트. 기존 라우트 테스트는 'beta' 사용자 시나리오를 가정.
+const getUserAccessTierMock = vi.fn(async () => 'beta' as const);
+vi.mock('@/lib/legend/access-tier', () => ({
+  getUserAccessTier: (...args: unknown[]) => getUserAccessTierMock(...args),
+}));
+
 import { POST } from '../route';
 
 beforeEach(() => {
@@ -42,6 +48,8 @@ beforeEach(() => {
   callTutorMock.mockReset();
   consumeQuotaMock.mockReset();
   fromMock.mockReset();
+  getUserAccessTierMock.mockReset();
+  getUserAccessTierMock.mockResolvedValue('beta');
 });
 
 function makeReq(body: unknown): Request {
@@ -211,5 +219,91 @@ describe('POST /api/legend/solve', () => {
     expect(consumeQuotaMock).toHaveBeenCalledTimes(2);
     expect(consumeQuotaMock.mock.calls[0][1]).toBe('problem_total_daily');
     expect(consumeQuotaMock.mock.calls[1][1]).toBe('legend_call_daily');
+  });
+
+  // ── G06-32 (Δ9) — Trial Access Tier 시나리오 ─────────────────────────
+  describe('Trial Access Tier (Δ9)', () => {
+    it('trial 사용자가 Tier 2 (gauss) 호출 시 → 402 beta_only + apply_url', async () => {
+      getUserMock.mockResolvedValue({ data: { user: { id: 'u-trial' } } });
+      mockRoutingDecision({ user_id: 'u-trial', routed_tier: 2 });
+      getUserAccessTierMock.mockResolvedValue('trial');
+
+      const res = await POST(
+        makeReq({
+          routing_decision_id: 'd1',
+          tutor: 'gauss',
+          problem_text: 'x',
+        }),
+      );
+
+      expect(res.status).toBe(402);
+      const body = await res.json();
+      expect(body.error).toBe('beta_only');
+      expect(body.apply_url).toBe('/legend/beta/apply');
+      // 거부됨 → quota 소진 호출 X
+      expect(consumeQuotaMock).not.toHaveBeenCalled();
+      expect(callTutorMock).not.toHaveBeenCalled();
+    });
+
+    it('trial 사용자가 라마누잔 (Tier 1) 호출 → trial_ramanujan_daily 만 소진', async () => {
+      getUserMock.mockResolvedValue({ data: { user: { id: 'u-trial' } } });
+      mockRoutingDecision({ user_id: 'u-trial', routed_tier: 1 });
+      getUserAccessTierMock.mockResolvedValue('trial');
+      consumeQuotaMock.mockResolvedValueOnce({
+        kind: 'trial_ramanujan_daily',
+        used: 1,
+        limit: 3,
+        allowed: true,
+        reset_at: 'x',
+      });
+      callTutorMock.mockResolvedValue({
+        session_id: 'sess-trial',
+        trace_jsonb: { turns: [{ content: 'hi', tool_calls: [] }] },
+        final_answer: '7',
+        duration_ms: 500,
+        actual_tutor: 'ramanujan_intuit',
+      });
+
+      const res = await POST(
+        makeReq({
+          routing_decision_id: 'd1',
+          tutor: 'ramanujan_intuit',
+          problem_text: 'x',
+        }),
+      );
+
+      expect(res.status).toBe(200);
+      // 단 1회 — trial_ramanujan_daily 만
+      expect(consumeQuotaMock).toHaveBeenCalledTimes(1);
+      expect(consumeQuotaMock.mock.calls[0][1]).toBe('trial_ramanujan_daily');
+    });
+
+    it('trial 사용자 라마누잔 호출 quota 소진 (used 3/3) → 402 trial_quota_exceeded', async () => {
+      getUserMock.mockResolvedValue({ data: { user: { id: 'u-trial' } } });
+      mockRoutingDecision({ user_id: 'u-trial', routed_tier: 1 });
+      getUserAccessTierMock.mockResolvedValue('trial');
+      consumeQuotaMock.mockResolvedValueOnce({
+        kind: 'trial_ramanujan_daily',
+        used: 3,
+        limit: 3,
+        allowed: false,
+        blocked_reason: 'limit_exceeded',
+        reset_at: 'x',
+      });
+
+      const res = await POST(
+        makeReq({
+          routing_decision_id: 'd1',
+          tutor: 'ramanujan_intuit',
+          problem_text: 'x',
+        }),
+      );
+
+      expect(res.status).toBe(402);
+      const body = await res.json();
+      expect(body.error).toBe('trial_quota_exceeded');
+      expect(body.apply_url).toBe('/legend/beta/apply');
+      expect(callTutorMock).not.toHaveBeenCalled();
+    });
   });
 });

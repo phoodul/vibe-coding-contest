@@ -20,6 +20,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { checkQuota, consumeQuota } from '@/lib/legend/quota-manager';
 import { aggregateWeakness } from '@/lib/euler/weakness-aggregator';
+import { getUserAccessTier } from '@/lib/legend/access-tier';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -32,6 +33,20 @@ export async function POST(): Promise<Response> {
   } = await supabase.auth.getUser();
   if (!user) {
     return Response.json({ error: 'unauthorized' }, { status: 401 });
+  }
+
+  // 1.5. Access Tier 게이트 (Δ9, G06-32) — 주간 리포트는 베타 only
+  const tier = await getUserAccessTier(user.id);
+  if (tier === 'trial') {
+    return Response.json(
+      {
+        error: 'beta_only',
+        message:
+          '주간 리포트는 베타 사용자만 이용 가능합니다. 베타 신청을 진행해주세요.',
+        apply_url: '/legend/beta/apply',
+      },
+      { status: 402 },
+    );
   }
 
   // 2. quota 사전 검사 (eligibility_gate vs limit_exceeded 분기)

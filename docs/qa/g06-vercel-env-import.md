@@ -29,9 +29,12 @@ NEXT_PUBLIC_LEGEND_TREE_COLLAPSE_NODE_THRESHOLD=30
 LEGEND_DELEGATION_ENABLED=false
 LEGEND_RAMANUJAN_MODEL=gemini-3-1-pro
 LEGEND_RAMANUJAN_FALLBACK_MODEL=claude-sonnet-4-6-20260101
+LEGEND_TRIAL_RAMANUJAN_DAILY=3
+ANTHROPIC_SONNET_MODEL_ID=claude-sonnet-4-6-20260101
+OPENAI_MODEL_ID=gpt-5.5
 ```
 
-(18개 — 16종 + G06-30 Δ8 라마누잔 모델 swap 2종)
+(21개 — 18종 + G06-32 Δ9 Trial Access Tier + G-05 모델 격상 3종)
 
 ### 2. Vercel 대시보드에서 Import
 
@@ -63,6 +66,9 @@ vercel env ls
 | LEGEND_DELEGATION_ENABLED | `false` (kill switch) | 0 |
 | LEGEND_RAMANUJAN_MODEL | `gemini-3-1-pro` (Tier 1 baseline) | 0 |
 | LEGEND_RAMANUJAN_FALLBACK_MODEL | `claude-sonnet-4-6-20260101` (429 swap) | 0 |
+| LEGEND_TRIAL_RAMANUJAN_DAILY | `3` (체험판 일 한도) | 0 |
+| ANTHROPIC_SONNET_MODEL_ID | `claude-sonnet-4-6-20260101` (G-05 격상) | 0 |
+| OPENAI_MODEL_ID | `gpt-5.5` (G-05 격상) | 0 |
 
 **API 키 시크릿 아님** — `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `SUPABASE_*` 등 **기존에 등록된** 시크릿은 본 import에 포함하지 않습니다.
 

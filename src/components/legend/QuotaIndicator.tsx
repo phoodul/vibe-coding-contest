@@ -21,6 +21,9 @@ const QUOTA_DISPLAY: Record<QuotaKind, { icon: string; label: string }> = {
   report_per_problem_daily: { icon: '📊', label: '리포트' },
   weekly_report: { icon: '📅', label: '주간' },
   monthly_report: { icon: '🗓️', label: '월간' },
+  // Δ9 (G06-32) — 체험판 라마누잔 일 3회. 베타 사용자에게는 노출되지 않으나
+  // QuotaKind union 완전성을 위해 매핑 유지.
+  trial_ramanujan_daily: { icon: '🎓', label: '체험' },
 };
 
 const ORDER: QuotaKind[] = [

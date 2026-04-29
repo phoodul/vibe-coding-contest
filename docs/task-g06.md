@@ -23,7 +23,8 @@
 | M8 — 베타 모집 준비 (격 차별화 + 신청·승인) | 2일 | ✅ | 2/2 |
 | M9 — R1 UX 개선 (풀이 정리 Δ7) | 1일 | ✅ | 1/1 |
 | M10 — Tier 1 = Gemini baseline + Sonnet fallback | 0.5일 | ✅ | 1/1 |
-| **합계** | **43.5일** | — | **29/29 (G06-23 deferred)** |
+| M11 — Trial/Beta Access Tier + Legend 메인 채팅 (Δ9) | 1일 | ✅ | 1/1 |
+| **합계** | **44.5일** | — | **30/30 (G06-23 deferred)** |
 
 진입 게이트: 각 마일스톤은 직전 마일스톤의 모든 Task 완료 후 진입. M1 → M2 → M3 → M4 → M5 → M6 → M7. M5 일부 Task (UI 컴포넌트) 는 M4 백엔드 Task 와 일부 병렬 가능 (T3 마킹).
 
@@ -594,3 +595,47 @@ G06-01 → G06-02 → G06-03 (M1)
   - `pnpm dlx vitest run` ✅ (**248/248 PASS**, +18 신규 / 기존 230 회귀 0)
 - **위험**: LOW (R1 카드 신규 섹션 추가 + LLM struggle 와 차원 분리)
 - **commit**: `feat(g06): SolutionSummarySection 풀이 정리 (옵션 B, Δ7)`
+
+---
+
+## M11. Trial / Beta Access Tier + Legend 메인 채팅 통합 (1일, 1 task)
+
+> 추가일: 2026-04-29 (Δ9 사용자 결정)
+> 목적: 모든 Legend 기능 production 배포 + 권한 게이트. 베타 승인자만 5튜터·R1·R2 사용. 비-베타 = 라마누잔 일 3회 체험.
+
+### G06-32: Trial/Beta Access Tier + Legend 메인 채팅 통합 (Δ9)
+- **선행**: G06-30 (M10 완료) + G06-27 (베타 신청·승인 시스템)
+- **변경 파일**:
+  - `src/lib/legend/access-tier.ts` (신규) — `getUserAccessTier(userId)` 'trial' | 'beta' 판정
+  - `src/lib/legend/types.ts` (수정) — `QuotaKind` 에 `'trial_ramanujan_daily'` 추가
+  - `src/lib/legend/quota-manager.ts` (수정) — `QUOTA_LIMITS.trial_ramanujan_daily` 추가
+  - `supabase/migrations/20260610_trial_ramanujan_quota.sql` (신규) — `legend_quota_counters_quota_kind_check` enum 확장 + Supabase MCP `apply_migration` 적용
+  - `src/app/api/legend/solve/route.ts` (수정) — access-tier 게이트 (trial Tier 2 거부 / 라마누잔만 trial quota 소진)
+  - `src/app/api/legend/retry-with-tutor/route.ts` (수정) — 동일 패턴
+  - `src/app/api/legend/report/weekly/route.ts` (수정) — trial 즉시 거부 (beta_only)
+  - `src/app/api/legend/report/monthly/route.ts` (수정) — 동일
+  - `src/app/api/euler-tutor/route.ts` (수정) — Sonnet 4.5 → 4.6 + GPT-5.1 → GPT-5.5 (G-05 격상, env 외부화)
+  - `src/components/legend/TrialChat.tsx` (신규) — 라마누잔 페르소나 + 5 거장 카드 잠금 + 베타 신청 CTA
+  - `src/components/legend/BetaChat.tsx` (신규) — 5 튜터 카드 자유 선택 + 격 차별화
+  - `src/components/legend/QuotaIndicator.tsx` (수정) — `QUOTA_DISPLAY` 에 `trial_ramanujan_daily` 매핑 추가 (타입 완전성)
+  - `src/app/legend/page.tsx` (재작성) — re-export 폐지, Server Component access-tier 분기 (TrialChat / BetaChat)
+  - `src/app/page.tsx` (수정) — studentFeatures 에 "🏛️ Legend Tutor" 카드 추가 + featureAccents 확장
+  - `.env.example` + `docs/qa/g06-vercel-env-import.md` (수정) — `LEGEND_TRIAL_RAMANUJAN_DAILY` / `ANTHROPIC_SONNET_MODEL_ID` / `OPENAI_MODEL_ID` 추가
+  - `src/lib/legend/__tests__/access-tier.test.ts` (신규, +6 테스트) — 5 시나리오 (approved / invite / both null / empty userId / regression / pending-then-trial)
+  - `src/lib/legend/__tests__/quota-manager.test.ts` (수정, +3 테스트) — trial_ramanujan_daily quota
+  - `src/app/api/legend/solve/__tests__/route.test.ts` (수정) — Trial Tier 시나리오 +3 + access-tier mock
+  - `src/app/api/legend/retry-with-tutor/__tests__/route.test.ts` (수정) — access-tier mock
+  - `src/app/api/legend/report/weekly/__tests__/route.test.ts` (수정) — access-tier mock
+  - `src/app/api/legend/report/monthly/__tests__/route.test.ts` (수정) — access-tier mock
+- **변경 내용**:
+  - access-tier 판정: beta_applications.approved → euler_beta_invites.redeemed_by → trial (단락 평가)
+  - 회귀 안전: 기존 베타 사용자 60명 (`euler_beta_invites.redeemed_by`) 모두 자동 'beta' 판정
+  - API 가드: trial Tier 2 호출 → 402 `beta_only` + `apply_url='/legend/beta/apply'` / 라마누잔 quota 소진 → 402 `trial_quota_exceeded`
+  - 마이그레이션 enum 확장 (5종 → 6종): drop+add CHECK constraint, 기존 row 무파괴
+- **검증**:
+  - `pnpm tsc --noEmit` ✅ (무에러)
+  - `pnpm dlx vitest run` ✅ (**317/317 PASS**, +12 신규 / 기존 304 회귀 0)
+  - `pnpm next build` ✅ — `/legend` 가 ƒ (Dynamic, server-rendered) 으로 빌드 (Server Component access-tier 분기 정확 반영)
+  - Supabase MCP `apply_migration` ✅ (`trial_ramanujan_quota` 적용 성공)
+- **위험**: LOW (회귀 0, 마이그레이션 idempotent)
+- **commit**: `feat(g06): Trial/Beta Access Tier + Legend 메인 채팅 통합 (G06-32, Δ9)`

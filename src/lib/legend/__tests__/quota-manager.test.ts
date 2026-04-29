@@ -144,6 +144,32 @@ describe('checkQuota — daily quotas (no eligibility gate)', () => {
     expect(status.limit).toBe(1);
     expect(status.allowed).toBe(true);
   });
+
+  // Δ9 (G06-32) — Trial 라마누잔 일 3회 quota
+  it('trial_ramanujan_daily 신규 사용자 → used 0 / limit 3 / allowed', async () => {
+    state.counterRow = null;
+    const status = await checkQuota(USER, 'trial_ramanujan_daily');
+    expect(status.used).toBe(0);
+    expect(status.limit).toBe(3);
+    expect(status.allowed).toBe(true);
+    expect(status.eligibility).toBeUndefined();
+  });
+
+  it('trial_ramanujan_daily 한도 도달 (used 3 / limit 3) → blocked limit_exceeded', async () => {
+    state.counterRow = { count: 3 };
+    const status = await checkQuota(USER, 'trial_ramanujan_daily');
+    expect(status.allowed).toBe(false);
+    expect(status.blocked_reason).toBe('limit_exceeded');
+  });
+
+  it('LEGEND_TRIAL_RAMANUJAN_DAILY=10 env override → limit 10', async () => {
+    process.env.LEGEND_TRIAL_RAMANUJAN_DAILY = '10';
+    state.counterRow = { count: 5 };
+    const status = await checkQuota(USER, 'trial_ramanujan_daily');
+    expect(status.limit).toBe(10);
+    expect(status.allowed).toBe(true);
+    delete process.env.LEGEND_TRIAL_RAMANUJAN_DAILY;
+  });
 });
 
 describe('checkQuota — weekly/monthly with eligibility gate', () => {

@@ -39,6 +39,12 @@ vi.mock('@/lib/legend/quota-manager', () => ({
   consumeQuota: (...args: unknown[]) => consumeQuotaMock(...args),
 }));
 
+// G06-32 (Δ9) — Access Tier 게이트. 기존 라우트 테스트는 'beta' 사용자 시나리오를 가정.
+const getUserAccessTierMock = vi.fn(async () => 'beta' as const);
+vi.mock('@/lib/legend/access-tier', () => ({
+  getUserAccessTier: (...args: unknown[]) => getUserAccessTierMock(...args),
+}));
+
 import { POST } from '../route';
 
 beforeEach(() => {
@@ -46,6 +52,8 @@ beforeEach(() => {
   callTutorMock.mockReset();
   consumeQuotaMock.mockReset();
   fromMock.mockReset();
+  getUserAccessTierMock.mockReset();
+  getUserAccessTierMock.mockResolvedValue('beta');
 });
 
 function makeReq(body: unknown): Request {

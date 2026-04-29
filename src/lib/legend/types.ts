@@ -110,7 +110,9 @@ export type QuotaKind =
   | 'legend_call_daily'
   | 'report_per_problem_daily'
   | 'weekly_report'
-  | 'monthly_report';
+  | 'monthly_report'
+  // Δ9 (G06-32): 비-베타 (체험판) 사용자의 라마누잔 일 3회 quota.
+  | 'trial_ramanujan_daily';
 
 export interface QuotaStatus {
   kind: QuotaKind;

@@ -24,6 +24,7 @@ import { createClient } from '@/lib/supabase/server';
 import { callTutor } from '@/lib/legend/tutor-orchestrator';
 import { consumeQuota } from '@/lib/legend/quota-manager';
 import { createSSEStream } from '@/lib/legend/sse';
+import { getUserAccessTier } from '@/lib/legend/access-tier';
 import type { TutorName } from '@/lib/legend/types';
 
 export const runtime = 'nodejs';
@@ -78,22 +79,55 @@ export async function POST(req: Request) {
     return Response.json({ error: 'forbidden' }, { status: 403 });
   }
 
-  // 4. quota 소진 — problem_total_daily 우선, Tier 2 면 legend_call_daily 추가
-  const problemQuota = await consumeQuota(user.id, 'problem_total_daily');
-  if (!problemQuota.allowed) {
-    return Response.json(
-      { error: 'quota_exceeded', quota: problemQuota },
-      { status: 402 },
-    );
-  }
+  // 4. Access Tier 게이트 (Δ9, G06-32):
+  //    - trial: Tier 2 호출 거부 (402 beta_only) + 라마누잔만 trial_ramanujan_daily quota 소진
+  //    - beta:  기존 5종 quota (problem_total_daily + legend_call_daily) 그대로
+  const tier = await getUserAccessTier(user.id);
   const isLegendTier = decision.routed_tier === 2;
-  if (isLegendTier) {
-    const legendQuota = await consumeQuota(user.id, 'legend_call_daily');
-    if (!legendQuota.allowed) {
+
+  if (tier === 'trial') {
+    if (isLegendTier) {
       return Response.json(
-        { error: 'quota_exceeded', quota: legendQuota },
+        {
+          error: 'beta_only',
+          message:
+            '레전드 튜터 (가우스/폰 노이만/오일러/라이프니츠) 는 베타 사용자만 이용 가능합니다. 베타 신청을 진행해주세요.',
+          apply_url: '/legend/beta/apply',
+        },
         { status: 402 },
       );
+    }
+    // 라마누잔 호출 (Tier 0/1) — 체험 quota 소진
+    const trialQuota = await consumeQuota(user.id, 'trial_ramanujan_daily');
+    if (!trialQuota.allowed) {
+      return Response.json(
+        {
+          error: 'trial_quota_exceeded',
+          quota: trialQuota,
+          message:
+            '오늘 체험 한도 (3회) 를 모두 사용했습니다. 베타 신청 후 더 많은 기능을 이용해보세요.',
+          apply_url: '/legend/beta/apply',
+        },
+        { status: 402 },
+      );
+    }
+  } else {
+    // beta — 기존 5종 quota 게이트
+    const problemQuota = await consumeQuota(user.id, 'problem_total_daily');
+    if (!problemQuota.allowed) {
+      return Response.json(
+        { error: 'quota_exceeded', quota: problemQuota },
+        { status: 402 },
+      );
+    }
+    if (isLegendTier) {
+      const legendQuota = await consumeQuota(user.id, 'legend_call_daily');
+      if (!legendQuota.allowed) {
+        return Response.json(
+          { error: 'quota_exceeded', quota: legendQuota },
+          { status: 402 },
+        );
+      }
     }
   }
 

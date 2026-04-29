@@ -637,9 +637,14 @@ ${cc.verified
       });
     }
 
+    // G06-32 (Δ9 + G-05): 모델 격상 — Sonnet 4.5 → 4.6, GPT-5.1 → GPT-5.5.
+    // 환경변수로 외부화하여 추후 재격상·rollback 무코드.
+    const sonnetModelId =
+      process.env.ANTHROPIC_SONNET_MODEL_ID || "claude-sonnet-4-6-20260101";
+    const openaiModelId = process.env.OPENAI_MODEL_ID || "gpt-5.5";
     const model = (useGpt
-      ? openai("gpt-5.1")
-      : anthropic("claude-sonnet-4-5-20250929")) as LanguageModelV1;
+      ? openai(openaiModelId)
+      : anthropic(sonnetModelId)) as LanguageModelV1;
 
     const result = streamText({
       model,

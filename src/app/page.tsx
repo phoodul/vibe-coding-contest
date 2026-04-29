@@ -10,12 +10,14 @@ import { GlassCard } from "@/components/shared/glass-card";
 /* ─── Accent colors per feature card ─── */
 const featureAccents = [
   "#8b5cf6", // violet - 소크라테스
+  "#f59e0b", // amber - 오일러
+  "#fbbf24", // amber light - Legend Tutor (G06-32)
   "#6366f1", // indigo - 마인드 맵
   "#06b6d4", // cyan - 영어 단어
   "#f43f5e", // rose - 영어 회화
   "#22d3ee", // cyan-400 - 영문법 듣기
-  "#f59e0b", // amber - 진로
-  "#eab308", // yellow - 내 길 내비
+  "#eab308", // yellow - 진로
+  "#facc15", // yellow-400 - 내 길 내비
   "#10b981", // emerald - 도서
   "#ef4444", // red - PAPS
   "#14b8a6", // teal - 현장실습
@@ -23,6 +25,10 @@ const featureAccents = [
   "#a78bfa", // light violet - 공문서 포맷터
   "#38bdf8", // sky - 공문서 초안
   "#f97316", // orange - 생기부 세특
+  "#8b5cf6", // teacher 1
+  "#6366f1", // teacher 2
+  "#a855f7", // teacher 3
+  "#f97316", // teacher 4
 ];
 
 // MiniDemo removed from landing — now shown on individual feature pages
@@ -300,6 +306,12 @@ const studentFeatures = [
     description: "계산은 AI가 할게요. 수학 문제의 논리적 사고과정을 따뜻한 멘토와 함께 훈련합니다.",
     icon: "euler",
     href: "/euler-tutor",
+  },
+  {
+    title: "Legend Tutor",
+    description: "라마누잔·가우스·폰 노이만·오일러·라이프니츠 — 5 명의 수학 거장 AI. 체험 무료, 베타 신청 시 거장 4명 + R1 리포트 + 추론 트리.",
+    icon: "🏛️",
+    href: "/legend",
   },
   {
     title: "마인드 맵",
