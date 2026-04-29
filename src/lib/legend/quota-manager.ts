@@ -18,6 +18,7 @@
  */
 import { createClient } from '@/lib/supabase/server';
 import type { QuotaKind, QuotaStatus } from './types';
+import { isAdminEmail } from './access-tier';
 
 // ────────────────────────────────────────────────────────────────────────────
 // 한도·게이트 설정
@@ -217,6 +218,13 @@ export async function checkQuota(
   const limit = getLimit(kind);
   const resetAt = getResetAt(cfg.periodKind, periodStart);
 
+  // 0) 관리자 — quota 무제한 (사용자 결정 2026-04-29)
+  const authClient = await createClient();
+  const { data: { user: authUser } } = await authClient.auth.getUser();
+  if (isAdminEmail(authUser?.email)) {
+    return { kind, used: 0, limit: -1, allowed: true, reset_at: resetAt };
+  }
+
   // 1) 자격 게이트 우선 평가 (weekly_report / monthly_report 만)
   const eligibility = await fetchEligibility(supabase, userId, kind);
   if (eligibility && eligibility.current < eligibility.required) {
@@ -270,6 +278,9 @@ export async function consumeQuota(
 ): Promise<QuotaStatus> {
   const pre = await checkQuota(userId, kind);
   if (!pre.allowed) return pre;
+
+  // 관리자 — RPC skip (count 미증가, 무제한 동작)
+  if (pre.limit === -1) return pre;
 
   const supabase = (await createClient()) as unknown as SupabaseLike;
   const cfg = QUOTA_LIMITS[kind];
