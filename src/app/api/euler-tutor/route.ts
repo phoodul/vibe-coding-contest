@@ -34,6 +34,7 @@ import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 import { tryParseJson } from "@/lib/euler/json";
 import { routeProblem } from "@/lib/legend/legend-router";
 import type { RouteDecision } from "@/lib/legend/types";
+import { shorthandToLatex } from "@/lib/math-input/shorthand-to-latex";
 
 const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
 const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본 on
@@ -97,7 +98,31 @@ function parseProblemInfo(messages: { role: string; content: string }[]) {
 
 export async function POST(req: Request) {
   try {
-    const { messages, area, useGpt, input_mode } = await req.json();
+    const { messages: rawMessages, area, useGpt, input_mode } = await req.json();
+
+    // G06-31: 학생 단축 표기 (RR(x), pi, II(0,1) f(x) dx 등) → 표준 LaTeX 정규화.
+    // user 메시지의 텍스트만 변환. assistant 메시지는 모델 응답이므로 미변환.
+    // 다운스트림 함수 (parseProblemInfo, extractCriticInputs 등) 가 string content 기대 →
+    // 변환 후에도 외부 시그니처 유지하기 위해 string 으로 cast (vision array 는 그대로 유지).
+    const messages = (rawMessages as Array<{ role: string; content: string }>).map((m) => {
+      if (m.role !== "user") return m;
+      if (typeof m.content === "string") {
+        return { ...m, content: shorthandToLatex(m.content) };
+      }
+      // Vision message (array of parts) — text 부분만 정규화
+      if (Array.isArray(m.content)) {
+        const parts = m.content as Array<{ type?: string; text?: string }>;
+        return {
+          ...m,
+          content: parts.map((p) =>
+            p.type === "text" && typeof p.text === "string"
+              ? { ...p, text: shorthandToLatex(p.text) }
+              : p,
+          ) as unknown as string,  // vision array 형태도 다운스트림 호환
+        };
+      }
+      return m;
+    });
 
     const tutorName = useGpt ? "가우스 튜터" : "오일러 튜터";
     const tutorPersona = useGpt ? "gauss" : "euler";
@@ -567,6 +592,20 @@ ${cc.verified
       }
     }
 
+    // G06-31: 학생 단축 표기 안내 (서버 normalize 후 모델은 표준 LaTeX 만 본다.
+    // 그래도 모델이 학생의 의도를 이해하고 응답을 표준 LaTeX 로 통일하도록 명시.)
+    const shorthandNote = `
+
+## 학생 입력 단축 표기 안내 (서버 자동 LaTeX 변환)
+학생은 LaTeX 부담 없이 다음 단축으로 입력할 수 있고, 서버가 표준 LaTeX 로 자동 변환해 당신에게 전달합니다:
+- 거듭제곱근: RR(x), RR3(x), RRn(x)
+- 합·곱·적분: SS(k=1,n) f, PP(k=1,n) f, II(0,1) f(x) dx
+- 그리스: pi=π, phi=φ, th=θ, al/be/ga/de/la/mu/si/om
+- 확률·통계: bar(X), N(mu, si^2), nCr, nPr, P(B|A)
+- 벡터: vec(OA), OA->, abs(a), dot(a,b), cross(a,b), AB LL CD (수직)
+- 함수: f@g (합성), f^-1, lim(x->a), frac(a,b)
+응답은 **항상 표준 LaTeX** 로 작성하세요 (학생이 다른 도구·교재와 일관되도록).`;
+
     const systemPrompt = `${EULER_SYSTEM_PROMPT}
 
 현재 학습 영역: ${area || "자유 질문"}
@@ -575,7 +614,7 @@ ${cc.verified
 
 첫 메시지라면 따뜻하게 인사하고, 학생에게 문제를 보여달라고 요청하세요.
 "안녕! ${tutorName}예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"
-학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${lockNote}${solutionContext}${managerContext}${retrievedContext}${similarContext}${chainContext}${criticContext}`;
+학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${lockNote}${shorthandNote}${solutionContext}${managerContext}${retrievedContext}${similarContext}${chainContext}${criticContext}`;
 
     console.log(
       `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} similar=${similarContext ? "Y" : "N"} chain=${chainContext ? "Y" : "N"} messages=${messages.length}`
@@ -605,7 +644,8 @@ ${cc.verified
     const result = streamText({
       model,
       system: systemPrompt,
-      messages,
+      // G06-31: messages 변환 시 role 이 string 으로 widen 됨 → streamText 의 좁은 union 타입에 cast
+      messages: messages as Parameters<typeof streamText>[0]["messages"],
       onFinish: () => {
         // Phase G-02: stream 종료 시 streamData 닫기 (chain payload 포함)
         void streamData.close();

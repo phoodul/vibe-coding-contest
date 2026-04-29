@@ -7,6 +7,7 @@
  * G06-17: layout + QuotaIndicator stub mount. G06-21 에서 /euler→/legend redirect 통합.
  */
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { QuotaIndicator } from '@/components/legend/QuotaIndicator';
 
 export const metadata = {
@@ -19,11 +20,22 @@ export default function LegendLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 text-white">
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-black/30 px-4 py-3 backdrop-blur">
         <div className="flex items-center gap-2">
-          <span className="text-base font-semibold tracking-tight">Legend Tutor</span>
+          <Link href="/legend" className="text-base font-semibold tracking-tight hover:text-white/80">
+            Legend Tutor
+          </Link>
           <span className="hidden text-xs text-white/50 sm:inline">5명의 거장이 함께 푸는 수학</span>
         </div>
-        {/* QuotaIndicator stub — G06-20 에서 실제 데이터 fetch 연결 */}
-        <QuotaIndicator />
+        <div className="flex items-center gap-3">
+          {/* G06-31: 단축 표기 가이드 */}
+          <Link
+            href="/legend/help"
+            className="text-xs text-white/60 transition-colors hover:text-white"
+          >
+            입력 가이드
+          </Link>
+          {/* QuotaIndicator stub — G06-20 에서 실제 데이터 fetch 연결 */}
+          <QuotaIndicator />
+        </div>
       </header>
       <main className="mx-auto max-w-5xl px-4 py-6">{children}</main>
     </div>
