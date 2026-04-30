@@ -29,7 +29,8 @@ import { getUserAccessTier } from '@/lib/legend/access-tier';
 import type { TutorName } from '@/lib/legend/types';
 
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+// Δ15 — 60→300s. 다른 거장 재호출 시 agentic 5-step 누적이 60초 초과 가능.
+export const maxDuration = 300;
 
 interface RetryRequestBody {
   routing_decision_id?: string;

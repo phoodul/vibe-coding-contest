@@ -77,7 +77,10 @@ function extractCriticInputs(
   return { problem: firstUser.content, solution: lastAssistant };
 }
 
-export const maxDuration = 60;
+// Δ15 — 60→300s. 학생이 한참 생각 후 답변 → agentic 5-step + retrieval + critic +
+// cross-check 연쇄가 60초 안에 끝나지 않아 streaming 도중 끊김 보고. Vercel 기본 default
+// 가 300s 으로 상향되어 안전하게 사용 가능.
+export const maxDuration = 300;
 
 /** 첫 메시지에서 기출문제 정보 파싱 (정답은 메시지에 포함하지 않음) */
 function parseProblemInfo(messages: { role: string; content: string }[]) {

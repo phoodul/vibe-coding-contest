@@ -28,7 +28,8 @@ import { getUserAccessTier } from '@/lib/legend/access-tier';
 import type { TutorName } from '@/lib/legend/types';
 
 export const runtime = 'nodejs';
-export const maxDuration = 60;
+// Δ15 — 60→300s. agentic 5-step 거장 호출이 60초 안에 끝나지 않을 수 있음.
+export const maxDuration = 300;
 
 interface SolveRequestBody {
   routing_decision_id?: string;

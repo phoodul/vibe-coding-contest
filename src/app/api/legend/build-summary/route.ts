@@ -29,7 +29,9 @@ import { formatConversation } from '@/lib/legend/report/student-struggle-extract
 import type { TutorName } from '@/lib/legend/types';
 
 export const runtime = 'nodejs';
-export const maxDuration = 90;
+// Δ15 — 90→300s. callTutor (agentic 5-step) + buildReport (step decompose + LLM struggle Haiku +
+// tree-builder + student-struggle Haiku + solution-summarizer Haiku) 누적이 90초 초과 가능.
+export const maxDuration = 300;
 
 const VALID_TUTORS: TutorName[] = [
   'ramanujan_calc',
