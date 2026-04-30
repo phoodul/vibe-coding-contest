@@ -15,6 +15,7 @@
  * (PerProblemReport.student_struggle 필드로 buildReport 에서 함께 upsert).
  */
 import { callModel } from '@/lib/legend/call-model';
+import { retrieveTools, type RetrievedTool } from '@/lib/euler/retriever';
 import { tryParseJson } from '@/lib/euler/json';
 import type {
   PerProblemStep,
@@ -200,13 +201,35 @@ export async function extractStudentStruggle(
     ? `\n참고 — 핵심 trigger: ${args.primary_trigger.tool_name} (${args.primary_trigger.why_text})`
     : '';
 
+  // Δ22 — RAG fetch: problem_text → trigger 후보 top-5
+  let candidateTriggers: RetrievedTool[] = [];
+  try {
+    candidateTriggers = await retrieveTools({
+      conditions: [args.problem_text],
+      direction: 'forward',
+      topK: 5,
+    });
+  } catch (e) {
+    console.warn('[student-struggle-extractor] RAG fetch failed:', (e as Error).message);
+  }
+  const ragNote = candidateTriggers.length
+    ? `\n### 참고: 이 문제와 매칭 가능한 trigger 후보 (DB RAG)\n${candidateTriggers
+        .slice(0, 5)
+        .map((t, i) => {
+          const A = (t.trigger_condition ?? '').slice(0, 200);
+          const B = (t.derived_fact ?? t.goal_pattern ?? t.tool_name ?? '').slice(0, 200);
+          return `${i + 1}. A: "${A}" → B: "${B}" (tool: ${t.tool_name})`;
+        })
+        .join('\n')}\n→ 학생 막힘 자리에서 발화했어야 한 A 가 위 후보 중 있으면 trigger_quote 작성 시 우선 참고.`
+    : '';
+
   const promptBody = `### 원문제
 ${args.problem_text.slice(0, 1000)}
 
 ### 풀이 단계 요약 (steps[].index = ${validIndices}, pivotal=${args.pivotal_step_index})
 ${args.steps
   .map((s) => `- step ${s.index} (${s.kind}): ${s.summary.slice(0, 200)}`)
-  .join('\n')}${triggerHint}
+  .join('\n')}${triggerHint}${ragNote}
 
 ### 학생-AI 대화 이력
 ${args.conversation_text.slice(0, 4000)}
@@ -220,7 +243,7 @@ ${args.conversation_text.slice(0, 4000)}
       model_id:
         process.env.LEGEND_REPORT_MODEL ??
         process.env.ANTHROPIC_SONNET_MODEL_ID ??
-        'claude-sonnet-4-6-20260101',
+        'claude-sonnet-4-6',
       provider: 'anthropic',
       mode: 'baseline',
       problem: promptBody,

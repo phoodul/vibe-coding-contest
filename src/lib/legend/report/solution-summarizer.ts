@@ -17,6 +17,7 @@
  */
 
 import { callModel } from '@/lib/legend/call-model';
+import { retrieveTools, type RetrievedTool } from '@/lib/euler/retriever';
 import type {
   PerProblemStep,
   ReasoningTree,
@@ -228,7 +229,22 @@ function parseSummaryJson(raw: string): SolutionSummary {
 const MAX_PROBLEM_CHARS = 2000;
 const MAX_STEPS_FOR_PAYLOAD = 10;
 
-function buildUserPayload(args: SummarizeSolutionArgs): string {
+function formatCandidateTriggers(tools: RetrievedTool[]): string {
+  if (!tools.length) return '';
+  const items = tools
+    .slice(0, 5)
+    .map((t, i) => {
+      const A = (t.trigger_condition ?? '').slice(0, 200);
+      const B =
+        (t.derived_fact ?? t.goal_pattern ?? t.tool_name ?? '').slice(0, 200);
+      const why = (t.why_text ?? '').slice(0, 200);
+      return `${i + 1}. A (조건): "${A}" → B (활용): "${B}"\n   why: ${why}\n   tool: ${t.tool_name} (cosine ${(t.similarity * 100).toFixed(0)}%)`;
+    })
+    .join('\n');
+  return `\n### 참고: 이 문제와 매칭 가능한 trigger 후보 (DB RAG)\n${items}\n→ 위 후보 중 이 문제에 실제 발화한 A 가 있으면 trigger_motivation 작성 시 우선 참고. 없으면 자체 추론.`;
+}
+
+function buildUserPayload(args: SummarizeSolutionArgs, candidateTriggers: RetrievedTool[] = []): string {
   const problem = (args.problem_text ?? '').slice(0, MAX_PROBLEM_CHARS);
 
   const stepsForPayload = args.steps.slice(0, MAX_STEPS_FOR_PAYLOAD);
@@ -247,6 +263,8 @@ function buildUserPayload(args: SummarizeSolutionArgs): string {
     ? `\n### 참고: 핵심 trigger (왜 이 도구를 떠올렸는가)\n- 도구: ${args.primary_trigger.tool_name}\n- 발동 조건 패턴: ${args.primary_trigger.pattern_short}\n- 왜: ${args.primary_trigger.why_text}\n→ trigger_motivation 필드 작성 시 이 정보를 학생 친화 톤으로 풀어 설명하세요.`
     : '';
 
+  const ragNote = formatCandidateTriggers(candidateTriggers);
+
   return `### 원문제 (요약)
 ${problem}
 
@@ -254,6 +272,7 @@ ${problem}
 ${stepsText || '(단계 없음)'}
 ${hardestNote}
 ${triggerNote}
+${ragNote}
 
 위 풀이를 학생에게 5~7 문장으로 정리해주세요. JSON 만 출력 (5 필드 모두).`;
 }
@@ -269,6 +288,20 @@ export async function summarizeSolution(
     return FALLBACK_SUMMARY;
   }
 
+  // Δ22 — RAG fetch: problem_text → trigger 후보 top-5 (DB math_tool_triggers).
+  // A→B framework 의 A (trigger_condition) 가 problem_text 와 매칭되는 도구 후보.
+  // 실패 시 빈 배열 (회복 안전 — 자체 추론으로 fallback).
+  let candidateTriggers: RetrievedTool[] = [];
+  try {
+    candidateTriggers = await retrieveTools({
+      conditions: [args.problem_text],
+      direction: 'forward',
+      topK: 5,
+    });
+  } catch (e) {
+    console.warn('[solution-summarizer] RAG fetch failed:', (e as Error).message);
+  }
+
   try {
     // Δ16 — Haiku → Sonnet 4.6 격상. max_tokens 500 → 2500. 시간·토큰 더 투자.
     // 사용자 결정: "리포트 생성에 더 많은 시간 할애 + 토큰 더 사용 — 학생이 더 나은 사고를 하도록".
@@ -276,10 +309,10 @@ export async function summarizeSolution(
       model_id:
         process.env.LEGEND_REPORT_MODEL ??
         process.env.ANTHROPIC_SONNET_MODEL_ID ??
-        'claude-sonnet-4-6-20260101',
+        'claude-sonnet-4-6',
       provider: 'anthropic',
       mode: 'baseline',
-      problem: buildUserPayload(args),
+      problem: buildUserPayload(args, candidateTriggers),
       system_prompt: SOLUTION_SUMMARY_SYSTEM,
       max_tokens: 2500,
     });

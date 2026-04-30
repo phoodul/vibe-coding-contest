@@ -119,7 +119,7 @@ ${trimmedTurn}
     model_id:
       process.env.LEGEND_REPORT_MODEL ??
       process.env.ANTHROPIC_SONNET_MODEL_ID ??
-      'claude-sonnet-4-6-20260101',
+      'claude-sonnet-4-6',
     provider: 'anthropic',
     mode: 'baseline',
     problem: promptBody,
