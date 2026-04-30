@@ -242,6 +242,20 @@ export interface SolutionSummary {
    * schema 1.2 호환: 본 필드 없는 캐시 row 도 안전 (UI 가 falsy 체크 후 숨김).
    */
   trigger_motivation?: string;
+  /**
+   * Δ23 — LLM 자동 누적용 구조화 trigger.
+   * trigger_motivation 자연어 문단과 별개로 (Cue A, Tool B, Why) 를 명시 분리하여
+   * 풀이 종료 시 candidate_triggers / candidate_tools 큐에 자동 누적하는 입력으로 사용.
+   * 학생 UI 에는 노출되지 않음 (back-end accumulation 전용).
+   */
+  structured_trigger?: {
+    /** A — 문제 표면 단서 (40~80자, 정석 형식의 좌변) */
+    cue_a: string;
+    /** B — 호출되는 구체 도구 (40~80자, 정석 형식의 우변) */
+    tool_b: string;
+    /** 인과 풀이 (200자 내외) */
+    why_text: string;
+  };
 }
 
 export interface PerProblemStep {

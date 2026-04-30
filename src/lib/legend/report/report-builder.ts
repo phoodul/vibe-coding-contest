@@ -29,6 +29,7 @@ import { expandTrigger } from './trigger-expander';
 import { aggregateStuck, type StuckReason } from './stuck-tracker';
 import { summarizeSolution } from './solution-summarizer';
 import { extractStudentStruggle } from './student-struggle-extractor';
+import { accumulateTrigger } from '@/lib/legend/trigger-accumulator';
 import type { Provider } from './trace-normalizer';
 import type {
   PerProblemReport,
@@ -415,6 +416,25 @@ export async function buildReport(
       }
     } catch (e) {
       console.warn('[report-builder] upsert unexpected:', (e as Error).message);
+    }
+  }
+
+  // 12. Δ23 — Trigger Auto-Accumulation: structured_trigger 가 있으면 candidate 큐에 누적
+  // 회복 안전: 누적 실패해도 report 반환에는 영향 없음 (silent log).
+  if (!opts.skipPersist && report.solution_summary?.structured_trigger) {
+    try {
+      const result = await accumulateTrigger({
+        cue_a: report.solution_summary.structured_trigger.cue_a,
+        tool_b: report.solution_summary.structured_trigger.tool_b,
+        why_text: report.solution_summary.structured_trigger.why_text,
+        user_id: args.user_id,
+        problem_hash: session.problem_hash,
+      });
+      console.log(
+        `[trigger-accumulator] outcome=${result.outcome} ${result.detail ?? ''} ${result.matched_id ?? ''}`.trim(),
+      );
+    } catch (e) {
+      console.warn('[trigger-accumulator] failed silently:', (e as Error).message);
     }
   }
 
