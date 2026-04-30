@@ -19,7 +19,7 @@ export function CrisisButton() {
           <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500" />
         </span>
         <span className="text-sm font-medium text-rose-300 group-hover:text-rose-200 transition-colors">
-          도움이 필요하신가요?
+          혼자가 아닙니다
         </span>
       </motion.div>
     </Link>
