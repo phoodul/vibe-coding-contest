@@ -35,6 +35,7 @@ import { tryParseJson } from "@/lib/euler/json";
 import { routeProblem } from "@/lib/legend/legend-router";
 import type { RouteDecision } from "@/lib/legend/types";
 import { shorthandToLatex } from "@/lib/math-input/shorthand-to-latex";
+import { evaluateGuardrail } from "@/lib/legend/guardrail";
 
 const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
 const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본 on
@@ -146,6 +147,77 @@ export async function POST(req: Request) {
           { status: 429 }
         );
       }
+    }
+
+    // Δ24 — 가드레일: 모든 user turn 에 대해 평가 (수학 외 주제·욕설·위기 신호 등).
+    // self_harm_crisis 면 즉시 전문 상담 안내. 일반 위반이면 안내 + DB 로그.
+    // safe 면 null 반환 → 정상 흐름 진행. 회복 안전 (실패 시 정상 처리).
+    try {
+      const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
+      const userText =
+        typeof lastUserMsg?.content === 'string'
+          ? lastUserMsg.content
+          : Array.isArray(lastUserMsg?.content)
+            ? (lastUserMsg.content as Array<{ type?: string; text?: string }>)
+                .filter((p) => p.type === 'text' && p.text)
+                .map((p) => p.text!)
+                .join('\n')
+            : '';
+
+      if (userText.trim()) {
+        const supabaseAuth = await createSupabaseServer();
+        const {
+          data: { user },
+        } = await supabaseAuth.auth.getUser();
+        // 직전 N=4 메시지 발췌 (분쟁 증거)
+        const snippet = messages
+          .slice(-4)
+          .map((m) => {
+            const role = m.role === 'user' ? '학생' : '튜터';
+            const t =
+              typeof m.content === 'string'
+                ? m.content
+                : Array.isArray(m.content)
+                  ? (m.content as Array<{ type?: string; text?: string }>)
+                      .filter((p) => p.type === 'text' && p.text)
+                      .map((p) => p.text!)
+                      .join(' ')
+                  : '';
+            return `[${role}] ${t.slice(0, 600)}`;
+          })
+          .join('\n\n');
+
+        const decision = await evaluateGuardrail({
+          message: userText,
+          user_id: user?.id,
+          conversation_snippet: snippet,
+        });
+        if (decision) {
+          // SSE 호환 streaming 형식으로 표준 응답 반환.
+          // useChat 클라이언트가 SSE 로 받도록 text/event-stream + Vercel AI SDK data protocol.
+          // 가장 단순: 일반 JSON 422 — useChat 의 onError 가 받음.
+          // 그러나 학생에게 친절히 노출하려면 SSE message 가 더 적합.
+          // 우선 streaming chunk 로 응답 (data:0:"...") — useChat 이 normal text 로 인식.
+          const stream = new ReadableStream<Uint8Array>({
+            start(controller) {
+              const encoder = new TextEncoder();
+              const escaped = JSON.stringify(decision.message_to_user);
+              controller.enqueue(encoder.encode(`0:${escaped}\n`));
+              controller.close();
+            },
+          });
+          return new Response(stream, {
+            status: 200,
+            headers: {
+              'content-type': 'text/plain; charset=utf-8',
+              'x-guardrail-category': decision.category,
+              'x-guardrail-severity': decision.severity,
+            },
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('[euler-tutor] guardrail check failed (silent):', (e as Error).message);
     }
 
     // 기출문제인 경우 풀이 DB에서 조회 (정답+풀이 모두 서버측에서만 처리)
