@@ -257,13 +257,13 @@ describe('summarizeSolution', () => {
     expect(callModel).toHaveBeenCalledTimes(1);
   });
 
-  it('callModel 호출 인자: provider=anthropic + max_tokens=500', async () => {
+  it('callModel 호출 인자: provider=anthropic + max_tokens=2500 (Δ16 Sonnet 격상)', async () => {
     vi.mocked(callModel).mockResolvedValue({
       text: '{}',
       trace: {},
       tool_calls: [],
       duration_ms: 100,
-      model_id: 'haiku',
+      model_id: 'sonnet',
     });
 
     await summarizeSolution({
@@ -275,7 +275,7 @@ describe('summarizeSolution', () => {
     const args = vi.mocked(callModel).mock.calls[0][0];
     expect(args.provider).toBe('anthropic');
     expect(args.mode).toBe('baseline');
-    expect(args.max_tokens).toBe(500);
+    expect(args.max_tokens).toBe(2500);
     expect(args.system_prompt).toBeTruthy();
   });
 });

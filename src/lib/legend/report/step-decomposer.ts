@@ -21,6 +21,8 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { embedText } from '@/lib/euler/embed';
+import { callModel } from '@/lib/legend/call-model';
+import { tryParseJson } from '@/lib/euler/json';
 import type { PerProblemStep } from '@/lib/legend/types';
 import { normalizeTrace, type NormalizedTurn, type Provider } from './trace-normalizer';
 
@@ -191,11 +193,130 @@ export interface DecomposeOptions {
   skipPersist?: boolean;
 }
 
+/**
+ * Δ16 — 빈 trace fallback. trace 가 빈 또는 normalizeTrace 가 0 turn 일 때
+ * Sonnet 4.6 으로 problem + final_answer 직접 분석해 5~8 step 추출.
+ *
+ * "0단계 / 단계가 추출되지 않았습니다" 메시지가 학생에게 보이지 않도록.
+ */
+const STEP_FALLBACK_SYSTEM = `당신은 수학 풀이 분석가입니다. 주어진 수학 문제와 풀이 텍스트를 5~8 개의 의미있는 step 으로 분해해 JSON 으로 응답합니다.
+
+각 step 은 풀이의 하나의 사고 도약 단계입니다.
+
+## step.kind 종류
+- "parse": 문제 구조 파악, 조건 정리
+- "domain_id": 영역·정의역·치역·범위 식별
+- "forward": 조건에서 사실 도출 (순방향 추론)
+- "backward": 답에서 역추적 (subgoal 분해)
+- "tool_call": 정리·공식·도구 적용 (예: 평균값 정리, IVT, 부분적분)
+- "computation": 계산 수행
+- "verify": 검증·확인
+- "answer": 최종 답 도출
+
+## difficulty (1~6)
+1~2: 단순 정의 적용 / 3~4: 표준 기법 / 5~6: 고난도 사고 도약
+
+## 출력 (JSON 만, 코드펜스·해설 금지)
+{
+  "steps": [
+    {"kind": "parse", "summary": "구체적 한 줄 요약 (60자 내)", "difficulty": 2},
+    {"kind": "forward", "summary": "...", "difficulty": 3},
+    ...
+  ]
+}
+
+규칙:
+- 5~8 개 step 강제. 너무 적으면 빈약, 너무 많으면 노이즈.
+- summary 는 학생이 읽고 무슨 사고였는지 즉시 이해할 수준의 구체성.
+- pivotal (가장 어려운) 단계가 명백하면 difficulty 5~6 으로 표시.`;
+
+interface FallbackStepJson {
+  kind?: string;
+  summary?: string;
+  difficulty?: number;
+}
+
+async function decomposeWithLLMFallback(
+  problem_text: string,
+  trace: unknown,
+): Promise<PerProblemStep[]> {
+  // trace 에서 final answer text 추출 시도
+  let answerText = '';
+  try {
+    if (trace && typeof trace === 'object') {
+      const t = trace as { text?: string; final_answer?: string };
+      answerText = (t.text ?? t.final_answer ?? '').slice(0, 3000);
+    }
+  } catch {
+    // ignore
+  }
+
+  const prompt = `### 원문제
+${problem_text.slice(0, 2000)}
+
+${answerText ? `### 풀이 텍스트 (LLM 응답)\n${answerText}` : '### 풀이 텍스트\n(없음 — 문제만 보고 표준 풀이 흐름 추론)'}
+
+위 풀이를 5~8 step 으로 분해. JSON 만.`;
+
+  try {
+    const result = await callModel({
+      model_id:
+        process.env.LEGEND_REPORT_MODEL ??
+        process.env.ANTHROPIC_SONNET_MODEL_ID ??
+        'claude-sonnet-4-6-20260101',
+      provider: 'anthropic',
+      mode: 'baseline',
+      problem: prompt,
+      system_prompt: STEP_FALLBACK_SYSTEM,
+      max_tokens: 2500,
+    });
+    const parsed = tryParseJson<{ steps?: FallbackStepJson[] }>((result.text ?? '').trim());
+    const raw = parsed?.steps;
+    if (!Array.isArray(raw) || raw.length === 0) return [];
+
+    const steps: PerProblemStep[] = [];
+    raw.forEach((s, i) => {
+      const kindRaw = (s.kind ?? '').toLowerCase();
+      const kind: PerProblemStep['kind'] = VALID_STEP_KINDS.has(
+        kindRaw as PerProblemStep['kind'],
+      )
+        ? (kindRaw as PerProblemStep['kind'])
+        : 'forward';
+      const summary =
+        typeof s.summary === 'string' && s.summary.trim()
+          ? s.summary.trim().slice(0, 200)
+          : `${i + 1}단계`;
+      const difficulty =
+        typeof s.difficulty === 'number'
+          ? Math.max(1, Math.min(6, Math.floor(s.difficulty)))
+          : 3;
+      steps.push({
+        index: i,
+        kind,
+        summary,
+        difficulty,
+        is_pivotal: false,
+      });
+    });
+    if (steps.length === 0) return [];
+
+    // pivotal 선정
+    const pivotalIdx = selectPivotal(steps);
+    if (pivotalIdx >= 0) steps[pivotalIdx].is_pivotal = true;
+    return steps;
+  } catch (e) {
+    console.warn('[step-decomposer] LLM fallback failed:', (e as Error).message);
+    return [];
+  }
+}
+
 export async function decomposeChainSteps(
   trace: unknown,
   session_id: string,
   provider: Provider,
   opts: DecomposeOptions = {},
+  /** Δ16 — LLM fallback 활성화 시 problem_text 필요 */
+  problem_text?: string,
 ): Promise<PerProblemStep[]> {
   const turns = normalizeTrace(trace, provider);
   const steps: PerProblemStep[] = [];
@@ -268,7 +389,15 @@ export async function decomposeChainSteps(
     }
   }
 
+  // Δ16 — 빈 trace 시 LLM fallback (problem_text 있을 때만)
   if (steps.length === 0) {
+    if (problem_text && problem_text.trim()) {
+      const fallback = await decomposeWithLLMFallback(problem_text, trace);
+      if (fallback.length > 0) {
+        if (!opts.skipPersist) await insertSteps(session_id, fallback);
+        return fallback;
+      }
+    }
     return steps;
   }
 

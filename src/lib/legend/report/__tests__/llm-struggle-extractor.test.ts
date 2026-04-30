@@ -97,7 +97,8 @@ describe('extractLLMStruggle — anthropic agentic 5 turns', () => {
     };
     expect(call.provider).toBe('anthropic');
     expect(call.mode).toBe('baseline');
-    expect(call.max_tokens).toBe(200);
+    // Δ16 — Haiku → Sonnet 4.6 격상, max_tokens 200 → 1200
+    expect(call.max_tokens).toBe(1200);
   });
 
   it('per_step.length === steps.length', async () => {

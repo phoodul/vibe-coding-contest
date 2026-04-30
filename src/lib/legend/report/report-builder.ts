@@ -252,12 +252,13 @@ export async function buildReport(
   // 4. provider 결정
   const provider = inferProvider(session.tutor_name);
 
-  // 5. step 분해 (G06-12)
+  // 5. step 분해 (G06-12 + Δ16 LLM fallback)
   const steps = await decomposeChainSteps(
     session.trace_jsonb,
     args.session_id,
     provider,
     { skipPersist: opts.skipPersist },
+    args.problem_text,
   );
 
   // 6. LLM struggle (G06-13, Δ3)

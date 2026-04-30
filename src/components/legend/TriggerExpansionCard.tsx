@@ -20,11 +20,10 @@ export interface TriggerExpansionCardProps {
   onExpandTrigger?: (triggerId: string) => void;
 }
 
-const DIRECTION_LABEL: Record<TriggerCard['direction'], string> = {
-  forward: '순방향',
-  backward: '역방향',
-  both: '양방향',
-};
+// Δ16 — direction 메타 표기 ("양방향"/"순방향"/"역방향") 제거.
+// 사용자 보고: 학생에게 "양방향" 같은 추상적 메타는 의미 없음. trigger 의 본질은
+// "이 문제에서 왜 이 도구를 떠올려야 하는가" 의 구체적 인과 사슬이며, 그 역할은
+// student_struggle.trigger_quote / solution_summary.trigger_motivation 이 담당.
 
 export function TriggerExpansionCard({
   primary,
@@ -40,14 +39,9 @@ export function TriggerExpansionCard({
         transition={{ duration: 0.35 }}
         className="rounded-lg border border-amber-400/40 bg-amber-400/10 p-4"
       >
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
-            핵심 trigger
-          </span>
-          <span className="rounded-full border border-amber-300/40 px-2 py-0.5 text-[10px] text-amber-200">
-            {DIRECTION_LABEL[primary.direction]}
-          </span>
-        </div>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
+          핵심 trigger
+        </span>
         <div className="mt-1 text-base font-semibold text-white">{primary.tool_name}</div>
         <p className="mt-1 text-sm text-white/75">{primary.pattern_short}</p>
         {primary.why_text && (
@@ -78,12 +72,7 @@ export function TriggerExpansionCard({
                 'hover:border-white/25 hover:bg-white/10',
               )}
             >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-white">{card.tool_name}</span>
-                <span className="rounded-full border border-white/15 px-1.5 py-0.5 text-[9px] text-white/55">
-                  {DIRECTION_LABEL[card.direction]}
-                </span>
-              </div>
+              <span className="text-sm font-semibold text-white">{card.tool_name}</span>
               <span className="text-xs text-white/60">{card.pattern_short}</span>
               {card.example_problem_ref && (
                 <span className="mt-1 text-[10px] text-sky-300">

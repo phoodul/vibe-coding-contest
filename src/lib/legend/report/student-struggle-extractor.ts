@@ -31,16 +31,36 @@ export interface ExtractStudentStruggleArgs {
   primary_trigger?: TriggerCard;
 }
 
-const SYSTEM = `당신은 수학 학습 분석가입니다. 학생-AI 튜터 대화를 보고 다음 5 차원을 JSON 으로만 응답합니다.
-1) stuck_step_index: 학생이 가장 망설이거나 잘못 접근한 step (제공된 steps[].index 중 하나; 막힘이 명확하지 않으면 -1)
-2) stuck_summary: 한 문장 요약 (예: "지수 변환에서 어떤 변환을 적용할지 망설임")
-3) trigger_quote: 그 step 에서 학생이 떠올렸어야 하는 trigger·접근법 (1~2 문장, 학생 친화 톤)
-4) ai_hint_quote: AI 튜터가 학생을 도왔던 핵심 hint 발화 인용 (한 줄, 원문 그대로 따옴표 안에)
-5) resolution: 학생이 어떻게 극복했는지 (1 문장; 끝까지 못 풀었으면 "끝까지 망설임")
+const SYSTEM = `당신은 학생의 사고 발달을 돕는 학습 분석가입니다. 학생-AI 튜터 대화를 깊이 분석해 학생이 막혔던 지점과 어떻게 극복했는지 5 차원으로 정리합니다.
 
-규칙:
-- 한국어 존댓말, 학생 비판 금지.
-- 응답은 다음 형식의 JSON 한 객체만:
+## 핵심 철학
+이 분석은 학생이 다음에 비슷한 문제에서 같은 자리에 막히지 않도록, 막힘의 본질과 떠올렸어야 할 trigger 를 명시화하는 것입니다.
+
+## 5 차원 (각 필드의 깊이 있는 분석)
+
+1. **stuck_step_index** — 학생이 가장 망설이거나 잘못 접근한 step (steps[].index 중 하나; 막힘이 명확하지 않으면 -1)
+
+2. **stuck_summary** (2~3 문장) — 학생 막힘의 본질
+   - 학생이 어디서, 무엇을 떠올리지 못했는지 구체적으로.
+   - 표면적 "모르겠다" 가 아닌 "어떤 사고 도약이 안 됐는가" 차원.
+   - 비판 금지. 학생 입장에서 자연스러운 어려움으로 묘사.
+
+3. **trigger_quote** (3~5 문장) — 떠올렸어야 하는 trigger·접근법
+   - **반드시 다음 형식**: "이 문제에서 왜 [구체적 행동·계산·도구] 을 [그 시점에] 떠올려야 하는가? 그것은 바로 [구체적 이유 — 어떤 조건이 어떤 성질을 보장하므로 어떤 도구가 자연스럽게 발동되는지의 인과 사슬] 이기 때문입니다."
+   - 예시 (좋음): "이 문제에서 왜 g'(x) 를 먼저 계산해야 하는가? 그것은 바로 g(x) 의 극값 조건 때문입니다. 극값에서는 g'(c)=0 이 성립하고, 이는 곧 (가) 조건의 함수 형태가 c 에서 0 이 된다는 의미이므로, g'(x) 를 정확히 알면 c 의 위치가 결정됩니다."
+   - 예시 (나쁨 — 절대 금지): "양방향 trigger", "역행 trigger", "이 도구는 forward/backward 모두 사용", "trigger 발동 조건"
+   - **추상적 메타 표현 (양방향/순행/역행/forward/backward 등) 절대 금지**. 학생이 보고 "왜 이 사고를 해야 하는지" 가 즉시 이해되는 구체성.
+
+4. **ai_hint_quote** (1~2 문장) — AI 튜터가 학생을 도왔던 핵심 hint
+   - 대화 이력에서 학생의 사고를 가장 효과적으로 도왔던 한 마디 인용.
+   - 원문 그대로 따옴표 안에. 인용 못 하면 의미를 보존한 paraphrase.
+
+5. **resolution** (2~3 문장) — 학생이 어떻게 극복했는지
+   - 어떤 사고 전환·관점 변경으로 막힘을 풀었는가?
+   - 학습 전이 관점: 다음에 비슷한 자리에 막히면 무엇을 떠올려야 하는지.
+   - 끝까지 못 풀었으면 "끝까지 망설였으나, 다음에는 ~ 를 떠올려보세요" 형식.
+
+## 출력 (반드시 JSON 만, 다른 텍스트·코드펜스·해설 금지)
 {
   "stuck_step_index": <number>,
   "stuck_summary": "...",
@@ -48,7 +68,8 @@ const SYSTEM = `당신은 수학 학습 분석가입니다. 학생-AI 튜터 대
   "ai_hint_quote": "...",
   "resolution": "..."
 }
-- 마크다운·코드블록·해설 금지. 순수 JSON 만.`;
+
+대화 이력이 짧거나 학생 발화가 적어도 각 필드를 비워두지 마세요. 추론으로라도 의미있는 분석을 채우세요.`;
 
 interface RawJson {
   stuck_step_index?: unknown;
@@ -71,6 +92,12 @@ function coerceString(v: unknown, max = 240): string {
   if (typeof v !== 'string') return '';
   return v.trim().slice(0, max);
 }
+
+// Δ16 — Sonnet 응답이 더 길어졌으므로 truncation 한도 상향
+const STUCK_SUMMARY_MAX = 600;
+const TRIGGER_QUOTE_MAX = 800;
+const AI_HINT_QUOTE_MAX = 400;
+const RESOLUTION_MAX = 600;
 
 /**
  * 학생-AI 대화를 분석해 학생 막힘 5 차원을 추출한다.
@@ -104,13 +131,17 @@ ${args.conversation_text.slice(0, 4000)}
 
   let parsed: RawJson | null = null;
   try {
+    // Δ16 — Haiku → Sonnet 4.6 격상. max 400 → 2000. 학생 막힘의 본질을 깊이 분석.
     const result = await callModel({
-      model_id: process.env.ANTHROPIC_HAIKU_MODEL_ID ?? 'claude-haiku-4-5-20251201',
+      model_id:
+        process.env.LEGEND_REPORT_MODEL ??
+        process.env.ANTHROPIC_SONNET_MODEL_ID ??
+        'claude-sonnet-4-6-20260101',
       provider: 'anthropic',
       mode: 'baseline',
       problem: promptBody,
       system_prompt: SYSTEM,
-      max_tokens: 400,
+      max_tokens: 2000,
     });
     const text = (result.text ?? '').trim();
     parsed = tryParseJson<RawJson>(text);
@@ -127,10 +158,10 @@ ${args.conversation_text.slice(0, 4000)}
 
   const summary: StudentStruggleSummary = {
     stuck_step_index: safeStuckIdx,
-    stuck_summary: coerceString(parsed.stuck_summary, 200),
-    trigger_quote: coerceString(parsed.trigger_quote, 320),
-    ai_hint_quote: coerceString(parsed.ai_hint_quote, 240),
-    resolution: coerceString(parsed.resolution, 200),
+    stuck_summary: coerceString(parsed.stuck_summary, STUCK_SUMMARY_MAX),
+    trigger_quote: coerceString(parsed.trigger_quote, TRIGGER_QUOTE_MAX),
+    ai_hint_quote: coerceString(parsed.ai_hint_quote, AI_HINT_QUOTE_MAX),
+    resolution: coerceString(parsed.resolution, RESOLUTION_MAX),
   };
 
   // 모든 텍스트 차원이 비어있으면 의미 없음 — null 반환 (UI 섹션 숨김)

@@ -89,8 +89,13 @@ function selectHardestIndex(per_step: LLMStruggleSnapshot[]): number {
 // Haiku 요약 ($0.0002 / max_tokens 200)
 // ────────────────────────────────────────────────────────────────────────────
 
-const RESOLUTION_SYSTEM = `당신은 학습 코치입니다. 학생에게 다음 단계를 1~2문장으로 친근하게 설명해주세요: "AI도 어려웠지만 어떻게 해결했는지".
-결론·계산이 아닌 통찰 위주로. 한국어 존댓말, 간결하게.`;
+const RESOLUTION_SYSTEM = `당신은 학습 코치입니다. AI 가 이 단계에서 어려웠지만 어떻게 해결했는지를 학생 친화 톤으로 3~5 문장으로 설명해주세요.
+
+원칙:
+- 결론·계산·숫자 나열 X. 어려움의 본질과 해결의 통찰 위주.
+- "AI 도 처음엔 ~ 가 어려웠어요. 하지만 ~ 라는 관점으로 보니 풀렸어요" 같이 구체적으로.
+- 학생이 같은 자리에서 막혔을 때 어떤 사고 전환이 필요한지 시사.
+- 한국어 존댓말, 따뜻한 톤. 추상적 표현 X. 이 문제 고유 통찰 명시.`;
 
 async function summarizeResolution(args: {
   problem: string;
@@ -109,13 +114,17 @@ ${trimmedTurn}
 
 위 단계가 왜 어려웠는지·어떻게 해결했는지 1~2문장으로 친근하게 설명하세요.`;
 
+  // Δ16 — Haiku → Sonnet 4.6 격상. max 200 → 1200. 어려움의 본질 깊이 분석.
   const result = await callModel({
-    model_id: process.env.ANTHROPIC_HAIKU_MODEL_ID ?? 'claude-haiku-4-5-20251201',
+    model_id:
+      process.env.LEGEND_REPORT_MODEL ??
+      process.env.ANTHROPIC_SONNET_MODEL_ID ??
+      'claude-sonnet-4-6-20260101',
     provider: 'anthropic',
     mode: 'baseline',
     problem: promptBody,
     system_prompt: RESOLUTION_SYSTEM,
-    max_tokens: 200,
+    max_tokens: 1200,
   });
   return (result.text ?? '').trim();
 }

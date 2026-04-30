@@ -24,6 +24,8 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
+import { callModel } from '@/lib/legend/call-model';
+import { tryParseJson } from '@/lib/euler/json';
 import type {
   PerProblemStep,
   ReasoningTree,
@@ -216,7 +218,203 @@ export interface BuildReasoningTreeOptions {
   skipPersist?: boolean;
 }
 
+/**
+ * Δ16 — LLM 기반 사고 도식 추출.
+ *
+ * 사용자 결정: "조건 → 답 단순 구조는 누구나 아는 것이라 의미 없음. 풀이 과정에서
+ * 무엇을 알아내고 어떤 조건과 연결해서 답이 되는지를 도식으로 보여야 한다."
+ *
+ * Sonnet 4.6 1회 호출 (max 3500) → 의미있는 사고 노드·엣지 JSON.
+ * 실패 시 buildReasoningTreeAlgorithm (기존 휴리스틱) 으로 fallback.
+ */
+const TREE_LLM_SYSTEM = `당신은 학생의 사고 발달을 돕는 분석가입니다. 학생이 방금 푼 문제의 풀이 과정을 깊이있는 **사고 도식**으로 그려주세요.
+
+## 핵심 철학
+"조건 → 답" 식 단순 화살표는 누구나 보면 압니다. 그건 학습 가치가 없습니다.
+**학생이 풀이 중에 떠올렸어야 했던 중간 발견·통찰·subgoal·도구 발동**을 노드로 명시화하고, 노드 사이의 의미있는 연결을 엣지로 표현하세요.
+
+## 노드 종류 (kind)
+- "condition": 문제의 주어진 조건 — (가)/(나)/(다) 또는 명시적 가정
+- "derived_fact": 조건·도구에서 도출된 중간 발견 (예: "f 가 연속이면 IVT 적용 가능")
+- "subgoal": 답을 위해 풀어야 할 부문제 (역추적 결과)
+- "answer": 최종 답 (정확히 1개, id="answer")
+
+## 엣지 종류 (kind)
+- "derived_from": A 에서 B 로 사실이 도출됨 (forward inference)
+- "requires": B 가 A 를 요구함 (backward, subgoal)
+
+## 도식 품질 기준
+- 노드 개수: **5~12 개** (너무 적으면 빈약, 많으면 노이즈).
+- 각 노드 text 는 **풀이의 사고 도약 한 단계** 를 명료히 (15~50자).
+- 같은 조건이 여러 도출에 사용되면 그 다중 의존을 엣지로 표현 (multi-parent OK).
+- 단순 "조건 → 답" 이 아닌 **의미있는 중간 노드** 가 적어도 3개 이상.
+- pivotal 단계 (가장 어려운 사고 도약) 가 명시적으로 어디인지 한 노드는 \`is_pivotal\` 표시.
+
+## 출력 (반드시 JSON 만)
+{
+  "nodes": [
+    {"id": "...", "label": "...", "text": "...", "kind": "condition|derived_fact|subgoal|answer", "is_pivotal": false},
+    ...
+  ],
+  "edges": [
+    {"from": "...", "to": "...", "kind": "derived_from|requires", "label": "이 연결의 의미 (선택)"},
+    ...
+  ]
+}
+
+규칙:
+- 반드시 id="answer" 인 answer 노드 1개 포함.
+- 모든 노드는 직간접적으로 answer 와 연결.
+- nodes/edges 외 다른 필드 금지.
+- JSON 외 마크다운·코드펜스·해설 금지.`;
+
+interface LLMTreeJson {
+  nodes?: Array<{
+    id?: string;
+    label?: string;
+    text?: string;
+    kind?: string;
+    is_pivotal?: boolean;
+  }>;
+  edges?: Array<{
+    from?: string;
+    to?: string;
+    kind?: string;
+    label?: string;
+  }>;
+}
+
+const VALID_TREE_KINDS = new Set([
+  'condition',
+  'derived_fact',
+  'subgoal',
+  'answer',
+]);
+
+function buildLLMTreePrompt(args: BuildReasoningTreeArgs): string {
+  const stepsText = args.steps
+    .slice(0, 12)
+    .map((s) => {
+      const star = s.is_pivotal ? ' ★pivotal' : '';
+      return `- ${s.index + 1}단계 [${s.kind}]${star}: ${s.summary.slice(0, 200)}`;
+    })
+    .join('\n');
+  return `### 원문제
+${args.problem_text.slice(0, 2000)}
+
+### 풀이 단계 (참고용 — 단순 나열, 이를 의미있는 사고 도식으로 변환)
+${stepsText || '(단계 정보 없음 — 문제 자체로부터 사고 도식 추론)'}
+
+위 풀이를 학생이 이해할 수 있는 깊이있는 사고 도식 (5~12 노드) 으로 정리하세요. JSON 만.`;
+}
+
+async function buildReasoningTreeLLM(
+  args: BuildReasoningTreeArgs,
+): Promise<ReasoningTree | null> {
+  try {
+    const result = await callModel({
+      model_id:
+        process.env.LEGEND_REPORT_MODEL ??
+        process.env.ANTHROPIC_SONNET_MODEL_ID ??
+        'claude-sonnet-4-6-20260101',
+      provider: 'anthropic',
+      mode: 'baseline',
+      problem: buildLLMTreePrompt(args),
+      system_prompt: TREE_LLM_SYSTEM,
+      max_tokens: 3500,
+    });
+    const text = (result.text ?? '').trim();
+    const parsed = tryParseJson<LLMTreeJson>(text);
+    if (!parsed || !Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
+      return null;
+    }
+
+    // 노드 검증·정규화
+    const seenIds = new Set<string>();
+    const nodes: ReasoningTreeNode[] = [];
+    let hasAnswer = false;
+    for (const n of parsed.nodes) {
+      if (!n.id || typeof n.id !== 'string') continue;
+      if (seenIds.has(n.id)) continue;
+      seenIds.add(n.id);
+      const kindRaw = (n.kind ?? '').toLowerCase();
+      if (!VALID_TREE_KINDS.has(kindRaw)) continue;
+      const kind = kindRaw as ReasoningTreeNode['kind'];
+      if (kind === 'answer') hasAnswer = true;
+      nodes.push({
+        id: n.id,
+        label: (n.label ?? n.id).slice(0, 40),
+        text: (n.text ?? '').slice(0, 220),
+        kind,
+        depth: -1,
+        is_pivotal: !!n.is_pivotal,
+      });
+    }
+    if (nodes.length < 3 || !hasAnswer) return null;
+
+    // 엣지 검증
+    const validIds = new Set(nodes.map((n) => n.id));
+    const edges: ReasoningTreeEdge[] = [];
+    for (const e of parsed.edges) {
+      if (!e.from || !e.to) continue;
+      if (!validIds.has(e.from) || !validIds.has(e.to)) continue;
+      const kindRaw = (e.kind ?? 'derived_from').toLowerCase();
+      const kind: ReasoningTreeEdge['kind'] =
+        kindRaw === 'requires' ? 'requires' : 'derived_from';
+      edges.push({ from: e.from, to: e.to, kind });
+    }
+    if (edges.length === 0) return null;
+
+    // depth 계산
+    const rootId = 'answer';
+    computeDepth(nodes, edges, rootId);
+
+    const node_count = nodes.length;
+    const depth_max = nodes.reduce((m, n) => Math.max(m, n.depth), 0);
+    const collapse_hint = node_count >= TREE_COLLAPSE_NODE_THRESHOLD;
+
+    // condition 노드 추출 → conditions 배열 (UI 호환)
+    const conditions = nodes
+      .filter((n) => n.kind === 'condition')
+      .map((n, i) => ({ idx: i + 1, text: n.text }));
+
+    return {
+      schema_version: '1.0',
+      root_id: rootId,
+      nodes,
+      edges,
+      conditions,
+      depth_max,
+      node_count,
+      collapse_hint,
+    };
+  } catch (e) {
+    console.warn('[tree-builder] LLM mode failed:', (e as Error).message);
+    return null;
+  }
+}
+
 export async function buildReasoningTree(
+  args: BuildReasoningTreeArgs,
+  opts: BuildReasoningTreeOptions = {},
+): Promise<ReasoningTree> {
+  // Δ16 — LLM 모드 우선 시도. 실패 시 알고리즘 fallback.
+  const llmTree = await buildReasoningTreeLLM(args);
+  if (llmTree) {
+    if (!opts.skipPersist) {
+      const branchingFactor =
+        llmTree.node_count > 1
+          ? llmTree.edges.length / Math.max(llmTree.node_count - 1, 1)
+          : 0;
+      await persistTree(args.session_id, args.user_id, llmTree, branchingFactor);
+    }
+    return llmTree;
+  }
+  // === 기존 알고리즘 fallback (LLM 실패 시 보존) ===
+  return buildReasoningTreeAlgorithm(args, opts);
+}
+
+async function buildReasoningTreeAlgorithm(
   args: BuildReasoningTreeArgs,
   opts: BuildReasoningTreeOptions = {},
 ): Promise<ReasoningTree> {
