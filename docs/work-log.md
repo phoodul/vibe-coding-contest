@@ -1,5 +1,33 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-30 9차 세션 종료 — Phase G-06 진정 완결
+
+### 핵심 성과
+**Legend Tutor production 라이브** — 5 거장 라우팅 + R1 Per-Problem Report (ToT 트리 + AI 어려움 + 풀이 정리 + 떠올린 이유) + Trial/Beta 권한 게이트 + 베타 신청·승인·자율 리뷰.
+
+### 9차 누적 결정 (Δ1~Δ12)
+- Δ1 5종 quota 통합 / Δ2 Gemini Preview 유지 / Δ3 LLM struggle / Δ4 ToT 트리
+- Δ5 격 차별화 카운트다운 / Δ6 베타 신청·승인 / Δ7 풀이 정리 + 떠올린 이유
+- Δ8 Tier 1 = Gemini baseline + Sonnet fallback / Δ9 Trial/Beta Access Tier
+- Δ10 UX (LaTeX·Typewriter·풀이 진입) / Δ11 자율 리뷰 (인터뷰 폐기) / Δ12 베타 결함 fix
+
+### 9차 통계
+- **Commits**: 80+ (마지막 `086f828`)
+- **vitest baseline**: 374/374 PASS
+- **마이그레이션**: 11종 / API 17 라우트 / 페이지 10 / 컴포넌트 15+
+- **흉상 이미지**: 5 / 단축 매핑: 50+
+- **production 라이브**: https://vibe-coding-contest.vercel.app
+
+### 다음 세션 (10차 G-07) 후보
+1. 베타 사용자 리뷰 통계
+2. Sonnet baseline + Critic
+3. /api/euler-tutor callTutor 본격 위임
+4. R2 강화 / 한글 OCR 진단
+5. 유료 가격 정책
+6. 학습지 통합 PoC (Phase I)
+
+---
+
 ## 2026-04-30 Night (12차 세션 Night mode — G06-35 베타 검증 결함 4종 통합 fix, Δ12)
 
 ### 배경

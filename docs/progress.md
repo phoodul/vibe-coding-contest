@@ -1,9 +1,20 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-30 (12차 세션 Night mode — **G06-35 ✅ 베타 검증 결함 4종 통합 fix (Δ12)**)
-- Phase: **Phase G-06 ✅ + G06-33~35 (Δ10·Δ11·Δ12)** → 베타 모집 본격 시작 가능
-- Step: **G06-35 ✅ Night mode** — 베타 시뮬레이션 발견 결함 4종 통합 fix.
+- Time: 2026-04-30 (**9차 세션 종료** — 4일 누적 Night·Day mode 통합)
+- Phase: **Phase G-06 ✅ 진정 완결** + G06-33·34·35 (Δ10·Δ11·Δ12) — Legend Tutor production 라이브
+- Status: **베타 모집 즉시 시작 가능** (검증된 4 결함 fix + 베타 신청·승인·리뷰 시스템 완비)
+- Git: clean, origin/main 동기화 (commit `086f828` 마지막)
+- vitest: **374/374 PASS** baseline
+- 다음 세션 (10차 G-07) 후보:
+  1. 베타 사용자 누적 → 리뷰 통계 분석 → 마케팅 자료
+  2. Sonnet baseline + Critic 옵션 검증
+  3. /api/euler-tutor callTutor 본격 위임
+  4. R2 Weekly/Monthly Report 강화
+  5. 한글 손글씨 OCR 정확도 진단 (베타 데이터 기반)
+  6. 유료 가격 정책 다변화 (Plan A/B/C 시뮬레이션)
+  7. 학습지 통합 PoC (Phase I 진입)
+- Step (마지막): **G06-35 ✅ Night mode** — 베타 시뮬레이션 발견 결함 4종 통합 fix.
   - **(35a) Manager 난이도 prompt 강화**: `stage1-manager.ts` system 프롬프트 50+줄 — 6/9/12/14/21/29번 정밀 매핑 + few-shot 10개 + (가)(나)(다) 보수적 분류 가이드.
   - **(35b) 선택 튜터 일관성**: `build-summary` body 에 `selected_tutor` (6 enum 검증). BetaChat selectedTutor state → SolutionSummaryButton → API 전파. 풀이 정리도 채팅 튜터로 강제.
   - **(35c) 모델명 숨김**: portraits.ts `persona_desc` 신규 ("수학의 왕자" 등). TutorBadge default = persona_desc. PerProblemReportCard / TutorChoicePrompt / TutorPickerModal raw 모델명 노출 제거.
