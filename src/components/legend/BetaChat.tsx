@@ -174,11 +174,10 @@ export function BetaChat({ user: _user }: { user: User }) {
         const mimeType = mimeMatch?.[1] || 'image/jpeg';
         append({
           role: 'user',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           content: [
             { type: 'image', image: `data:${mimeType};base64,${base64}` },
             { type: 'text', text: input.trim() || '이 문제를 같이 풀어보고 싶어요.' },
-          ] as any,
+          ] as unknown as string,
         });
       }
     } catch {
@@ -187,11 +186,10 @@ export function BetaChat({ user: _user }: { user: User }) {
       const mimeType = mimeMatch?.[1] || 'image/jpeg';
       append({
         role: 'user',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         content: [
           { type: 'image', image: `data:${mimeType};base64,${base64}` },
           { type: 'text', text: input.trim() || '이 문제를 같이 풀어보고 싶어요.' },
-        ] as any,
+        ] as unknown as string,
       });
     } finally {
       setParsing(false);
