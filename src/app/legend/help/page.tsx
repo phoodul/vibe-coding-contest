@@ -101,6 +101,38 @@ const SECTIONS: Section[] = [
       { input: "inf, -inf", latex: "\\infty, -\\infty" },
     ],
   },
+  {
+    title: "도함수",
+    description: "프라임 표기를 그대로 사용합니다 (LaTeX 자동 렌더). 거장 튜터는 1계·2계·n계로 정확히 인식합니다.",
+    items: [
+      { input: "f'(x)", latex: "f'(x)", note: "1계 도함수" },
+      { input: "f''(x)", latex: "f''(x)", note: "2계 도함수" },
+      { input: "f'''(x)", latex: "f'''(x)", note: "3계 도함수" },
+      { input: "f^{(n)}(x)", latex: "f^{(n)}(x)", note: "n계 도함수" },
+      { input: "y'", latex: "y'", note: "y의 1계 도함수" },
+    ],
+  },
+  {
+    title: "오일러수·자연상수",
+    description: "단독으로 등장하는 e는 자연로그의 밑 (오일러수, ≈ 2.71828) 으로 해석됩니다.",
+    items: [
+      { input: "e", latex: "e", note: "자연로그의 밑 ≈ 2.71828" },
+      { input: "e^x", latex: "e^{x}", note: "지수함수" },
+      { input: "ln(e)", latex: "\\ln e = 1", note: "자연로그" },
+      { input: "lim(n->inf) (1+1/n)^n", latex: "\\lim_{n \\to \\infty}\\left(1+\\frac{1}{n}\\right)^n = e" },
+    ],
+  },
+  {
+    title: "절대값·구간",
+    description: "절대값은 표준 막대 기호, 구간은 괄호/대괄호로 양 끝 포함 여부를 구분합니다.",
+    items: [
+      { input: "|x|", latex: "|x|", note: "절대값" },
+      { input: "|x - 3|", latex: "|x - 3|", note: "거리·편차" },
+      { input: "(3, 5)", latex: "(3, 5)", note: "열린 구간 — 양 끝 미포함" },
+      { input: "[3, 5]", latex: "[3, 5]", note: "닫힌 구간 — 양 끝 포함" },
+      { input: "[3, 5)", latex: "[3, 5)", note: "반열린 구간" },
+    ],
+  },
 ];
 
 function MathPreview({ latex }: { latex: string }) {

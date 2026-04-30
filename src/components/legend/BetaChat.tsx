@@ -21,10 +21,11 @@ import { useChat } from 'ai/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import 'katex/dist/katex.min.css';
 import { PORTRAITS } from '@/lib/legend/portraits';
 import type { PerProblemReport, TutorName } from '@/lib/legend/types';
+import { InlineHandwritePanel } from '@/components/euler/InlineHandwritePanel';
 import { SolutionSummaryButton } from './SolutionSummaryButton';
 import { PerProblemReportCard } from './PerProblemReportCard';
 import { StreamingMarkdown } from './StreamingMarkdown';
@@ -42,10 +43,26 @@ const ALL_TUTORS: TutorName[] = [
   'leibniz',
 ];
 
-/** G06-33a — 마지막 user 메시지의 텍스트 추출 (build-summary 입력용). */
-function extractLastUserText(messages: Array<{ role: string; content: string }>): string {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i].role === 'user') return messages[i].content;
+/**
+ * G06-33a (Δ10) — build-summary 입력용 problem_text 추출.
+ * Δ13 fix: 마지막 user 가 아닌 **첫** user 메시지(원문제) 추출.
+ *   이전: 풀이 중간 짧은 user 메시지 ("이걸 인수분해할게요") 가 problem_text 로 전달되어
+ *         routeProblem 이 난이도 1로 분류 → ToT 트리가 빈약했음.
+ *   현재: 첫 user 메시지 = 원문제 → routeProblem 이 정확한 난이도 분류 → ToT 풍부.
+ */
+function extractFirstUserText(messages: Array<{ role: string; content: unknown }>): string {
+  for (const m of messages) {
+    if (m.role !== 'user') continue;
+    if (typeof m.content === 'string') return m.content;
+    // multimodal (필기/사진) — text 부분만 합치기
+    if (Array.isArray(m.content)) {
+      const parts = m.content as { type?: string; text?: string }[];
+      const text = parts
+        .filter((p) => p.type === 'text' && p.text)
+        .map((p) => p.text!)
+        .join('\n');
+      if (text) return text;
+    }
   }
   return '';
 }
@@ -58,10 +75,16 @@ export function BetaChat({ user: _user }: { user: User }) {
   // G06-33: 풀이 정리 인라인 카드 상태 (마지막 assistant 메시지 1개만 유지)
   const [inlineReport, setInlineReport] = useState<PerProblemReport | null>(null);
 
+  // Δ13 — 필기/사진 입력 채널 (EulerTutorPage 패턴 차용)
+  const [handwriteOpen, setHandwriteOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [parsing, setParsing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // 라마누잔 (Tier 1) = useGpt=false → Sonnet 4.6 (G-05 격상 적용)
   // 가우스 / 폰 노이만 등 거장 = useGpt=true → GPT-5.5 (G-05 격상 적용)
   // 본격적 5튜터 분기는 G-07 callTutor 위임에서 처리 — 현 단계는 binary toggle.
-  const { messages, input, handleInputChange, handleSubmit, isLoading, status } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
       api: '/api/euler-tutor',
       body: { area: '자유 질문', useGpt, input_mode: 'text' },
@@ -85,7 +108,109 @@ export function BetaChat({ user: _user }: { user: User }) {
     !isLoading &&
     status !== 'streaming' &&
     status !== 'submitted';
-  const lastUserText = useMemo(() => extractLastUserText(messages), [messages]);
+  // Δ13 — 첫 user 메시지(원문제) 를 build-summary 에 전달 (마지막 user 짧은 계산 단계 회피)
+  const firstUserText = useMemo(() => extractFirstUserText(messages), [messages]);
+
+  // Δ13 — 필기 OCR 결과를 채팅에 append
+  const handleHandwriteResult = useCallback(
+    (text: string) => {
+      const isFirst = messages.length === 0;
+      append({
+        role: 'user',
+        content: isFirst
+          ? `[필기로 입력]\n\n${text}\n\n이 문제를 같이 풀어보고 싶어요!`
+          : `[필기로 입력한 답/풀이]\n\n${text}`,
+      });
+    },
+    [append, messages.length],
+  );
+
+  // Δ13 — 이미지 업로드 핸들러
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setImagePreview(reader.result as string);
+    reader.readAsDataURL(file);
+  }, []);
+
+  // Δ13 — 클립보드 paste 이미지 (스크린샷 → Ctrl+V)
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => setImagePreview(reader.result as string);
+        reader.readAsDataURL(file);
+        return;
+      }
+    }
+  }, []);
+
+  // Δ13 — 이미지 전송 (Upstage parse → fallback Vision)
+  const sendImage = useCallback(async () => {
+    if (!imagePreview) return;
+    setParsing(true);
+    try {
+      const parseRes = await fetch('/api/euler-tutor/parse-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imagePreview }),
+      });
+      const parseData = await parseRes.json();
+
+      if (parseData.text && !parseData.fallback) {
+        append({
+          role: 'user',
+          content: `[수학 문제 이미지에서 추출된 텍스트]\n\n${parseData.text}\n\n${input.trim() || '이 문제를 같이 풀어보고 싶어요.'}`,
+        });
+      } else {
+        const [header, base64] = imagePreview.split(',');
+        const mimeMatch = header.match(/data:(.+);base64/);
+        const mimeType = mimeMatch?.[1] || 'image/jpeg';
+        append({
+          role: 'user',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          content: [
+            { type: 'image', image: `data:${mimeType};base64,${base64}` },
+            { type: 'text', text: input.trim() || '이 문제를 같이 풀어보고 싶어요.' },
+          ] as any,
+        });
+      }
+    } catch {
+      const [header, base64] = imagePreview.split(',');
+      const mimeMatch = header.match(/data:(.+);base64/);
+      const mimeType = mimeMatch?.[1] || 'image/jpeg';
+      append({
+        role: 'user',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        content: [
+          { type: 'image', image: `data:${mimeType};base64,${base64}` },
+          { type: 'text', text: input.trim() || '이 문제를 같이 풀어보고 싶어요.' },
+        ] as any,
+      });
+    } finally {
+      setParsing(false);
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }, [imagePreview, input, append]);
+
+  const onSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (imagePreview) {
+        sendImage();
+      } else {
+        handleSubmit(e);
+      }
+    },
+    [imagePreview, sendImage, handleSubmit],
+  );
 
   function handleTutorClick(tutor: TutorName) {
     setSelectedTutor(tutor);
@@ -282,9 +407,10 @@ export function BetaChat({ user: _user }: { user: User }) {
 
           {/* G06-33 — 풀이 정리 버튼 (마지막 assistant 직후, 스트리밍 종료 시) */}
           {/* G06-35b — selectedTutor 전달: 채팅 튜터와 정리 튜터 일관성 강제 */}
-          {canShowSummaryButton && lastUserText && !inlineReport && (
+          {/* Δ13 — firstUserText (원문제) 전달: 짧은 마지막 user → 난이도 1 오판정 fix */}
+          {canShowSummaryButton && firstUserText && !inlineReport && (
             <SolutionSummaryButton
-              problemText={lastUserText}
+              problemText={firstUserText}
               selectedTutor={selectedTutor}
               onSummaryReady={(report) => setInlineReport(report)}
             />
@@ -309,20 +435,90 @@ export function BetaChat({ user: _user }: { user: User }) {
       {/* 입력 */}
       <div className="sticky bottom-0 border-t border-white/10 bg-slate-950/70 backdrop-blur-xl px-4 py-3">
         <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleSubmit} className="flex gap-2 items-end">
+          {/* Δ13 — 필기 패널 (handwriteOpen 시 펼침) */}
+          <InlineHandwritePanel
+            open={handwriteOpen}
+            onClose={() => setHandwriteOpen(false)}
+            onConfirm={(text) => {
+              handleHandwriteResult(text);
+              setHandwriteOpen(false);
+            }}
+          />
+
+          {/* Δ13 — 이미지 미리보기 */}
+          {imagePreview && (
+            <div className="mb-2 rounded-xl border border-amber-400/30 bg-amber-400/5 p-2">
+              <div className="flex items-start gap-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imagePreview}
+                  alt="문제 이미지"
+                  className="max-h-32 rounded-lg object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagePreview(null);
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                  }}
+                  className="text-xs text-white/60 hover:text-white"
+                  aria-label="이미지 제거"
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="mt-1 text-[10px] text-amber-200/70">
+                {parsing ? '이미지 인식 중...' : '전송 버튼을 누르면 거장이 분석합니다.'}
+              </p>
+            </div>
+          )}
+
+          <form onSubmit={onSubmit} className="flex gap-2 items-end">
+            {/* Δ13 — 필기 버튼 */}
+            <button
+              type="button"
+              onClick={() => setHandwriteOpen((v) => !v)}
+              disabled={isLoading || parsing}
+              className="px-3 py-3 rounded-xl border border-emerald-400/40 bg-emerald-400/10 text-emerald-200 hover:bg-emerald-400/20 transition-colors disabled:opacity-40 flex-shrink-0"
+              title="필기로 입력"
+              aria-label="필기로 입력"
+            >
+              ✏️
+            </button>
+
+            {/* Δ13 — 사진 업로드 버튼 */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading || parsing}
+              className="px-3 py-3 rounded-xl border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors disabled:opacity-40 flex-shrink-0"
+              title="사진·스크린샷 업로드 (Ctrl+V 도 가능)"
+              aria-label="사진 업로드"
+            >
+              📸
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+
             <textarea
               value={input}
               onChange={handleInputChange}
+              onPaste={handlePaste}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  handleSubmit(e as unknown as React.FormEvent);
+                  onSubmit(e as unknown as React.FormEvent);
                 }
               }}
-              placeholder="문제를 입력하세요 (베타: 일 5문제 + 거장 일 3회)"
+              placeholder="문제 입력 · 필기(✏️) · 사진(📸) · Ctrl+V 스크린샷"
               rows={1}
               className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400/50 transition-colors text-sm resize-none"
-              disabled={isLoading}
+              disabled={isLoading || parsing}
               onInput={(e) => {
                 const t = e.currentTarget;
                 t.style.height = 'auto';
@@ -333,14 +529,17 @@ export function BetaChat({ user: _user }: { user: User }) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               type="submit"
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || parsing || (!input.trim() && !imagePreview)}
               className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-medium text-sm disabled:opacity-40 transition-all flex-shrink-0"
             >
               전송
             </motion.button>
           </form>
           <p className="mt-2 text-center text-[10px] text-white/40">
-            베타 한도: 일 5문제 + 거장 일 3회 (자정 KST 리셋)
+            베타 한도: 일 5문제 + 거장 일 3회 (자정 KST 리셋) · 입력{' '}
+            <Link href="/legend/help" className="underline hover:text-white/70">
+              가이드
+            </Link>
           </p>
         </div>
       </div>
