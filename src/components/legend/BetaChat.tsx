@@ -408,10 +408,12 @@ export function BetaChat({ user: _user }: { user: User }) {
           {/* G06-33 — 풀이 정리 버튼 (마지막 assistant 직후, 스트리밍 종료 시) */}
           {/* G06-35b — selectedTutor 전달: 채팅 튜터와 정리 튜터 일관성 강제 */}
           {/* Δ13 — firstUserText (원문제) 전달: 짧은 마지막 user → 난이도 1 오판정 fix */}
+          {/* Δ14 — conversation 전달: 학생 막힘 5 차원 (stuck_step·trigger·AI hint·resolution) */}
           {canShowSummaryButton && firstUserText && !inlineReport && (
             <SolutionSummaryButton
               problemText={firstUserText}
               selectedTutor={selectedTutor}
+              conversation={messages}
               onSummaryReady={(report) => setInlineReport(report)}
             />
           )}

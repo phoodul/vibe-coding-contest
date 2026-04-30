@@ -28,11 +28,13 @@ import { buildReasoningTree } from './tree-builder';
 import { expandTrigger } from './trigger-expander';
 import { aggregateStuck, type StuckReason } from './stuck-tracker';
 import { summarizeSolution } from './solution-summarizer';
+import { extractStudentStruggle } from './student-struggle-extractor';
 import type { Provider } from './trace-normalizer';
 import type {
   PerProblemReport,
   PerProblemStep,
   ProblemArea,
+  StudentStruggleSummary,
   TriggerCard,
   TutorName,
 } from '@/lib/legend/types';
@@ -172,6 +174,11 @@ export interface BuildReportArgs {
   session_id: string;
   user_id: string;
   problem_text: string;
+  /**
+   * Δ14 — 학생-AI 대화 이력 (직렬화된 텍스트). 전달되면 student_struggle 5 차원 추출.
+   * 미전달 시 student_struggle 필드 비어있음 (UI 가 falsy 체크 후 섹션 숨김).
+   */
+  student_conversation?: string;
 }
 
 export interface BuildReportOptions {
@@ -335,13 +342,29 @@ export async function buildReport(
     primary_trigger: primaryCard ?? undefined,
   });
 
+  // 9.6 Δ14 — 학생 막힘 분석 (conversation 전달된 경우만, Haiku 1회 ~$0.001~0.002)
+  let studentStruggle: StudentStruggleSummary | null = null;
+  if (args.student_conversation && args.student_conversation.trim()) {
+    try {
+      studentStruggle = await extractStudentStruggle({
+        conversation_text: args.student_conversation,
+        problem_text: args.problem_text,
+        steps: stepsWithStruggle,
+        pivotal_step_index: pivotalIndex,
+        primary_trigger: primaryCard ?? undefined,
+      });
+    } catch (e) {
+      console.warn('[report-builder] student-struggle failed:', (e as Error).message);
+    }
+  }
+
   // 10. PerProblemReport 조립
   const labelInfo = TUTOR_LABELS_KO[session.tutor_name] ?? { label: session.tutor_name, model: '' };
   const difficulty =
     pivotalStep?.difficulty ?? difficultyHint ?? 4;
 
   const report: PerProblemReport = {
-    schema_version: '1.3',
+    schema_version: studentStruggle ? '1.4' : '1.3',
     problem_summary: {
       text_short: args.problem_text.slice(0, 80),
       area,
@@ -368,6 +391,7 @@ export async function buildReport(
     },
     reasoning_tree: tree,
     solution_summary: solutionSummary,
+    ...(studentStruggle ? { student_struggle: studentStruggle } : {}),
   };
 
   // 11. per_problem_reports upsert

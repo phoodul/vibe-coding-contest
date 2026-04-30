@@ -167,6 +167,56 @@ export function PerProblemReportCard({
           </section>
         )}
 
+        {/* 6.5 Δ14 — 학생 막힘 분석 (대화 이력 기반). conversation 미전달 시 섹션 숨김 */}
+        {report.student_struggle && report.student_struggle.stuck_summary && (
+          <section className="rounded-xl border border-violet-400/30 bg-violet-400/[0.04] p-4">
+            <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-violet-100">
+              <span aria-hidden>🧗</span> 내가 막혔던 부분
+              {report.student_struggle.stuck_step_index >= 0 && (
+                <span className="rounded-full border border-violet-300/30 bg-violet-300/10 px-2 py-0.5 text-[10px] font-normal text-violet-200">
+                  step {report.student_struggle.stuck_step_index + 1}
+                </span>
+              )}
+            </h3>
+            <div className="space-y-2.5 text-sm leading-relaxed text-violet-50/90">
+              <p>
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-300/80">
+                  막힘 요약
+                </span>
+                <br />
+                {report.student_struggle.stuck_summary}
+              </p>
+              {report.student_struggle.trigger_quote && (
+                <p>
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-300/80">
+                    💡 떠올렸어야 하는 것
+                  </span>
+                  <br />
+                  {report.student_struggle.trigger_quote}
+                </p>
+              )}
+              {report.student_struggle.ai_hint_quote && (
+                <p className="rounded-md border border-violet-300/15 bg-black/20 px-3 py-2 italic text-violet-100/85">
+                  <span className="not-italic text-[10px] font-semibold uppercase tracking-wide text-violet-300/80">
+                    튜터의 핵심 한 마디
+                  </span>
+                  <br />
+                  &ldquo;{report.student_struggle.ai_hint_quote}&rdquo;
+                </p>
+              )}
+              {report.student_struggle.resolution && (
+                <p>
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-violet-300/80">
+                    어떻게 풀렸는가
+                  </span>
+                  <br />
+                  {report.student_struggle.resolution}
+                </p>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* 7. Second Opinion CTA */}
         {onCallSecondOpinion && (
           <motion.button

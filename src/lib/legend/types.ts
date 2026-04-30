@@ -132,8 +132,31 @@ export interface QuotaStatus {
 // R1 PerProblemReport schema 1.1 (Δ3 + Δ4 확장)
 // ────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Δ14 — 학생 막힘 분석 (R1 카드 student_struggle 섹션).
+ *
+ * 베타 단계에서 `legend_step_stuck_snapshots` 테이블이 비어 있어 `stuck_signals` 가 0 으로
+ * 나오는 문제 보강. 학생-AI 대화 이력을 Haiku 가 분석하여 "학생이 어디서 막혔고,
+ * AI 가 어떤 hint 로 도왔는가" 를 1 카드로 추출.
+ *
+ * 가용성: build-summary 호출 시 `conversation` 가 함께 전달된 경우에만 채워진다.
+ *         legacy 캐시 row 호환을 위해 optional.
+ */
+export interface StudentStruggleSummary {
+  /** 학생이 막힌 step (steps[].index 와 매칭, 없으면 -1) */
+  stuck_step_index: number;
+  /** 한 문장 요약 — "지수 변환 단계에서 어떤 변환을 적용할지 망설임" */
+  stuck_summary: string;
+  /** 그 step 에서 떠올렸어야 하는 trigger·접근법 (학생 친화 톤, 1~2문장) */
+  trigger_quote: string;
+  /** AI 가 학생을 도왔던 핵심 hint 인용 (한 줄, 따옴표 포함 가능) */
+  ai_hint_quote: string;
+  /** 학생이 어떻게 극복했는지 — 못 했으면 "끝까지 망설임" 등 (1문장) */
+  resolution: string;
+}
+
 export interface PerProblemReport {
-  schema_version: '1.3';
+  schema_version: '1.3' | '1.4';
   problem_summary: {
     /** 80자 발췌 */
     text_short: string;
@@ -185,6 +208,11 @@ export interface PerProblemReport {
   reasoning_tree: ReasoningTree;
   /** Δ7 — 풀이 정리 (학습 코치 톤, 4~6 문장) */
   solution_summary: SolutionSummary;
+  /**
+   * Δ14 — 학생 막힘 분석. build-summary 에 conversation 이 함께 전달된 경우에만 채워진다.
+   * stuck_signals 가 비어있는 베타 단계에서 학생 코칭 차원을 채우는 핵심 섹션.
+   */
+  student_struggle?: StudentStruggleSummary;
 }
 
 /**

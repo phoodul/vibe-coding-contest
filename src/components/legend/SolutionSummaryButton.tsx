@@ -27,6 +27,11 @@ export interface SolutionSummaryButtonProps {
    * 풀이 정리도 같은 튜터로 생성됨 (모델·페르소나 일관성 보장).
    */
   selectedTutor?: TutorName;
+  /**
+   * Δ14 — 학생-AI 대화 이력 (useChat messages). 전달되면 buildReport 가
+   * student_struggle 5 차원을 함께 추출.
+   */
+  conversation?: Array<{ role: string; content: unknown }>;
 }
 
 interface BuildSummaryError {
@@ -40,6 +45,7 @@ export function SolutionSummaryButton({
   onSummaryReady,
   hidden,
   selectedTutor,
+  conversation,
 }: SolutionSummaryButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<BuildSummaryError | null>(null);
@@ -59,6 +65,7 @@ export function SolutionSummaryButton({
         body: JSON.stringify({
           problem_text: problemText,
           ...(selectedTutor ? { selected_tutor: selectedTutor } : {}),
+          ...(conversation && conversation.length > 0 ? { conversation } : {}),
         }),
       });
       if (!res.ok) {

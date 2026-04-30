@@ -25,6 +25,7 @@ import { consumeQuota } from '@/lib/legend/quota-manager';
 import { getUserAccessTier } from '@/lib/legend/access-tier';
 import { routeProblem } from '@/lib/legend/legend-router';
 import { buildReport } from '@/lib/legend/report/report-builder';
+import { formatConversation } from '@/lib/legend/report/student-struggle-extractor';
 import type { TutorName } from '@/lib/legend/types';
 
 export const runtime = 'nodejs';
@@ -47,6 +48,13 @@ interface BuildSummaryRequestBody {
    * unknown 값은 정상 무시 (기존 라우팅 로직 fallback).
    */
   selected_tutor?: string;
+  /**
+   * Δ14 — 학생-AI 대화 이력 (useChat messages). 전달되면 buildReport 가
+   * student_struggle 5 차원 (학생 막힘 step + summary + trigger + AI hint + resolution) 을
+   * 추가 추출하여 R1 카드에 통합.
+   * 미전달 시 기존 흐름 그대로 (student_struggle 섹션 비활성).
+   */
+  conversation?: Array<{ role: string; content: unknown }>;
 }
 
 export async function POST(req: Request) {
@@ -136,11 +144,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // 7. buildReport — Δ3 + Δ4 + Δ7 + Δ10 통합
+    // 7. buildReport — Δ3 + Δ4 + Δ7 + Δ10 + Δ14 통합
+    // Δ14 — conversation 직렬화 후 전달 (학생 막힘 분석)
+    const studentConversation = Array.isArray(body.conversation)
+      ? formatConversation(body.conversation)
+      : undefined;
     const report = await buildReport({
       session_id: tutorResult.session_id,
       user_id: user.id,
       problem_text: body.problem_text,
+      ...(studentConversation ? { student_conversation: studentConversation } : {}),
     });
 
     // 8. JSON 반환
