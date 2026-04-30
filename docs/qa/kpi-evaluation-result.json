@@ -1,17 +1,17 @@
 {
   "mode": "mock",
-  "run_at": "2026-04-26T16:36:21.202Z",
+  "run_at": "2026-04-28T22:22:12.436Z",
   "summary": {
-    "total": 45,
-    "retriever_hit_rate_top3": 0.2222222222222222,
-    "retriever_hit_rate_top5": 0.2222222222222222,
-    "reasoner_accuracy": 0.2222222222222222,
-    "reasoner_accuracy_hard": 0.2631578947368421,
+    "total": 10,
+    "retriever_hit_rate_top3": 1,
+    "retriever_hit_rate_top5": 1,
+    "reasoner_accuracy": 1,
+    "reasoner_accuracy_hard": 1,
     "why_inclusion_rate": 1,
     "manager_classify_rate": 1,
     "pass": {
-      "retriever": false,
-      "accuracy": false,
+      "retriever": true,
+      "accuracy": true,
       "why": true
     },
     "chain": {
@@ -29,993 +29,153 @@
   },
   "results": [
     {
-      "id": "EVAL_01",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "평균값 정리 (기본)"
-      ],
-      "expected_tools": [
-        "평균값 정리 (기본)"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: 1\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_02",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "롤의 정리",
-        "1계 도함수 부호변화로 극값 판정"
-      ],
-      "expected_tools": [
-        "롤의 정리",
-        "1계 도함수 부호변화로 극값 판정"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: 0\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_03",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "사잇값 정리",
-        "연속성 판정"
-      ],
-      "expected_tools": [
-        "사잇값 정리",
-        "연속성 판정"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: f(0)=1>0, f(1)=-1<0 이므로 사잇값 정리에 의해 (0,1) 에서 f(c)=0 인 c 존재\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_04",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "1계 도함수 부호변화로 극값 판정",
-        "3차함수의 극값"
-      ],
-      "expected_tools": [
-        "1계 도함수 부호변화로 극값 판정",
-        "3차함수의 극값"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: 0\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_05",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "치환 적분",
-        "정적분 치환 (한도 변환)"
-      ],
-      "expected_tools": [
-        "치환 적분",
-        "정적분 치환 (한도 변환)"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: (e-1)/2\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_06",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "부분 적분",
-        "삼각함수 미분"
-      ],
-      "expected_tools": [
-        "부분 적분",
-        "삼각함수 미분"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: π\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_07",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "회전체 부피 (원판법)",
-        "넓이 = 정적분"
-      ],
-      "expected_tools": [
-        "회전체 부피 (원판법)",
-        "넓이 = 정적분"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: 8π\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_08",
-      "difficulty": 3,
-      "manager_ok": true,
-      "manager_difficulty": 3,
-      "retrieved_tools": [
-        "연쇄법칙",
-        "삼각함수 미분"
-      ],
-      "expected_tools": [
-        "연쇄법칙",
-        "삼각함수 미분"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: 4x cos(2x²+1)\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_09",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "음함수 미분법",
-        "접선의 방정식"
-      ],
-      "expected_tools": [
-        "음함수 미분법",
-        "접선의 방정식"
-      ],
-      "hit_top3": true,
-      "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: -1/√3 (또는 -√3/3)\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_10",
+      "id": "2022-기하-29",
       "difficulty": 6,
       "manager_ok": true,
       "manager_difficulty": 6,
-      "retrieved_tools": [
-        "이동거리 = ∫|v| dt",
-        "위치·속도·가속도 관계",
-        "정적분 치환 (한도 변환)"
-      ],
-      "expected_tools": [
-        "이동거리 = ∫|v| dt",
-        "위치·속도·가속도 관계",
-        "정적분 치환 (한도 변환)"
-      ],
+      "retrieved_tools": [],
+      "expected_tools": [],
       "hit_top3": true,
       "hit_top5": true,
-      "reasoner_text": "(mock) 최종 답: 28\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": true,
-      "why_included": true,
-      "errors": [],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M01",
-      "difficulty": 3,
-      "manager_ok": true,
-      "manager_difficulty": 3,
-      "retrieved_tools": [
-        "이차방정식의 인수분해"
-      ],
-      "expected_tools": [
-        "이차방정식의 인수분해"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: x=2, x=3\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '이차방정식의 인수분해' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M02",
-      "difficulty": 3,
-      "manager_ok": true,
-      "manager_difficulty": 3,
-      "retrieved_tools": [
-        "피타고라스 정리"
-      ],
-      "expected_tools": [
-        "피타고라스 정리"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 5\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '피타고라스 정리' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M03",
-      "difficulty": 3,
-      "manager_ok": true,
-      "manager_difficulty": 3,
-      "retrieved_tools": [
-        "연립일차방정식 (가감법·대입법)"
-      ],
-      "expected_tools": [
-        "연립일차방정식 (가감법·대입법)"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: x=3, y=1\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '연립일차방정식 (가감법·대입법)' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M04",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "원의 둘레·넓이"
-      ],
-      "expected_tools": [
-        "원의 둘레·넓이"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: r=10\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '원의 둘레·넓이' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M05",
-      "difficulty": 3,
-      "manager_ok": true,
-      "manager_difficulty": 3,
-      "retrieved_tools": [
-        "평균·중앙값·최빈값",
-        "분산·표준편차"
-      ],
-      "expected_tools": [
-        "평균·중앙값·최빈값",
-        "분산·표준편차"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 평균=34/6=17/3≈5.67, 분산≈7.22\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '평균·중앙값·최빈값' 가 math-tools-seed.json 에 없음",
-        "expected_tool '분산·표준편차' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_C01",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "인수정리",
-        "조립제법·다항식 나눗셈"
-      ],
-      "expected_tools": [
-        "인수정리",
-        "조립제법·다항식 나눗셈"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: a=5, 몫=x²-3x+2\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '인수정리' 가 math-tools-seed.json 에 없음",
-        "expected_tool '조립제법·다항식 나눗셈' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_C02",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "이차부등식의 풀이"
-      ],
-      "expected_tools": [
-        "이차부등식의 풀이"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: -1 ≤ x ≤ 5\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '이차부등식의 풀이' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_C03",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "복소수의 기본 연산",
-        "복소수의 절댓값과 켤레"
-      ],
-      "expected_tools": [
-        "복소수의 기본 연산",
-        "복소수의 절댓값과 켤레"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: |z|=√50=5√2\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '복소수의 기본 연산' 가 math-tools-seed.json 에 없음",
-        "expected_tool '복소수의 절댓값과 켤레' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_C04",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "산술-기하 평균 부등식",
-        "코시-슈바르츠 부등식 (2변수)"
-      ],
-      "expected_tools": [
-        "산술-기하 평균 부등식",
-        "코시-슈바르츠 부등식 (2변수)"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 9/4\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '산술-기하 평균 부등식' 가 math-tools-seed.json 에 없음",
-        "expected_tool '코시-슈바르츠 부등식 (2변수)' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_C05",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "이항정리"
-      ],
-      "expected_tools": [
-        "이항정리"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 40\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '이항정리' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M1_01",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "로그의 연산법칙"
-      ],
-      "expected_tools": [
-        "로그의 연산법칙"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 2\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '로그의 연산법칙' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M1_02",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "지수·로그방정식과 부등식"
-      ],
-      "expected_tools": [
-        "지수·로그방정식과 부등식"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 1\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '지수·로그방정식과 부등식' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M1_03",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "삼각함수 기본항등식",
-        "삼각방정식의 풀이"
-      ],
-      "expected_tools": [
-        "삼각함수 기본항등식",
-        "삼각방정식의 풀이"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 5π/2\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '삼각함수 기본항등식' 가 math-tools-seed.json 에 없음",
-        "expected_tool '삼각방정식의 풀이' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M1_04",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "Σ 분해 (선형성)",
-        "Σk²·Σk³ 공식"
-      ],
-      "expected_tools": [
-        "Σ 분해 (선형성)",
-        "Σk²·Σk³ 공식"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
       "reasoner_text": "(mock) 최종 답: 100\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
+      "reasoner_answer_correct": true,
       "why_included": true,
-      "errors": [
-        "expected_tool 'Σ 분해 (선형성)' 가 math-tools-seed.json 에 없음",
-        "expected_tool 'Σk²·Σk³ 공식' 가 math-tools-seed.json 에 없음"
-      ],
+      "errors": [],
       "duration_ms": 0
     },
     {
-      "id": "EVAL_M1_05",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "무한등비급수의 합"
-      ],
-      "expected_tools": [
-        "무한등비급수의 합"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 1/2\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '무한등비급수의 합' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M2_01",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "0/0 꼴 — 인수분해·유리화"
-      ],
-      "expected_tools": [
-        "0/0 꼴 — 인수분해·유리화"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 4\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '0/0 꼴 — 인수분해·유리화' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M2_02",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "함수의 연속",
-        "0/0 꼴 — 인수분해·유리화"
-      ],
-      "expected_tools": [
-        "함수의 연속",
-        "0/0 꼴 — 인수분해·유리화"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 2\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '함수의 연속' 가 math-tools-seed.json 에 없음",
-        "expected_tool '0/0 꼴 — 인수분해·유리화' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M2_03",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "극값 — 일계도함수 부호변화",
-        "다항함수의 미분 (멱법칙)"
-      ],
-      "expected_tools": [
-        "극값 — 일계도함수 부호변화",
-        "다항함수의 미분 (멱법칙)"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 10\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '극값 — 일계도함수 부호변화' 가 math-tools-seed.json 에 없음",
-        "expected_tool '다항함수의 미분 (멱법칙)' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M2_04",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "두 곡선 사이 넓이",
-        "곡선과 x축 사이 넓이"
-      ],
-      "expected_tools": [
-        "두 곡선 사이 넓이",
-        "곡선과 x축 사이 넓이"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 4/3\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '두 곡선 사이 넓이' 가 math-tools-seed.json 에 없음",
-        "expected_tool '곡선과 x축 사이 넓이' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_M2_05",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "정적분의 정의 (FTC)",
-        "다항함수 적분 (멱적분)"
-      ],
-      "expected_tools": [
-        "정적분의 정의 (FTC)",
-        "다항함수 적분 (멱적분)"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 2\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '정적분의 정의 (FTC)' 가 math-tools-seed.json 에 없음",
-        "expected_tool '다항함수 적분 (멱적분)' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_P01",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "이항분포 B(n,p)"
-      ],
-      "expected_tools": [
-        "이항분포 B(n,p)"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 120·(0.3)³·(0.7)⁷ ≈ 0.2668\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '이항분포 B(n,p)' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_P02",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "표준정규분포표 활용"
-      ],
-      "expected_tools": [
-        "표준정규분포표 활용"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 약 0.475\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '표준정규분포표 활용' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_P03",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "순열·조합 기본"
-      ],
-      "expected_tools": [
-        "순열·조합 기본"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 15\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '순열·조합 기본' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_P04",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "여사건의 확률",
-        "사건의 독립",
-        "독립시행의 확률"
-      ],
-      "expected_tools": [
-        "여사건의 확률",
-        "사건의 독립",
-        "독립시행의 확률"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 0.64\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '여사건의 확률' 가 math-tools-seed.json 에 없음",
-        "expected_tool '사건의 독립' 가 math-tools-seed.json 에 없음",
-        "expected_tool '독립시행의 확률' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_P05",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "기댓값"
-      ],
-      "expected_tools": [
-        "기댓값"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 1.1\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '기댓값' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_G01",
-      "difficulty": 3,
-      "manager_ok": true,
-      "manager_difficulty": 3,
-      "retrieved_tools": [
-        "공간에서 두 점 사이 거리"
-      ],
-      "expected_tools": [
-        "공간에서 두 점 사이 거리"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 5\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '공간에서 두 점 사이 거리' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_G02",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "벡터의 내적",
-        "두 벡터의 사잇각"
-      ],
-      "expected_tools": [
-        "벡터의 내적",
-        "두 벡터의 사잇각"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 4/9\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '벡터의 내적' 가 math-tools-seed.json 에 없음",
-        "expected_tool '두 벡터의 사잇각' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_G03",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "타원의 정의와 표준형"
-      ],
-      "expected_tools": [
-        "타원의 정의와 표준형"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 8\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '타원의 정의와 표준형' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_G04",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "점과 평면 사이의 거리"
-      ],
-      "expected_tools": [
-        "점과 평면 사이의 거리"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 5/3\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '점과 평면 사이의 거리' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_G05",
-      "difficulty": 4,
-      "manager_ok": true,
-      "manager_difficulty": 4,
-      "retrieved_tools": [
-        "구의 방정식"
-      ],
-      "expected_tools": [
-        "구의 방정식"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 중심 (1,-2,3), 반지름 = 3\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '구의 방정식' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_CL01",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "치환적분",
-        "지수·로그 적분"
-      ],
-      "expected_tools": [
-        "치환적분",
-        "지수·로그 적분"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: e - 1\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '치환적분' 가 math-tools-seed.json 에 없음",
-        "expected_tool '지수·로그 적분' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_CL02",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "부분적분"
-      ],
-      "expected_tools": [
-        "부분적분"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 1\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool '부분적분' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_CL03",
-      "difficulty": 5,
-      "manager_ok": true,
-      "manager_difficulty": 5,
-      "retrieved_tools": [
-        "sin x / x 의 극한",
-        "로피탈의 정리"
-      ],
-      "expected_tools": [
-        "sin x / x 의 극한",
-        "로피탈의 정리"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 3\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
-      "why_included": true,
-      "errors": [
-        "expected_tool 'sin x / x 의 극한' 가 math-tools-seed.json 에 없음",
-        "expected_tool '로피탈의 정리' 가 math-tools-seed.json 에 없음"
-      ],
-      "duration_ms": 0
-    },
-    {
-      "id": "EVAL_CL04",
+      "id": "2022-기하-30",
       "difficulty": 6,
       "manager_ok": true,
       "manager_difficulty": 6,
-      "retrieved_tools": [
-        "매개변수 미분"
-      ],
-      "expected_tools": [
-        "매개변수 미분"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 11/4\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 23\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
       "why_included": true,
-      "errors": [
-        "expected_tool '매개변수 미분' 가 math-tools-seed.json 에 없음"
-      ],
+      "errors": [],
       "duration_ms": 0
     },
     {
-      "id": "EVAL_CL05",
+      "id": "2023-기하-29",
       "difficulty": 6,
       "manager_ok": true,
       "manager_difficulty": 6,
-      "retrieved_tools": [
-        "회전체의 부피 (디스크)"
-      ],
-      "expected_tools": [
-        "회전체의 부피 (디스크)"
-      ],
-      "hit_top3": false,
-      "hit_top5": false,
-      "reasoner_text": "(mock) 최종 답: 8π\n코칭 한마디: 왜냐하면 ...",
-      "reasoner_answer_correct": false,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 12\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
       "why_included": true,
-      "errors": [
-        "expected_tool '회전체의 부피 (디스크)' 가 math-tools-seed.json 에 없음"
-      ],
+      "errors": [],
+      "duration_ms": 0
+    },
+    {
+      "id": "2023-기하-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 24\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 0
+    },
+    {
+      "id": "2024-기하-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 11\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 0
+    },
+    {
+      "id": "2024-기하-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 147\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 0
+    },
+    {
+      "id": "2025-기하-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 107\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 0
+    },
+    {
+      "id": "2025-기하-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 316\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 0
+    },
+    {
+      "id": "2026-기하-29",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 360\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
+      "duration_ms": 0
+    },
+    {
+      "id": "2026-기하-30",
+      "difficulty": 6,
+      "manager_ok": true,
+      "manager_difficulty": 6,
+      "retrieved_tools": [],
+      "expected_tools": [],
+      "hit_top3": true,
+      "hit_top5": true,
+      "reasoner_text": "(mock) 최종 답: 221\n코칭 한마디: 왜냐하면 ...",
+      "reasoner_answer_correct": true,
+      "why_included": true,
+      "errors": [],
       "duration_ms": 0
     }
   ]
