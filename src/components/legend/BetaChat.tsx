@@ -252,6 +252,12 @@ export function BetaChat({ user: _user }: { user: User }) {
           </div>
           <div className="flex items-center gap-1.5">
             <Link
+              href="/legend/triggers"
+              className="text-[11px] px-2.5 py-1 rounded-full border border-violet-400/40 bg-violet-400/10 text-violet-200 hover:bg-violet-400/20 transition-colors font-semibold"
+            >
+              🎯 Trigger
+            </Link>
+            <Link
               href="/legend/beta/review"
               className="text-[11px] px-2.5 py-1 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 transition-colors font-semibold"
             >
