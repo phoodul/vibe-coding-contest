@@ -1,11 +1,44 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-30 (**9차 세션 종료** — 4일 누적 Night·Day mode 통합)
-- Phase: **Phase G-06 ✅ 진정 완결** + G06-33·34·35 (Δ10·Δ11·Δ12) — Legend Tutor production 라이브
-- Status: **베타 모집 즉시 시작 가능** (검증된 4 결함 fix + 베타 신청·승인·리뷰 시스템 완비)
-- Git: clean, origin/main 동기화 (commit `086f828` 마지막)
-- vitest: **374/374 PASS** baseline
+- Time: 2026-04-30 (**10차 세션 — Δ13 + Δ14 통합 fix**)
+- Phase: **Phase G-06 ✅** + G06-33~35 (Δ10·Δ11·Δ12) + **Δ13 (베타 1차) + Δ14 (학생 막힘)**
+- Status: **베타 모집 즉시 시작 가능** — 7건 검증 결함 fix + 풀이 전 과정 인식
+- Git: clean, origin/main 동기화 필요 (commits `9d59344` Δ13, `c84d765` Δ14)
+- vitest: **386/386 PASS** (+12 student-struggle 신규, 회귀 0)
+- 미커밋 untracked 4 파일 (docs/qa/ + scripts/) — 평가셋 번호 무결성 진단 (별도 정리 예정)
+
+## 10차 세션 — 베타 검증 결함 7건 통합 fix
+
+### Δ13 (commit `9d59344`) — 1차 6 결함
+1. 대시보드 진입점 정정 (오일러 튜터 → Legend Tutor / /legend)
+2. BetaChat 필기(✏️) + 사진/스크린샷(📸) + Ctrl+V paste 입력 채널
+3. EULER_SYSTEM_PROMPT 학생 입력 해석 가이드 (도함수 f' f'' / 오일러수 e /
+   절대값 |x| / 구간 (a,b) [a,b])
+4. /legend/help 신규 4 섹션 (KaTeX preview)
+5. SolutionSummary problem_text: extractLastUserText → extractFirstUserText
+   (마지막 user 짧은 계산 단계 → 난이도 1 오판정 fix)
+
+### Δ14 (commit `c84d765`) — 풀이 전 과정 인식
+6. types.ts schema 1.4 + StudentStruggleSummary 신규
+7. student-struggle-extractor 모듈 (Haiku 1회 ~$0.001~0.002)
+   - stuck_step_index / stuck_summary / trigger_quote / ai_hint_quote / resolution
+   - formatConversation 헬퍼 (max 12 메시지, 앞 4 + 뒷 8 보존)
+8. buildReport.student_conversation? + 9.6 단계 통합
+9. build-summary API.body.conversation? + SolutionSummaryButton.conversation prop
+10. BetaChat: messages 직접 전달 (Δ13 firstUserText + Δ14 conversation)
+11. PerProblemReportCard "🧗 내가 막혔던 부분" 섹션 (violet accent)
+12. 단위 테스트 +12 (정상/파싱실패/throw/invalid/빈입력/multimodal/맥스 등)
+
+### 핵심 진단 (Δ14)
+- 기존: ToT + AI struggle + trigger ✅, 학생 막힘만 비어있음 (legend_step_stuck_snapshots 빈 테이블 의존)
+- 해결: 학생-AI 대화 이력을 직접 분석하는 차원 신규 → R1 카드에 5 sub-card 노출
+- 사용자 코칭 가치: "AI 도 어려웠던 순간 (amber)" + "내가 막혔던 부분 (violet)" 양 차원 분리
+
+## 9차 세션 종료 (2026-04-30, commit `086f828`)
+- Phase G-06 ✅ + G06-33·34·35 (Δ10·Δ11·Δ12) — Legend Tutor production 라이브
+- vitest 374/374 baseline 확립
+
 - 다음 세션 (10차 G-07) 후보:
   1. 베타 사용자 누적 → 리뷰 통계 분석 → 마케팅 자료
   2. Sonnet baseline + Critic 옵션 검증
