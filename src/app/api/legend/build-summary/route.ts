@@ -30,8 +30,23 @@ import type { TutorName } from '@/lib/legend/types';
 export const runtime = 'nodejs';
 export const maxDuration = 90;
 
+const VALID_TUTORS: TutorName[] = [
+  'ramanujan_calc',
+  'ramanujan_intuit',
+  'gauss',
+  'von_neumann',
+  'euler',
+  'leibniz',
+];
+
 interface BuildSummaryRequestBody {
   problem_text?: string;
+  /**
+   * G06-35b — 사용자가 채팅에서 사용한 튜터 (BetaChat 5튜터 선택 또는 useGpt 토글).
+   * 지정되면 routeProblem 결정과 무관하게 해당 튜터로 callTutor 강제.
+   * unknown 값은 정상 무시 (기존 라우팅 로직 fallback).
+   */
+  selected_tutor?: string;
 }
 
 export async function POST(req: Request) {
@@ -93,9 +108,19 @@ export async function POST(req: Request) {
       input_mode: 'text',
     });
 
-    // 6. callTutor — Tier 2 라우팅 시 routed_tutor 그대로,
+    // 6. callTutor — selected_tutor 우선 (G06-35b 베타 결함 2 fix).
+    //    사용자가 채팅에서 명시적으로 선택한 튜터가 있으면 그대로 사용 — 풀이 정리 시 다른 튜터로
+    //    스왑되어 모델·페르소나 일관성이 깨지는 문제 방지.
+    //    selected_tutor 부재 시: Tier 2 라우팅 시 routed_tutor 그대로,
     //    Tier 0/1 라우팅 시 가우스 강제 (정리 품질 ↑, agentic 5step trace 확보).
-    const tutor: TutorName = decision.routed_tier === 2 ? decision.routed_tutor : 'gauss';
+    const isSelectedValid =
+      typeof body.selected_tutor === 'string' &&
+      (VALID_TUTORS as string[]).includes(body.selected_tutor);
+    const tutor: TutorName = isSelectedValid
+      ? (body.selected_tutor as TutorName)
+      : decision.routed_tier === 2
+        ? decision.routed_tutor
+        : 'gauss';
     const tutorResult = await callTutor({
       user_id: user.id,
       problem_text: body.problem_text,

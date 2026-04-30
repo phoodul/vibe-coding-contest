@@ -24,7 +24,50 @@ import { embedText } from '@/lib/euler/embed';
 import type { PerProblemStep } from '@/lib/legend/types';
 import { normalizeTrace, type NormalizedTurn, type Provider } from './trace-normalizer';
 
-const STEP_MATCH_THRESHOLD = 0.7;
+// G06-35d: ANN cosine threshold 완화 (베타 결함 4 fix — trigger 추출 0건 방지).
+// 0.7 (정밀) → 0.5 (회수율 우선). 의미 불일치는 나중에 1순위 1건만 채택해 완화.
+const STEP_MATCH_THRESHOLD = 0.5;
+
+/** G06-35d: agentic_5step 응답 시작에 callTutor 가 강제하는 마커 정규식. */
+const STEP_KIND_MARKER_RE = /\[STEP_KIND:\s*(parse|domain_id|forward|backward|tool_call|computation|verify|answer)\s*\]/i;
+const TRIGGER_MARKER_RE = /\[TRIGGER:\s*([^\]\n]+?)\s*\]/i;
+
+const VALID_STEP_KINDS = new Set<PerProblemStep['kind']>([
+  'parse',
+  'domain_id',
+  'forward',
+  'backward',
+  'tool_call',
+  'computation',
+  'verify',
+  'answer',
+]);
+
+/**
+ * G06-35d — agentic 응답에서 [STEP_KIND: ...] 마커 추출 (1차 — 정확).
+ * 매칭 실패 시 null → classifyStepKind heuristic fallback.
+ */
+export function extractStepKindMarker(text: string): PerProblemStep['kind'] | null {
+  if (!text) return null;
+  const m = text.match(STEP_KIND_MARKER_RE);
+  if (!m) return null;
+  const kind = m[1].toLowerCase() as PerProblemStep['kind'];
+  return VALID_STEP_KINDS.has(kind) ? kind : null;
+}
+
+/**
+ * G06-35d — agentic 응답에서 [TRIGGER: ...] 마커 추출.
+ * "없음" 또는 빈 문자열은 null. text 그대로 반환 (한글 도구 이름).
+ */
+export function extractTriggerMarker(text: string): string | null {
+  if (!text) return null;
+  const m = text.match(TRIGGER_MARKER_RE);
+  if (!m) return null;
+  const raw = m[1].trim();
+  if (!raw || raw === '없음' || raw === 'none' || raw === 'None') return null;
+  // 마지막 'trigger' 접미사 제거 — DB 도구 이름과 매칭 정확도 향상
+  return raw.replace(/\s*trigger\s*$/i, '').trim();
+}
 
 interface TriggerMatch {
   trigger_id: string;
@@ -183,14 +226,29 @@ export async function decomposeChainSteps(
 
     // 2) text 자체 step (reasoning 이 비어있지 않으면)
     if (turn.text && turn.text.trim()) {
-      const kind = classifyStepKind(turn.text);
+      // G06-35d: 마커 우선 (1차 — 정확). 없으면 heuristic (2차 — 한국어 키워드).
+      const markerKind = extractStepKindMarker(turn.text);
+      const kind = markerKind ?? classifyStepKind(turn.text);
+      const triggerHint = extractTriggerMarker(turn.text);
+
       // tool_call 이 이미 있고 text 가 짧으면 중복 생성 안 함 (text < 40자)
       const skipText = turn.tool_calls.length > 0 && turn.text.trim().length < 40;
       if (!skipText) {
-        const trig =
-          kind === 'forward' || kind === 'backward' || kind === 'computation'
-            ? await matchTriggerByText(turn.text)
-            : null;
+        // G06-35d: trigger 매칭 우선순위
+        //   (1) 마커 hint → matchTriggerByToolName (한글 정규식 직접 매칭, 정확)
+        //   (2) (1) 실패 시 forward/backward/computation/tool_call → matchTriggerByText (ANN)
+        let trig: TriggerMatch | null = null;
+        if (triggerHint) {
+          trig = await matchTriggerByToolName(triggerHint);
+        }
+        if (!trig && (
+          kind === 'forward' ||
+          kind === 'backward' ||
+          kind === 'computation' ||
+          kind === 'tool_call'
+        )) {
+          trig = await matchTriggerByText(turn.text);
+        }
         steps.push({
           index: stepIndex++,
           kind,

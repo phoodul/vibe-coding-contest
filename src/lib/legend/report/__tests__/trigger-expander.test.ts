@@ -145,18 +145,19 @@ describe('expandTrigger', () => {
     expect(cards[0].tool_name).toContain('도구');
   });
 
-  it('similarity < 0.7 후보 제외', async () => {
+  it('similarity < 0.5 후보 제외 (G06-35d threshold 0.7→0.5 완화)', async () => {
     rpcMock.mockResolvedValue({
       data: [
         buildRpcRow({ trigger_id: 'trig-primary', tool_id: 'TOOL_A', similarity: 0.99 }),
         buildRpcRow({ trigger_id: 'trig-1', tool_id: 'TOOL_B', similarity: 0.91 }),
-        buildRpcRow({ trigger_id: 'trig-low', tool_id: 'TOOL_C', similarity: 0.6 }),
-        buildRpcRow({ trigger_id: 'trig-low2', tool_id: 'TOOL_D', similarity: 0.5 }),
+        buildRpcRow({ trigger_id: 'trig-mid', tool_id: 'TOOL_C', similarity: 0.6 }),
+        buildRpcRow({ trigger_id: 'trig-low', tool_id: 'TOOL_D', similarity: 0.49 }),
       ],
       error: null,
     });
     const cards = await expandTrigger('trig-primary', undefined, 3);
-    expect(cards.map((c) => c.trigger_id)).toEqual(['trig-1']);
+    // threshold 0.5 → 0.91, 0.6 통과 / 0.49 제외. self (trig-primary) 도 제외.
+    expect(cards.map((c) => c.trigger_id)).toEqual(['trig-1', 'trig-mid']);
   });
 
   it('exclude_tool_id 의 도구 제외', async () => {

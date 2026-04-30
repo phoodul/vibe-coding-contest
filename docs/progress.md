@@ -1,6 +1,17 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
+- Time: 2026-04-30 (12차 세션 Night mode — **G06-35 ✅ 베타 검증 결함 4종 통합 fix (Δ12)**)
+- Phase: **Phase G-06 ✅ + G06-33~35 (Δ10·Δ11·Δ12)** → 베타 모집 본격 시작 가능
+- Step: **G06-35 ✅ Night mode** — 베타 시뮬레이션 발견 결함 4종 통합 fix.
+  - **(35a) Manager 난이도 prompt 강화**: `stage1-manager.ts` system 프롬프트 50+줄 — 6/9/12/14/21/29번 정밀 매핑 + few-shot 10개 + (가)(나)(다) 보수적 분류 가이드.
+  - **(35b) 선택 튜터 일관성**: `build-summary` body 에 `selected_tutor` (6 enum 검증). BetaChat selectedTutor state → SolutionSummaryButton → API 전파. 풀이 정리도 채팅 튜터로 강제.
+  - **(35c) 모델명 숨김**: portraits.ts `persona_desc` 신규 ("수학의 왕자" 등). TutorBadge default = persona_desc. PerProblemReportCard / TutorChoicePrompt / TutorPickerModal raw 모델명 노출 제거.
+  - **(35d) ToT + Trigger 정상화**: callModel agentic system prompt 에 `[STEP_KIND]` / `[TRIGGER]` 마커 강제. step-decomposer 마커 1차 + heuristic 2차 + ANN 3차 매칭. threshold 0.7 → 0.5. tree-builder 빈 트리 fallback (s-fallback 노드).
+  - 검증: tsc ✅ + vitest **374/374 PASS** (신규 28 + 회귀 0) + next build ✅
+- Session: 12차 Night mode (**G-06 + Δ12 ✅**, 다음 단계: 베타 모집 시작 + git push)
+
+## 이전 Checkpoint (G06-34, 2026-04-30 11차 Night)
 - Time: 2026-04-30 (11차 세션 Night mode — **G06-34 ✅ 베타 리뷰 시스템 — 5 항목 자율 후기 + 공개 페이지 (Δ11)**)
 - Phase: **Phase G-06 ✅ + G06-33 (Δ10) + G06-34 (Δ11)** → 베타 모집 + 출시 마케팅 자산 확보
 - Step: **G06-34 ✅ Night mode** — 기존 G06-23 인터뷰 폐기 → 자율 글 후기 시스템.

@@ -281,9 +281,11 @@ export function BetaChat({ user: _user }: { user: User }) {
             )}
 
           {/* G06-33 — 풀이 정리 버튼 (마지막 assistant 직후, 스트리밍 종료 시) */}
+          {/* G06-35b — selectedTutor 전달: 채팅 튜터와 정리 튜터 일관성 강제 */}
           {canShowSummaryButton && lastUserText && !inlineReport && (
             <SolutionSummaryButton
               problemText={lastUserText}
+              selectedTutor={selectedTutor}
               onSummaryReady={(report) => setInlineReport(report)}
             />
           )}

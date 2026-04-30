@@ -1,5 +1,61 @@
 # Work Log — Euler Tutor 2.0
 
+## 2026-04-30 Night (12차 세션 Night mode — G06-35 베타 검증 결함 4종 통합 fix, Δ12)
+
+### 배경
+
+베타 사용자 관점 시뮬레이션에서 결함 4종 발견 — 베타 모집 시작 전 차단 필수:
+1. 어려운 문제도 Manager Haiku 가 난이도 1~2 분류 → Tier 0/1 라우팅 → 풀이 부정확
+2. 폰 노이만으로 채팅 → 풀이 정리 클릭 시 가우스로 R1 생성 (모델·페르소나 불일치)
+3. TutorBadge / R1 카드에서 raw 모델명 노출 ("Gemini 3.1 Pro" 등) — 마케팅 부정적
+4. ToT 트리 "추출하지 못했다" + Trigger 카드 빈약 → 핵심 차별화 가치 손실
+
+### 산출물
+
+#### 35a — Manager 난이도 prompt 강화
+- `src/lib/legend/stage1-manager.ts` system 프롬프트 ~80줄 확장
+- 한국 수능 정밀 매핑 (1: 6번 / 2: 9번 / 3: 12번 / 4: 14번 / 5: 21·28번 / 6: 29·30번)
+- few-shot 예시 10개 (이차함수·정규분포·벡터·함수의 개수·격자점)
+- 보수적 분류 가이드 6항목 ((가)(나)(다) 2+ → 최소 4 / "정수 ~의 개수" → 5~6 / 200자+ 자동 +1)
+
+#### 35b — 선택 튜터 일관성
+- `build-summary/route.ts` body 에 `selected_tutor` (optional string, 6 enum 검증)
+- BetaChat selectedTutor state → SolutionSummaryButton → API 전파
+- 풀이 정리도 채팅 튜터로 강제 호출
+
+#### 35c — 모델명 숨김
+- `portraits.ts` `persona_desc` 필드 신규 + `getTutorPersonaDesc()` 헬퍼
+- 6 튜터 페르소나 설명: "계산의 달인" / "직관과 통찰의 천재" / "수학의 왕자" / "기하·해석의 거장" / "모든 수학을 잇는 다리" / "미적분의 창시자"
+- TutorBadge default subtitle = persona_desc (admin/dev 만 model prop)
+- PerProblemReportCard / TutorChoicePrompt / TutorPickerModal 의 raw 모델명 노출 제거
+- model_short 필드는 보존 (admin / billing 페이지에서 활용 가능)
+
+#### 35d — ToT + Trigger 추출 정상화
+- `call-model.ts` agentic system prompt 에 `[STEP_KIND]` / `[TRIGGER]` 마커 강제
+- `step-decomposer.ts` `extractStepKindMarker` + `extractTriggerMarker` 신규
+- 매칭 우선순위: 마커 hint → matchTriggerByToolName (한글 정규식) → matchTriggerByText (ANN)
+- ANN cosine threshold step-decomposer 0.7 → 0.5, trigger-expander 0.7 → 0.5
+- `tree-builder.ts` 빈 트리 fallback (s-fallback 노드 강제)
+
+#### 신규 단위 테스트 4 파일 (28 신규)
+- `step-decomposer-marker.test.ts` (15) / `tree-builder-fallback.test.ts` (4) / `portraits-persona.test.ts` (5)
+- 기존 stage1-manager.test.ts +4 / build-summary route.test.ts +2 / tree-builder 1 갱신 / trigger-expander 1 갱신
+
+### 검증
+
+- TypeScript `tsc --noEmit` ✅
+- vitest **374/374 PASS** (344 → +28 신규 + 2 기존 갱신, 회귀 0)
+- Next.js `npm run build` ✅
+- DB 스키마 무변경 / types.ts 무수정 (selected_tutor route body 전용)
+
+### 영향
+
+- 베타 모집 시작 가능 — 핵심 차별화 (R1 풀이 정리 + ToT + AI 어려움 + 떠올린 이유) 정상 동작
+- 영향 격리: `src/lib/legend/` + `src/components/legend/` + `src/app/api/legend/build-summary/` + docs
+- 의존성 추가: vitest@^2 (devDep) — 환경 부재로 1회 설치. 기존 lockfile 갱신.
+
+---
+
 ## 2026-04-30 Night (11차 세션 Night mode — G06-34 베타 리뷰 시스템, Δ11)
 
 ### 배경

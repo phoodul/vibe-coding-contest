@@ -716,3 +716,31 @@ G06-01 → G06-02 → G06-03 (M1)
   - `pnpm next build` ✅ (`/legend/beta/review` 3.79kB + `/legend/reviews` 2.36kB + API 2 라우트 정상)
 - **위험**: LOW (신규 테이블·신규 라우트, 기존 무영향, 의존성 추가 X)
 - **commit**: `feat(g06): 베타 리뷰 시스템 — 5 항목 자율 후기 + 공개 페이지 (G06-34, Δ11)`
+
+---
+
+### G06-35: 베타 검증 결함 4종 통합 fix (Δ12, Night mode 자율)
+- **선행**: G06-33 (M11 build-summary), G06-34 (M11 베타 리뷰)
+- **배경**: 베타 시뮬레이션 시 발견된 결함 4종 — 베타 모집 시작 전 차단 필수.
+- **작업**:
+  - **G06-35a (Manager 난이도 prompt 강화)**:
+    - `stage1-manager.ts` system 프롬프트 50+줄 확장 — 한국 수능 6/9/12/14/21/29번 정밀 매핑 + 영역별 few-shot 10개 + 보수적 분류 가이드.
+  - **G06-35b (선택 튜터 일관성)**:
+    - `build-summary/route.ts` body 에 `selected_tutor` (optional, 6 enum 검증) 추가. 사용자 명시 선택 시 routeProblem 결정 무시.
+    - `SolutionSummaryButton.tsx` selectedTutor prop / `BetaChat.tsx` 가 `selectedTutor` state 전달.
+  - **G06-35c (모델명 숨김)**:
+    - `portraits.ts` `persona_desc` 필드 신규 + `getTutorPersonaDesc()` 헬퍼.
+    - `TutorBadge.tsx` default subtitle = `persona_desc` (admin/dev 한정 model prop).
+    - `PerProblemReportCard.tsx` / `TutorChoicePrompt.tsx` / `TutorPickerModal.tsx` 의 raw 모델명 노출 제거.
+  - **G06-35d (ToT + Trigger 추출 정상화)**:
+    - `call-model.ts` agentic system prompt 에 `[STEP_KIND: ...]` / `[TRIGGER: ...]` 마커 강제.
+    - `step-decomposer.ts` `extractStepKindMarker` + `extractTriggerMarker` 신규. 마커 1차 → heuristic 2차 fallback.
+    - trigger 매칭 우선순위: 마커 hint → matchTriggerByToolName → matchTriggerByText (ANN).
+    - threshold 완화: step-decomposer 0.7 → 0.5, trigger-expander 0.7 → 0.5.
+    - `tree-builder.ts` 빈 트리 fallback (`s-fallback` 노드 1개 강제).
+- **검증**:
+  - vitest **374/374 PASS** (신규 28 + 회귀 0).
+  - TypeScript / Next.js build 무에러.
+  - DB 스키마 무변경. types.ts 무수정 (selected_tutor 는 route body 전용).
+- **영향**: 베타 모집 시작 가능 — 핵심 차별화 (R1 풀이 정리 + ToT + AI 어려움 + 떠올린 이유) 정상 동작.
+- **commit**: `fix(g06): 베타 검증 결함 4종 통합 fix — 난이도·튜터일치·모델명숨김·ToT (G06-35, Δ12)`

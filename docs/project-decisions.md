@@ -478,6 +478,57 @@ Stage 2: 라마누잔 baseline probe + 자가평가 → escalation 권유
 
 ---
 
+## [2026-04-30] Δ12. 베타 검증 결함 4종 통합 fix (G06-35, Night mode)
+
+### 배경
+
+베타 사용자 관점에서 시뮬레이션한 결과 4종 결함 발견 — 모두 베타 모집 시작 전 차단 필수:
+
+1. **결함 1 (35a)**: 어려운 (가)(나)(다) 문제도 Stage 1 Manager Haiku 가 난이도 1~2 로 분류 → Tier 0/1 라우팅 → 풀이 부정확.
+2. **결함 2 (35b)**: 채팅에서 폰 노이만으로 풀이했는데 "📝 풀이 정리 보기" 클릭 시 가우스로 R1 생성 → 모델·페르소나 불일치.
+3. **결함 3 (35c)**: TutorBadge / R1 카드에서 raw 모델명 ("Gemini 3.1 Pro" 등) 학생 노출 → 마케팅 부정적 + 베타테스트 정체성 훼손.
+4. **결함 4 (35d)**: ToT 트리 "추출하지 못했다" 표시 + Trigger 카드 빈약 → 핵심 차별화 (R1 풀이 정리) 가치 손실.
+
+### 결정 (4 sub-fix 통합 commit)
+
+**35a — Manager 난이도 prompt 강화** (`src/lib/legend/stage1-manager.ts`):
+- 시스템 프롬프트에 한국 수능 난이도 기준 정밀 매핑 (1: 6번, 2: 9번, 3: 12번, 4: 14번, 5: 21·28번, 6: 29·30번).
+- few-shot 예시 10개 (이차함수 / 정규분포 / 벡터 / 함수의 개수 / 격자점 등 영역별).
+- 보수적 분류 가이드: (가)(나)(다) 조건 2+ 시 최소 4 부터 / "정수 ~의 개수" 형태는 5~6 / 200자+ 자동 +1.
+
+**35b — build-summary 같은 튜터 강제** (`src/app/api/legend/build-summary/route.ts` + `SolutionSummaryButton.tsx` + `BetaChat.tsx`):
+- request body 에 `selected_tutor` (optional string) 추가. 6 enum 검증.
+- routeProblem 결정과 무관하게 사용자 선택 튜터로 callTutor 강제. 잘못된 값은 무시 → routing fallback.
+- BetaChat 의 `selectedTutor` state 를 SolutionSummaryButton 통해 build-summary 에 전파.
+
+**35c — 모델명 숨김** (`src/lib/legend/portraits.ts` + `TutorBadge.tsx` + `PerProblemReportCard.tsx` + `TutorChoicePrompt.tsx` + `TutorPickerModal.tsx`):
+- `TutorPortrait.persona_desc` 신규 — "수학의 왕자" / "기하·해석의 거장" 등 인물 캐릭터 묘사.
+- TutorBadge default subtitle = `persona_desc` (admin/dev 페이지에서만 `model` prop 으로 raw 모델명 노출).
+- PerProblemReportCard 가 `model_short` 강제 전달 제거.
+- `model_short` 는 DB / billing / admin 페이지 한정 — 학생 노출 금지.
+
+**35d — ToT + Trigger 추출 정상화** (`call-model.ts` + `step-decomposer.ts` + `trigger-expander.ts` + `tree-builder.ts`):
+- agentic_5step system prompt 에 `[STEP_KIND: ...]` / `[TRIGGER: ...]` 마커 강제 (매 turn 응답 시작 2줄).
+- step-decomposer 가 마커 정규식으로 1차 추출 (정확) → 매칭 실패 시 한국어 heuristic 2차 fallback.
+- trigger 매칭 우선순위: 마커 hint → matchTriggerByToolName (한글 정규식) → matchTriggerByText (ANN).
+- ANN cosine threshold: step-decomposer 0.7 → 0.5, trigger-expander 0.7 → 0.5 (회수율 우선).
+- tree-builder 빈 트리 fallback: step 0개 + 조건 0개 시 `s-fallback` 노드 1개 강제 추가 ("추출하지 못했다" 표시 차단).
+
+### 산출물
+
+- 코어: `stage1-manager.ts` (system 프롬프트 50줄 강화) / `build-summary/route.ts` (selected_tutor 검증·우선순위) / `portraits.ts` (persona_desc + getTutorPersonaDesc) / `TutorBadge.tsx` (default = persona_desc) / `call-model.ts` (agentic system prompt 마커 강제) / `step-decomposer.ts` (extractStepKindMarker / extractTriggerMarker + 매칭 우선순위) / `trigger-expander.ts` (threshold 0.5) / `tree-builder.ts` (fallback 노드).
+- UI: `SolutionSummaryButton.tsx` (selectedTutor prop) / `BetaChat.tsx` (selectedTutor 전달) / `PerProblemReportCard.tsx` / `TutorChoicePrompt.tsx` / `TutorPickerModal.tsx` (model_short → persona_desc 교체).
+- 신규 단위 테스트 4 파일: `step-decomposer-marker.test.ts` (15) / `tree-builder-fallback.test.ts` (4) / `portraits-persona.test.ts` (5) + 기존 stage1-manager.test.ts +4 / build-summary route.test.ts +2.
+
+### 결과
+
+- TypeScript / Next.js build 무에러
+- vitest **374/374 PASS** (신규 +28 / 기존 회귀 0)
+- DB 스키마 무변경
+- 영향 격리: `src/lib/legend/` + `src/components/legend/` + `src/app/api/legend/build-summary/` + docs
+
+---
+
 ## 미정 항목 (다음 세션에서 결정)
 
 - 음성 입력(Conversation의 STT 인프라 재활용) Phase A~D 후 도입 여부

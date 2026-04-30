@@ -15,13 +15,18 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import type { PerProblemReport } from '@/lib/legend/types';
+import type { PerProblemReport, TutorName } from '@/lib/legend/types';
 
 export interface SolutionSummaryButtonProps {
   problemText: string;
   onSummaryReady: (report: PerProblemReport, sessionId: string) => void;
   /** 외부에서 강제 hide (예: 새 메시지 도착) */
   hidden?: boolean;
+  /**
+   * G06-35b — 사용자가 채팅에서 선택한 튜터. build-summary 호출 시 그대로 전달되어
+   * 풀이 정리도 같은 튜터로 생성됨 (모델·페르소나 일관성 보장).
+   */
+  selectedTutor?: TutorName;
 }
 
 interface BuildSummaryError {
@@ -34,6 +39,7 @@ export function SolutionSummaryButton({
   problemText,
   onSummaryReady,
   hidden,
+  selectedTutor,
 }: SolutionSummaryButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<BuildSummaryError | null>(null);
@@ -50,7 +56,10 @@ export function SolutionSummaryButton({
       const res = await fetch('/api/legend/build-summary', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ problem_text: problemText }),
+        body: JSON.stringify({
+          problem_text: problemText,
+          ...(selectedTutor ? { selected_tutor: selectedTutor } : {}),
+        }),
       });
       if (!res.ok) {
         const errBody = (await res.json().catch(() => ({}))) as BuildSummaryError;

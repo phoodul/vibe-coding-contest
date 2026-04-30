@@ -160,7 +160,7 @@ export function TutorPickerModal({
                       />
                       <div className="flex flex-col leading-tight">
                         <span className="text-sm font-semibold text-white">{portrait.label_ko}</span>
-                        <span className="text-[11px] text-white/55">{portrait.model_short}</span>
+                        <span className="text-[11px] text-white/55">{portrait.persona_desc}</span>
                       </div>
                     </div>
                     <div

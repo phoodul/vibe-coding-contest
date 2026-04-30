@@ -298,7 +298,8 @@ describe('buildReasoningTree', () => {
     expect(typeof inserted.branching_factor).toBe('number');
   });
 
-  it('빈 steps → root 만 있는 트리', async () => {
+  it('빈 steps + 조건 0개 → G06-35d fallback 으로 root + s-fallback 2 노드', async () => {
+    // G06-35d 베타 결함 4 fix — "추출하지 못했다" 메시지 X, 단순 chain 트리 보장.
     const tree = await buildReasoningTree(
       {
         session_id: 'sess-empty',
@@ -308,9 +309,9 @@ describe('buildReasoningTree', () => {
       },
       { skipPersist: true },
     );
-    expect(tree.nodes).toHaveLength(1);
-    expect(tree.nodes[0].id).toBe('answer');
-    expect(tree.edges).toHaveLength(0);
-    expect(tree.depth_max).toBe(0);
+    expect(tree.nodes).toHaveLength(2);
+    expect(tree.nodes.find((n) => n.id === 'answer')).toBeDefined();
+    expect(tree.nodes.find((n) => n.id === 's-fallback')).toBeDefined();
+    expect(tree.edges).toHaveLength(1);
   });
 });

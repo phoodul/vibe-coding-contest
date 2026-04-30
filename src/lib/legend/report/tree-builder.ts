@@ -311,6 +311,24 @@ export async function buildReasoningTree(
   // 4. 다중 부모 감지 — 같은 trigger_id 공유 노드 합류
   detectMultiParents(nodes, edges);
 
+  // G06-35d (Δ12): 빈 트리 fallback — 베타 결함 4 fix.
+  //   step 이 0~2 개 + 조건 노드 0개 (= 본질적으로 root 만 존재) 시 단순 chain 표현 노드 1개라도 추가.
+  //   "추출하지 못했다" 메시지를 단순 트리라도 노출하도록 보정.
+  const nonAnswerStepCount = args.steps.filter((s) => s.kind !== 'answer').length;
+  if (nonAnswerStepCount === 0 && conditions.length === 0) {
+    // 모든 step 이 answer 이거나 step 자체가 0개 — 풀이 줄거리만 1 노드 보존.
+    nodes.push({
+      id: 's-fallback',
+      label: '풀이',
+      text: answerStep?.summary?.slice(0, 80) ?? '풀이 과정 (요약 없음)',
+      kind: 'derived_fact',
+      depth: -1,
+      step_index: undefined,
+      is_pivotal: false,
+    });
+    edges.push({ from: 's-fallback', to: rootId, kind: 'derived_from' });
+  }
+
   // 5. depth 계산 (BFS from root)
   computeDepth(nodes, edges, rootId);
 

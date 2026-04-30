@@ -20,7 +20,9 @@ import { createClient } from '@/lib/supabase/server';
 import { embedText } from '@/lib/euler/embed';
 import type { TriggerCard } from '@/lib/legend/types';
 
-const EXPAND_THRESHOLD = 0.7;
+// G06-35d (Δ12): 0.7 → 0.5 — 베타 결함 4. 임베딩 유사도 의미 손실 보정 위해
+// 회수율 우선. exclude_tool_id + 자기 자신 제외 후 max_count 채우기 어려운 시나리오 완화.
+const EXPAND_THRESHOLD = 0.5;
 const DEFAULT_MAX = 3;
 /** RPC over-fetch — exclude 후에도 max_count 채울 수 있도록 여유분 */
 const OVER_FETCH = 8;

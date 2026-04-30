@@ -106,4 +106,57 @@ describe('classifyDifficulty', () => {
     const call = generateTextMock.mock.calls[0]?.[0] as { prompt: string };
     expect(call.prompt).toContain('확률과통계');
   });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // G06-35a — few-shot 강화 검증 (베타 결함 1 fix)
+  // ──────────────────────────────────────────────────────────────────────
+  describe('G06-35a — few-shot prompt 강화', () => {
+    it('system 프롬프트에 한국 수능 난이도 기준 (6번/9번/12번/14번/21번/29번) 모두 포함', async () => {
+      generateTextMock.mockResolvedValue({
+        text: JSON.stringify({ difficulty: 4, confidence: 0.7, area: 'common' }),
+      });
+      await classifyDifficulty('테스트 문제');
+      const call = generateTextMock.mock.calls[0]?.[0] as { system: string };
+      expect(call.system).toContain('6번');
+      expect(call.system).toContain('9번');
+      expect(call.system).toContain('12번');
+      expect(call.system).toContain('14번');
+      expect(call.system).toContain('21');
+      expect(call.system).toContain('29');
+    });
+
+    it('system 프롬프트에 few-shot 예시 (10개) 포함', async () => {
+      generateTextMock.mockResolvedValue({
+        text: JSON.stringify({ difficulty: 4, confidence: 0.7, area: 'common' }),
+      });
+      await classifyDifficulty('테스트');
+      const call = generateTextMock.mock.calls[0]?.[0] as { system: string };
+      // few-shot 예시 마커 (10번까지 번호 매김)
+      expect(call.system).toMatch(/1\)/);
+      expect(call.system).toMatch(/9\)/);
+      expect(call.system).toMatch(/10\)/);
+    });
+
+    it('system 프롬프트에 보수적 분류 + (가)(나)(다) 조건 가이드 포함', async () => {
+      generateTextMock.mockResolvedValue({
+        text: JSON.stringify({ difficulty: 4, confidence: 0.7, area: 'common' }),
+      });
+      await classifyDifficulty('테스트');
+      const call = generateTextMock.mock.calls[0]?.[0] as { system: string };
+      expect(call.system).toContain('보수적');
+      expect(call.system).toContain('(가)(나)(다)');
+      expect(call.system).toContain('정수');
+    });
+
+    it('Manager가 어려운 (가)(나)(다) 문제를 5로 분류 — 시뮬레이션', async () => {
+      generateTextMock.mockResolvedValue({
+        text: JSON.stringify({ difficulty: 5, confidence: 0.85, area: 'calculus' }),
+      });
+      const result = await classifyDifficulty(
+        '미분가능한 함수 f(x) 가 다음 조건을 만족한다. (가) f(0)=1 (나) f(1)=2 (다) f(2)=4',
+      );
+      expect(result.difficulty).toBe(5);
+      expect(result.area).toBe('calculus');
+    });
+  });
 });

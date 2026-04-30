@@ -70,7 +70,8 @@ export function PerProblemReportCard({
       {/* 1. Tutor + Problem 헤더 */}
       <header className="flex flex-col gap-3 border-b border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-5">
         <div className="flex items-center justify-between gap-3">
-          <TutorBadge tutor={report.tutor.name} label={report.tutor.label_ko} model={report.tutor.model_short} />
+          {/* G06-35c — model_short 전달 금지. TutorBadge 가 portraits.persona_desc 자동 사용 */}
+          <TutorBadge tutor={report.tutor.name} label={report.tutor.label_ko} />
           <div className="flex items-center gap-2">
             <span className="rounded-full border border-white/15 px-2.5 py-1 text-[11px] text-white/65">
               {report.problem_summary.area}

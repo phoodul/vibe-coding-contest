@@ -286,6 +286,87 @@ describe('POST /api/legend/build-summary', () => {
     expect(buildReportMock).not.toHaveBeenCalled();
   });
 
+  it('selected_tutor=von_neumann 명시 시 그 튜터 강제 호출 (G06-35b)', async () => {
+    getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    consumeQuotaMock
+      .mockResolvedValueOnce({ kind: 'legend_call_daily', used: 1, limit: 3, allowed: true, reset_at: 'x' })
+      .mockResolvedValueOnce({ kind: 'report_per_problem_daily', used: 1, limit: 1, allowed: true, reset_at: 'x' });
+    routeProblemMock.mockResolvedValue({
+      stage_reached: 2,
+      routed_tier: 2,
+      routed_tutor: 'gauss', // 라우터는 가우스 권고
+      routing_decision_id: 'rd-5',
+      duration_ms: 200,
+    });
+    callTutorMock.mockResolvedValue({
+      session_id: 'sess-vn',
+      trace_jsonb: { turns: [] },
+      final_answer: '5',
+      duration_ms: 5000,
+      actual_tutor: 'von_neumann',
+    });
+    buildReportMock.mockResolvedValue({
+      schema_version: '1.3',
+      tutor: { name: 'von_neumann', label_ko: '폰 노이만', model_short: 'GPT-5.5' },
+      solution_summary: {
+        core_insight: 'a',
+        step_flow_narrative: 'b',
+        hardest_resolution: 'c',
+        generalization: 'd',
+        trigger_motivation: 'e',
+      },
+    });
+
+    const res = await POST(
+      makeReq({ problem_text: '문제', selected_tutor: 'von_neumann' }),
+    );
+
+    expect(res.status).toBe(200);
+    // 사용자 선택 우선 — 라우터의 'gauss' 무시하고 폰 노이만으로 호출.
+    expect(callTutorMock).toHaveBeenCalledTimes(1);
+    expect(callTutorMock.mock.calls[0][0].tutor).toBe('von_neumann');
+  });
+
+  it('selected_tutor 잘못된 값(예: invalid_tutor) → 라우터 fallback', async () => {
+    getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
+    consumeQuotaMock
+      .mockResolvedValueOnce({ kind: 'legend_call_daily', used: 1, limit: 3, allowed: true, reset_at: 'x' })
+      .mockResolvedValueOnce({ kind: 'report_per_problem_daily', used: 1, limit: 1, allowed: true, reset_at: 'x' });
+    routeProblemMock.mockResolvedValue({
+      stage_reached: 2,
+      routed_tier: 2,
+      routed_tutor: 'gauss',
+      routing_decision_id: 'rd-6',
+      duration_ms: 200,
+    });
+    callTutorMock.mockResolvedValue({
+      session_id: 'sess-fb',
+      trace_jsonb: { turns: [] },
+      final_answer: '5',
+      duration_ms: 5000,
+      actual_tutor: 'gauss',
+    });
+    buildReportMock.mockResolvedValue({
+      schema_version: '1.3',
+      tutor: { name: 'gauss', label_ko: '가우스', model_short: 'Gemini 3.1 Pro' },
+      solution_summary: {
+        core_insight: 'a',
+        step_flow_narrative: 'b',
+        hardest_resolution: 'c',
+        generalization: 'd',
+        trigger_motivation: 'e',
+      },
+    });
+
+    const res = await POST(
+      makeReq({ problem_text: '문제', selected_tutor: 'invalid_tutor' }),
+    );
+
+    expect(res.status).toBe(200);
+    // 잘못된 selected_tutor 는 무시 → 라우터의 'gauss' 그대로 사용.
+    expect(callTutorMock.mock.calls[0][0].tutor).toBe('gauss');
+  });
+
   it('callTutor throw → 500 build_summary_failed', async () => {
     getUserMock.mockResolvedValue({ data: { user: { id: 'u1' } } });
     consumeQuotaMock

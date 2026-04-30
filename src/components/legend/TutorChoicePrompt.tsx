@@ -147,7 +147,7 @@ export function TutorChoicePrompt({
                   className="rounded-full object-cover ring-2 ring-white/10"
                 />
                 <span className="text-xs font-medium text-white">{portrait.label_ko}</span>
-                <span className="text-[10px] leading-tight text-white/50">{portrait.model_short}</span>
+                <span className="text-[10px] leading-tight text-white/50">{portrait.persona_desc}</span>
               </motion.button>
             );
           })}
