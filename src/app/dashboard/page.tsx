@@ -15,6 +15,8 @@ interface Profile {
   role: "student" | "teacher";
 }
 
+const ADMIN_EMAILS = ["phoodul@gmail.com"];
+
 interface MenuItem {
   title: string;
   desc: string;
@@ -66,6 +68,7 @@ const cardVariants = {
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"student" | "teacher">("student");
   const router = useRouter();
@@ -78,6 +81,7 @@ export default function DashboardPage() {
       } = await supabase.auth.getUser();
 
       if (user) {
+        setUserEmail(user.email ?? null);
         const { data } = await supabase
           .from("profiles")
           .select("display_name, role")
@@ -93,6 +97,8 @@ export default function DashboardPage() {
     }
     load();
   }, [router]);
+
+  const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
 
   if (loading) {
     return (
@@ -128,11 +134,21 @@ export default function DashboardPage() {
               👋
             </motion.span>
           </h1>
-          <p className="text-muted">
-            {isLoggedIn
-              ? `${activeTab === "teacher" ? "교사" : "학생"} 대시보드`
-              : "로그인 없이 체험할 수 있습니다"}
-          </p>
+          <div className="flex items-center gap-3 flex-wrap">
+            <p className="text-muted">
+              {isLoggedIn
+                ? `${activeTab === "teacher" ? "교사" : "학생"} 대시보드`
+                : "로그인 없이 체험할 수 있습니다"}
+            </p>
+            {isAdmin && (
+              <Link
+                href="/admin/beta-applications"
+                className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-200 hover:bg-amber-400/20 transition-colors"
+              >
+                🔐 관리자 페이지
+              </Link>
+            )}
+          </div>
         </motion.div>
 
         {/* 역할 전환 탭 */}
