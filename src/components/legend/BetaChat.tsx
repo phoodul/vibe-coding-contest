@@ -35,6 +35,12 @@ interface User {
   email?: string | null;
 }
 
+interface BetaMeta {
+  is_active: boolean;
+  expires_at: string | null;
+  days_left: number | null;
+}
+
 const ALL_TUTORS: TutorName[] = [
   'ramanujan_intuit',
   'gauss',
@@ -67,7 +73,7 @@ function extractFirstUserText(messages: Array<{ role: string; content: unknown }
   return '';
 }
 
-export function BetaChat({ user: _user }: { user: User }) {
+export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: BetaMeta }) {
   const [useGpt, setUseGpt] = useState(false);
   const [selectedTutor, setSelectedTutor] = useState<TutorName>('ramanujan_intuit');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -251,6 +257,25 @@ export function BetaChat({ user: _user }: { user: User }) {
             </div>
           </div>
           <div className="flex items-center gap-1.5">
+            {/* Δ28 — 베타 만료 카운트다운 (≤ 7일 임박 시 amber, 평시 emerald) */}
+            {betaMeta?.is_active && betaMeta.days_left !== null && (
+              <span
+                className={`text-[11px] px-2.5 py-1 rounded-full border font-semibold ${
+                  betaMeta.days_left <= 0
+                    ? 'border-rose-400/40 bg-rose-400/10 text-rose-200'
+                    : betaMeta.days_left <= 7
+                      ? 'border-amber-400/40 bg-amber-400/10 text-amber-200'
+                      : 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200'
+                }`}
+                title={
+                  betaMeta.expires_at
+                    ? `만료: ${new Date(betaMeta.expires_at).toLocaleDateString('ko-KR')}`
+                    : ''
+                }
+              >
+                {betaMeta.days_left <= 0 ? '⚠ 만료' : `⏳ ${betaMeta.days_left}일`}
+              </span>
+            )}
             <Link
               href="/legend/triggers"
               className="text-[11px] px-2.5 py-1 rounded-full border border-violet-400/40 bg-violet-400/10 text-violet-200 hover:bg-violet-400/20 transition-colors font-semibold"

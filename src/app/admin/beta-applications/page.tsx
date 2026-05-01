@@ -151,6 +151,10 @@ export default function BetaApplicationsAdminPage() {
                 <div className="text-xs text-white/55">
                   신청일: {new Date(a.applied_at).toLocaleString("ko-KR")}
                 </div>
+                {/* Δ28 — 승인된 사용자만 만료일·남은 일수 표시 */}
+                {a.status === "approved" && a.reviewed_at && (
+                  <ExpiryBadge reviewedAt={a.reviewed_at} />
+                )}
               </div>
               <span
                 className={`rounded px-2 py-1 text-xs font-medium ${
@@ -246,6 +250,30 @@ function Meta({ label, value, ok }: { label: string; value: string; ok?: boolean
       >
         {value}
       </div>
+    </div>
+  );
+}
+
+/** Δ28 — 승인일 기준 30일 만료 표시. */
+function ExpiryBadge({ reviewedAt }: { reviewedAt: string }) {
+  const reviewedTime = new Date(reviewedAt).getTime();
+  const expiresTime = reviewedTime + 30 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const daysLeft = Math.ceil((expiresTime - now) / (1000 * 60 * 60 * 24));
+  const isExpired = daysLeft <= 0;
+  return (
+    <div
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+        isExpired
+          ? "border-rose-400/40 bg-rose-400/10 text-rose-200"
+          : daysLeft <= 7
+            ? "border-amber-400/40 bg-amber-400/10 text-amber-200"
+            : "border-emerald-400/40 bg-emerald-400/10 text-emerald-200"
+      }`}
+    >
+      {isExpired
+        ? `⚠ 만료됨 (${new Date(expiresTime).toLocaleDateString("ko-KR")})`
+        : `⏳ ${daysLeft}일 남음 (${new Date(expiresTime).toLocaleDateString("ko-KR")} 만료)`}
     </div>
   );
 }

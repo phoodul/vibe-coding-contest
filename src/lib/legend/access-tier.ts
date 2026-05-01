@@ -39,9 +39,12 @@ export function isAdminEmail(email?: string | null): boolean {
  *
  * 우선순위:
  *   0. 관리자 이메일 → 즉시 'beta' (신청 절차 무시)
- *   1. beta_applications.status === 'approved'
- *   2. euler_beta_invites.redeemed_by
- *   3. 'trial'
+ *   1. euler_beta_invites status='active' AND (expires_at IS NULL OR expires_at > now())
+ *      → 승인 후 30일 미만 → 'beta'
+ *      (기존 EULER2026 흐름 + 신청·승인 흐름 모두 invites row 자동 생성하므로 단일 경로 검사로 충분)
+ *   2. 위 모두 미해당 → 'trial' (체험판 또는 만료된 베타)
+ *
+ * Δ28 — 30일 만료 정책 도입. 기존 active 사용자는 backfill 로 오늘부터 +30일.
  */
 export async function getUserAccessTier(userId: string): Promise<AccessTier> {
   if (!userId) return 'trial';
@@ -52,22 +55,57 @@ export async function getUserAccessTier(userId: string): Promise<AccessTier> {
   const { data: { user } } = await supabase.auth.getUser();
   if (isAdminEmail(user?.email)) return 'beta';
 
-  // 1. beta_applications.status === 'approved' (G06-27 신청·승인 흐름)
-  const { data: app } = await supabase
-    .from('beta_applications')
-    .select('status')
-    .eq('user_id', userId)
-    .eq('status', 'approved')
-    .maybeSingle();
-  if (app) return 'beta';
-
-  // 2. euler_beta_invites.redeemed_by (기존 EULER2026 코드 사용자 호환)
+  // 1. euler_beta_invites — status active + 만료되지 않음
   const { data: invite } = await supabase
     .from('euler_beta_invites')
-    .select('id')
-    .eq('redeemed_by', userId)
+    .select('user_id, status, expires_at')
+    .eq('user_id', userId)
+    .eq('status', 'active')
     .maybeSingle();
-  if (invite) return 'beta';
+  if (invite) {
+    const expiresAt = (invite as { expires_at: string | null }).expires_at;
+    if (!expiresAt || new Date(expiresAt).getTime() > Date.now()) {
+      return 'beta';
+    }
+    // 만료됨 → trial 로 fallback (자동 강등)
+  }
 
   return 'trial';
+}
+
+/**
+ * Δ28 — 베타 만료 메타 정보. 학생 UI 에 "남은 일수" 노출용.
+ * 만료 임박 (≤ 7일) 시 학생에게 안내 가능.
+ */
+export interface BetaInviteMeta {
+  is_active: boolean;
+  expires_at: string | null;
+  days_left: number | null;
+}
+
+export async function getBetaInviteMeta(userId: string): Promise<BetaInviteMeta | null> {
+  if (!userId) return null;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from('euler_beta_invites')
+      .select('status, expires_at')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (!data) return null;
+    const row = data as { status: string; expires_at: string | null };
+    const isActive = row.status === 'active';
+    let daysLeft: number | null = null;
+    if (isActive && row.expires_at) {
+      const ms = new Date(row.expires_at).getTime() - Date.now();
+      daysLeft = Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+    }
+    return {
+      is_active: isActive,
+      expires_at: row.expires_at,
+      days_left: daysLeft,
+    };
+  } catch {
+    return null;
+  }
 }
