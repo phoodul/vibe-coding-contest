@@ -1,12 +1,121 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-04-30 (**10차 세션 — Δ13 + Δ14 통합 fix**)
-- Phase: **Phase G-06 ✅** + G06-33~35 (Δ10·Δ11·Δ12) + **Δ13 (베타 1차) + Δ14 (학생 막힘)**
-- Status: **베타 모집 즉시 시작 가능** — 7건 검증 결함 fix + 풀이 전 과정 인식
-- Git: clean, origin/main 동기화 필요 (commits `9d59344` Δ13, `c84d765` Δ14)
-- vitest: **386/386 PASS** (+12 student-struggle 신규, 회귀 0)
-- 미커밋 untracked 4 파일 (docs/qa/ + scripts/) — 평가셋 번호 무결성 진단 (별도 정리 예정)
+- Time: 2026-05-01 (**13차 세션 — Δ13 ~ Δ28 대규모 베타 운영 인프라 구축**)
+- Phase: **Phase G-06 완전 운영 라이브** + Δ13~Δ28 (15 개 commit / 25 개 commit 누적)
+- Status: **베타 운영 가능 — 신청 1건 대기, 30일 만료 정책 활성**
+- Git: clean, origin/main 동기화 (`862db7b` Δ28 마지막)
+- vitest: **385/385 PASS** (access-tier 만료 정책 5 신규)
+- 운영 라이브: 학생용 trigger 자동 누적 + 가드레일 + 만료 정책
+
+## 13차 세션 핵심 — Trigger 의 본질 + 운영 인프라 완성
+
+### 사용자가 정의한 Trigger 본질
+- **Trigger** = "왜 이 문제에서 [이 도구]를 사용해야 하는가?" 의 **답**
+- **Tool** = 알려진 사실 + 활용 방법 결합 명제 (예: "두 변+끼인각 → S=½ab sin θ")
+- **공식** ≠ Tool. 공식·정리는 도구의 재료. Tool 은 "A이면 B" 형식의 조건부 명제.
+- **Trigger 자체 = (Cue, Tool) 매핑 명제** ("X일 때 Y를 한다") + 그 매핑의 인과
+- 학습 사명: 수많은 문제로 어렴풋이 익힐 "수학적 감각" 을 LLM 이 명쾌히 언어화 → 적은 문제로도 같은 학습 효과
+
+## 이번 세션 commit 시리즈 (Δ13~Δ28)
+
+| Δ | Commit | 내용 |
+|---|---|---|
+| Δ13 | `9d59344` | 베타 1차 결함 6종 — 대시보드 카드 / BetaChat 필기·사진 / 표기 가이드 / firstUserText |
+| Δ14 | `c84d765` | 학생 막힘 분석 5 차원 (Haiku → schema 1.4) |
+| — | `d8d3f7c` | 10차 progress.md |
+| — | `2719d1f` | BetaChat ESLint hotfix (Vercel 빌드 fix) |
+| Δ15 | `4221108` | 메인 채팅 routes maxDuration 60s/90s → 300s |
+| Δ16 | `edf3b48` | 리포트 LLM 5 모듈 Haiku → Sonnet 4.6 + tree-builder LLM 모드 + step fallback |
+| Δ17 | `6d088f9` | Tool ⊥ Trigger 엄격 분리 |
+| Δ18 | `20bc7b6` | Trigger = (Cue,Tool) 매핑 명제 정석 형식 |
+| Δ19 | `d084020` | anchor ④ ∞/∞ 꼴 추가 |
+| Δ20 | `956881a` | Trigger 메타인지 — 4 분류 + 자문 + 용어 의존 회피 |
+| Δ21 | `21117ec` | "도구 = A이면 B" framework + Trigger = 발화한 A |
+| Δ22a | `d66d33e` | user-anchors seed (6 anchor) + RAG fetch |
+| Δ22b | `a9202cc` | /legend/triggers 학생 열람 페이지 |
+| Δ23 | `c32fd93` | Trigger Auto-Accumulation — LLM 풀이 중 자동 누적 |
+| Δ24 | `698578f` | 가드레일 시스템 9 카테고리 + 위기 안내 + 분쟁 증거 DB |
+| — | `3fc4567` | 가드레일 위기 메시지 단순화 (기존 CrisisButton 인프라 재사용) |
+| — | `c8b90c4` | "혼자가 아닙니다" floating 텍스트 복원 |
+| Δ25 | `8548453` | MathText 인라인 KaTeX 렌더 + 풀이 정리 max_tokens 4500 |
+| — | `d8c3ea5` | review_beta_application ambiguous id fix |
+| — | `82bd3c9` | #variable_conflict use_column directive (RPC 모호성 근본 fix) |
+| Δ27 | `2edc752` | /admin 가드 layout + 대시보드 관리자 진입점 + 모드 헤더 |
+| — | `d738dda` | list_beta_applications email::text cast |
+| — | `1dffc3a` | admin UI dark theme + 사용자 식별 + N수생 옵션 |
+| Δ28 | `862db7b` | 베타 30일 만료 정책 — 승인 후 한 달 무료 |
+
+## Δ22 — Trigger 라이브러리 (DB 자산화)
+
+### 6 anchor seed (사용자 직접 가르침)
+| Tool ID | Layer | A → B |
+|---|---|---|
+| USER_triangle_area_two_sides_angle | 3 | 두 변+끼인각 → S=½ab sin θ |
+| USER_repeated_figure_recurrence | 4 | 반복 도형 → 닮음비 점화식 |
+| USER_two_lines_acute_angle | 4 | 두 직선 기울기 → tan(a-b) |
+| USER_inf_inf_rational_limit | 4 | ∞/∞ 꼴 유리함수 극한 → 분모 최고차항 분리 |
+| USER_logarithmic_differentiation | 5 | 밑·지수 모두 변수 → 로그 미분법 |
+| USER_radical_indef_integral_substitution | 5 | √f(x) 부정적분 → √f(x)=t 또는 f(x)=t 치환 |
+
+Supabase math_tools + math_tool_triggers 적재 완료 (forward + backward embedding 12개 모두 정상).
+
+### Auto-Accumulation 흐름 (Δ23)
+1. LLM 풀이 정리 시 structured_trigger { cue_a, tool_b, why_text } 출력
+2. accumulateTrigger() 자동 hook
+3. 5 단계 dedup: math_tool_triggers ≥0.85 → candidate_triggers ≥0.85 → tool 매칭 → candidate_tools 신규
+4. occurrence_count ≥ 5 도달 시 status='pending_review' 자동 승격
+5. /admin/candidate-triggers 에서 승인 → 정식 trigger 라이브러리 머지
+
+## Δ24 — 가드레일
+
+### 9 카테고리 + 위기 처리
+- 비-수학·메타·욕설·외설·폭력·정치 → 정중한 안내 + 24h 재발 시 경고 1회 + DB 로그
+- 자해·자살 위기 → 거부 X. 즉시 기존 CrisisButton ("혼자가 아닙니다") 으로 안내 + crisis_alert 로그
+- guardrail_violations 테이블 (분쟁 증거 4000자 보존)
+
+## Δ27 — 관리자 시스템
+
+- `/admin/layout.tsx` Server Component 가드 → 비-admin 자동 /dashboard redirect
+- 대시보드 인사말 옆 "🔐 관리자 페이지" 배지 (admin email 만 노출)
+- 관리자 모드 헤더 (4 nav: 베타 신청 / 도구·트리거 / 후보 트리거 / 기여자)
+- /admin/beta-applications: dark theme 통일 + 이메일 + UUID 명확 노출 + 만료 카운트다운
+
+## Δ28 — 베타 30일 만료
+
+- 승인 시점부터 30일 무료, 이후 자동 trial 강등
+- 정원 50명 cap 그대로
+- 기존 active 사용자 backfill (오늘 + 30일 grace)
+- BetaChat 헤더 ⏳ N일 배지 (≤7일 amber, ≤0 rose)
+- 재신청 가능 (재승인 시 30일 리셋)
+
+## 학생 화면 가시성 (Δ25)
+- MathText 컴포넌트로 모든 step.summary, solution_summary 5 차원, student_struggle 4 sub-card 에 KaTeX 인라인 렌더
+- raw 단축 표기 (`f'(1)`, `e^{2-f(x)}`) 가 자연스러운 수식으로 노출
+
+## DB Migration 5종 적용 (Supabase MCP)
+- 20260501_guardrail_violations
+- 20260501_review_beta_application_fix (ambiguous id)
+- 20260501_beta_applications_variable_conflict (use_column directive)
+- 20260501_list_beta_applications_email_cast (auth.users.email::text)
+- 20260501_beta_invites_expires_at (30일 만료 정책)
+
+## 운영 모니터링 포인트
+- Vercel logs 에서 `[solution-summarizer] parsed = FALLBACK` 검색 → 빈발 시 system prompt 단순화
+- candidate_triggers 누적 추이 모니터링 → /admin/candidate-triggers
+- guardrail_violations 위반 빈도 → /admin (별도 UI 필요 시 Δ24b)
+- 베타 신청 승인 후 30일 만료자 자동 강등 동작 확인
+
+## 다음 세션 후보 (14차)
+1. **베타 사용자 모집 확장** — 신청 1건 (현재 pending) 승인 + 카카오·디스코드 등 채널 모집
+2. **Δ22c** — RAG fetch 시 retrieved trigger 들이 실제 trigger_motivation 생성 품질에 미친 영향 KPI 측정
+3. **Δ24b** — /admin/guardrail 위반 로그 열람·통계 UI
+4. **풀이 정리 SSE 청크 스트리밍** (Phase 2 — Δ25 후속)
+5. **Trigger 라이브러리 학생 직접 등록 community contribution UI**
+6. **만료 임박 사용자 자동 이메일 알림** (≤ 3일 → 안내 메일)
+7. **베타 사용자 후기 통계 분석 → 마케팅 자료** (G06-34 완성된 시스템 활용)
+
+## 이전 Checkpoint (10차 — Δ13 + Δ14)
 
 ## 10차 세션 — 베타 검증 결함 7건 통합 fix
 
