@@ -39,6 +39,7 @@ const GRADES = [
   { value: "high1", label: "고등학교 1학년" },
   { value: "high2", label: "고등학교 2학년" },
   { value: "high3", label: "고등학교 3학년" },
+  { value: "n_su", label: "N수생" },
   { value: "other", label: "기타" },
 ];
 

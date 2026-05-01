@@ -85,17 +85,17 @@ export default function BetaApplicationsAdminPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-5xl p-6">
+    <div className="container mx-auto max-w-5xl p-6 text-white">
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">베타 신청 검토</h1>
-        <Link href="/admin/contributors" className="text-sm text-gray-500 hover:underline">
+        <h1 className="text-2xl font-semibold text-white">베타 신청 검토</h1>
+        <Link href="/admin/contributors" className="text-sm text-white/50 hover:text-white hover:underline">
           contributors →
         </Link>
       </div>
 
-      <p className="mb-4 rounded bg-blue-50 p-3 text-sm text-blue-900">
+      <p className="mb-4 rounded border border-blue-400/30 bg-blue-500/10 p-3 text-sm text-blue-100">
         admin 만 접근 가능. 신청자의 동기·피드백 동의·메타를 검토 후 승인/거부합니다.
-        승인 시 <code className="bg-blue-100 px-1 rounded">euler_beta_invites</code> 가 자동 발급됩니다.
+        승인 시 <code className="bg-blue-400/20 px-1 rounded text-blue-100">euler_beta_invites</code> 가 자동 발급됩니다.
       </p>
 
       <div className="mb-4 flex gap-2">
@@ -103,8 +103,10 @@ export default function BetaApplicationsAdminPage() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`rounded border px-3 py-1 text-sm ${
-              filter === f ? "bg-blue-600 text-white border-blue-600" : ""
+            className={`rounded border px-3 py-1 text-sm transition-colors ${
+              filter === f
+                ? "bg-blue-500 text-white border-blue-500"
+                : "border-white/15 text-white/70 hover:border-white/30 hover:text-white"
             }`}
           >
             {f === "pending"
@@ -118,11 +120,11 @@ export default function BetaApplicationsAdminPage() {
         ))}
       </div>
 
-      {error && <p className="mb-2 text-sm text-red-700">{error}</p>}
-      {loading && <p>Loading...</p>}
+      {error && <p className="mb-2 text-sm text-red-300">{error}</p>}
+      {loading && <p className="text-white/60">Loading...</p>}
 
       {!loading && apps.length === 0 && (
-        <p className="text-sm text-gray-500">해당 상태의 신청이 없습니다.</p>
+        <p className="text-sm text-white/50">해당 상태의 신청이 없습니다.</p>
       )}
 
       <div className="space-y-4">
@@ -131,28 +133,32 @@ export default function BetaApplicationsAdminPage() {
             key={a.id}
             className={`rounded-lg border p-4 ${
               a.status === "pending"
-                ? "bg-amber-50 border-amber-200"
+                ? "bg-amber-400/10 border-amber-400/30"
                 : a.status === "approved"
-                  ? "bg-emerald-50 border-emerald-200"
-                  : "bg-rose-50 border-rose-200"
+                  ? "bg-emerald-400/10 border-emerald-400/30"
+                  : "bg-rose-400/10 border-rose-400/30"
             }`}
           >
             <div className="mb-2 flex items-start justify-between gap-3">
-              <div>
-                <div className="text-sm font-semibold">
-                  {a.user_email ?? a.user_id.slice(0, 8) + "..."}
+              <div className="space-y-1">
+                {/* 사용자 식별: 이메일 + UUID 모두 명확 노출 */}
+                <div className="text-sm font-semibold text-white">
+                  📧 {a.user_email ?? "(이메일 없음)"}
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="font-mono text-[11px] text-white/55">
+                  ID: {a.user_id}
+                </div>
+                <div className="text-xs text-white/55">
                   신청일: {new Date(a.applied_at).toLocaleString("ko-KR")}
                 </div>
               </div>
               <span
                 className={`rounded px-2 py-1 text-xs font-medium ${
                   a.status === "pending"
-                    ? "bg-amber-200 text-amber-900"
+                    ? "bg-amber-400/30 text-amber-100"
                     : a.status === "approved"
-                      ? "bg-emerald-200 text-emerald-900"
-                      : "bg-rose-200 text-rose-900"
+                      ? "bg-emerald-400/30 text-emerald-100"
+                      : "bg-rose-400/30 text-rose-100"
                 }`}
               >
                 {a.status === "pending"
@@ -164,8 +170,8 @@ export default function BetaApplicationsAdminPage() {
             </div>
 
             <div className="mb-3">
-              <div className="text-xs text-gray-500 mb-1">동기</div>
-              <p className="text-sm whitespace-pre-wrap bg-white rounded p-3 border">
+              <div className="text-xs text-white/55 mb-1">동기</div>
+              <p className="text-sm whitespace-pre-wrap rounded border border-white/10 bg-white/5 p-3 text-white/90">
                 {a.motivation}
               </p>
             </div>
@@ -190,27 +196,27 @@ export default function BetaApplicationsAdminPage() {
                   }
                   placeholder="코멘트 (선택, 거부 시 사유 등)"
                   rows={2}
-                  className="w-full rounded border p-2 text-sm"
+                  className="w-full rounded border border-white/15 bg-slate-900/60 p-2 text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-blue-400/50 transition-colors"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => review(a.id, "approve")}
                     disabled={busy[a.id]}
-                    className="rounded bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-40"
+                    className="rounded bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-400 disabled:opacity-40 transition-colors"
                   >
                     {busy[a.id] ? "처리 중..." : "승인"}
                   </button>
                   <button
                     onClick={() => review(a.id, "reject")}
                     disabled={busy[a.id]}
-                    className="rounded bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-40"
+                    className="rounded bg-rose-500 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-400 disabled:opacity-40 transition-colors"
                   >
                     {busy[a.id] ? "처리 중..." : "거부"}
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="mt-2 text-xs text-gray-600">
+              <div className="mt-2 text-xs text-white/65">
                 {a.reviewed_at && (
                   <div>처리일: {new Date(a.reviewed_at).toLocaleString("ko-KR")}</div>
                 )}
@@ -218,7 +224,7 @@ export default function BetaApplicationsAdminPage() {
                   <div className="mt-1">코멘트: {a.review_comment}</div>
                 )}
                 {a.invite_code && (
-                  <div className="mt-1 font-mono">발급 코드: {a.invite_code}</div>
+                  <div className="mt-1 font-mono text-amber-200">발급 코드: {a.invite_code}</div>
                 )}
               </div>
             )}
@@ -231,11 +237,11 @@ export default function BetaApplicationsAdminPage() {
 
 function Meta({ label, value, ok }: { label: string; value: string; ok?: boolean }) {
   return (
-    <div className="rounded bg-white border p-2">
-      <div className="text-gray-500">{label}</div>
+    <div className="rounded border border-white/10 bg-white/5 p-2">
+      <div className="text-white/50">{label}</div>
       <div
         className={`font-semibold ${
-          ok === true ? "text-emerald-700" : ok === false ? "text-rose-700" : ""
+          ok === true ? "text-emerald-300" : ok === false ? "text-rose-300" : "text-white"
         }`}
       >
         {value}
