@@ -257,7 +257,7 @@ describe('summarizeSolution', () => {
     expect(callModel).toHaveBeenCalledTimes(1);
   });
 
-  it('callModel 호출 인자: provider=anthropic + max_tokens=2500 (Δ16 Sonnet 격상)', async () => {
+  it('callModel 호출 인자: provider=anthropic + max_tokens=4500 (Δ25 추가 상향)', async () => {
     vi.mocked(callModel).mockResolvedValue({
       text: '{}',
       trace: {},
@@ -275,7 +275,7 @@ describe('summarizeSolution', () => {
     const args = vi.mocked(callModel).mock.calls[0][0];
     expect(args.provider).toBe('anthropic');
     expect(args.mode).toBe('baseline');
-    expect(args.max_tokens).toBe(2500);
+    expect(args.max_tokens).toBe(4500);
     expect(args.system_prompt).toBeTruthy();
   });
 });

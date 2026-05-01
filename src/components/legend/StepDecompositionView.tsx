@@ -13,6 +13,7 @@
 import { motion } from 'framer-motion';
 import type { ReactElement } from 'react';
 import { cn } from '@/lib/utils';
+import { MathText } from './MathText';
 import type { PerProblemStep } from '@/lib/legend/types';
 
 export interface StepDecompositionViewProps {
@@ -103,9 +104,13 @@ export function StepDecompositionView({
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-sm text-white/75">{step.summary}</p>
+              <p className="mt-1 text-sm text-white/75">
+                <MathText>{step.summary}</MathText>
+              </p>
               {step.why_text && (
-                <p className="mt-1 text-xs italic text-white/50">{step.why_text}</p>
+                <p className="mt-1 text-xs italic text-white/50">
+                  <MathText>{step.why_text}</MathText>
+                </p>
               )}
             </div>
           </motion.li>

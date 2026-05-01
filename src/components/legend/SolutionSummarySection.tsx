@@ -18,6 +18,7 @@
 
 import { motion } from 'framer-motion';
 import type { ReactElement } from 'react';
+import { MathText } from './MathText';
 import type { SolutionSummary } from '@/lib/legend/types';
 
 export interface SolutionSummarySectionProps {
@@ -48,11 +49,13 @@ export function SolutionSummarySection({
           <span className="mr-1.5" aria-hidden>
             💡
           </span>
-          핵심: {summary.core_insight}
+          핵심: <MathText>{summary.core_insight}</MathText>
         </div>
 
         {/* 2. 단계 흐름 */}
-        <div className="text-white/80">{summary.step_flow_narrative}</div>
+        <div className="text-white/80">
+          <MathText>{summary.step_flow_narrative}</MathText>
+        </div>
 
         {/* 3. 가장 어려운 부분 */}
         {summary.hardest_resolution && (
@@ -60,7 +63,7 @@ export function SolutionSummarySection({
             <span className="mr-1.5 not-italic" aria-hidden>
               🎯
             </span>
-            어려운 부분: {summary.hardest_resolution}
+            어려운 부분: <MathText>{summary.hardest_resolution}</MathText>
           </div>
         )}
 
@@ -70,7 +73,7 @@ export function SolutionSummarySection({
             <span className="mr-1.5" aria-hidden>
               💡
             </span>
-            떠올린 이유: {summary.trigger_motivation}
+            떠올린 이유: <MathText>{summary.trigger_motivation}</MathText>
           </div>
         )}
 
@@ -80,7 +83,7 @@ export function SolutionSummarySection({
             <span className="mr-1.5" aria-hidden>
               💭
             </span>
-            일반 원칙: {summary.generalization}
+            일반 원칙: <MathText>{summary.generalization}</MathText>
           </div>
         )}
       </div>

@@ -238,7 +238,8 @@ ${args.conversation_text.slice(0, 4000)}
 
   let parsed: RawJson | null = null;
   try {
-    // Δ16 — Haiku → Sonnet 4.6 격상. max 400 → 2000. 학생 막힘의 본질을 깊이 분석.
+    // Δ16 — Haiku → Sonnet 4.6 격상. max 400 → 2000.
+    // Δ25 — system prompt 길어진 상태에서 자주 절단됨 → 3500 으로 추가 상향.
     const result = await callModel({
       model_id:
         process.env.LEGEND_REPORT_MODEL ??
@@ -248,12 +249,18 @@ ${args.conversation_text.slice(0, 4000)}
       mode: 'baseline',
       problem: promptBody,
       system_prompt: SYSTEM,
-      max_tokens: 2000,
+      max_tokens: 3500,
     });
     const text = (result.text ?? '').trim();
     parsed = tryParseJson<RawJson>(text);
+    if (!parsed) {
+      console.warn(
+        '[student-struggle-extractor] parse failed. raw (first 500):',
+        text.slice(0, 500),
+      );
+    }
   } catch (e) {
-    console.warn('[student-struggle-extractor] Haiku failed:', (e as Error).message);
+    console.warn('[student-struggle-extractor] Sonnet failed:', (e as Error).message);
     return null;
   }
 

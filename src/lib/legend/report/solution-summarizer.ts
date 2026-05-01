@@ -332,7 +332,9 @@ export async function summarizeSolution(
 
   try {
     // Δ16 — Haiku → Sonnet 4.6 격상. max_tokens 500 → 2500. 시간·토큰 더 투자.
-    // 사용자 결정: "리포트 생성에 더 많은 시간 할애 + 토큰 더 사용 — 학생이 더 나은 사고를 하도록".
+    // Δ25 — 5 차원 모두 빈 fallback 빈발 → max 2500 → 4500 으로 추가 상향.
+    // structured_trigger 추가 (Δ23) 로 응답 토큰 부담 ↑ + 사용자 요구 (5~7 → 8+ 문장)
+    // 누적되어 2500 으로 자주 절단되었던 것으로 추정.
     const result = await callModel({
       model_id:
         process.env.LEGEND_REPORT_MODEL ??
@@ -342,9 +344,18 @@ export async function summarizeSolution(
       mode: 'baseline',
       problem: buildUserPayload(args, candidateTriggers),
       system_prompt: SOLUTION_SUMMARY_SYSTEM,
-      max_tokens: 2500,
+      max_tokens: 4500,
     });
-    return parseSummaryJson(result.text ?? '');
+    const rawText = result.text ?? '';
+    const parsed = parseSummaryJson(rawText);
+    // Δ25 — fallback 인지 진단 로그 (production 디버깅용)
+    if (parsed.core_insight === FALLBACK_SUMMARY.core_insight) {
+      console.warn(
+        '[solution-summarizer] parsed = FALLBACK. raw response (first 600 chars):',
+        rawText.slice(0, 600),
+      );
+    }
+    return parsed;
   } catch (e) {
     console.warn('[solution-summarizer] failed:', (e as Error).message);
     return FALLBACK_SUMMARY;

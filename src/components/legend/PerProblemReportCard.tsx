@@ -25,6 +25,7 @@ import { TriggerExpansionCard } from './TriggerExpansionCard';
 import { ReasoningTreeView } from './ReasoningTreeView';
 import { LLMStruggleSection } from './LLMStruggleSection';
 import { SolutionSummarySection } from './SolutionSummarySection';
+import { MathText } from './MathText';
 import type { PerProblemReport } from '@/lib/legend/types';
 
 export interface PerProblemReportCardProps {
@@ -184,7 +185,7 @@ export function PerProblemReportCard({
                   막힘 요약
                 </span>
                 <br />
-                {report.student_struggle.stuck_summary}
+                <MathText>{report.student_struggle.stuck_summary}</MathText>
               </p>
               {report.student_struggle.trigger_quote && (
                 <p>
@@ -192,7 +193,7 @@ export function PerProblemReportCard({
                     💡 떠올렸어야 하는 것
                   </span>
                   <br />
-                  {report.student_struggle.trigger_quote}
+                  <MathText>{report.student_struggle.trigger_quote}</MathText>
                 </p>
               )}
               {report.student_struggle.ai_hint_quote && (
@@ -201,7 +202,7 @@ export function PerProblemReportCard({
                     튜터의 핵심 한 마디
                   </span>
                   <br />
-                  &ldquo;{report.student_struggle.ai_hint_quote}&rdquo;
+                  &ldquo;<MathText>{report.student_struggle.ai_hint_quote}</MathText>&rdquo;
                 </p>
               )}
               {report.student_struggle.resolution && (
@@ -210,7 +211,7 @@ export function PerProblemReportCard({
                     어떻게 풀렸는가
                   </span>
                   <br />
-                  {report.student_struggle.resolution}
+                  <MathText>{report.student_struggle.resolution}</MathText>
                 </p>
               )}
             </div>
