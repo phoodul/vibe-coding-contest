@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { GlassCard } from "@/components/shared/glass-card";
+import { PersonaAvatar } from "@/components/conversation/PersonaAvatar";
 
 import {
   LEVELS,
@@ -69,9 +70,12 @@ export default function ConversationPage() {
   const [interimText, setInterimText] = useState("");
   const [report, setReport] = useState<string | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
+  const [mouthOpen, setMouthOpen] = useState(0);
 
   const recognitionRef = useRef<any>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const rafIdRef = useRef<number | null>(null);
   const shouldListenRef = useRef(false);
   const pendingTranscriptRef = useRef("");
   const aiStateRef = useRef<AIState>("idle");
@@ -93,13 +97,18 @@ export default function ConversationPage() {
     },
   });
 
-  // --- TTS (OpenAI gpt-4o-mini-tts — 고품질 음성) ---
+  // --- TTS (OpenAI gpt-4o-mini-tts — 고품질 음성 + Web Audio amplitude lip sync) ---
   const stopAudio = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       audioRef.current = null;
     }
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+    setMouthOpen(0);
   }, []);
 
   const playTTS = useCallback(
@@ -122,17 +131,57 @@ export default function ConversationPage() {
         return new Promise<void>((resolve) => {
           const audio = new Audio(url);
           audioRef.current = audio;
-          audio.onended = () => {
+
+          // Web Audio analyser — amplitude 기반 lip sync
+          let analyser: AnalyserNode | null = null;
+          let dataArray: Uint8Array<ArrayBuffer> | null = null;
+          try {
+            const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+            if (!audioCtxRef.current) audioCtxRef.current = new Ctx();
+            const audioCtx = audioCtxRef.current;
+            if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+            const source = audioCtx.createMediaElementSource(audio);
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            dataArray = new Uint8Array(new ArrayBuffer(analyser.frequencyBinCount));
+          } catch {
+            // analyser 실패해도 재생은 진행 (입은 닫힌 상태로)
+          }
+
+          const updateMouth = () => {
+            if (!analyser || !dataArray) return;
+            analyser.getByteTimeDomainData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+              const v = (dataArray[i] - 128) / 128;
+              sum += v * v;
+            }
+            const rms = Math.sqrt(sum / dataArray.length);
+            setMouthOpen(Math.min(1, rms * 4));
+            rafIdRef.current = requestAnimationFrame(updateMouth);
+          };
+
+          const cleanup = () => {
+            if (rafIdRef.current !== null) {
+              cancelAnimationFrame(rafIdRef.current);
+              rafIdRef.current = null;
+            }
+            setMouthOpen(0);
             URL.revokeObjectURL(url);
             audioRef.current = null;
             resolve();
           };
-          audio.onerror = () => {
-            URL.revokeObjectURL(url);
-            audioRef.current = null;
-            resolve();
-          };
-          audio.play();
+
+          audio.onended = cleanup;
+          audio.onerror = cleanup;
+          audio
+            .play()
+            .then(() => {
+              if (analyser) updateMouth();
+            })
+            .catch(cleanup);
         });
       } catch {
         // TTS 실패 시 무시 — 텍스트는 이미 표시됨
@@ -580,7 +629,7 @@ export default function ConversationPage() {
 
         {/* AI Persona */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-6 gap-6">
-          <PersonaOrb state={aiState} />
+          <PersonaAvatar voiceId={voiceId} state={aiState} mouthOpen={mouthOpen} />
 
           <p className="text-sm text-muted">
             {aiState === "idle" && "Space를 눌러 말하세요"}
@@ -857,57 +906,3 @@ export default function ConversationPage() {
   );
 }
 
-// --- AI Persona Orb Component ---
-function PersonaOrb({ state }: { state: AIState }) {
-  return (
-    <div className="relative w-24 h-24 sm:w-32 sm:h-32">
-      {/* 외부 링 */}
-      <motion.div
-        className="absolute inset-0 rounded-full border-2 border-primary/30"
-        animate={
-          state === "listening"
-            ? { scale: [1, 1.3, 1], opacity: [0.3, 0.1, 0.3] }
-            : state === "speaking"
-              ? { scale: [1, 1.2, 1], opacity: [0.4, 0.2, 0.4] }
-              : state === "thinking"
-                ? { rotate: 360 }
-                : { scale: [1, 1.05, 1] }
-        }
-        transition={
-          state === "thinking"
-            ? { duration: 2, repeat: Infinity, ease: "linear" }
-            : { duration: state === "listening" ? 1 : 2, repeat: Infinity, ease: "easeInOut" }
-        }
-      />
-
-      {/* 두 번째 링 */}
-      {(state === "listening" || state === "speaking") && (
-        <motion.div
-          className="absolute inset-[-8px] rounded-full border border-primary/20"
-          animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0, 0.2] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-        />
-      )}
-
-      {/* 중앙 오브 */}
-      <motion.div
-        className="absolute inset-3 rounded-full bg-gradient-to-br from-primary/60 to-secondary/60 backdrop-blur-xl flex items-center justify-center"
-        animate={
-          state === "thinking"
-            ? { scale: [1, 0.95, 1] }
-            : state === "speaking"
-              ? { scale: [1, 1.05, 0.98, 1] }
-              : {}
-        }
-        transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <span className="text-3xl">
-          {state === "idle" && "🎙️"}
-          {state === "listening" && "👂"}
-          {state === "thinking" && "💭"}
-          {state === "speaking" && "🗣️"}
-        </span>
-      </motion.div>
-    </div>
-  );
-}
