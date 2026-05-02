@@ -53,7 +53,7 @@
 | A. Legend Tutor 보강 | 4 (P0-01~04) | `beta_reviews` 자발 리뷰 모니터링 + chain miss / R1 KaTeX / persona 일관성 (운영자 인터뷰 X) |
 | B. 영어 문법 trigger PoC | 5 (P0-05~09) | `tools.subject_anchor` 도입 / 6 anchor seed / 5문제 ≥ 70% 검증 |
 | C. GTM 자료 + 동영상 + 추가 채널 | 7 (P0-10~13d) | 1-pager / 후기 SEO / 텐볼스토리 콜드 메일 / 수만휘 가이드 / 학부모·유튜브 채널 맵 / 시연 영상 1편 / 자동 양산 스크립트 |
-| D. 베타 1 → 5명 | 3 (P0-14~16) | pending 1건 승인 + 4명 시드 모집 + 온보딩 체크리스트 |
+| D. 베타 1 → 5명 | 3 (P0-14~16) | active 1명 사용 상태 점검 + 지인 4명 모집 + 온보딩 체크리스트 |
 
 총 **19 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 

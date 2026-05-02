@@ -342,21 +342,22 @@
 
 ### D. 베타 1명 → 5명 확장 (P0-14 ~ P0-16)
 
-#### P0-14: 현재 pending 신청 1건 승인 + 베타 invite 발급
-- **What**: `beta_applications` 테이블의 pending 신청 1건을 admin UI 에서 승인하고 30일 만료 invite 를 발급한다. **수동 액션** — 사용자 직접 처리.
-- **Why**: roadmap.md §Phase 0 산출물 4 + business-vision.md §5 Phase 1 (베타 5명 모집 시작).
+#### P0-14: 현재 active 베타 1명 사용 상태 점검 + 만료일 확인
+- **What**: 사용자 정정 (2026-05-03) — pending 신청 0건, **이미 active 베타 1명 사용 중**. 따라서 이 task 는 신규 승인 X, 기존 active 1명의 사용 상태·만료일·이상 행동 점검으로 변경. **수동 + 자동** 모두 사용.
+- **Why**: P0-01 분석이 이 1명의 데이터에 의존. 만료가 임박했거나 사용이 정체된 경우 사전 발견 필요.
 - **How**:
-  - `/admin/beta-applications` 진입 → pending 신청 검토 → 승인 클릭
-  - `list_beta_applications` RPC + `review_beta_application` RPC 동작 확인
-  - 30일 만료 정책 자동 적용 검증 (13차 Δ28 베타 30일 정책)
-  - 승인 후 사용자 이메일에 invite 링크 발송 (자동 또는 수동)
+  - `/admin/beta-applications` 진입 → approved 1건 검토
+  - `euler_beta_invites.expires_at` 확인 — D-day 계산 (≤ 7일이면 만료 안내 + 갱신 결정)
+  - `legend_solve_logs` 누적 풀이 횟수·최근 사용 일자 확인
+  - `beta_reviews` 자발 리뷰 게시 여부 확인 (Day 14/30 알림 트리거 시점 판단)
+  - 가드레일 위반 로그 (`guardrail_violations`) 점검
 - **검증**:
-  - `beta_applications.status='approved'`
-  - `euler_beta_invites` 에 신규 row + `expires_at` = now + 30 days
-  - 사용자 가입·로그인 → Legend Tutor 사용 가능
+  - 1명 active 상태 + 만료일 명확 (D-N 일 기록)
+  - 누적 풀이 ≥ 1턴 / 최근 사용 ≤ 7일 (정체 X)
+  - 결과 보고: `docs/qa/beta1-status.md` 신규 (1 페이지 요약)
 - **선행 의존성**: 없음 (A·B 와 병렬)
-- **예상 시간**: 30분 (수동)
-- **Commit 메시지 prefix**: `chore:` 또는 코드 변경 없음 — Phase 0 진행 보고 commit
+- **예상 시간**: 30분 (수동 점검)
+- **Commit 메시지 prefix**: `docs:` (점검 리포트)
 
 #### P0-15: 추가 베타 4명 지인 모집 + 송출
 - **What**: 베타 5명 cap 을 채우기 위해 **지인 4명** 을 우선 모집한다 (사용자 결정 2026-05-03). 후속 채널 (수만휘·인스타·학부모 카페) 은 Phase 0 종료 후 백로그.
@@ -493,7 +494,7 @@ D 카테고리 (베타 확장)
 | P0-13b | (pending) | | 학부모·유튜브 채널 맵 |
 | P0-13c | (pending) | | 시연 영상 1편 (폰 노이만 ↔ 학생 함께 풀이 + R1 리포트 / 5분) |
 | P0-13d | (pending) | | 채널 개설 + 자동 양산 |
-| P0-14 | (pending) | | |
+| P0-14 | (pending) | | active 1명 상태 점검 (승인 작업 X) |
 | P0-15 | (pending) | | |
 | P0-16 | (pending) | | |
 
