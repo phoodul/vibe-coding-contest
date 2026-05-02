@@ -45,7 +45,7 @@
 
 ---
 
-## 2. Task 분해 (총 19 task)
+## 2. Task 분해 (총 20 task — P0-01b 추가)
 
 각 task 형식:
 - **What**: 변경 범위 1~2 문장
@@ -73,6 +73,24 @@
 - **선행 의존성**: 없음
 - **예상 시간**: 반나절
 - **Commit 메시지 prefix**: `docs:` (qa/beta1-defect-list.md 추가 + scripts 추가)
+
+#### P0-01b: BetaChat / TrialChat area 하드코딩 제거 + Manager 자동 분류 (P1 critical)
+- **What**: P0-01 분석에서 발견된 D1 결함 fix. `BetaChat.tsx:96` 과 `TrialChat.tsx:43` 에 하드코딩된 `area: '자유 질문'` 제거 → Manager(Haiku) 자동 분류 + 신청서 area default 하이브리드 적용.
+- **Why**: 이 결함 때문에 베타 사용자 풀이 2건 모두 Legend 라우팅 / chain / R1 카드 / Trigger 자동 누적이 우회됨. **차별화 무기 6개 중 4개가 작동 안 함**. fix 1건으로 quick win 가능. business-vision.md §3 차별화 무기 / `docs/qa/beta1-defect-list.md` §3 참조.
+- **How**:
+  - `src/components/legend/BetaChat.tsx:96` — body 에서 `area: '자유 질문'` 제거. 대신 Manager 가 problem_text 기반 자동 분류하도록 backend 위임 (또는 신청서 area default `calculus` / `math2` 등 사용)
+  - `src/components/legend/TrialChat.tsx:43` — 동일 패턴 제거
+  - `/api/legend/route` 또는 `/api/euler-tutor` 의 area 처리: client 가 area 미지정 시 Manager 자동 분류로 fallback (13차 Δ16 Sonnet 4.6 인프라 재사용)
+  - 사용자 명시 자유 질문 케이스: BetaChat UI 에 "자유 질문" 토글 추가 (default off — 문제 입력은 자동 분류)
+- **검증**:
+  - 신규 풀이 1건 → `euler_solve_logs.area` 가 `'자유 질문'` 이외 값 (예: `'calculus'`, `'math2'`)
+  - `legend_routing_decisions` 신규 row 생성 확인
+  - `legend_tutor_sessions.tutor_name` 5 거장 중 하나로 라우팅
+  - `per_problem_reports` 신규 R1 카드 생성
+  - vitest 회귀 0 (385/385 유지)
+- **선행 의존성**: P0-01
+- **예상 시간**: 4시간
+- **Commit 메시지 prefix**: `fix:` (P1 critical fix)
 
 #### P0-02: chain miss 추적 인프라 강화 (P1 결함 우선)
 - **What**: P0-01 에서 chain miss (도구 매칭 실패) 가 가장 빈번한 결함으로 확인될 가능성이 높음. `candidate_triggers` 큐 적재율과 admin 검수 UX 를 점검하고, 누락된 chain miss 패턴을 보강한다.
@@ -478,7 +496,8 @@ D 카테고리 (베타 확장)
 
 | Task | Commit Hash | 완료 일자 | 비고 |
 |---|---|---|---|
-| P0-01 | (pending) | | |
+| P0-01 | (this commit) | 2026-05-03 | 베타 1명 분석 → D1 발견 (area 하드코딩) |
+| P0-01b | (pending) | | P1 critical — area 하드코딩 fix |
 | P0-02 | (pending) | | |
 | P0-03 | (pending) | | |
 | P0-04 | (pending) | | |
