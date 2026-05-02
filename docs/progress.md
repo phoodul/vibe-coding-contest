@@ -1,12 +1,59 @@
 # Workflow Progress — Euler Tutor 2.0
 
 ## Last Checkpoint
-- Time: 2026-05-01 (**13차 세션 — Δ13 ~ Δ28 대규모 베타 운영 인프라 구축**)
-- Phase: **Phase G-06 완전 운영 라이브** + Δ13~Δ28 (15 개 commit / 25 개 commit 누적)
-- Status: **베타 운영 가능 — 신청 1건 대기, 30일 만료 정책 활성**
-- Git: clean, origin/main 동기화 (`862db7b` Δ28 마지막)
-- vitest: **385/385 PASS** (access-tier 만료 정책 5 신규)
-- 운영 라이브: 학생용 trigger 자동 누적 + 가드레일 + 만료 정책
+- Time: 2026-05-02 (**14차 세션 시작 — Δ29 평가셋 정답 정합성 감사 + 10건 정정**)
+- Phase: **Phase G-06 운영 라이브** + Δ29 (KPI 데이터 정합성 보강)
+- Status: 13차 그대로 + **sub-killer-eval.json 정답 10건 정정 (로컬 전용)**
+- Git: clean (Δ29 commit 직후 예정)
+- vitest: 385/385 PASS (변동 없음 — sub-killer-eval 은 단위 테스트 무관)
+
+## 14차 세션 — Δ29 평가셋 정답 정합성 감사
+
+### 발견
+OCR 단계에서 마크다운의 **문제 번호 라벨**(예: `12.`, `14.`)이 일부 어긋남 (3 누락 + 2 중복, 6/7 또는 9/10 페어 swap 등). 평가셋(`sub-killer-eval.json` 50문항)이 마크다운 라벨을 그대로 신뢰했기 때문에 일부 문항의 `expected_answer`가 **다른 문항의 정답**을 들고 있음 → 이전 KPI 측정에서 일부 문항이 항상 오답으로 채점되었을 가능성.
+
+### 진단 인프라 (커밋 대상)
+| 파일 | 역할 |
+|---|---|
+| `scripts/audit-markdown-numbers.ts` | 5년치 마크다운 (2022~2026) 영역별 라벨 시퀀스 추출 → 매트릭스 |
+| `docs/qa/markdown-number-audit.md` | 누락·중복·shift 매트릭스 (영역별 라인 매핑 포함) |
+| `scripts/identify-true-numbers.ts` | 평가셋 problem_latex 본문을 마크다운 본문에 매칭 → 등장 순서로 진짜 시험 번호 추론 → math-problems.ts 정답표와 비교 |
+| `docs/qa/eval-true-number-mapping.json` | 50문항 매핑 결과 (shift_detected / true_test_number / true_answer / mismatch) |
+| `scripts/fix-eval-answers.ts` | mismatch 자동 정정 (math-problems.ts 정답을 권위로 삼음) |
+
+### 정정 결과 — 10건 (로컬 sub-killer-eval.json 만 변경, gitignored)
+
+| eval_id | shift | 이전 answer | 정정 answer |
+|---|---|---|---|
+| 2022-공통-14 | +1 (실제 13번) | 3 | 2 |
+| 2023-공통-6 | -1 (실제 7번) | 2 | 4 |
+| 2024-공통-6 | -1 (실제 7번) | 4 | 5 |
+| 2024-공통-9 | -1 (실제 10번) | 4 | 2 |
+| 2024-확률과통계-25 | +1 (실제 24번) | 5 | 4 |
+| 2025-공통-6 | -1 (실제 7번) | 5 | 3 |
+| 2025-공통-9 | -1 (실제 10번) | 4 | 3 |
+| 2026-공통-9 | -1 (실제 10번) | 4 | 3 |
+| 2026-확률과통계-25 | +1 (실제 24번) | 2 | 1 |
+| 2026-확률과통계-27 | +1 (실제 26번) | 4 | 5 |
+
+재검증: identify-true-numbers.ts 재실행 → **mismatch = 0** (모든 정답 정합).
+
+### unmapped 14건 — 후속 수동 검증 task
+
+본문 텍스트 매칭 자체가 실패한 케이스 (problem_latex 와 마크다운 본문 불일치 가능성). 자동 정정 불가, 수동 비교 후속 작업.
+
+```
+2022-공통-9 / 2022-기하-25 / 2022-확률과통계-25 / 2022-확률과통계-27
+2023-공통-9 / 2023-기하-25 / 2023-기하-27 / 2023-미적분-24 / 2023-미적분-26
+2024-기하-25 / 2024-기하-27
+2025-기하-25 / 2025-기하-27
+2026-공통-6
+```
+
+### 영향 — 이전 KPI 보고서 재해석 필요
+- `docs/qa/kpi-killer-g05-report.md`, `kpi-killer-ab-report.md`, `kpi-chain-ab-report.md` 의 sub-killer 채점 일부가 잘못된 expected_answer 로 측정됨
+- 다음 측정부터는 정정된 평가셋이 자동 적용 (file-based)
+- 단, **다른 평가셋**(`killer-eval.json` 38 / `killer-eval-extra.json` 36 / `geometry-eval.json` 10)은 21/22/28/29/30번대만 들고 있어 sub-killer 영역과 겹치지 않음 → 별도 audit 후속 task
 
 ## 13차 세션 핵심 — Trigger 의 본질 + 운영 인프라 완성
 
