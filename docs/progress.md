@@ -28,23 +28,34 @@
 
 상세 구조와 베타 운영 결정 사항은 `docs_legacy/` 의 G-06 산출물(`implementation_plan_g06.md`, `architecture-g06-legend.md`, `task-g06.md` 등) 참조.
 
-## 다음 마일스톤 (유료 출시 로드맵 초안)
+## PRD / Roadmap (v1.1, 2026-05-02 작성)
 
-### A. 16개 도구 품질 끌어올리기 (코어)
-1. **각 도구별 사용성 audit** — 16개 도구를 순회하며 학생/교사가 실제로 막히는 지점을 발견(베타 후기·세션 녹화·Analytics).
-2. **개별 정교화 작업** — 도구별로 학습 효과·UX·안정성·접근성 개선 spec 작성 → 우선순위로 처리.
-3. **공통 컴포넌트 다듬기** — 가드레일·에러 바운더리·스켈레톤·접근성(WCAG AA)·모바일 최적화를 16개 도구 공통 표준으로 정착.
+비전·시장 가설·가격·아키텍처·로드맵을 4개 문서로 정리했고, Phase 0(2주, 즉시) 의 16 task 분해까지 완료. 다음 세션은 이 문서들을 토대로 진행.
 
-### B. SaaS 출시 준비
-4. **베타 사용자 모집 확장** — 현재 신청 1건 pending, 채널 다양화(커뮤니티·학원·SNS).
-5. **유료 가격 정책 시뮬레이션** — Plan A(월 9,900) / B(월 14,900) / C(가족·학원 라이선스) 비교.
-6. **결제 통합** — Toss Payments 우선(한국 시장) → 나중에 Stripe 확장.
-7. **마케팅 자산** — 베타 사용자 후기 통계 기반 랜딩 페이지·데모 영상.
+| 문서 | 역할 | 줄 |
+|---|---|---|
+| [`docs/business-vision.md`](business-vision.md) | 시장 가설 / 차별화 무기(Trigger 라이브러리=정답 도달 핵심 코칭) / B2B2C 사업 모델 / 메가스터디 역전 시나리오 | 341 |
+| [`docs/pricing-strategy.md`](pricing-strategy.md) | Tier 5/15/30만 / 단과 학원 1과목 자리 framing / 토큰 경제 / 부모 결제 마케팅 | 378 |
+| [`docs/roadmap.md`](roadmap.md) | Phase 0~6 (입증 → 전 과목 → 수능 추론 → 결제 → 출판사 PoC → 출시 → 확장) | 532 |
+| [`docs/architecture-platform.md`](architecture-platform.md) | 16 도구 → 출판사 콘텐츠 플랫폼 진화 / Trigger 라이브러리 일반화 / 모델 라우팅·결제·법무 | 611 |
+| [`docs/research_raw.md`](research_raw.md) | 외부 리서치 (수만휘·콴다·뤼튼·EBS·토큰 가격·출판사 협상·청소년 결제) | 568 |
+| [`docs/implementation_plan_phase0.md`](implementation_plan_phase0.md) | Phase 0 (2주) 16 task 분해 + 14일 일정표 + 회고 체크리스트 | 445 |
 
-### C. 운영·신뢰
-8. **운영 모니터링** — Sentry · 로그 대시보드 · 가드레일 위반 통계 UI.
-9. **부모/교사 신뢰 채널** — 사용 통계 리포트 · 만료/업그레이드 알림 메일.
-10. **법무 자문 (LEG-02)** — 변호사 1회 검토 후 결제 활성화.
+### 핵심 thesis (4 문서 공통)
+
+> **콴다·EBS·뤼튼은 "문제의 답"을 주고, 우리는 "답에 이르는 길"을 가르친다.**
+> Trigger 라이브러리(수학에서 검증된 89.5% KPI)를 전 과목으로 일반화 → 일타강사 직관을 LLM 명제로 언어화. 단과 학원 1과목 월 20~30만원 자리에 들어가는 AI 코치 — 사교육비 시장에서 새 카테고리가 아닌 **자리 대체**.
+
+## Phase 0 — 입증 자산화 + 수만휘 GTM (2주, 즉시)
+
+| 카테고리 | Task 수 | 핵심 |
+|---|---|---|
+| A. Legend Tutor 보강 | 4 (P0-01~04) | 베타 1명 검증 결과 반영 + chain miss / R1 KaTeX / persona 일관성 |
+| B. 영어 문법 trigger PoC | 5 (P0-05~09) | `tools.subject_anchor` 도입 / 6 anchor seed / 5문제 ≥ 70% 검증 |
+| C. 수만휘 GTM 자료 | 4 (P0-10~13) | 1-pager / 후기 SEO / 텐볼스토리 콜드 메일 / 수만휘 등업 가이드 |
+| D. 베타 1 → 5명 | 3 (P0-14~16) | pending 1건 승인 + 4명 시드 모집 + 온보딩 체크리스트 |
+
+상세 task / 의존성 / 일정 / 검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
 ## 도구 / 인프라 (그대로 유지)
 
@@ -59,6 +70,7 @@
 
 ## 다음 세션 시작 시
 
-1. 이 문서를 먼저 읽고 현재 방향성 확인
-2. `docs_legacy/progress.md` 의 마지막 체크포인트 (13차 / Δ29) 참조
-3. 베타 신청 처리 → 마일스톤 1번부터 진행
+1. 이 문서(`progress.md`)로 방향성 확인
+2. `docs/business-vision.md` + `docs/roadmap.md` 핵심 thesis 복기
+3. `docs/implementation_plan_phase0.md` 16 task 중 P0-01 부터 순차 진행
+4. 과거 컨텍스트 필요 시 `docs_legacy/progress.md` (13차 / Δ29) 참조
