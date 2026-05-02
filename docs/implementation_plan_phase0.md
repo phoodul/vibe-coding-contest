@@ -496,8 +496,8 @@ D 카테고리 (베타 확장)
 
 | Task | Commit Hash | 완료 일자 | 비고 |
 |---|---|---|---|
-| P0-01 | (this commit) | 2026-05-03 | 베타 1명 분석 → D1 발견 (area 하드코딩) |
-| P0-01b | (pending) | | P1 critical — area 하드코딩 fix |
+| P0-01 | a8f12d1 | 2026-05-03 | 베타 1명 분석 → D1 발견 (area 하드코딩) |
+| P0-01b | (this commit) | 2026-05-03 | P1 critical fix — Manager 자동 분류로 위임 |
 | P0-02 | (pending) | | |
 | P0-03 | (pending) | | |
 | P0-04 | (pending) | | |

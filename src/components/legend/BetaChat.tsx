@@ -90,10 +90,12 @@ export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: Bet
   // 라마누잔 (Tier 1) = useGpt=false → Sonnet 4.6 (G-05 격상 적용)
   // 가우스 / 폰 노이만 등 거장 = useGpt=true → GPT-5.5 (G-05 격상 적용)
   // 본격적 5튜터 분기는 G-07 callTutor 위임에서 처리 — 현 단계는 binary toggle.
+  // P0-01b: area 하드코딩 제거 — backend Manager(Haiku) 가 problem_text 분석으로 자동 분류.
+  // Legend 라우팅 / chain / R1 카드 / Trigger 자동 누적이 정상 작동하려면 area 가 정확해야 함.
   const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
       api: '/api/euler-tutor',
-      body: { area: '자유 질문', useGpt, input_mode: 'text' },
+      body: { useGpt, input_mode: 'text' },
     });
 
   useEffect(() => {

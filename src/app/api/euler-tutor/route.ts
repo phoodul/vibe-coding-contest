@@ -102,7 +102,10 @@ function parseProblemInfo(messages: { role: string; content: string }[]) {
 
 export async function POST(req: Request) {
   try {
-    const { messages: rawMessages, area, useGpt, input_mode } = await req.json();
+    // P0-01b: client 가 area 를 보내지 않거나 '자유 질문' 으로 보내면
+    // Manager(Haiku) 자동 분류 결과로 갱신. 명시적 자유 질문 의도는 client 가 별도 플래그로 표현.
+    const { messages: rawMessages, area: clientArea, useGpt, input_mode } = await req.json();
+    let area: string | null = clientArea ?? null;
 
     // G06-31: 학생 단축 표기 (RR(x), pi, II(0,1) f(x) dx 등) → 표준 LaTeX 정규화.
     // user 메시지의 텍스트만 변환. assistant 메시지는 모델 응답이므로 미변환.
@@ -400,6 +403,11 @@ ${tools
           // Reasoner BFS — 영역별 임계값 (확통·기하·미적분은 4+, 중학·공통은 5+)
           // F-09 fix: Manager 가 한글 area 를 반환할 수 있으므로 normalize.
           const normalizedArea = normalizeArea(mgr.area);
+          // P0-01b: client area 가 없거나 '자유 질문' 이면 Manager 분류 결과로 갱신.
+          // 이로써 BetaChat·TrialChat 의 area 하드코딩 결함을 백엔드에서도 방어.
+          if (!area || area === "자유 질문") {
+            area = normalizedArea;
+          }
           const areaThreshold = REASONER_THRESHOLD_BY_AREA[normalizedArea] ?? REASONER_MIN_DIFFICULTY;
           // Phase G-02: Recursive Chain — 도구 비자명성(layer_6_difficulty) 5+ 일 때만
           const runChain = REASONER_ENABLED && shouldRunRecursiveChain(mgr);

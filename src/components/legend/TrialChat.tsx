@@ -39,8 +39,9 @@ export function TrialChat({ user: _user }: { user: User }) {
   const { messages, input, handleInputChange, handleSubmit, isLoading, status } =
     useChat({
       api: '/api/euler-tutor',
-      // useGpt=false → Sonnet 4.6 (라마누잔 baseline 톤). area='자유 질문' 으로 시작.
-      body: { area: '자유 질문', useGpt: false, input_mode: 'text' },
+      // P0-01b: area 하드코딩 제거 — Manager(Haiku) 자동 분류로 위임.
+      // useGpt=false → Sonnet 4.6 (라마누잔 baseline 톤).
+      body: { useGpt: false, input_mode: 'text' },
       onError: (error) => {
         // 402 응답을 fetch 가 throw 하지 않으므로 onError 는 네트워크/스트림 에러용.
         // trial_quota_exceeded 는 onResponse 에서 분기.
