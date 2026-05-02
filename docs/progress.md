@@ -46,16 +46,16 @@
 > **콴다·EBS·뤼튼은 "문제의 답"을 주고, 우리는 "답에 이르는 길"을 가르친다.**
 > Trigger 라이브러리(수학에서 검증된 89.5% KPI)를 전 과목으로 일반화 → 일타강사 직관을 LLM 명제로 언어화. 단과 학원 1과목 월 20~30만원 자리에 들어가는 AI 코치 — 사교육비 시장에서 새 카테고리가 아닌 **자리 대체**.
 
-## Phase 0 — 입증 자산화 + 수만휘 GTM (2주, 즉시)
+## Phase 0 — 입증 자산화 + GTM 시작 (2주, 즉시)
 
 | 카테고리 | Task 수 | 핵심 |
 |---|---|---|
-| A. Legend Tutor 보강 | 4 (P0-01~04) | 베타 1명 검증 결과 반영 + chain miss / R1 KaTeX / persona 일관성 |
+| A. Legend Tutor 보강 | 4 (P0-01~04) | `beta_reviews` 자발 리뷰 모니터링 + chain miss / R1 KaTeX / persona 일관성 (운영자 인터뷰 X) |
 | B. 영어 문법 trigger PoC | 5 (P0-05~09) | `tools.subject_anchor` 도입 / 6 anchor seed / 5문제 ≥ 70% 검증 |
-| C. 수만휘 GTM 자료 | 4 (P0-10~13) | 1-pager / 후기 SEO / 텐볼스토리 콜드 메일 / 수만휘 등업 가이드 |
+| C. GTM 자료 + 동영상 + 추가 채널 | 7 (P0-10~13d) | 1-pager / 후기 SEO / 텐볼스토리 콜드 메일 / 수만휘 가이드 / 학부모·유튜브 채널 맵 / 시연 영상 1편 / 자동 양산 스크립트 |
 | D. 베타 1 → 5명 | 3 (P0-14~16) | pending 1건 승인 + 4명 시드 모집 + 온보딩 체크리스트 |
 
-상세 task / 의존성 / 일정 / 검증 KPI: `docs/implementation_plan_phase0.md` 참조.
+총 **19 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
 ## 도구 / 인프라 (그대로 유지)
 
