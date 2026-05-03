@@ -72,11 +72,19 @@
 - ✅ **P0-01 베타 1명 분석 + D1 critical 결함 발견** (`a8f12d1`)
 - ✅ **P0-01b area 하드코딩 critical fix — Manager 자동 분류로 위임** (`c7c92a0`)
 
-### 확정된 결정 (15차 시작 시점)
-- **도메인 = `easyedu.ai`** (Cloudflare Registrar 구입 + Vercel 자동 연동, 2026-05-03 완료). 기존 후보 legend.kr / studyai.kr 폐기.
-- 코드 변경 영향: `src/middleware.ts` 에 `vibe-coding-contest.vercel.app` → `easyedu.ai` + `www → apex` 301 redirect 추가. root `middleware.ts` dead code 삭제. (이전 progress 의 "vercel.ts redirect 인프라 ready" 메모는 잘못된 기억 — 실제로는 `src/middleware.ts` 의 `/euler → /legend` 패턴 가리킴.)
-- 환경변수·OAuth provider 콘솔 변경 불필요. Supabase Auth 가 `window.location.origin` 으로 callback 자동 처리.
-- **사용자 액션 1건만**: Supabase 대시보드 → Authentication → URL Configuration → Site URL 을 `https://easyedu.ai` 로 변경 + Redirect URLs allow list 에 `https://easyedu.ai/**`, `https://www.easyedu.ai/**` 추가.
+### 15차 세션 도메인 작업 완료 (2026-05-03)
+
+**`easyedu.ai` (apex primary) 도입 완료**:
+- Cloudflare Registrar 구입 + Vercel auto config (apex CNAME flattening, `*.vercel-dns-017.com`)
+- Vercel Domains 패널: `easyedu.ai` Production / `www.easyedu.ai` 308 → apex
+- Supabase Auth URL Configuration: Site URL `https://easyedu.ai` + Redirect URLs 갱신
+- OAuth 3종(Google·GitHub·Kakao) 검증 완료 — provider 콘솔 변경 불필요(Supabase callback URL 만 사용)
+- middleware: `vibe-coding-contest.vercel.app` → `easyedu.ai` 301 redirect 만 처리. www↔apex 정규화는 Vercel 위임 (충돌 회피).
+- root `middleware.ts` dead code 삭제
+
+**디버깅 흔적**: 초기 commit (`c61851b`) 에 middleware 의 `www → apex` redirect 가 Vercel auto config 의 `apex → www` redirect 와 충돌하여 ERR_TOO_MANY_REDIRECTS 발생 → `e8c5913` 으로 긴급 제거 후 사용자가 Vercel Domains 패널에서 primary 를 apex 로 뒤집음 → 이번 commit 에서 LEGACY redirect 만 안전하게 재추가.
+
+이전 progress 의 "vercel.ts redirect 인프라 ready" 메모는 잘못된 기억 — 실제로는 `src/middleware.ts` 의 `/euler → /legend` 패턴.
 
 ### 다음 세션 (15차) 시작점
 
