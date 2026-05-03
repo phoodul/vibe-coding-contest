@@ -72,8 +72,11 @@
 - ✅ **P0-01 베타 1명 분석 + D1 critical 결함 발견** (`a8f12d1`)
 - ✅ **P0-01b area 하드코딩 critical fix — Manager 자동 분류로 위임** (`c7c92a0`)
 
-### 보류된 결정
-- **도메인 변경** — 후보: `legend.kr` / `legendtutor.kr` / `studyai.kr` 등. 사용자 결정 + 구입 후 별도 task. `vercel.ts` redirect 인프라는 ready.
+### 확정된 결정 (15차 시작 시점)
+- **도메인 = `easyedu.ai`** (Cloudflare Registrar 구입 + Vercel 자동 연동, 2026-05-03 완료). 기존 후보 legend.kr / studyai.kr 폐기.
+- 코드 변경 영향: `src/middleware.ts` 에 `vibe-coding-contest.vercel.app` → `easyedu.ai` + `www → apex` 301 redirect 추가. root `middleware.ts` dead code 삭제. (이전 progress 의 "vercel.ts redirect 인프라 ready" 메모는 잘못된 기억 — 실제로는 `src/middleware.ts` 의 `/euler → /legend` 패턴 가리킴.)
+- 환경변수·OAuth provider 콘솔 변경 불필요. Supabase Auth 가 `window.location.origin` 으로 callback 자동 처리.
+- **사용자 액션 1건만**: Supabase 대시보드 → Authentication → URL Configuration → Site URL 을 `https://easyedu.ai` 로 변경 + Redirect URLs allow list 에 `https://easyedu.ai/**`, `https://www.easyedu.ai/**` 추가.
 
 ### 다음 세션 (15차) 시작점
 
