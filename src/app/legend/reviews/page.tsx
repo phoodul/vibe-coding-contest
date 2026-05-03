@@ -46,6 +46,7 @@ async function fetchReviews(
       stats: {
         total: 0,
         avg_rating: 0,
+        purchase_intent_responded: 0,
         purchase_intent_rate: 0,
         tutor_distribution: {},
       },

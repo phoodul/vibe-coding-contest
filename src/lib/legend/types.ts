@@ -353,10 +353,10 @@ export type RecommendedTutor =
 
 export interface BetaReview {
   id: string;
-  pros: string;
-  cons: string;
-  purchase_intent: boolean;
-  recommended_tutor: RecommendedTutor;
+  pros: string | null;
+  cons: string | null;
+  purchase_intent: boolean | null;
+  recommended_tutor: RecommendedTutor | null;
   star_rating: number;
   free_comment?: string | null;
   is_public: boolean;
@@ -366,6 +366,7 @@ export interface BetaReview {
 export interface BetaReviewStats {
   total: number;
   avg_rating: number;
+  purchase_intent_responded: number;
   purchase_intent_rate: number;
   tutor_distribution: Record<string, number>;
 }

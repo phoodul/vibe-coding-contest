@@ -1,8 +1,40 @@
-> 버전 1.1 / 작성일 2026-05-02 / Author: Architect Agent
-> 관련 문서: [business-vision.md](./business-vision.md) · [roadmap.md](./roadmap.md) · [architecture-platform.md](./architecture-platform.md) · [research_raw.md](./research_raw.md)
-> v1.1 변경 요약: 단과 학원 1과목 ₩20~30만 baseline framing 명시 / 학생 자발 vs 부모 결제 섹션에 "학원 1과목 자리" 포지셔닝 추가
+> 버전 2.0 / 작성일 2026-05-03 / Author: Orchestrator (15차 세션)
+> 관련 문서: [business-vision.md](./business-vision.md) · [roadmap.md](./roadmap.md) · [architecture-platform.md](./architecture-platform.md) · [research_raw.md](./research_raw.md) · [monetization-operations.md](./monetization-operations.md)
+> v2.0 변경 요약: **Phase 1 (베타 종료 후) 출시 가격을 ₩29,000 / ₩49,000 / ₩99,000 (VAT 포함, 3 tier) 로 확정**. v1.1 의 ₩5/15/30/40만원 framing(단과 학원 1과목 자리)은 **Phase 4+ B2B/학원 자리 진입 시 검토** 로 보류.
 
-# Pricing Strategy — Tier 설계와 토큰 경제
+---
+
+## 0. v2.0 — Phase 1 출시 가격 (2026-05-03 사용자 결정)
+
+### 0-1. Tier 표 (Phase 1 시작, 베타 종료 후)
+
+| Tier | 가격 (월, VAT 포함) | 매출 (VAT 제외) | 위치 |
+|---|---|---|---|
+| **Basic** | ₩29,000 | ₩26,364 | 개인 학생 entry |
+| **Standard** | ₩49,000 | ₩44,545 | **메인 anchor** |
+| **Premium** | ₩99,000 | ₩90,000 | 무제한 + 부모 리포트 |
+
+### 0-2. 가격 결정 배경
+
+- **학생 자발 결제 상한선 ₩2~5만원** (research_raw.md §5-4) → Basic/Standard 가 직접 진입.
+- **Premium ₩99,000** 은 부모 결제 영역 첫 단계 — 학원 1과목 ₩20~30만 의 1/2~1/3 가격으로 "AI 보조 코치" 포지셔닝.
+- **VAT 포함 가격 표시**는 한국 전자상거래법 B2C 의무.
+
+### 0-3. v1.1 framing 보류 사유
+
+v1.1 의 ₩5만 / ₩15만 / ₩30만 / ₩40만 (Lite/Standard/Pro/Family) 은 **단과 학원 1과목 자리** 를 직접 대체하는 framing 이었다. 베타 검증 데이터 + 출판사 제휴 + 학원 매칭이 갖춰진 **Phase 4+ B2B/학원 진입 시점에 재검토** 한다. 그 전까지는 v2.0 가격 (₩29/49/99천) 으로 일반 사교육비 시장의 entry 자리에서 검증한다.
+
+### 0-4. v2.0 → v1.1 진화 시나리오 (참고)
+
+```
+Phase 1 출시: v2.0 (₩29/49/99천) — 개인 사용자 검증
+Phase 2: 영어 / 국어 trigger 일반화 → 가격 그대로 유지 (다과목 가치 추가)
+Phase 3: 메가스터디·EBS 비교 마케팅 → Premium 가격 인상 검토 (~₩129,000)
+Phase 4: 학원 매칭 + 출판사 콘텐츠 → v1.1 의 ₩30만 Pro tier 신규 추가
+Phase 5: B2B Academy tier (₩50~150만) — 학원 단위 라이센스
+```
+
+---
 
 ## 1. 가격 철학
 

@@ -50,8 +50,10 @@ export function ReviewsList({ reviews }: { reviews: BetaReview[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {reviews.map((r, idx) => {
-        const tutorKey = TUTOR_KEY_MAP[r.recommended_tutor] ?? 'ramanujan_intuit';
-        const portrait = PORTRAITS[tutorKey];
+        const tutorKey = r.recommended_tutor
+          ? (TUTOR_KEY_MAP[r.recommended_tutor] ?? 'ramanujan_intuit')
+          : null;
+        const portrait = tutorKey ? PORTRAITS[tutorKey] : null;
         return (
           <motion.article
             key={r.id}
@@ -60,53 +62,63 @@ export function ReviewsList({ reviews }: { reviews: BetaReview[] }) {
             transition={{ delay: Math.min(idx * 0.05, 0.4) }}
             className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-5 hover:border-amber-300/30 transition-colors"
           >
-            {/* 헤더: 별점 + 추천 튜터 + 구매 의향 */}
+            {/* 헤더: 별점 + (선택) 추천 튜터 + (선택) 구매 의향 */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Image
-                  src={portrait.src}
-                  alt={portrait.alt}
-                  width={32}
-                  height={32}
-                  className="rounded-full object-cover ring-1 ring-amber-400/30"
-                />
+                {portrait && (
+                  <Image
+                    src={portrait.src}
+                    alt={portrait.alt}
+                    width={32}
+                    height={32}
+                    className="rounded-full object-cover ring-1 ring-amber-400/30"
+                  />
+                )}
                 <div className="leading-tight">
-                  <div className="text-xs font-medium text-white">
-                    {portrait.label_ko} 추천
-                  </div>
+                  {portrait && (
+                    <div className="text-xs font-medium text-white">
+                      {portrait.label_ko} 추천
+                    </div>
+                  )}
                   <StarRow rating={r.star_rating} />
                 </div>
               </div>
-              <span
-                className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                  r.purchase_intent
-                    ? 'bg-emerald-400/15 text-emerald-200 border border-emerald-400/30'
-                    : 'bg-rose-400/10 text-rose-200/80 border border-rose-400/20'
-                }`}
-              >
-                {r.purchase_intent ? '구매 의향 ◯' : '구매 의향 ✕'}
-              </span>
+              {r.purchase_intent !== null && (
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                    r.purchase_intent
+                      ? 'bg-emerald-400/15 text-emerald-200 border border-emerald-400/30'
+                      : 'bg-rose-400/10 text-rose-200/80 border border-rose-400/20'
+                  }`}
+                >
+                  {r.purchase_intent ? '구매 의향 ◯' : '구매 의향 ✕'}
+                </span>
+              )}
             </div>
 
-            {/* 장점 */}
-            <div className="mb-3">
-              <p className="text-[10px] uppercase tracking-wider text-emerald-300/70 mb-1">
-                좋았던 점
-              </p>
-              <p className="text-sm text-white/85 leading-relaxed line-clamp-4">
-                {r.pros}
-              </p>
-            </div>
+            {/* 장점 (선택) */}
+            {r.pros && (
+              <div className="mb-3">
+                <p className="text-[10px] uppercase tracking-wider text-emerald-300/70 mb-1">
+                  좋았던 점
+                </p>
+                <p className="text-sm text-white/85 leading-relaxed line-clamp-4">
+                  {r.pros}
+                </p>
+              </div>
+            )}
 
-            {/* 단점 */}
-            <div className="mb-3">
-              <p className="text-[10px] uppercase tracking-wider text-rose-300/70 mb-1">
-                아쉬운 점
-              </p>
-              <p className="text-sm text-white/70 leading-relaxed line-clamp-3">
-                {r.cons}
-              </p>
-            </div>
+            {/* 단점 (선택) */}
+            {r.cons && (
+              <div className="mb-3">
+                <p className="text-[10px] uppercase tracking-wider text-rose-300/70 mb-1">
+                  아쉬운 점
+                </p>
+                <p className="text-sm text-white/70 leading-relaxed line-clamp-3">
+                  {r.cons}
+                </p>
+              </div>
+            )}
 
             {/* 자유 코멘트 */}
             {r.free_comment && (
