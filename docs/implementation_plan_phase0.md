@@ -189,7 +189,11 @@
 - **예상 시간**: 반나절
 - **Commit 메시지 prefix**: `feat:`
 
-#### P0-08: 영어 문법 LLM 풀이 모드 진입 — Legend Tutor 영어 과목 확장
+#### P0-08 (재정의 2026-05-04): 영어 문법 별도 제품 신설 — Legend 분기 폐기
+
+> **⭐ 2026-05-04 architecture 변경**: 사용자 결정으로 Legend Tutor 는 수학 전용 유지. 영어 문법은 **별도 제품** 으로 신설한다 (`/grammar` 또는 미정 경로). Legend 의 5거장 페르소나·라우팅·R1 카드는 수학 한정 — 영어 문법 모드 분기 X. 세부 5가지 결정 (이름·URL·페르소나·UI·인증 공유 여부) 사용자 대기 중.
+
+#### P0-08 (구안, 폐기): 영어 문법 LLM 풀이 모드 진입 — Legend Tutor 영어 과목 확장
 - **What**: 기존 Legend Tutor (수학) 에 영어 문법 모드 분기를 추가한다. 신규 페이지 X — 기존 `/legend` 페이지에 과목 선택 UI (수학 / 영어 문법 PoC) 추가. 영어 문법 모드 선택 시 system prompt 가 영어 문법 페르소나·trigger 검색·R1 카드 영어 문법 버전으로 전환.
 - **Why**: roadmap.md §Phase 0 산출물 3 (Trigger 라이브러리 영어 문법 PoC) + architecture-platform.md §8-1 (Phase 1 영문법 PoC). Phase 1 의 영어 문법 인강 모드 출시 전 1차 PoC.
 - **How**:

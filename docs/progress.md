@@ -82,12 +82,16 @@
 | **P0-05** subject_anchor schema | math_tools + candidate_triggers 에 subject_anchor (default 'math') + subject_grade 컬럼 + 인덱스. 기존 250 도구 자동 'math'. | (commit pending) |
 | **P0-06** 영문법 30 도구 seed JSON | `data/seeds/english-grammar-anchors.json` — 6 anchor (시제·관계대명사·가정법·수동태·분사·문장구조) × 5 도구 = 30 도구 / 90 trigger (ko/en pair) / 도구별 common_mistake 예문 포함 | (commit pending) |
 
-### 다음 세션 (16차) 시작점 — P0-07 부터
+### ⭐ 2026-05-04 architecture 확정 — Legend Tutor = 수학 전용
 
-**P0-07~09 미완료 (사용자 승인·검토 필요)**:
-- **P0-07** trigger 임베딩 — OpenAI text-embedding-3-small 호출. 90 trigger × ko/en = 180 임베딩. 비용 발생 (예상 $0.01 미만). 사용자 사전 승인 후 자율 호출.
-- **P0-08** Legend Tutor 영어 모드 분기 — `/legend` 에 SubjectPicker + 라이프니츠 페르소나 영문법 변형 system prompt + trigger 검색 subject_anchor 필터. 큰 코드 변경.
-- **P0-09** 5문제 수동 검증 — 사람 검증 필수. KPI ≥ 70% 도달 여부.
+사용자 직접 결정. 영어 문법·기타 과목은 **별도 제품** 으로 분리. Legend 의 5거장 페르소나·라우팅·R1 카드는 **수학 한정** 유지 (페르소나 일관성·KPI·brand 오염 방지). Phase 0 plan §B P0-08 "Legend Tutor 영어 모드 분기" 폐기 → 별도 제품 신설 task 로 재정의 (세부 5가지 — 이름·URL·페르소나·UI·인증 — 사용자 결정 대기).
+
+### 다음 세션 (16차) 시작점
+
+**P0-07~09 미완료 — architecture 변경 반영 필요**:
+- **P0-07** trigger 임베딩 — OpenAI text-embedding-3-small 호출. 90 trigger × ko/en = 180 임베딩. 비용 발생 (예상 $0.01 미만). 사용자 사전 승인 후 자율 호출. 영문법 도구는 별도 제품에서 검색되므로 동일 임베딩 인프라 재사용 가능.
+- **P0-08 (재정의)** ~~Legend 영어 모드 분기~~ → **영문법 별도 제품 신설**. 사용자가 5가지 결정 (이름·URL·페르소나·UI·인증) 한 후 진행.
+- **P0-09** 5문제 수동 검증 — 영문법 별도 제품 출시 후 진행. 사람 검증 필수.
 
 **다음 세션 사용자 액션 (Phase 0 종료까지)**:
 1. P0-06 영문법 30 도구 JSON quality 검토 (필요 시 정정)
