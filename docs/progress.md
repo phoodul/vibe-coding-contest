@@ -82,9 +82,23 @@
 | **P0-05** subject_anchor schema | math_tools + candidate_triggers 에 subject_anchor (default 'math') + subject_grade 컬럼 + 인덱스. 기존 250 도구 자동 'math'. | (commit pending) |
 | **P0-06** 영문법 30 도구 seed JSON | `data/seeds/english-grammar-anchors.json` — 6 anchor (시제·관계대명사·가정법·수동태·분사·문장구조) × 5 도구 = 30 도구 / 90 trigger (ko/en pair) / 도구별 common_mistake 예문 포함 | (commit pending) |
 
-### ⭐ 2026-05-04 architecture 확정 — Legend Tutor = 수학 전용
+### ⭐ 2026-05-04 architecture 확정 — Legend = 수학 / 헤밍웨이 = 영문법
 
-사용자 직접 결정. 영어 문법·기타 과목은 **별도 제품** 으로 분리. Legend 의 5거장 페르소나·라우팅·R1 카드는 **수학 한정** 유지 (페르소나 일관성·KPI·brand 오염 방지). Phase 0 plan §B P0-08 "Legend Tutor 영어 모드 분기" 폐기 → 별도 제품 신설 task 로 재정의 (세부 5가지 — 이름·URL·페르소나·UI·인증 — 사용자 결정 대기).
+**Legend Tutor**: 수학 전용 유지 (5거장 페르소나·라우팅·R1 카드 절대 다른 과목 노출 X).
+
+**헤밍웨이 영문법 코치** (학생 13번째 도구, `/grammar`): 사용자 5가지 결정 (2026-05-04):
+1. 이름 = 헤밍웨이 (단일 페르소나)
+2. URL = `/grammar` sub-path
+3. 페르소나 = 1명 (단일 AI)
+4. UI = Legend vibe 동일 (다크 글래스)
+5. 인증·결제·가드레일 = 공유 (계정 1개)
+
+**중요**: 별도 sub-app/도메인 X. **기존 16 도구 그리드의 17번째 자리** 에 학생 13번째 도구로 추가 (영어 카테고리 묶음). dashboard / landing / guide 3 파일 동기화 완료.
+
+진행:
+- `src/app/dashboard/page.tsx` + `src/app/page.tsx` + `src/app/guide/page.tsx` 에 헤밍웨이 카드 추가 (✒️ icon).
+- `src/app/grammar/page.tsx` placeholder UI (6 anchor 카드 + 입력 textarea + "Phase 1 LLM 호출 통합 예정" 안내).
+- `src/lib/ai/grammar-prompt.ts` `HEMINGWAY_PERSONA` system prompt 정의 (짧고 명확 / 진단 → trigger 명제 → 정정 예시 → 왜 이렇게 쓰나 4단계).
 
 ### 다음 세션 (16차) 시작점
 

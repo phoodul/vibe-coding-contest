@@ -282,6 +282,7 @@ const demoTypes: Record<string, string> = {
   "영어 단어 학습": "vocab",
   "AI 영어 회화": "conversation",
   "영문법 핵심 300문장": "grammar",
+  "헤밍웨이 영문법 코치": "grammar",
   "진로 시뮬레이터": "career",
   "내 길 내비": "pathfinder",
   "맞춤 도서 추천": "books",
@@ -342,6 +343,12 @@ const studentFeatures = [
     description: "A1~C2 3레벨 핵심 문법 300문장을 반복 청취하며 체득. 이동 중 학습에 최적화.",
     icon: "🎧",
     href: "/grammar-listen",
+  },
+  {
+    title: "헤밍웨이 영문법 코치",
+    description: "헤밍웨이 페르소나가 학생의 영어 문장 오류 패턴을 진단하고 한 문장씩 교정합니다. 시제·관계대명사·가정법 등 6 anchor 영문법 trigger 라이브러리 기반.",
+    icon: "✒️",
+    href: "/grammar",
   },
   {
     title: "진로 시뮬레이터",
