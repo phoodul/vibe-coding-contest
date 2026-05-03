@@ -36,17 +36,6 @@
       ],
       "env": {}
     },
-    "firebase": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@gannonh/firebase-mcp"
-      ],
-      "env": {
-        "SERVICE_ACCOUNT_KEY_PATH": "C:\\Users\\JSS\\.firebase\\serviceAccountKey.json"
-      }
-    },
     "vercel": {
       "type": "http",
       "url": "https://mcp.vercel.com"
