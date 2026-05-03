@@ -72,6 +72,29 @@
 - ✅ **P0-01 베타 1명 분석 + D1 critical 결함 발견** (`a8f12d1`)
 - ✅ **P0-01b area 하드코딩 critical fix — Manager 자동 분류로 위임** (`c7c92a0`)
 
+### 15차 세션 P0-02~06 자율 진행 완료 (2026-05-04 night mode)
+
+| Task | 변경 | Commit |
+|---|---|---|
+| **P0-02** trigger accumulator observability | `legend_trigger_accumulation_log` 테이블 + accumulator outcome 5단계 적재 + admin "최근 7일 활동" 섹션 + outcome 분포 칩 + 최근 20건 raw log | `3473d39` |
+| **P0-03** R1 KaTeX 안정화 | MathText 의 `parseMathSegments` 분리 export + display math 패턴 (`$$..$$`, `\[..\]`) 추가 + `\(..\)` 정규식 fix + 회귀 테스트 16건 | `efef26c` |
+| **P0-04** 페르소나 일관성 | TUTOR_PERSONAS / buildSystemPrompt / extractFinalAnswer export + 회귀 테스트 19건 (페르소나 시작 패턴 / "최종 답" / 5단계 / 자가 검증 / [STUCK] / answer 추출) | `b30c164` |
+| **P0-05** subject_anchor schema | math_tools + candidate_triggers 에 subject_anchor (default 'math') + subject_grade 컬럼 + 인덱스. 기존 250 도구 자동 'math'. | (commit pending) |
+| **P0-06** 영문법 30 도구 seed JSON | `data/seeds/english-grammar-anchors.json` — 6 anchor (시제·관계대명사·가정법·수동태·분사·문장구조) × 5 도구 = 30 도구 / 90 trigger (ko/en pair) / 도구별 common_mistake 예문 포함 | (commit pending) |
+
+### 다음 세션 (16차) 시작점 — P0-07 부터
+
+**P0-07~09 미완료 (사용자 승인·검토 필요)**:
+- **P0-07** trigger 임베딩 — OpenAI text-embedding-3-small 호출. 90 trigger × ko/en = 180 임베딩. 비용 발생 (예상 $0.01 미만). 사용자 사전 승인 후 자율 호출.
+- **P0-08** Legend Tutor 영어 모드 분기 — `/legend` 에 SubjectPicker + 라이프니츠 페르소나 영문법 변형 system prompt + trigger 검색 subject_anchor 필터. 큰 코드 변경.
+- **P0-09** 5문제 수동 검증 — 사람 검증 필수. KPI ≥ 70% 도달 여부.
+
+**다음 세션 사용자 액션 (Phase 0 종료까지)**:
+1. P0-06 영문법 30 도구 JSON quality 검토 (필요 시 정정)
+2. P0-07 임베딩 OpenAI 호출 승인
+3. P0-13c 영상 시연용 수능 킬러 문제 1개 선정 (스크립트 자율 작성용)
+4. 부산 소상공인 임대 검색 (Phase 1 결제 도입 전)
+
 ### 15차 세션 P0-02 완료 (2026-05-04) — chain miss observability
 
 원래 plan 의 "subject_anchor 필터 추가" 는 candidate_triggers 에 해당 컬럼이 없어 폐기. 코드 audit 결과 진짜 누락은 **observability** — accumulator 의 모든 outcome 이 silent (`console.warn`) 이라 production 베타 5명 확장 시 누적 동작 추적 불가능했음.

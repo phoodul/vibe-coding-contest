@@ -1,0 +1,412 @@
+{
+  "$schema": "english-grammar-anchors.schema.v1",
+  "subject_anchor": "english_grammar",
+  "subject_grade": "high",
+  "version": "p0-06.draft.2026-05-04",
+  "purpose": "P0-06 — 영어 문법 6 anchor × 5 도구 = 30 seed (PoC). Phase 1 5문제 ≥ 70% 검증용. trigger 라이브러리 일반화 (수학 6 anchor 모델) 의 1차 적용.",
+  "anchors": [
+    {
+      "anchor": "시제",
+      "anchor_en": "Tense",
+      "anchor_id": "tense",
+      "tools": [
+        {
+          "id": "eg_tense_perfect_vs_past",
+          "name": "현재완료 vs 단순과거 (since/for vs ago)",
+          "knowledge_layer": 1,
+          "tool_proposition": "since/for + 기간이 보이면 현재완료, ago 가 보이면 단순과거를 쓴다.",
+          "triggers": [
+            { "ko": "since/for + 기간이 보이면 현재완료를 쓴다", "en": "If you see 'since' or 'for' with a duration, use present perfect (have/has + p.p.)." },
+            { "ko": "ago 가 보이면 단순과거를 쓴다", "en": "If you see 'ago', use simple past (V-ed), not present perfect." },
+            { "ko": "have/has + ago 조합은 오류", "en": "The combination 'have/has ... ago' is grammatically incorrect." }
+          ],
+          "common_mistake_example": "I have met him three years ago. (X) → I met him three years ago. (O)"
+        },
+        {
+          "id": "eg_tense_future_in_time_clause",
+          "name": "시간/조건 부사절 미래 표현",
+          "knowledge_layer": 2,
+          "tool_proposition": "when/if/before/after/until 부사절에서는 미래시제(will)를 쓰지 않고 현재시제로 미래를 표현한다.",
+          "triggers": [
+            { "ko": "when/if/before/after/until 부사절은 will 쓰지 않는다", "en": "In adverbial clauses with when/if/before/after/until, do NOT use 'will'." },
+            { "ko": "시간/조건 부사절에서 미래는 현재시제로 표현한다", "en": "Express future time with present tense in time/condition clauses." },
+            { "ko": "주절은 will 가능, 부사절은 현재시제", "en": "Main clause may use 'will', but the time/condition clause uses present tense." }
+          ],
+          "common_mistake_example": "I will call you when I will arrive. (X) → I will call you when I arrive. (O)"
+        },
+        {
+          "id": "eg_tense_state_verbs",
+          "name": "진행형 불가 동사 (state verbs)",
+          "knowledge_layer": 2,
+          "tool_proposition": "know/believe/love/hate/own/belong 같은 상태동사는 진행형(be V-ing)으로 쓰지 않는다.",
+          "triggers": [
+            { "ko": "know/believe/love/own 같은 상태동사는 진행형 X", "en": "State verbs (know, believe, love, own, belong) cannot be used in progressive form." },
+            { "ko": "감각·인지·감정·소유 동사는 단순현재로", "en": "Verbs of perception, cognition, emotion, possession use simple tenses, not progressive." },
+            { "ko": "I am knowing, He is owning 은 오류", "en": "Phrases like 'I am knowing' or 'He is owning' are incorrect." }
+          ],
+          "common_mistake_example": "I am knowing the answer. (X) → I know the answer. (O)"
+        },
+        {
+          "id": "eg_tense_reported_speech",
+          "name": "시제 일치 (간접화법)",
+          "knowledge_layer": 3,
+          "tool_proposition": "주절이 과거시제이면 종속절은 한 단계 과거로 시제를 일치시킨다 (현재→과거, 과거→과거완료).",
+          "triggers": [
+            { "ko": "주절이 said/told 같은 과거이면 종속절도 시제 한 단계 과거로", "en": "If the main verb is past (said/told), shift the subordinate clause one step into the past." },
+            { "ko": "현재시제 → 과거시제, 현재완료/과거 → 과거완료", "en": "Present → past; present perfect or past → past perfect." },
+            { "ko": "보편적 진리는 시제 일치 예외 (현재시제 유지)", "en": "Universal truths stay in present tense (exception to backshift)." }
+          ],
+          "common_mistake_example": "He said he is happy. (X) → He said he was happy. (O)"
+        },
+        {
+          "id": "eg_tense_future_progressive",
+          "name": "미래 진행/완료 (will be V-ing / will have p.p.)",
+          "knowledge_layer": 3,
+          "tool_proposition": "특정 미래 시점의 진행 동작은 will be V-ing, 그 시점까지 완료된 상태는 will have p.p. 로 표현한다.",
+          "triggers": [
+            { "ko": "특정 미래 시점에 진행 중인 동작은 will be V-ing", "en": "Use 'will be V-ing' for an action in progress at a specific future time." },
+            { "ko": "특정 미래 시점까지 완료된 상태는 will have p.p.", "en": "Use 'will have p.p.' for an action completed by a specific future time." },
+            { "ko": "by + 미래시점 + will have p.p. 결합 패턴", "en": "Pattern: 'by + future time + will have p.p.'" }
+          ],
+          "common_mistake_example": "By next year, I will study English for 10 years. (X) → By next year, I will have studied English for 10 years. (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "관계대명사",
+      "anchor_en": "Relative Pronoun",
+      "anchor_id": "relative_pronoun",
+      "tools": [
+        {
+          "id": "eg_rp_who_vs_whom",
+          "name": "주격 who vs 목적격 whom",
+          "knowledge_layer": 1,
+          "tool_proposition": "선행사가 사람이고 관계절 안에서 주어 역할이면 who, 목적어 역할이면 whom.",
+          "triggers": [
+            { "ko": "선행사가 사람 + 관계절 안에서 주어 자리면 who", "en": "Use 'who' when the antecedent is a person and serves as subject in the relative clause." },
+            { "ko": "선행사가 사람 + 관계절 안에서 목적어 자리면 whom", "en": "Use 'whom' when the antecedent is a person and serves as object in the relative clause." },
+            { "ko": "회화에서는 whom 대신 who 도 자주 쓰이지만 시험에서는 whom", "en": "In formal/exam contexts, use 'whom' for object position even though spoken English often uses 'who'." }
+          ],
+          "common_mistake_example": "The man who I met yesterday. (informal OK) → The man whom I met yesterday. (formal/exam)"
+        },
+        {
+          "id": "eg_rp_that_vs_which",
+          "name": "that vs which",
+          "knowledge_layer": 2,
+          "tool_proposition": "한정적 용법(콤마 X)에는 that/which 둘 다 가능하지만, 계속적 용법(콤마)에는 which 만 가능하고 that 은 쓸 수 없다.",
+          "triggers": [
+            { "ko": "콤마 + 관계대명사 = which (that 불가)", "en": "After a comma (non-restrictive clause), use 'which', not 'that'." },
+            { "ko": "한정적 용법 (콤마 없음) 에는 that/which 둘 다 가능", "en": "In restrictive clauses (no comma), both 'that' and 'which' are acceptable." },
+            { "ko": ", that 패턴이 보이면 오류 → , which 로 수정", "en": "If you see ', that' it is an error → change to ', which'." }
+          ],
+          "common_mistake_example": "My car, that is red, is fast. (X) → My car, which is red, is fast. (O)"
+        },
+        {
+          "id": "eg_rp_relative_adverb",
+          "name": "관계부사 (where/when/why/how)",
+          "knowledge_layer": 2,
+          "tool_proposition": "선행사가 장소·시간·이유·방법이고 관계절이 완전한 문장이면 관계부사를 쓴다 (전치사+관계대명사 대체).",
+          "triggers": [
+            { "ko": "선행사 = 장소 + 관계절이 완전한 문장 → where", "en": "Antecedent is a place + complete clause follows → use 'where'." },
+            { "ko": "선행사 = 시간 + 관계절이 완전한 문장 → when", "en": "Antecedent is a time + complete clause follows → use 'when'." },
+            { "ko": "관계대명사 뒤는 불완전, 관계부사 뒤는 완전", "en": "After a relative pronoun the clause is incomplete; after a relative adverb the clause is complete." }
+          ],
+          "common_mistake_example": "The house which I live is big. (X) → The house where I live is big. (O)"
+        },
+        {
+          "id": "eg_rp_non_restrictive",
+          "name": "관계대명사 계속적 용법 (콤마)",
+          "knowledge_layer": 3,
+          "tool_proposition": "콤마 + 관계대명사는 추가 정보(부가 설명)를 제공하며, 관계절을 빼도 문장이 성립한다. that 사용 불가.",
+          "triggers": [
+            { "ko": "콤마 + 관계대명사 = 부가 정보 (생략 가능)", "en": "Comma + relative pronoun adds extra info that can be omitted without breaking the sentence." },
+            { "ko": "계속적 용법은 that 사용 불가, which/who 만 가능", "en": "Non-restrictive clauses cannot use 'that' — only 'which' or 'who'." },
+            { "ko": "선행사가 고유명사면 보통 계속적 용법", "en": "Proper nouns typically take non-restrictive (comma) clauses." }
+          ],
+          "common_mistake_example": "Seoul, that is the capital of Korea, ... (X) → Seoul, which is the capital of Korea, ... (O)"
+        },
+        {
+          "id": "eg_rp_whose",
+          "name": "소유격 whose",
+          "knowledge_layer": 3,
+          "tool_proposition": "선행사의 소유 관계를 나타낼 때 whose 를 쓴다 (선행사가 사람·사물 모두 가능).",
+          "triggers": [
+            { "ko": "선행사 + 소유물 관계 → whose + 명사", "en": "When the antecedent owns the noun in the relative clause, use 'whose + noun'." },
+            { "ko": "whose 는 사람·사물 선행사 모두 가능", "en": "'Whose' can be used for both human and non-human antecedents." },
+            { "ko": "of which 도 가능하지만 어색함 (whose 권장)", "en": "'Of which' is grammatical but awkward; 'whose' is preferred." }
+          ],
+          "common_mistake_example": "The boy who his name is Tom. (X) → The boy whose name is Tom. (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "가정법",
+      "anchor_en": "Conditional / Subjunctive",
+      "anchor_id": "conditional",
+      "tools": [
+        {
+          "id": "eg_cond_past",
+          "name": "가정법 과거 (현재 사실의 반대)",
+          "knowledge_layer": 2,
+          "tool_proposition": "현재 사실의 반대 가정은 if + 과거시제, 주절은 would/could/might + 동사원형.",
+          "triggers": [
+            { "ko": "if + 과거시제 / would + 동사원형 = 현재 사실 반대", "en": "Pattern: 'if + past tense, ... would + base verb' = contrary to present fact." },
+            { "ko": "if I were (was X) — 가정법은 항상 were", "en": "In the subjunctive, use 'were' for all subjects (e.g., 'if I were', not 'if I was')." },
+            { "ko": "주절 will 은 오류 (가정법 과거에서는 would)", "en": "Do not use 'will' in the main clause of a past subjunctive — use 'would'." }
+          ],
+          "common_mistake_example": "If I was rich, I will buy a car. (X) → If I were rich, I would buy a car. (O)"
+        },
+        {
+          "id": "eg_cond_past_perfect",
+          "name": "가정법 과거완료 (과거 사실의 반대)",
+          "knowledge_layer": 3,
+          "tool_proposition": "과거 사실의 반대 가정은 if + had p.p., 주절은 would/could/might have p.p.",
+          "triggers": [
+            { "ko": "if + had p.p. / would have p.p. = 과거 사실 반대", "en": "Pattern: 'if + had p.p., ... would have p.p.' = contrary to past fact." },
+            { "ko": "주절 would + 동사원형 은 가정법 과거 (과거완료 X)", "en": "'would + base verb' is past subjunctive (present), not past perfect subjunctive." },
+            { "ko": "과거의 후회·반사실은 항상 had p.p. + would have p.p.", "en": "Past regret or counter-fact always uses 'had p.p.' + 'would have p.p.'" }
+          ],
+          "common_mistake_example": "If I had studied harder, I would pass. (X) → If I had studied harder, I would have passed. (O)"
+        },
+        {
+          "id": "eg_cond_i_wish",
+          "name": "I wish + 가정법",
+          "knowledge_invariant": 2,
+          "knowledge_layer": 2,
+          "tool_proposition": "I wish 다음 절이 현재 반대 소망이면 과거시제, 과거 반대 후회면 had p.p.",
+          "triggers": [
+            { "ko": "I wish + 과거시제 = 현재 소망 (지금 그렇지 않다)", "en": "'I wish + past tense' expresses a present unfulfilled wish." },
+            { "ko": "I wish + had p.p. = 과거 후회 (그때 그렇지 않았다)", "en": "'I wish + had p.p.' expresses regret about a past event." },
+            { "ko": "I wish + 현재시제 는 일반적으로 오류", "en": "'I wish + present tense' is usually incorrect for unfulfilled wishes." }
+          ],
+          "common_mistake_example": "I wish I am taller. (X) → I wish I were taller. (O)"
+        },
+        {
+          "id": "eg_cond_as_if",
+          "name": "as if / as though + 가정법",
+          "knowledge_layer": 3,
+          "tool_proposition": "as if/though 다음에 과거시제는 현재 반사실, had p.p. 는 과거 반사실.",
+          "triggers": [
+            { "ko": "as if + 과거시제 = 현재 반사실 (마치 ~인 것처럼)", "en": "'as if + past tense' = contrary to present reality." },
+            { "ko": "as if + had p.p. = 과거 반사실", "en": "'as if + had p.p.' = contrary to past reality." },
+            { "ko": "as if 다음 직설법 현재시제도 가능 (사실에 가까울 때)", "en": "Indicative present after 'as if' is possible when speaker considers it close to fact." }
+          ],
+          "common_mistake_example": "He talks as if he is a doctor. (가정 의도) → He talks as if he were a doctor. (O)"
+        },
+        {
+          "id": "eg_cond_mixed",
+          "name": "혼합 가정법 (mixed conditional)",
+          "knowledge_layer": 3,
+          "tool_proposition": "과거의 원인이 현재까지 영향을 미치는 가정은 if + had p.p. / would + 동사원형 (혼합).",
+          "triggers": [
+            { "ko": "if + had p.p. / would + 동사원형 = 과거 원인 + 현재 결과", "en": "'if + had p.p., would + base' = past cause + present result." },
+            { "ko": "if 절이 과거 사실 반대인데 주절이 현재 결과면 mixed", "en": "When the if-clause is past counter-fact and the main clause refers to present, use mixed conditional." },
+            { "ko": "now / today 같은 현재 부사가 주절에 있으면 mixed 신호", "en": "Adverbs like 'now' or 'today' in the main clause signal a mixed conditional." }
+          ],
+          "common_mistake_example": "If I had studied medicine, I would have been a doctor now. (X) → ... I would be a doctor now. (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "수동태",
+      "anchor_en": "Passive Voice",
+      "anchor_id": "passive",
+      "tools": [
+        {
+          "id": "eg_passive_basic",
+          "name": "기본 수동태 (be + p.p.)",
+          "knowledge_layer": 1,
+          "tool_proposition": "능동의 목적어가 주어가 되고, 동사는 be + p.p., 행위자는 by + 행위자로 표현한다.",
+          "triggers": [
+            { "ko": "타동사 + 목적어 → 목적어가 주어, be + p.p.", "en": "Active object becomes passive subject; verb becomes 'be + p.p.'" },
+            { "ko": "행위자 강조 시 by + 행위자, 불필요 시 생략", "en": "Add 'by + agent' when relevant; omit when the agent is unimportant." },
+            { "ko": "시제는 be 동사로 표현 (was/were/is/are/has been)", "en": "Tense in passive is shown via the be-verb (was, is, has been, etc.)." }
+          ],
+          "common_mistake_example": "The book wrote by him. (X) → The book was written by him. (O)"
+        },
+        {
+          "id": "eg_passive_4th_pattern",
+          "name": "4형식 수동태 (간접목적어 to/for)",
+          "knowledge_layer": 2,
+          "tool_proposition": "4형식 수동태에서 직접목적어를 주어로 만들면 간접목적어 앞에 to/for 전치사가 필요하다.",
+          "triggers": [
+            { "ko": "give/send/teach 류 동사는 to + 간접목적어", "en": "Verbs like give/send/teach take 'to + indirect object' in passive." },
+            { "ko": "make/buy/find 류 동사는 for + 간접목적어", "en": "Verbs like make/buy/find take 'for + indirect object' in passive." },
+            { "ko": "직접목적어 주어 변환 시 전치사 필수", "en": "When the direct object becomes subject, a preposition (to/for) must precede the indirect object." }
+          ],
+          "common_mistake_example": "A book was given me. (X) → A book was given to me. (O)"
+        },
+        {
+          "id": "eg_passive_5th_pattern",
+          "name": "5형식 수동태 (목적격 보어)",
+          "knowledge_layer": 3,
+          "tool_proposition": "5형식의 목적어를 수동태 주어로 바꾸면 목적격 보어는 그 자리에 그대로 남고, 사역·지각동사는 to부정사로 변환된다.",
+          "triggers": [
+            { "ko": "5형식 수동태 — 목적격 보어는 주격 보어로 그대로", "en": "In passive of 5-pattern verbs, the object complement remains as subject complement." },
+            { "ko": "사역동사 (make/let/have) 수동태 — 원형부정사 → to부정사", "en": "With causative verbs (make/let/have) in passive, bare infinitive becomes to-infinitive." },
+            { "ko": "지각동사 (see/hear/feel) 수동태 — 원형부정사 → to부정사", "en": "With perception verbs (see/hear/feel) in passive, bare infinitive becomes to-infinitive." }
+          ],
+          "common_mistake_example": "He was made study. (X) → He was made to study. (O)"
+        },
+        {
+          "id": "eg_passive_preposition",
+          "name": "by 외 전치사 (감정 형용사 패턴)",
+          "knowledge_layer": 2,
+          "tool_proposition": "interested in / surprised at / satisfied with 같은 감정 표현은 by 가 아닌 고유 전치사를 쓴다.",
+          "triggers": [
+            { "ko": "interested + in (about 아님)", "en": "'Interested' takes 'in', not 'about' or 'by'." },
+            { "ko": "surprised/shocked + at/by 둘 다 가능", "en": "'Surprised/shocked' can take 'at' or 'by'." },
+            { "ko": "satisfied/pleased + with", "en": "'Satisfied/pleased' takes 'with'." }
+          ],
+          "common_mistake_example": "I am interested by music. (X) → I am interested in music. (O)"
+        },
+        {
+          "id": "eg_passive_intransitive",
+          "name": "자동사는 수동태 불가",
+          "knowledge_layer": 2,
+          "tool_proposition": "happen/occur/disappear/arrive 같은 자동사는 목적어가 없으므로 수동태로 변환할 수 없다.",
+          "triggers": [
+            { "ko": "happen/occur 등 자동사는 수동태 X", "en": "Intransitive verbs (happen, occur, disappear, arrive) have no passive form." },
+            { "ko": "be happened, was occurred 는 항상 오류", "en": "Phrases like 'be happened' or 'was occurred' are always incorrect." },
+            { "ko": "능동으로만 표현 (사건이 발생했다 = the event happened)", "en": "Express such events only in active voice ('the event happened')." }
+          ],
+          "common_mistake_example": "An accident was happened yesterday. (X) → An accident happened yesterday. (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "분사·동명사",
+      "anchor_en": "Participle / Gerund",
+      "anchor_id": "participle_gerund",
+      "tools": [
+        {
+          "id": "eg_part_active_vs_passive",
+          "name": "현재분사(능동) vs 과거분사(수동)",
+          "knowledge_layer": 1,
+          "tool_proposition": "수식하는 명사가 행위 주체이면 현재분사(V-ing), 행위 대상이면 과거분사(V-ed).",
+          "triggers": [
+            { "ko": "명사가 행위 주체 (능동) → V-ing", "en": "If the noun performs the action (active), use V-ing." },
+            { "ko": "명사가 행위 대상 (수동) → V-ed (p.p.)", "en": "If the noun receives the action (passive), use V-ed (past participle)." },
+            { "ko": "감정 동사: 사람은 V-ed, 사물은 V-ing", "en": "Emotion verbs: people take V-ed (interested), things take V-ing (interesting)." }
+          ],
+          "common_mistake_example": "I am boring. (X, '나는 지루한 사람') → I am bored. (O, '나는 지루함을 느낀다')"
+        },
+        {
+          "id": "eg_part_phrase",
+          "name": "분사구문 (시간/이유/조건)",
+          "knowledge_layer": 2,
+          "tool_proposition": "부사절의 접속사+주어를 생략하고 동사를 V-ing 또는 (Being) p.p. 로 변환한다. 주어는 주절과 일치해야 한다.",
+          "triggers": [
+            { "ko": "분사구문은 주어가 주절과 일치해야 한다", "en": "The implicit subject of a participle phrase must match the main clause subject." },
+            { "ko": "능동 의미면 V-ing, 수동 의미면 (Being) p.p.", "en": "Use V-ing for active meaning, (Being) p.p. for passive meaning." },
+            { "ko": "주어 다르면 독립분사구문 (with + 명사 + 분사)", "en": "If subjects differ, use absolute participle ('with + noun + participle')." }
+          ],
+          "common_mistake_example": "Walking down the street, the rain fell. (X, 비가 걷지 않음) → Walking down the street, I felt the rain. (O)"
+        },
+        {
+          "id": "eg_part_gerund_vs_infinitive",
+          "name": "동명사 vs to부정사 목적어",
+          "knowledge_layer": 2,
+          "tool_proposition": "enjoy/finish/avoid/mind/quit 은 동명사만, want/decide/hope/promise 는 to부정사만 목적어로 취한다.",
+          "triggers": [
+            { "ko": "enjoy/finish/avoid/mind/quit + V-ing (to부정사 X)", "en": "Verbs like enjoy/finish/avoid/mind/quit take only gerund (V-ing), not to-infinitive." },
+            { "ko": "want/decide/hope/promise + to V (V-ing X)", "en": "Verbs like want/decide/hope/promise take only to-infinitive, not gerund." },
+            { "ko": "remember/forget/stop/try 는 의미에 따라 둘 다 가능 (의미 차이)", "en": "Remember/forget/stop/try take both, but with different meanings." }
+          ],
+          "common_mistake_example": "I enjoy to swim. (X) → I enjoy swimming. (O)"
+        },
+        {
+          "id": "eg_part_perfect",
+          "name": "완료분사 (having + p.p.)",
+          "knowledge_layer": 3,
+          "tool_proposition": "분사가 나타내는 시점이 주절보다 먼저면 having + p.p. (완료분사) 를 쓴다.",
+          "triggers": [
+            { "ko": "분사 시점 > 주절 시점 → having + p.p.", "en": "If the participle action precedes the main clause, use 'having + p.p.'" },
+            { "ko": "단순 V-ing 은 주절과 동시 동작", "en": "Simple V-ing implies the action is simultaneous with the main clause." },
+            { "ko": "Having p.p. 는 보통 시간/이유 분사구문", "en": "'Having p.p.' typically marks time-precedence or reason in participle phrases." }
+          ],
+          "common_mistake_example": "Finishing my homework, I had played soccer. (X, 시제 전후 모호) → Having finished my homework, I played soccer. (O)"
+        },
+        {
+          "id": "eg_part_with_absolute",
+          "name": "with + 명사 + 분사 (부대상황)",
+          "knowledge_layer": 3,
+          "tool_proposition": "부대상황을 나타낼 때 with + 명사 + V-ing(능동)/V-ed(수동) 패턴을 쓴다.",
+          "triggers": [
+            { "ko": "with + 명사 + V-ing — 능동 부대상황", "en": "'with + noun + V-ing' shows an accompanying active state." },
+            { "ko": "with + 명사 + V-ed (p.p.) — 수동 부대상황", "en": "'with + noun + V-ed' shows an accompanying passive state." },
+            { "ko": "주어 일치 불요 (독립분사 변형)", "en": "Subjects need not match the main clause (absolute construction)." }
+          ],
+          "common_mistake_example": "He stood with his eyes closing. (X, 의미 모호) → He stood with his eyes closed. (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "문장 구조",
+      "anchor_en": "Sentence Structure",
+      "anchor_id": "sentence_structure",
+      "tools": [
+        {
+          "id": "eg_struct_inversion",
+          "name": "도치 (부정어 문두 / Only)",
+          "knowledge_layer": 3,
+          "tool_proposition": "Never/Rarely/Hardly/Not only/Only 같은 부정·제한 표현이 문두에 오면 주어-동사 도치가 일어난다.",
+          "triggers": [
+            { "ko": "Never/Rarely/Hardly + 문두 → 도치 (조동사 + 주어)", "en": "Never/Rarely/Hardly at sentence start triggers inversion (auxiliary + subject)." },
+            { "ko": "Not only + 문두 → 도치 + but also 호응", "en": "'Not only' fronted triggers inversion and pairs with 'but also'." },
+            { "ko": "Only + 부사구 + 문두 → 도치", "en": "'Only + adverbial' fronted triggers inversion." }
+          ],
+          "common_mistake_example": "Never I have seen such a sight. (X) → Never have I seen such a sight. (O)"
+        },
+        {
+          "id": "eg_struct_cleft",
+          "name": "강조구문 (It is ~ that)",
+          "knowledge_layer": 2,
+          "tool_proposition": "강조하려는 부분을 It is/was 와 that 사이에 넣어 강조하며, 강조 대상에 따라 that 대신 who/which 도 가능.",
+          "triggers": [
+            { "ko": "It is/was + 강조어구 + that ... — 강조구문", "en": "Cleft pattern: 'It is/was + emphasized phrase + that ...'" },
+            { "ko": "강조 대상이 사람이면 that 대신 who 가능", "en": "If the emphasized phrase is a person, 'who' may replace 'that'." },
+            { "ko": "강조 대상이 시간·장소면 when/where 도 가능", "en": "If emphasizing time or place, 'when' or 'where' may replace 'that'." }
+          ],
+          "common_mistake_example": "It is yesterday I met him. (X) → It is yesterday that I met him. (O)"
+        },
+        {
+          "id": "eg_struct_appositive_that",
+          "name": "동격 that vs 관계대명사 that",
+          "knowledge_layer": 3,
+          "tool_proposition": "선행사가 fact/idea/news 같은 추상명사이고 뒤 절이 완전하면 동격 that, 불완전하면 관계대명사 that.",
+          "triggers": [
+            { "ko": "fact/idea/news + that + 완전한 문장 = 동격", "en": "Abstract noun (fact/idea/news) + 'that' + complete clause = appositive." },
+            { "ko": "선행사 + that + 불완전한 문장 = 관계대명사", "en": "Antecedent + 'that' + incomplete clause = relative pronoun." },
+            { "ko": "동격 that 는 의미상 선행사 = 절 (선행사를 풀어쓴 것)", "en": "Appositive 'that' equates the noun with the clause itself (re-statement)." }
+          ],
+          "common_mistake_example": "The fact which he is honest is clear. (X, fact 는 동격 명사) → The fact that he is honest is clear. (O)"
+        },
+        {
+          "id": "eg_struct_extraposition",
+          "name": "가주어 it / 진주어 to V·that 절",
+          "knowledge_layer": 2,
+          "tool_proposition": "주어가 너무 길면 it 을 가주어로 두고 to부정사·that절을 진주어로 뒤로 보낸다.",
+          "triggers": [
+            { "ko": "It is + 형용사 + to V — to부정사 진주어 패턴", "en": "'It is + adjective + to V' is the to-infinitive extraposition pattern." },
+            { "ko": "It is + 형용사 + that 절 — that 진주어 패턴", "en": "'It is + adjective + that-clause' is the that-extraposition pattern." },
+            { "ko": "It is necessary that + 주어 + (should) + 동사원형 — 가정법 현재", "en": "'It is necessary that + S + (should) + base verb' uses present subjunctive." }
+          ],
+          "common_mistake_example": "To learn English is important it. (X) → It is important to learn English. (O)"
+        },
+        {
+          "id": "eg_struct_parallelism",
+          "name": "등위접속사 평행 구조",
+          "knowledge_layer": 2,
+          "tool_proposition": "and/but/or 로 연결된 항목은 같은 품사·구조여야 한다 (명사-명사, V-ing-V-ing, to V-to V).",
+          "triggers": [
+            { "ko": "and/but/or 양쪽이 같은 품사·구조여야 한다", "en": "Items joined by and/but/or must share the same part of speech and structure." },
+            { "ko": "V-ing and V-ing / to V and to V — 동사 형태 일치", "en": "Use 'V-ing and V-ing' or 'to V and to V' — match the verb form." },
+            { "ko": "not only A but also B — A·B 같은 구조", "en": "'Not only A but also B' requires A and B to be parallel structures." }
+          ],
+          "common_mistake_example": "I like swimming and to run. (X) → I like swimming and running. (O)"
+        }
+      ]
+    }
+  ]
+}
