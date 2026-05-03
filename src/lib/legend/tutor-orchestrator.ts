@@ -126,9 +126,13 @@ const TUTOR_PERSONAS: Record<TutorName, string> = {
 마지막 step 에서만 "최종 답: <값>" 한 줄.`,
 };
 
-function buildSystemPrompt(tutor: TutorName): string {
+/** P0-04 (2026-05-04): 회귀 테스트에서 페르소나 일관성 검증을 위해 export. */
+export function buildSystemPrompt(tutor: TutorName): string {
   return TUTOR_PERSONAS[tutor];
 }
+
+/** P0-04: 회귀 테스트 노출용 — TUTOR_PERSONAS 자체는 const 라 freeze 보장. */
+export { TUTOR_PERSONAS };
 
 // ────────────────────────────────────────────────────────────────────────────
 // 보조 헬퍼
@@ -141,8 +145,10 @@ function hashProblem(text: string): string {
 /**
  * 응답 텍스트에서 "최종 답: <값>" 패턴 추출.
  * 못 찾으면 마지막 200자 fallback (UI 가 noisy 답을 받지 않도록 trace_jsonb 만 보존).
+ *
+ * P0-04 (2026-05-04): 6 튜터 페르소나 회귀 테스트 위해 export.
  */
-function extractFinalAnswer(text: string): string {
+export function extractFinalAnswer(text: string): string {
   if (!text) return '';
   const match = text.match(/최종\s*답\s*[:：]\s*(.+?)(?:\n|$)/);
   if (match && match[1]) return match[1].trim();
