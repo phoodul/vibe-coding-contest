@@ -50,12 +50,48 @@
 
 | 카테고리 | Task 수 | 핵심 |
 |---|---|---|
-| A. Legend Tutor 보강 | 4 (P0-01~04) | `beta_reviews` 자발 리뷰 모니터링 + chain miss / R1 KaTeX / persona 일관성 (운영자 인터뷰 X) |
+| A. Legend Tutor 보강 | 4 + 1b = 5 (P0-01~04 + P0-01b) | `beta_reviews` 자발 리뷰 모니터링 + chain miss / R1 KaTeX / persona / **area 하드코딩 fix** |
 | B. 영어 문법 trigger PoC | 5 (P0-05~09) | `tools.subject_anchor` 도입 / 6 anchor seed / 5문제 ≥ 70% 검증 |
 | C. GTM 자료 + 동영상 + 추가 채널 | 7 (P0-10~13d) | 1-pager / 후기 SEO / 텐볼스토리 콜드 메일 / 수만휘 가이드 / 학부모·유튜브 채널 맵 / 시연 영상 1편 / 자동 양산 스크립트 |
 | D. 베타 1 → 5명 | 3 (P0-14~16) | active 1명 사용 상태 점검 + 지인 4명 모집 + 온보딩 체크리스트 |
 
-총 **19 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
+총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
+
+## 14차 세션 종료 (2026-05-03)
+
+### 완료된 task
+- ✅ Δ29 평가셋 정답 정합성 audit + 10건 정정 (`6b26b68`)
+- ✅ 컨테스트 → 학생 AI 교육 SW 방향 전환 (`85d6f15`)
+- ✅ Phase 0 PRD 5 문서 작성 (Researcher + Architect, `24241f6`)
+- ✅ 영어 회화 6 캐릭터 + lip sync (`ef82f75`)
+- ✅ 캐릭터 사실적 미국인 스타일 재구현 (`60608c0`)
+- ✅ Phase 0 plan 정정 — 인터뷰→리뷰 / 학부모/동영상/양산 task 3종 추가 (`70c6309`)
+- ✅ 베타 4명 = 지인 / 시연 영상 = 폰 노이만 결정 반영 (`079f952`)
+- ✅ 시연 영상 5분 단축 + 함께 풀이 + 리포트 양 축 (`54afa80`, `9d4d56e`)
+- ✅ pending 0 / active 1 P0-14 점검 task 로 변경 (`6396832`)
+- ✅ **P0-01 베타 1명 분석 + D1 critical 결함 발견** (`a8f12d1`)
+- ✅ **P0-01b area 하드코딩 critical fix — Manager 자동 분류로 위임** (`c7c92a0`)
+
+### 보류된 결정
+- **도메인 변경** — 후보: `legend.kr` / `legendtutor.kr` / `studyai.kr` 등. 사용자 결정 + 구입 후 별도 task. `vercel.ts` redirect 인프라는 ready.
+
+### 다음 세션 (15차) 시작점
+
+**P0-02 부터 B 옵션 자율 진행** — 코드 audit·인프라 강화 (베타 데이터 검증은 후속).
+
+순서:
+1. **P0-02** chain miss 추적 인프라 강화 (코드 audit)
+2. **P0-03** R1 KaTeX 렌더 안정화 (MathText 컴포넌트 점검)
+3. **P0-04** persona 응답 일관성 (system prompt 점검)
+4. **P0-05~09** B 카테고리 — 영어 문법 trigger PoC (병렬)
+5. **P0-10~13d** C 카테고리 — GTM 자료
+6. **P0-14~16** D 카테고리 — 베타 확장
+
+### 다음 세션 사용자 액션 (선택 시점)
+- 도메인 후보 결정 + 구입 + DNS 설정
+- 지인 4명에게 베타 메시지 송출 (P0-15)
+- P0-13c 시연 영상 녹화 (자료 준비 후)
+- P0-14 active 베타 1명 사용 모니터링
 
 ## 도구 / 인프라 (그대로 유지)
 
@@ -70,7 +106,8 @@
 
 ## 다음 세션 시작 시
 
-1. 이 문서(`progress.md`)로 방향성 확인
-2. `docs/business-vision.md` + `docs/roadmap.md` 핵심 thesis 복기
-3. `docs/implementation_plan_phase0.md` 16 task 중 P0-01 부터 순차 진행
-4. 과거 컨텍스트 필요 시 `docs_legacy/progress.md` (13차 / Δ29) 참조
+1. 이 문서(`progress.md`)로 14차 결과 + 15차 시작점 확인
+2. `docs/qa/beta1-defect-list.md` 의 D2~D6 후속 결함 점검
+3. `docs/implementation_plan_phase0.md` P0-02 부터 순차 자율 진행 (B 옵션 합의)
+4. 도메인 변경은 사용자 결정 후 별도 task
+5. 과거 컨텍스트 필요 시 `docs_legacy/progress.md` (13차 / Δ29) 참조
