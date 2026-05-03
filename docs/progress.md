@@ -72,6 +72,17 @@
 - ✅ **P0-01 베타 1명 분석 + D1 critical 결함 발견** (`a8f12d1`)
 - ✅ **P0-01b area 하드코딩 critical fix — Manager 자동 분류로 위임** (`c7c92a0`)
 
+### 15차 세션 P0-02 완료 (2026-05-04) — chain miss observability
+
+원래 plan 의 "subject_anchor 필터 추가" 는 candidate_triggers 에 해당 컬럼이 없어 폐기. 코드 audit 결과 진짜 누락은 **observability** — accumulator 의 모든 outcome 이 silent (`console.warn`) 이라 production 베타 5명 확장 시 누적 동작 추적 불가능했음.
+
+진행:
+- `legend_trigger_accumulation_log` 테이블 신설 (outcome / matched_id / cue / tool / cosine / user / problem / detail)
+- `get_trigger_accumulation_stats(days_back)` RPC — 분포 + 일별 추이 + 고유 사용자
+- `accumulateTrigger` 5단계 모든 outcome 에 `logAccumulationOutcome` 적재 (silent 정책 유지)
+- `/admin/candidate-triggers` 페이지에 "최근 7일 누적 활동" 섹션 추가 — outcome 분포 칩 + 최근 20건 raw log 펼치기
+- `/api/admin/trigger-accumulation` 신규
+
 ### 15차 세션 도메인 작업 완료 (2026-05-03)
 
 **`easyedu.ai` (apex primary) 도입 완료**:

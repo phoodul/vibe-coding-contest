@@ -290,14 +290,43 @@ async function insertCandidateTool(
 }
 
 /**
+ * P0-02 (2026-05-04) — observability: 누적 결과를 별도 테이블에 적재.
+ * silent 정책 유지 (적재 실패해도 학생 응답 영향 없음).
+ */
+async function logAccumulationOutcome(
+  result: AccumulateResult,
+  input: AccumulateInput,
+  similarity?: number,
+): Promise<void> {
+  try {
+    const supabase = await createClient();
+    await supabase.from('legend_trigger_accumulation_log').insert({
+      outcome: result.outcome,
+      matched_id: result.matched_id ?? null,
+      cue_a: input.cue_a?.slice(0, 240) ?? null,
+      tool_b: input.tool_b?.slice(0, 60) ?? null,
+      similarity: typeof similarity === 'number' ? similarity : null,
+      user_id: input.user_id ?? null,
+      problem_hash: input.problem_hash?.slice(0, 64) ?? null,
+      detail: result.detail ?? null,
+    });
+  } catch (e) {
+    console.warn('[trigger-accumulator] outcome log failed:', (e as Error).message);
+  }
+}
+
+/**
  * 메인 진입점 — buildReport 또는 build-summary route 끝에서 호출.
- * 모든 실패는 silent (학생 응답 영향 없음).
+ * 모든 실패는 silent (학생 응답 영향 없음). outcome 은
+ * legend_trigger_accumulation_log 테이블에 적재되어 admin 대시보드에서 추적.
  */
 export async function accumulateTrigger(
   input: AccumulateInput,
 ): Promise<AccumulateResult> {
   if (!input.cue_a?.trim() || !input.tool_b?.trim()) {
-    return { outcome: 'skipped', detail: 'empty cue or tool' };
+    const result: AccumulateResult = { outcome: 'skipped', detail: 'empty cue or tool' };
+    await logAccumulationOutcome(result, input);
+    return result;
   }
 
   // 1) cue 의 embedding
@@ -305,36 +334,48 @@ export async function accumulateTrigger(
   try {
     embedding = await embedText(input.cue_a);
   } catch (e) {
-    console.warn('[trigger-accumulator] embed failed:', (e as Error).message);
-    return { outcome: 'failed', detail: 'embedding failed' };
+    const result: AccumulateResult = {
+      outcome: 'failed',
+      detail: `embed failed: ${(e as Error).message.slice(0, 100)}`,
+    };
+    await logAccumulationOutcome(result, input);
+    return result;
   }
-  if (!embedding) return { outcome: 'failed', detail: 'no embedding' };
+  if (!embedding) {
+    const result: AccumulateResult = { outcome: 'failed', detail: 'no embedding' };
+    await logAccumulationOutcome(result, input);
+    return result;
+  }
 
   // 2) 기존 math_tool_triggers 매칭
   const existing = await findClosestExistingTrigger(embedding);
   if (existing) {
     await bumpToolHitCount(existing.tool_id);
-    return {
+    const result: AccumulateResult = {
       outcome: 'matched_existing_trigger',
       matched_id: existing.trigger_id,
       detail: `cosine=${existing.similarity.toFixed(3)}`,
     };
+    await logAccumulationOutcome(result, input, existing.similarity);
+    return result;
   }
 
   // 3) 기존 candidate_triggers 매칭
   const candidate = await findClosestCandidateTrigger(embedding);
   if (candidate) {
-    const result = await bumpCandidateOccurrence(
+    const promoteResult = await bumpCandidateOccurrence(
       candidate.id,
       candidate.occurrence_count,
       candidate.status,
       input.problem_hash,
     );
-    return {
-      outcome: result === 'promoted' ? 'promoted_candidate' : 'bumped_candidate',
+    const result: AccumulateResult = {
+      outcome: promoteResult === 'promoted' ? 'promoted_candidate' : 'bumped_candidate',
       matched_id: candidate.id,
       detail: `cosine=${candidate.similarity.toFixed(3)} count=${candidate.occurrence_count + 1}`,
     };
+    await logAccumulationOutcome(result, input, candidate.similarity);
+    return result;
   }
 
   // 4) tool_b 로 기존 도구 매칭
@@ -346,9 +387,11 @@ export async function accumulateTrigger(
       input.why_text,
       embedding,
     );
-    return newId
+    const result: AccumulateResult = newId
       ? { outcome: 'new_candidate_trigger', matched_id: newId, detail: `tool=${tool.id}` }
       : { outcome: 'failed', detail: 'candidate trigger insert failed' };
+    await logAccumulationOutcome(result, input);
+    return result;
   }
 
   // 5) 새 도구 후보로 등록
@@ -359,7 +402,9 @@ export async function accumulateTrigger(
     input.user_id,
     input.problem_hash,
   );
-  return newToolId
+  const result: AccumulateResult = newToolId
     ? { outcome: 'new_candidate_tool', matched_id: newToolId }
     : { outcome: 'failed', detail: 'candidate tool insert failed' };
+  await logAccumulationOutcome(result, input);
+  return result;
 }

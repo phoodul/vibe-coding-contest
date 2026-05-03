@@ -16,18 +16,70 @@ interface Candidate {
   created_at: string;
 }
 
+interface AccumulationStats {
+  total: number;
+  days_back: number;
+  outcome_distribution: Record<string, number>;
+  daily_total: Array<{ day: string; count: number }>;
+  unique_users: number;
+}
+
+interface AccumulationLogRow {
+  id: string;
+  outcome: string;
+  matched_id: string | null;
+  cue_a: string | null;
+  tool_b: string | null;
+  similarity: number | null;
+  detail: string | null;
+  created_at: string;
+}
+
+const OUTCOME_LABEL: Record<string, string> = {
+  matched_existing_trigger: "기존 매칭",
+  bumped_candidate: "후보 빈도+",
+  promoted_candidate: "후보 승격 ✨",
+  new_candidate_trigger: "신규 후보",
+  new_candidate_tool: "신규 도구 후보",
+  skipped: "스킵 (빈 입력)",
+  failed: "실패",
+};
+
+const OUTCOME_COLOR: Record<string, string> = {
+  matched_existing_trigger: "bg-emerald-100 text-emerald-700",
+  bumped_candidate: "bg-blue-100 text-blue-700",
+  promoted_candidate: "bg-amber-100 text-amber-700",
+  new_candidate_trigger: "bg-purple-100 text-purple-700",
+  new_candidate_tool: "bg-indigo-100 text-indigo-700",
+  skipped: "bg-gray-100 text-gray-600",
+  failed: "bg-rose-100 text-rose-700",
+};
+
 export default function CandidateTriggersPage() {
   const [items, setItems] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<AccumulationStats | null>(null);
+  const [recent, setRecent] = useState<AccumulationLogRow[]>([]);
 
   async function load() {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/candidate-triggers");
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-      setItems(data.candidates ?? []);
+      const [candRes, accRes] = await Promise.all([
+        fetch("/api/admin/candidate-triggers"),
+        fetch("/api/admin/trigger-accumulation?days=7"),
+      ]);
+
+      const candData = await candRes.json();
+      if (!candRes.ok) throw new Error(candData.error ?? `HTTP ${candRes.status}`);
+      setItems(candData.candidates ?? []);
+
+      const accData = await accRes.json();
+      if (accRes.ok) {
+        setStats(accData.stats ?? null);
+        setRecent(accData.recent ?? []);
+      }
+
       setError(null);
     } catch (e) {
       setError((e as Error).message);
@@ -71,6 +123,105 @@ export default function CandidateTriggersPage() {
         시스템이 운영 중 풀이 로그에서 발굴한 trigger 후보. occurrence_count 가 임계값 (기본 5) 도달 시 status=pending_review 로 승격.
         approve 시 source=&apos;auto_mined&apos; 로 math_tool_triggers 에 머지됩니다.
       </p>
+
+      {/* P0-02: 최근 7일 누적 활동 (observability) */}
+      {stats && (
+        <section className="mb-6 rounded-lg border bg-white p-4">
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">
+            최근 7일 누적 활동 (P0-02 observability)
+          </h2>
+          <div className="mb-3 grid grid-cols-3 gap-3 text-xs">
+            <div className="rounded bg-gray-50 p-3">
+              <div className="text-gray-500">총 호출</div>
+              <div className="text-2xl font-semibold">{stats.total}</div>
+            </div>
+            <div className="rounded bg-gray-50 p-3">
+              <div className="text-gray-500">고유 사용자</div>
+              <div className="text-2xl font-semibold">{stats.unique_users}</div>
+            </div>
+            <div className="rounded bg-gray-50 p-3">
+              <div className="text-gray-500">활성 일수</div>
+              <div className="text-2xl font-semibold">
+                {stats.daily_total.length}
+              </div>
+            </div>
+          </div>
+
+          {/* outcome 분포 */}
+          {Object.keys(stats.outcome_distribution).length > 0 && (
+            <div className="mb-3">
+              <div className="mb-1 text-xs text-gray-500">Outcome 분포</div>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(stats.outcome_distribution)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([outcome, cnt]) => (
+                    <span
+                      key={outcome}
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${OUTCOME_COLOR[outcome] ?? "bg-gray-100 text-gray-700"}`}
+                    >
+                      {OUTCOME_LABEL[outcome] ?? outcome}: {cnt}
+                    </span>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* 최근 20건 raw log */}
+          {recent.length > 0 && (
+            <details className="mt-3 text-xs">
+              <summary className="cursor-pointer text-gray-600 hover:text-gray-900">
+                최근 20건 raw log
+              </summary>
+              <table className="mt-2 w-full text-xs">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="border p-1 text-left">시각</th>
+                    <th className="border p-1 text-left">Outcome</th>
+                    <th className="border p-1 text-left">cue_a</th>
+                    <th className="border p-1 text-left">tool_b</th>
+                    <th className="border p-1 text-center">cosine</th>
+                    <th className="border p-1 text-left">detail</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recent.map((r) => (
+                    <tr key={r.id}>
+                      <td className="border p-1 font-mono">
+                        {new Date(r.created_at).toLocaleString("ko-KR", {
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                      <td className="border p-1">
+                        <span
+                          className={`rounded-full px-1.5 py-0.5 text-[10px] ${OUTCOME_COLOR[r.outcome] ?? "bg-gray-100"}`}
+                        >
+                          {OUTCOME_LABEL[r.outcome] ?? r.outcome}
+                        </span>
+                      </td>
+                      <td className="border p-1 text-gray-700">
+                        {r.cue_a?.slice(0, 40) ?? "-"}
+                        {r.cue_a && r.cue_a.length > 40 ? "…" : ""}
+                      </td>
+                      <td className="border p-1 text-gray-700">
+                        {r.tool_b?.slice(0, 30) ?? "-"}
+                      </td>
+                      <td className="border p-1 text-center font-mono">
+                        {r.similarity != null ? r.similarity.toFixed(3) : "-"}
+                      </td>
+                      <td className="border p-1 text-gray-500">
+                        {r.detail ?? "-"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </details>
+          )}
+        </section>
+      )}
 
       {error && <p className="mb-2 text-sm text-red-700">{error}</p>}
       {loading && <p>Loading...</p>}
