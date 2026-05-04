@@ -55,7 +55,7 @@ export function InlineHandwritePanel({ open, onClose, onConfirm }: InlineHandwri
     }
 
     try {
-      const resp = await fetch("/api/euler-tutor/parse-image", {
+      const resp = await fetch("/api/legend/tutor/parse-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image: payloadDataUrl, handwritten: true }),

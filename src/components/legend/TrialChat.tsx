@@ -60,7 +60,7 @@ export function TrialChat({ user: _user }: { user: User }) {
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
-      api: '/api/euler-tutor',
+      api: '/api/legend/tutor',
       // selectedSubject 는 사용자 hint — 'free' 면 백엔드 자동분류.
       body: {
         useGpt: false,

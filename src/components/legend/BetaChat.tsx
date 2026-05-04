@@ -118,7 +118,7 @@ export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: Bet
   // selectedSubject 는 사용자가 명시적으로 선택한 학년/과목 hint — 'free' 면 백엔드 자동분류.
   const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
-      api: '/api/euler-tutor',
+      api: '/api/legend/tutor',
       body: {
         useGpt,
         input_mode: 'text',
@@ -213,7 +213,7 @@ export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: Bet
     if (!imagePreview) return;
     setParsing(true);
     try {
-      const parseRes = await fetch('/api/euler-tutor/parse-image', {
+      const parseRes = await fetch('/api/legend/tutor/parse-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: imagePreview }),

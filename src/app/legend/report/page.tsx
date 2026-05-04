@@ -115,8 +115,8 @@ export default function LegendReportPage() {
       try {
         // 주 1회 리포트: 최근 7일 데이터 기반
         const [w, p] = await Promise.all([
-          fetch("/api/euler-tutor/report/weakness?window=7").then((r) => r.json()),
-          fetch("/api/euler-tutor/report/progress?days=7").then((r) => r.json()),
+          fetch("/api/legend/tutor/report/weakness?window=7").then((r) => r.json()),
+          fetch("/api/legend/tutor/report/progress?days=7").then((r) => r.json()),
         ]);
         if (cancelled) return;
         setWeakness(w);
