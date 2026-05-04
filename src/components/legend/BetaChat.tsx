@@ -29,6 +29,7 @@ import { InlineHandwritePanel } from '@/components/legend/InlineHandwritePanel';
 import { SolutionSummaryButton } from './SolutionSummaryButton';
 import { PerProblemReportCard } from './PerProblemReportCard';
 import { StreamingMarkdown } from './StreamingMarkdown';
+import { MATH_AREAS } from '@/lib/ai/euler-prompt';
 
 interface User {
   id: string;
@@ -73,10 +74,29 @@ function extractFirstUserText(messages: Array<{ role: string; content: unknown }
   return '';
 }
 
+const SUBJECT_STORAGE_KEY = 'legend_selected_subject';
+
 export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: BetaMeta }) {
   const [useGpt, setUseGpt] = useState(false);
   const [selectedTutor, setSelectedTutor] = useState<TutorName>('ramanujan_intuit');
+  const [selectedSubject, setSelectedSubject] = useState<string>('free');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 학년/과목 선택 localStorage hydration
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const saved = window.localStorage.getItem(SUBJECT_STORAGE_KEY);
+    if (saved && MATH_AREAS.some((a) => a.id === saved)) {
+      setSelectedSubject(saved);
+    }
+  }, []);
+
+  const handleSubjectClick = useCallback((id: string) => {
+    setSelectedSubject(id);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SUBJECT_STORAGE_KEY, id);
+    }
+  }, []);
 
   // G06-33: 풀이 정리 인라인 카드 상태 (마지막 assistant 메시지 1개만 유지)
   const [inlineReport, setInlineReport] = useState<PerProblemReport | null>(null);
@@ -90,12 +110,16 @@ export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: Bet
   // 라마누잔 (Tier 1) = useGpt=false → Sonnet 4.6 (G-05 격상 적용)
   // 가우스 / 폰 노이만 등 거장 = useGpt=true → GPT-5.5 (G-05 격상 적용)
   // 본격적 5튜터 분기는 G-07 callTutor 위임에서 처리 — 현 단계는 binary toggle.
-  // P0-01b: area 하드코딩 제거 — backend Manager(Haiku) 가 problem_text 분석으로 자동 분류.
-  // Legend 라우팅 / chain / R1 카드 / Trigger 자동 누적이 정상 작동하려면 area 가 정확해야 함.
+  // P0-01b: area 자동분류는 backend Manager 가 problem_text 분석으로 처리 (보존).
+  // selectedSubject 는 사용자가 명시적으로 선택한 학년/과목 hint — 'free' 면 백엔드 자동분류.
   const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
       api: '/api/euler-tutor',
-      body: { useGpt, input_mode: 'text' },
+      body: {
+        useGpt,
+        input_mode: 'text',
+        subject_hint: selectedSubject === 'free' ? null : selectedSubject,
+      },
     });
 
   useEffect(() => {
@@ -300,8 +324,41 @@ export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: Bet
         </div>
       </header>
 
+      {/* 학년/과목 선택 chip */}
+      <section className="max-w-4xl mx-auto w-full px-4 pt-6 pb-2">
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-3">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="text-cyan-300/90">📚</span>
+            <span className="text-xs font-semibold text-white">학년/과목</span>
+            <span className="text-[10px] text-white/40">선택하면 그 과목 맞춤 코칭으로 진행돼요</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {MATH_AREAS.map((a) => {
+              const active = selectedSubject === a.id;
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => handleSubjectClick(a.id)}
+                  title={a.desc}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                    active
+                      ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/40'
+                      : 'border-white/10 bg-white/5 text-white/70 hover:border-cyan-300/30 hover:bg-cyan-400/5'
+                  }`}
+                  data-testid={`beta-subject-${a.id}`}
+                >
+                  <span className="mr-1">{a.icon}</span>
+                  {a.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* 5 튜터 선택 카드 */}
-      <section className="max-w-4xl mx-auto w-full px-4 pt-6 pb-3">
+      <section className="max-w-4xl mx-auto w-full px-4 pt-2 pb-3">
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4">
           <div className="mb-3 flex items-center gap-2">
             <span className="text-amber-300/90">⭐</span>

@@ -21,6 +21,7 @@ import 'katex/dist/katex.min.css';
 import { PORTRAITS } from '@/lib/legend/portraits';
 import type { TutorName } from '@/lib/legend/types';
 import { StreamingMarkdown } from './StreamingMarkdown';
+import { MATH_AREAS } from '@/lib/ai/euler-prompt';
 
 interface User {
   id: string;
@@ -28,20 +29,40 @@ interface User {
 }
 
 const LEGEND_TUTORS: TutorName[] = ['gauss', 'von_neumann', 'euler', 'leibniz'];
+const SUBJECT_STORAGE_KEY = 'legend_selected_subject';
 
 export function TrialChat({ user: _user }: { user: User }) {
   const [trialQuotaError, setTrialQuotaError] = useState<{
     message: string;
     apply_url?: string;
   } | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string>('free');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const saved = window.localStorage.getItem(SUBJECT_STORAGE_KEY);
+    if (saved && MATH_AREAS.some((a) => a.id === saved)) {
+      setSelectedSubject(saved);
+    }
+  }, []);
+
+  const handleSubjectClick = (id: string) => {
+    setSelectedSubject(id);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SUBJECT_STORAGE_KEY, id);
+    }
+  };
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, status } =
     useChat({
       api: '/api/euler-tutor',
-      // P0-01b: area 하드코딩 제거 — Manager(Haiku) 자동 분류로 위임.
-      // useGpt=false → Sonnet 4.6 (라마누잔 baseline 톤).
-      body: { useGpt: false, input_mode: 'text' },
+      // selectedSubject 는 사용자 hint — 'free' 면 백엔드 자동분류.
+      body: {
+        useGpt: false,
+        input_mode: 'text',
+        subject_hint: selectedSubject === 'free' ? null : selectedSubject,
+      },
       onError: (error) => {
         // 402 응답을 fetch 가 throw 하지 않으므로 onError 는 네트워크/스트림 에러용.
         // trial_quota_exceeded 는 onResponse 에서 분기.
@@ -103,8 +124,40 @@ export function TrialChat({ user: _user }: { user: User }) {
         </div>
       </header>
 
+      {/* 학년/과목 선택 chip */}
+      <section className="max-w-4xl mx-auto w-full px-4 pt-6 pb-2">
+        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-3">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="text-cyan-300/90">📚</span>
+            <span className="text-xs font-semibold text-white">학년/과목</span>
+            <span className="text-[10px] text-white/40">선택하면 그 과목 맞춤 코칭으로 진행돼요</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {MATH_AREAS.map((a) => {
+              const active = selectedSubject === a.id;
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => handleSubjectClick(a.id)}
+                  title={a.desc}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                    active
+                      ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/40'
+                      : 'border-white/10 bg-white/5 text-white/70 hover:border-cyan-300/30 hover:bg-cyan-400/5'
+                  }`}
+                >
+                  <span className="mr-1">{a.icon}</span>
+                  {a.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* 5 튜터 안내 (잠금) */}
-      <section className="max-w-4xl mx-auto w-full px-4 pt-6 pb-3">
+      <section className="max-w-4xl mx-auto w-full px-4 pt-2 pb-3">
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4">
           <div className="flex items-start gap-3 mb-3">
             <div className="flex-1">
