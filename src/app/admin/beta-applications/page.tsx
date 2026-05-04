@@ -4,7 +4,7 @@
  * Phase G-06 G06-27 — 관리자 베타 신청 검토 페이지.
  *
  * 신청 목록 (status filter) + 1-click 승인/거부 + 코멘트 textarea.
- * 승인 시 invite_code 자동 발급 (RPC 내부에서 euler_beta_invites insert).
+ * 승인 시 invite_code 자동 발급 (RPC 내부에서 legend_beta_invites insert).
  */
 
 import { useEffect, useState } from "react";
@@ -95,7 +95,7 @@ export default function BetaApplicationsAdminPage() {
 
       <p className="mb-4 rounded border border-blue-400/30 bg-blue-500/10 p-3 text-sm text-blue-100">
         admin 만 접근 가능. 신청자의 동기·피드백 동의·메타를 검토 후 승인/거부합니다.
-        승인 시 <code className="bg-blue-400/20 px-1 rounded text-blue-100">euler_beta_invites</code> 가 자동 발급됩니다.
+        승인 시 <code className="bg-blue-400/20 px-1 rounded text-blue-100">legend_beta_invites</code> 가 자동 발급됩니다.
       </p>
 
       <div className="mb-4 flex gap-2">

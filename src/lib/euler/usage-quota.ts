@@ -67,7 +67,7 @@ export async function checkFreeQuota(): Promise<QuotaCheck | null> {
 
   const since = todayStartIso();
   const { count, error } = await supabase
-    .from("euler_solve_logs")
+    .from("legend_solve_logs")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .gte("created_at", since);

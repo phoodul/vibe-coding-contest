@@ -32,7 +32,7 @@ export default function LegendBetaPage() {
         return;
       }
       const { data } = await supabase
-        .from("euler_beta_invites")
+        .from("legend_beta_invites")
         .select("status")
         .eq("user_id", user.id)
         .eq("status", "active")
@@ -57,7 +57,7 @@ export default function LegendBetaPage() {
     setErrorMsg(null);
 
     const supabase = createClient();
-    const { error } = await supabase.rpc("redeem_euler_beta", { p_code: code.trim() });
+    const { error } = await supabase.rpc("redeem_legend_beta", { p_code: code.trim() });
 
     if (error) {
       setStage("error");
@@ -70,7 +70,7 @@ export default function LegendBetaPage() {
         setErrorMsg("로그인이 필요해요.");
       } else {
         setErrorMsg("처리 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.");
-        console.error("[redeem_euler_beta] unhandled error:", error);
+        console.error("[redeem_legend_beta] unhandled error:", error);
       }
       return;
     }

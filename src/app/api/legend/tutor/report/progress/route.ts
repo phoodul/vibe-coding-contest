@@ -33,7 +33,7 @@ export async function GET(req: Request) {
 
     // 1) 일자별 풀이 수 + 정답률 + Phase G-03 chain 종료 분포
     const { data: logs } = await supabase
-      .from("euler_solve_logs")
+      .from("legend_solve_logs")
       .select("created_at, is_correct, area, tools_used, chain_termination, chain_depth")
       .eq("user_id", user.id)
       .gte("created_at", sinceIso)
@@ -101,14 +101,14 @@ export async function GET(req: Request) {
 
     // 리포트 게이트 — 사용자 전체 누적 (window 무관) 첫 풀이 시점 + 총 풀이 수
     const { data: firstSolve } = await supabase
-      .from("euler_solve_logs")
+      .from("legend_solve_logs")
       .select("created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle();
     const { count: totalEverCount } = await supabase
-      .from("euler_solve_logs")
+      .from("legend_solve_logs")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id);
 

@@ -1,7 +1,7 @@
 /**
  * Phase G-04 G04-9: 자체 학습 trigger mining.
  *
- * 운영 중 euler_solve_logs 에서 발동된 trigger 패턴을 자동 발굴해
+ * 운영 중 legend_solve_logs 에서 발동된 trigger 패턴을 자동 발굴해
  * candidate_triggers 큐에 적재한다. occurrence_count 임계값 도달 시
  * status='pending_review' 로 승격되어 admin 검수 큐에 노출.
  *
@@ -178,7 +178,7 @@ export async function runTriggerMiner(): Promise<MinerResult> {
   // 최근 7일 chain_used_tools 비어있지 않은 logs
   const sinceIso = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
   const { data: logs, error } = await client
-    .from("euler_solve_logs")
+    .from("legend_solve_logs")
     .select("id, problem_text, chain_used_tools")
     .gte("created_at", sinceIso)
     .not("chain_used_tools", "is", null)

@@ -12,7 +12,7 @@ import { createClient as createServer } from "@supabase/supabase-js";
  *   1) profiles.graduated_at + 1 year < now 사용자 추출
  *   2) auth.users 의 email 을 SHA-256 hash 로 교체 (재로그인 불가)
  *   3) profiles 의 display_name 을 'anon-<hash6>' 로 치환
- *   4) euler_solve_logs 등 통계는 그대로 보존 (익명 분석용)
+ *   4) legend_solve_logs 등 통계는 그대로 보존 (익명 분석용)
  *
  * 주의: service_role 키 필요. 없으면 함수가 noop.
  */

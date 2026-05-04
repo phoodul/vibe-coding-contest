@@ -1,5 +1,5 @@
 /**
- * 풀이 1건이 끝난 시점에 euler_solve_logs 에 비동기 insert.
+ * 풀이 1건이 끝난 시점에 legend_solve_logs 에 비동기 insert.
  *
  * 호출 위치:
  *   - orchestrator route (선택) — 첫 user 메시지 + Manager/Reasoner/Critic 결과 종합 후
@@ -98,7 +98,7 @@ export async function logSolve(input: SolveLogInput): Promise<{ ok: boolean; id?
     const layerNum = normalizeLayer(input.stuck_layer ?? null);
 
     const { data, error } = await supabase
-      .from("euler_solve_logs")
+      .from("legend_solve_logs")
       .insert({
         user_id: user.id,
         problem_text: input.problem_text,

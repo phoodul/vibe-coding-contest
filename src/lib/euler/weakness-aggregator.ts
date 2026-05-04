@@ -1,5 +1,5 @@
 /**
- * 약점 분석 — euler_solve_logs + user_skill_stats + user_layer_stats 를 조합하여
+ * 약점 분석 — legend_solve_logs + user_skill_stats + user_layer_stats 를 조합하여
  * 7종 진단 카테고리별 점수 산출.
  *
  * project-decisions.md: 단순 정답률이 아닌 "어디서·왜 막히는가" 진단.
@@ -96,7 +96,7 @@ export async function aggregateWeakness(opts?: {
       )
       .eq("user_id", user.id),
     supabase
-      .from("euler_solve_logs")
+      .from("legend_solve_logs")
       .select("area, is_correct, stuck_layer, stuck_reason, chain_termination")
       .eq("user_id", user.id)
       .gte("created_at", sinceIso),

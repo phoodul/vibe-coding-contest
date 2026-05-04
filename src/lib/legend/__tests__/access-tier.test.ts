@@ -30,7 +30,7 @@ function makeQueryChain(table: string) {
     return {
       eq: eqRet,
       maybeSingle: async () => {
-        if (table === 'euler_beta_invites') {
+        if (table === 'legend_beta_invites') {
           return { data: state.inviteRow, error: null };
         }
         return { data: null, error: null };
@@ -70,7 +70,7 @@ describe('getUserAccessTier', () => {
     state.inviteRow = { user_id: USER_ID, status: 'active', expires_at: future };
     const tier = await getUserAccessTier(USER_ID);
     expect(tier).toBe('beta');
-    expect(state.fromCalls).toEqual(['euler_beta_invites']);
+    expect(state.fromCalls).toEqual(['legend_beta_invites']);
   });
 
   it('invites active + expires_at 과거 → trial (만료 자동 강등)', async () => {
@@ -90,7 +90,7 @@ describe('getUserAccessTier', () => {
     state.inviteRow = null;
     const tier = await getUserAccessTier(USER_ID);
     expect(tier).toBe('trial');
-    expect(state.fromCalls).toEqual(['euler_beta_invites']);
+    expect(state.fromCalls).toEqual(['legend_beta_invites']);
   });
 
   it('빈 userId → trial (defensive, 즉시 반환)', async () => {

@@ -52,7 +52,7 @@ export async function GET() {
       );
 
     const { data: solveData } = await supabase
-      .from("euler_solve_logs")
+      .from("legend_solve_logs")
       .select("user_id, is_correct");
 
     const map = new Map<string, PerStudent>();

@@ -26,7 +26,7 @@ export default function LegendCanvasRedirect() {
         return;
       }
       const { data } = await supabase
-        .from("euler_beta_invites")
+        .from("legend_beta_invites")
         .select("status")
         .eq("user_id", user.id)
         .eq("status", "active")

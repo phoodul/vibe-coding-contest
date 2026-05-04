@@ -1,20 +1,12 @@
 /**
- * Phase G-06 G06-32 (Δ9) — Trial / Beta Access Tier 판정.
- *
- * 베이스 문서:
- *   docs/project-decisions.md Δ9 — Production 권한 게이트
- *   docs/task-g06.md M11 — Trial/Beta Access Tier
+ * Trial / Beta Access Tier 판정.
  *
  * 판정 우선순위:
- *   0. 관리자 이메일 (LEGEND_ADMIN_EMAILS env)     → 'beta' (자동, 신청 절차 무시)
- *   1. beta_applications.status === 'approved'    → 'beta'
- *   2. euler_beta_invites.redeemed_by 매칭 (기존)  → 'beta'
- *   3. 위 모두 미해당                              → 'trial' (체험판 — 라마누잔 일 3회)
+ *   0. 관리자 이메일 (LEGEND_ADMIN_EMAILS env)             → 'beta' (자동)
+ *   1. legend_beta_invites status='active' + 미만료(30일)   → 'beta'
+ *   2. 위 모두 미해당                                       → 'trial' (라마누잔 일 3회)
  *
- * 영향 격리: 본 파일은 Server-only (createClient 의존). API 라우트 / Server Component 에서만 호출.
- *
- * 회귀 안전:
- *   - 기존 베타 사용자 60명 (`euler_beta_invites.redeemed_by`) 모두 자동 'beta' 판정 → 회귀 0.
+ * 본 파일은 Server-only (createClient 의존). API 라우트 / Server Component 에서만 호출.
  */
 import { createClient } from '@/lib/supabase/server';
 
@@ -39,7 +31,7 @@ export function isAdminEmail(email?: string | null): boolean {
  *
  * 우선순위:
  *   0. 관리자 이메일 → 즉시 'beta' (신청 절차 무시)
- *   1. euler_beta_invites status='active' AND (expires_at IS NULL OR expires_at > now())
+ *   1. legend_beta_invites status='active' AND (expires_at IS NULL OR expires_at > now())
  *      → 승인 후 30일 미만 → 'beta'
  *      (기존 EULER2026 흐름 + 신청·승인 흐름 모두 invites row 자동 생성하므로 단일 경로 검사로 충분)
  *   2. 위 모두 미해당 → 'trial' (체험판 또는 만료된 베타)
@@ -55,9 +47,9 @@ export async function getUserAccessTier(userId: string): Promise<AccessTier> {
   const { data: { user } } = await supabase.auth.getUser();
   if (isAdminEmail(user?.email)) return 'beta';
 
-  // 1. euler_beta_invites — status active + 만료되지 않음
+  // 1. legend_beta_invites — status active + 만료되지 않음
   const { data: invite } = await supabase
-    .from('euler_beta_invites')
+    .from('legend_beta_invites')
     .select('user_id, status, expires_at')
     .eq('user_id', userId)
     .eq('status', 'active')
@@ -88,7 +80,7 @@ export async function getBetaInviteMeta(userId: string): Promise<BetaInviteMeta 
   try {
     const supabase = await createClient();
     const { data } = await supabase
-      .from('euler_beta_invites')
+      .from('legend_beta_invites')
       .select('status, expires_at')
       .eq('user_id', userId)
       .maybeSingle();

@@ -13,7 +13,7 @@
  *
  * G06-21 의 단순 re-export (`/euler-tutor`) 폐지. 권한 게이트가 본격 진입.
  *
- * 회귀 안전: 기존 베타 사용자 60명 (`euler_beta_invites.redeemed_by`) 모두 자동 'beta' 판정.
+ * 회귀 안전: 기존 베타 사용자 60명 (`legend_beta_invites.redeemed_by`) 모두 자동 'beta' 판정.
  */
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';

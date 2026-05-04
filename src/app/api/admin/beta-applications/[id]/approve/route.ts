@@ -2,7 +2,7 @@
  * Phase G-06 G06-27 — POST /api/admin/beta-applications/[id]/approve
  *
  * 관리자 승인/거부. SECURITY DEFINER RPC `review_beta_application` 호출.
- * approve 시 `euler_beta_invites` 자동 발급 (RPC 내부에서 50명 cap 검사 + insert).
+ * approve 시 `legend_beta_invites` 자동 발급 (RPC 내부에서 50명 cap 검사 + insert).
  *
  * Body: { action: 'approve' | 'reject', comment?: string }
  * 응답: { id, status, invite_code? }
