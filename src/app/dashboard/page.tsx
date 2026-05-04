@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -9,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { GlassCard } from "@/components/shared/glass-card";
 import { CrisisButton } from "@/components/shared/crisis-button";
 import { SUBJECTS } from "@/lib/ai/tutor-prompt";
-import { isAdminEmail } from "@/lib/legend/access-tier";
+import { UserMenu } from "@/components/profile/UserMenu";
 
 interface Profile {
   display_name: string | null;
@@ -71,7 +70,6 @@ export default function DashboardPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"student" | "teacher">("student");
-  const router = useRouter();
 
   useEffect(() => {
     async function load() {
@@ -96,9 +94,7 @@ export default function DashboardPage() {
       setLoading(false);
     }
     load();
-  }, [router]);
-
-  const isAdmin = isAdminEmail(userEmail);
+  }, []);
 
   if (loading) {
     return (
@@ -119,43 +115,30 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-6"
+          className="mb-6 flex items-start justify-between gap-4"
         >
-          <h1 className="text-3xl font-bold mb-2">
-            {isLoggedIn
-              ? `안녕하세요, ${profile?.display_name || "사용자"}님`
-              : "EasyEdu AI"}{" "}
-            <motion.span
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-              className="inline-block"
-            >
-              👋
-            </motion.span>
-          </h1>
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-3xl font-bold mb-2">
+              {isLoggedIn
+                ? `안녕하세요, ${profile?.display_name || "사용자"}님`
+                : "EasyEdu AI"}{" "}
+              <motion.span
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                className="inline-block"
+              >
+                👋
+              </motion.span>
+            </h1>
             <p className="text-muted">
               {isLoggedIn
                 ? `${activeTab === "teacher" ? "교사" : "학생"} 대시보드`
                 : "로그인 없이 체험할 수 있습니다"}
             </p>
-            {isLoggedIn && (
-              <Link
-                href="/account"
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
-              >
-                ⚙️ 계정 설정
-              </Link>
-            )}
-            {isAdmin && (
-              <Link
-                href="/admin/beta-applications"
-                className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-200 hover:bg-amber-400/20 transition-colors"
-              >
-                🔐 관리자 페이지
-              </Link>
-            )}
+          </div>
+          <div className="shrink-0 pt-1">
+            <UserMenu email={userEmail} displayName={profile?.display_name ?? null} />
           </div>
         </motion.div>
 
@@ -254,33 +237,22 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-10 flex justify-end gap-4"
-        >
-          {isLoggedIn ? (
-            <button
-              onClick={async () => {
-                const supabase = createClient();
-                await supabase.auth.signOut();
-                router.push("/");
-              }}
-              className="text-sm text-muted hover:text-foreground transition-colors"
-            >
-              로그아웃
-            </button>
-          ) : (
+        {/* Footer — 비-로그인일 때만 로그인 CTA */}
+        {!isLoggedIn && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mt-10 flex justify-end gap-4"
+          >
             <Link
               href="/login"
               className="text-sm text-primary hover:text-primary/80 transition-colors"
             >
               로그인하여 교사 기능 이용하기 &rarr;
             </Link>
-          )}
-        </motion.div>
+          </motion.div>
+        )}
       </div>
     </div>
   );

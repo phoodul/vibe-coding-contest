@@ -15,6 +15,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import { IdentityManager } from '@/components/account/IdentityManager';
+import { PasswordChange } from '@/components/account/PasswordChange';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,6 +52,11 @@ export default async function AccountPage() {
         </p>
 
         <IdentityManager />
+
+        <section className="mt-10">
+          <h2 className="text-sm font-semibold text-white/80 mb-3">비밀번호 변경</h2>
+          <PasswordChange />
+        </section>
 
         <div className="mt-10 rounded-xl border border-amber-400/20 bg-amber-400/5 p-4">
           <h3 className="text-sm font-semibold text-amber-200 mb-2">
