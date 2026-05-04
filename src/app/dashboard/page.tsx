@@ -140,6 +140,14 @@ export default function DashboardPage() {
                 ? `${activeTab === "teacher" ? "교사" : "학생"} 대시보드`
                 : "로그인 없이 체험할 수 있습니다"}
             </p>
+            {isLoggedIn && (
+              <Link
+                href="/account"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+              >
+                ⚙️ 계정 설정
+              </Link>
+            )}
             {isAdmin && (
               <Link
                 href="/admin/beta-applications"
