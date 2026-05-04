@@ -114,12 +114,19 @@
 
 **비전 격차**: 50+ 교과로 확장 (영문법은 헤밍웨이, 수학은 Legend 분리). 같은 교과서 소스가 마인드맵 + 소크라테스 두 기능 동시 구동.
 
+**Phase 1 실행 결정 (16차 세션 끝, 사용자 직접)**:
+- 검인정 교과서 출판사 **계약 미보유** → **Claude 자체 제작 교과서**로 한 과목씩 점진 추가
+- 헤밍웨이 영문법 v2 (Claude 자체 200p, 14단원 75레슨 MDX) 패턴을 소크라테스 전 교과로 확장
+- 출판사 협업은 자체 콘텐츠 검증 후 향후 GTM (Phase 2+)
+- 마인드맵에서 수학 제외 — Legend 가 자체 시각화 보유, 마인드맵 = 소크라테스 콘텐츠와 1:1
+
 **17차 세션 작업**:
-1. 전 교과 매트릭스 작성 — 중1~고3 + 수능. 라이선스 vs Claude 자체 vs 보류 분류
-2. `docs/architecture-platform.md` 갱신 — 콘텐츠 구조·SubjectKey 확장·textbooks 디렉터리 표준화
-3. `docs/curriculum-content-spec.md` 신설 — chapter 모델·진도 DB·마인드맵 트리 명세
-4. `docs/implementation_plan_phase1.md` 작성 — Phase 1 (PoC 1~2 과목 추가) task 분해
-5. 출판사 협업 GTM 자료 — 어떤 출판사·어느 단계 접촉
+1. 전 교과 매트릭스 — 중1~고3 + 수능 (수학·영문법 제외) 우선순위 매기기. 사용자 입력 가능 항목.
+2. `docs/architecture-platform.md` 갱신 — SubjectKey 확장·textbooks 디렉터리 표준화·자체 제작 워크플로우
+3. `docs/curriculum-content-spec.md` 신설 — chapter 모델·진도 DB·마인드맵 트리 명세 (헤밍웨이 v2 패턴 재사용)
+4. `docs/implementation_plan_phase1.md` 작성 — Phase 1 (자체 제작 PoC 1~2 과목) task 분해
+5. (사용자 결정) 첫 자체 제작 과목 = ?  
+   기존 3 과목(생활과 윤리·언어와 매체·생명과학) chapter 보강 vs 신규 과목 추가
 
 ### Phase D — Euler API/DB 정리 (사용자 결정 대기)
 - `/api/euler-tutor/**` 11 라우트: 제거 vs `/api/legend` alias
