@@ -59,6 +59,14 @@
 
 ## 17차 세션 진행 중 (2026-05-05~)
 
+### Night mode 자율 작업 — commit 3건
+
+| # | Hash | 영역 | 핵심 |
+|---|---|---|---|
+| 1 | `dafee1d` | feat(auth) | admin 판정 다중 이메일 (Google + Kakao 양쪽 통과) |
+| 2 | `9b32ec9` | feat(account) | OAuth provider manual linking UI (`/account` + IdentityManager) |
+| 3 | (다음) | docs(curriculum) | Phase 1 자체 제작 콘텐츠 spec + 매트릭스 + plan |
+
 ### A1 — Admin email 다중화 (OAuth provider 충돌 fix) ✅
 
 **증상**: 사용자 본인이 Google 로그인 시 admin 통과, Kakao 로그인 시 admin 거부.
@@ -86,7 +94,42 @@
 - `LEGEND_ADMIN_EMAILS` Vercel env 는 default 만으로 충분 (본인 두 이메일 hardcode). 추가 admin 필요 시만 env 갱신.
 - production deploy 후 Kakao 로그인 본인 검증.
 
-### A2 — production 진단 결과 (16차 끝 → 17차 시작 사이 발견)
+### A2 — 학생용 manual linking UI ✅ (commit `9b32ec9`)
+
+**문제**: Admin email fix 와 같은 OAuth 분기 문제가 학생에게도 발생. 같은 학생이 Google
+로 가입 → Kakao 로 다음 로그인 시 다른 user_id 로 인식, 학습 진도 0 표시.
+
+**Fix**:
+- `src/app/account/page.tsx` 신설 (Server, auth guard).
+- `src/components/account/IdentityManager.tsx` (Client) — `supabase.auth.linkIdentity` /
+  `unlinkIdentity` / `getUserIdentities`. 마지막 1개 unlink 차단 (영구 잠금 방지).
+- `/dashboard` 헤더에 "⚙️ 계정 설정" 링크 (로그인 사용자에 노출).
+- `manual_linking_disabled` 에러 시 운영자 안내 메시지.
+
+**운영 prereq**: Supabase Dashboard → Authentication → Settings → "Manual linking" 활성화
+필요. **(사용자 액션)**
+
+### A3 — Phase 1 자체 제작 콘텐츠 spec docs ✅
+
+D4 비전 정정 (소크라테스 튜터 = 출판사·자체 제작, 수학 제외 전 교과) 후속 docs 4종:
+
+| 문서 | 역할 | 줄 |
+|---|---|---|
+| `docs/curriculum-matrix.md` (신설) | 전 교과 매트릭스 (수학·영문법 제외 50+) + 3 후보 전략 | 130 |
+| `docs/curriculum-content-spec.md` (신설) | chapter 4계층 모델·진도 DB·헤밍웨이 v2 vs TS 패턴·SubjectKey 확장 절차 | 200 |
+| `docs/implementation_plan_phase1.md` (신설) | Phase 1 (2주) 12 task 분해 + Phase 0 와 결합점 | 110 |
+| `docs/architecture-platform.md` (갱신) | 부록 D — 출판사 비전을 Phase 4+ 후순위로 이동, Phase 1 자체 제작 비전 추가 | +50 |
+
+**사용자 결정 대기 (D-1~D-5)**:
+1. 첫 자체 제작 과목 (3 후보 전략 중 1)
+2. MDX vs TS 통일 정책
+3. chapter 분량 표준 (800~1500자 vs 1500~3000자)
+4. 첫 과목 chapter 수 목표 (PoC 3 vs 전체)
+5. `textbook_progress` 마이그레이션 시점
+
+**기본값** (사용자 결정 무시 시): 통합사회 / 깊이 자유 / 1500~2500자 / PoC 3 chapter / 동시 진행.
+
+### A4 — production 진단 결과 (16차 끝 → 17차 시작 사이 발견)
 
 검증에서 발견된 **결함 1건 (사용자 결정으로 미복원)**:
 - `beta_applications` 1건 approved (`youngout320@gmail.com`, 2026-05-01) 인데 D2 ALTER+TRUNCATE 사고로 `legend_beta_invites` row 누락 → 베타 권한 발휘 불가.

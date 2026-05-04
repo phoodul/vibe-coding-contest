@@ -599,6 +599,58 @@ Trigger 일반화 ─┘                  │
 
 (research_raw.md §4-4 Vercel 가격 + 자체 추정)
 
+## 부록 D. Phase 1 자체 제작 비전 정정 (2026-05-04 D4, 17차 세션)
+
+본 문서 §2 의 출판사 콘텐츠 플랫폼 비전은 **Phase 4+ 로 후순위 이동**. 2026-05-04 사용자
+직접 결정으로 Phase 1 은 출판사 라이선스 없이 **Claude 자체 제작 교과서**로 시작한다.
+
+### 변경 이유
+- 검인정 교과서 출판사 계약 미보유 (실제 협상 진행 안 됨).
+- 헤밍웨이 영문법 v2 (자체 200p 텍스트북, 14단원 75 레슨 MDX) 패턴이 검증 가능.
+- 자체 제작 quality 검증 후 출판사 협상 시 더 좋은 조건 (입증된 사용자 수치 + 콘텐츠
+  제작 역량) 으로 진입 가능.
+
+### 도구 매핑 정정 (D4)
+
+| 도구 | 콘텐츠 출처 | 교과 |
+|---|---|---|
+| 헤밍웨이 영문법 (`/grammar`) | Claude 자체 200p 텍스트북 | 영문법만 |
+| Legend Tutor (`/legend`) | 수학 시드 + 수능 정답 DB | 수학만 — "소크라테스의 수학 특별판" |
+| 소크라테스 튜터 (`/tutor`) | 출판사 + Claude 자체 교과서 | **수학 제외 전 교과** |
+
+마인드맵 (`/mind-map`) 도 수학 제외 — Legend 가 자체 시각화 보유, 소크라테스 콘텐츠와 1:1.
+
+### 자체 제작 워크플로우 (요약)
+
+상세는 `docs/curriculum-content-spec.md` 와 `docs/implementation_plan_phase1.md` 참조.
+
+```
+Subject (SubjectKey)
+  └─ Chapter (대단원)
+      └─ Section (중단원)
+          └─ Content (소단원, 시험 대비 상세)
+
+별도 트리:
+  └─ Structured (마인드맵 암기 노트)
+```
+
+신규 과목 추가 시 4 위치 동기화:
+1. `src/lib/mind-map/build-tree.ts` — `SubjectKey` + `SUBJECT_DATA`
+2. `src/app/mind-map/page.tsx` — `SUBJECTS` 배열
+3. `src/lib/ai/tutor-prompt.ts` — `SUBJECTS` (튜터 진입 UI)
+4. `src/lib/data/textbooks/<subject>-{ch1..chN,index,structured}.ts`
+
+### Phase 1 진도 추적 DB
+
+`textbook_progress` 테이블 신설 — `subject_key + chapter_id` 텍스트 식별자 사용 (출판사
+FK 없이). 나중에 `student_textbook_progress` (출판사 비전 §2-1) 도입 시 호환.
+
+### 우선순위 매트릭스
+
+전 교과 매트릭스 (수학·영문법 제외 50+ 과목) + 3 후보 전략 (수능 영향·기존 보강·수능
+직접) 은 `docs/curriculum-matrix.md` 단일 source. 사용자 결정 사항 (첫 과목·MDX vs TS·
+chapter 분량) placeholder.
+
 ## 부록 C. 보안 체크리스트
 
 - [ ] 모든 PII 컬럼 암호화 (Supabase column-level encryption)
