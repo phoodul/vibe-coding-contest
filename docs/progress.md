@@ -94,24 +94,30 @@
 | 5 | `ca67d35` | feat(db) | euler_* → legend_* rename + 데이터 폐기 |
 | 6 | (다음) | feat(api) | subject_hint system prompt 주입 |
 
-### 다음 세션 (17차) 시작점 — D4 출판사 콘텐츠 비전 PRD
-사용자가 D2 결정 응답 시 밝힌 큰 비전:
-> 학년·과목 selector 의 진짜 목적은 **출판사 협업** — 그 학년 콘텐츠를 AI가 기본 개념까지 설명하고, 문제집의 문제를 하나씩 순차적으로 올려주며 학생과 함께 공부하는 진도 학습 시스템.
+### 다음 세션 (17차) 시작점 — D4 출판사 비전 = 소크라테스 튜터
 
-이건 헤밍웨이 영문법 v2 (`docs/grammar-curriculum.md` 14단원 75레슨 + `content/grammar/*.md` MDX) **수학판**.
+⚠️ **비전 정정 (2026-05-04 사용자 직접)**: D2 결정 시점에 내가 출판사 비전을 Legend Tutor 와 결합한 것은 오해. 정확한 매핑:
 
-**필요한 신규 자산** (다음 세션 설계):
-- `content/math/{학년}/{단원}/{차시}.md` — 출판사 콘텐츠 (MDX, 개념·예제·문제)
-- `legend_subject_progress` DB 테이블 (학생별 진도 추적)
-- Legend 메인 3번째 탭 "📚 진도 학습" (현재 'AI 코칭 / 수능 기출' + 신규)
-- 헤밍웨이 v2 와의 추상화 공유 — `curriculum-renderer` 같은 공통 컴포넌트
-- 출판사 협업 — 콘텐츠 라이선싱 (사업 단계, B2B2C)
+| 도구 | 콘텐츠 출처 | 교과 |
+|---|---|---|
+| 헤밍웨이 영문법 | Claude 자체 200p 텍스트북 (이미 진행 중) | 영문법만 |
+| Legend Tutor | 수학 시드(9 카테고리) + 수능 기출 정답 DB | 수학만 |
+| **소크라테스 튜터** | **출판사 라이선스 + Claude 자체 교과서** | **모든 중고등 + 수능 교과목** ← 진짜 비전 |
 
-**다음 세션 작업**:
-1. `docs/architecture-platform.md` 갱신 — 출판사 콘텐츠 구조 + 진도 DB schema
-2. `docs/curriculum-content-spec.md` 신설 — MDX 형식·메타데이터·진도 추적 명세
-3. `docs/implementation_plan_phase1.md` 작성 — Phase 1 (출판사 PoC) 의 task 분해
-4. 헤밍웨이 v2 와 공통 추상화 검토 (curriculum-runtime 통합)
+**현재 소크라테스 = 3 과목**:
+- 생활과 윤리 (`src/lib/data/textbooks/ethics-*.ts` 6 chapter)
+- 언어와 매체 (`korean-*.ts` 5 chapter)
+- 생명과학 (`biology-*.ts` 5 chapter)
+- 마인드맵도 같은 3 과목 (`SubjectKey` 기반)
+
+**비전 격차**: 50+ 교과로 확장 (영문법은 헤밍웨이, 수학은 Legend 분리). 같은 교과서 소스가 마인드맵 + 소크라테스 두 기능 동시 구동.
+
+**17차 세션 작업**:
+1. 전 교과 매트릭스 작성 — 중1~고3 + 수능. 라이선스 vs Claude 자체 vs 보류 분류
+2. `docs/architecture-platform.md` 갱신 — 콘텐츠 구조·SubjectKey 확장·textbooks 디렉터리 표준화
+3. `docs/curriculum-content-spec.md` 신설 — chapter 모델·진도 DB·마인드맵 트리 명세
+4. `docs/implementation_plan_phase1.md` 작성 — Phase 1 (PoC 1~2 과목 추가) task 분해
+5. 출판사 협업 GTM 자료 — 어떤 출판사·어느 단계 접촉
 
 ### Phase D — Euler API/DB 정리 (사용자 결정 대기)
 - `/api/euler-tutor/**` 11 라우트: 제거 vs `/api/legend` alias
