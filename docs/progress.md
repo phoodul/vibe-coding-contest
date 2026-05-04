@@ -74,11 +74,15 @@
 - 랜딩의 베타 후기 카드 제거
 - Legend layout 헤더에 **베타 신청자 한정** "📝 후기 쓰기 / ⭐ 후기 보기" 버튼 추가 (`getUserAccessTier === 'beta'`)
 
-### Phase C — 학년/과목 + 튜터 선택 UI + 수능 기출 연습 탭 (진행 예정)
-- 9개 학년/과목 chip selector (중1·중2·중3·공통수학·수I·수II·확률통계·미적분·기하벡터)
-- 5거장 튜터 직접 선택 UI (사용자 결정: 라우팅 가중치 X, 명시적 선택)
-- Legend 메인 안 탭으로 수능 기출 연습 통합 (별도 라우트 X)
-- math_tools 카테고리 컬럼 마이그레이션 (필요 시)
+### Phase C — 학년/과목 + 튜터 선택 UI + 수능 기출 연습 탭 ✅
+- C1: BetaChat / TrialChat 에 학년/과목 chip selector (`MATH_AREAS` 9 카테고리 + 자유질문) + localStorage persistence + useChat body 의 `subject_hint` 추가 (commit `5329b41`)
+- C2: BetaChat / TrialChat 에 'AI 코칭 / 수능 기출' 탭 전환 + `PastExamPanel` 신설 (연도·과목·번호 필터, 2017~2026 한국 수능 정답 DB 활용) + 문제 클릭 시 채팅 prefill
+- C3: 시드 9 파일 (`data/math-tools-seed/`)이 사용자 요구 9 카테고리와 1:1 매핑. `src/lib/data/math-problems.ts` 정답 DB 별도 → 추가 마이그레이션 불요. 향후 백엔드 `subject_hint` 통합 시 `math_tools.area` 컬럼 검토.
+
+### 사용자 결정 대기 — Phase D
+- D1: `/api/euler-tutor/**` 11 라우트 — 제거 vs `/api/legend` alias?
+- D2: `euler_solve_logs` · `euler_beta_invites` 테이블 — drop vs 보존?
+- D3: 5거장 튜터 selector UI — Legend 메인 어디에 배치할지 (Beta 전용 vs Trial 도)? 현재 Beta 만 자유 선택, Trial은 라마누잔 고정. Trial에서도 학년/과목 + 수능 기출 탭은 노출.
 
 ### Phase D — Euler API/DB 정리 (사용자 결정 대기)
 - `/api/euler-tutor/**` 11 라우트: 제거 vs `/api/legend` alias

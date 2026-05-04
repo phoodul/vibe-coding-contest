@@ -22,6 +22,9 @@ import { PORTRAITS } from '@/lib/legend/portraits';
 import type { TutorName } from '@/lib/legend/types';
 import { StreamingMarkdown } from './StreamingMarkdown';
 import { MATH_AREAS } from '@/lib/ai/euler-prompt';
+import { PastExamPanel } from './PastExamPanel';
+import problemTexts from '@/lib/data/problem-texts.json';
+import type { MathProblem } from '@/lib/data/math-problems';
 
 interface User {
   id: string;
@@ -37,6 +40,7 @@ export function TrialChat({ user: _user }: { user: User }) {
     apply_url?: string;
   } | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string>('free');
+  const [activeView, setActiveView] = useState<'chat' | 'past-exam'>('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,7 +58,7 @@ export function TrialChat({ user: _user }: { user: User }) {
     }
   };
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, status } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
       api: '/api/euler-tutor',
       // selectedSubject 는 사용자 hint — 'free' 면 백엔드 자동분류.
@@ -88,6 +92,24 @@ export function TrialChat({ user: _user }: { user: User }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
+
+  // 수능 기출 문제 클릭 → 채팅 탭으로 전환 + prefill (trial quota 적용됨)
+  const handleSelectExamProblem = (problem: MathProblem) => {
+    if (trialQuotaError) return;
+    setActiveView('chat');
+    setTimeout(() => {
+      const textKey = `${problem.year}_${problem.type}_${problem.number}`;
+      const raw = (problemTexts as Record<string, string>)[textKey];
+      const formatted = raw
+        ?.replace(/\n(\(1\))/, '\n\n$1')
+        .replace(/\n(\(\d\))/g, '  \n$1');
+      const header = `[${problem.year}학년도 수능 ${problem.type} ${problem.number}번 — ${problem.isMultipleChoice ? '객관식' : '주관식'}]`;
+      const content = formatted
+        ? `${header}\n\n${formatted}\n\n이 문제를 같이 풀어보고 싶어요!`
+        : `${header}\n\n이 문제를 함께 풀어보고 싶어요. 문제를 보여주시면 같이 풀어볼게요!`;
+      append({ role: 'user', content });
+    }, 200);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 text-white flex flex-col">
@@ -199,6 +221,40 @@ export function TrialChat({ user: _user }: { user: User }) {
         </div>
       </section>
 
+      {/* AI 코칭 / 수능 기출 탭 */}
+      <section className="max-w-4xl mx-auto w-full px-4 pt-1 pb-2">
+        <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+          <button
+            type="button"
+            onClick={() => setActiveView('chat')}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
+              activeView === 'chat'
+                ? 'bg-violet-400/20 text-violet-100 ring-1 ring-violet-300/40'
+                : 'text-white/60 hover:text-white'
+            }`}
+          >
+            🗨️ AI 코칭
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveView('past-exam')}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-colors ${
+              activeView === 'past-exam'
+                ? 'bg-violet-400/20 text-violet-100 ring-1 ring-violet-300/40'
+                : 'text-white/60 hover:text-white'
+            }`}
+          >
+            📜 수능 기출
+          </button>
+        </div>
+      </section>
+
+      {activeView === 'past-exam' ? (
+        <section className="max-w-4xl mx-auto w-full flex-1 px-4 pb-6">
+          <PastExamPanel onSelectProblem={handleSelectExamProblem} />
+        </section>
+      ) : (
+        <>
       {/* 메시지 영역 */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <div className="max-w-4xl mx-auto space-y-4">
@@ -358,6 +414,8 @@ export function TrialChat({ user: _user }: { user: User }) {
           </p>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
