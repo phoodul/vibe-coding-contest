@@ -57,6 +57,58 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 15차 세션 종료 (2026-05-04 night)
+
+세션 길이 약 24시간 (5/3 오후 → 5/4 새벽). night mode 자율 진행 적극 활용.
+
+### 누적 commit 14건 (993bc7a → 0d9ac6a)
+
+| # | Hash | 영역 | 핵심 |
+|---|---|---|---|
+| 1 | `38b874f` | infra | 미사용 firebase MCP 서버 제거 |
+| 2 | `7c603d2` | docs | claude.md 컨테스트 → 학생 AI 교육 SW 룰 전환 |
+| 3 | `c61851b` | domain | easyedu.ai 도입 + 레거시 host 301 redirect (초안) |
+| 4 | `e8c5913` | fix | ERR_TOO_MANY_REDIRECTS 긴급 해소 (www↔apex 충돌) |
+| 5 | `81f2af5` | domain | vercel.app → apex 301 안전 재추가 (Vercel apex primary 후) |
+| 6 | `06c49d8` | marketing | 베타 모집 + 홍보 워크플로우 + 채널 목록 (수만휘·오르비·맘카페) |
+| 7 | `8e5d70d` | feat | 베타 리뷰 단순화 (A-2) + 가격 v2.0 (₩29/49/99천) + monetization-operations |
+| 8 | `3473d39` | P0-02 | trigger accumulator observability — log 테이블 + admin 분포 시각화 |
+| 9 | `efef26c` | P0-03 | MathText display math 패턴 + 회귀 테스트 16건 |
+| 10 | `b30c164` | P0-04 | 6 튜터 페르소나 일관성 회귀 테스트 19건 |
+| 11 | `63a5c60` | P0-05/06 | subject_anchor schema + 영문법 30 도구 seed JSON |
+| 12 | `cf09b5c` | architecture | Legend Tutor = 수학 전용 확정 + P0-08 재정의 |
+| 13 | `0158ab4` | grammar | 헤밍웨이 영문법 = 학생 13번째 도구 (placeholder, v1) |
+| 14 | `0d9ac6a` | grammar v2 | 텍스트북 컨셉 — 14 단원 75 레슨 커리큘럼 + 샘플 1 레슨 |
+
+### 신규 vitest 35건 통과
+- P0-03 MathText 회귀 16건
+- P0-04 페르소나 일관성 19건
+
+### Production 라이브
+- 도메인: **https://easyedu.ai** (apex primary, www·vercel.app 자동 redirect)
+- DB: 마이그레이션 3개 적용 (`beta_reviews_simplify`, `trigger_accumulation_log`, `add_subject_anchor`)
+
+### 핵심 architecture 결정 (memory 동기화 완료)
+- **Legend Tutor = 수학 전용** (5거장 페르소나 오염 방지)
+- **헤밍웨이 영문법 = 학생 13번째 도구** (학생 12 → 13, 총 17 도구)
+- **헤밍웨이 v2 컨셉 = 텍스트북 학습** (영어 단어 18000 모델, LLM 호출 X)
+- **Phase 1 가격 = ₩29/49/99천 VAT 포함** (v1.1 의 ₩5/15/30만은 Phase 4+ 보류)
+- **결제 = 토스페이먼츠 단독** (부산 임대 → 사업자 주소 변경 → PG 가입 흐름)
+
+### 16차 세션 시작점
+
+**자율 진행 가능 (사용자 신호 1마디만)**:
+1. **헤밍웨이 Step 4** — 샘플 레슨 (`content/grammar/03-04-tense-perfect-vs-past.md`) quality "OK" 시 나머지 74 레슨 progressive 자율 작성 (10 레슨/commit, ~8 commit)
+2. **헤밍웨이 Step 3** — 진도 추적 DB (`grammar_progress`) + 레슨 뷰어 + 외우기 카드 + 5문제 테스트 UI
+
+**사용자 액션 필요**:
+- Step 2 샘플 레슨 quality 검토 (톤·분량·문제 난이도)
+- P0-13c 시연 영상 수능 킬러 문제 1개 선정
+- 부산 소상공인 임대 검색 (Phase 1 결제 도입 timing)
+- 헤밍웨이 portrait 이미지 (현재 ✒️ 이모지)
+
+---
+
 ## 14차 세션 종료 (2026-05-03)
 
 ### 완료된 task
