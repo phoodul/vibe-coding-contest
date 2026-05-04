@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { isAdminEmail } from "@/lib/legend/access-tier";
+import { isAdminEmail } from "@/lib/legend/admin-emails";
 
 type Candidate = {
   id: string;

@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
-import { isAdminEmail } from '@/lib/legend/access-tier';
+import { isAdminEmail } from '@/lib/legend/admin-emails';
 
 interface Props {
   email: string | null;
