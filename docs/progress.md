@@ -86,26 +86,40 @@
 
 **Legend Tutor**: 수학 전용 유지 (5거장 페르소나·라우팅·R1 카드 절대 다른 과목 노출 X).
 
-**헤밍웨이 영문법 코치** (학생 13번째 도구, `/grammar`): 사용자 5가지 결정 (2026-05-04):
-1. 이름 = 헤밍웨이 (단일 페르소나)
-2. URL = `/grammar` sub-path
-3. 페르소나 = 1명 (단일 AI)
-4. UI = Legend vibe 동일 (다크 글래스)
-5. 인증·결제·가드레일 = 공유 (계정 1개)
+**헤밍웨이 영문법** (학생 13번째 도구, `/grammar`): 사용자 5+5 가지 결정 (2026-05-04).
 
-**중요**: 별도 sub-app/도메인 X. **기존 16 도구 그리드의 17번째 자리** 에 학생 13번째 도구로 추가 (영어 카테고리 묶음). dashboard / landing / guide 3 파일 동기화 완료.
+**v1 컨셉 (2026-05-04 오전, 폐기)**: "학생 입력 → 오류 진단·교정" 코치. HEMINGWAY_PERSONA system prompt 작성 후 폐기.
 
-진행:
-- `src/app/dashboard/page.tsx` + `src/app/page.tsx` + `src/app/guide/page.tsx` 에 헤밍웨이 카드 추가 (✒️ icon).
-- `src/app/grammar/page.tsx` placeholder UI (6 anchor 카드 + 입력 textarea + "Phase 1 LLM 호출 통합 예정" 안내).
-- `src/lib/ai/grammar-prompt.ts` `HEMINGWAY_PERSONA` system prompt 정의 (짧고 명확 / 진단 → trigger 명제 → 정정 예시 → 왜 이렇게 쓰나 4단계).
+**⚠️ v2 컨셉 (2026-05-04 night, 사용자 직접 정정)**: **정해진 커리큘럼 기반 텍스트북 학습**. 영어 단어 학습 (18,000 단어 에베레스트) 모델과 동일.
+- 학습 흐름: 챕터 → 텍스트북 설명 스트리밍 → 대표 문장 1개 외우기 → 실전 문제 5개 → 다음 레슨
+- 헤밍웨이 = 강의 narrator + 외우기 코치 (오류 진단 X)
+- 5 추가 결정: 한국 영문법 표준 14 단원 75 레슨 / 한국 학년 / 레슨당 800~1500자 + 대표 문장 + 5문제 / 챕터 1개 quality 검토 후 자율 / MDX 정적 + DB 진도 추적
+
+진행 (Step 1·2 완료):
+- `src/app/dashboard/page.tsx` + `src/app/page.tsx` + `src/app/guide/page.tsx` 에 헤밍웨이 카드 추가 (✒️ icon, 영어 카테고리 묶음)
+- `src/app/grammar/page.tsx` v2 컨셉 메인 페이지 (14 단원 / 75 레슨 목차 카드 + Step 3 안내)
+- `docs/grammar-curriculum.md` 75 레슨 목차 + 단원별 슬러그 매핑 + P0-06 도구 매핑
+- `content/grammar/03-04-tense-perfect-vs-past.md` 샘플 1 레슨 (현재완료 vs 단순과거) — quality 검토용
+- `src/lib/ai/grammar-prompt.ts` v1 페르소나 폐기 삭제
 
 ### 다음 세션 (16차) 시작점
 
-**P0-07~09 미완료 — architecture 변경 반영 필요**:
-- **P0-07** trigger 임베딩 — OpenAI text-embedding-3-small 호출. 90 trigger × ko/en = 180 임베딩. 비용 발생 (예상 $0.01 미만). 사용자 사전 승인 후 자율 호출. 영문법 도구는 별도 제품에서 검색되므로 동일 임베딩 인프라 재사용 가능.
-- **P0-08 (재정의)** ~~Legend 영어 모드 분기~~ → **영문법 별도 제품 신설**. 사용자가 5가지 결정 (이름·URL·페르소나·UI·인증) 한 후 진행.
-- **P0-09** 5문제 수동 검증 — 영문법 별도 제품 출시 후 진행. 사람 검증 필수.
+**v2 헤밍웨이 텍스트북 학습 컨셉 진행 중**:
+- ✅ Step 1 — 75 레슨 커리큘럼 (`docs/grammar-curriculum.md`)
+- ✅ Step 2 — 샘플 1 레슨 (`content/grammar/03-04-tense-perfect-vs-past.md`) — **사용자 quality 검토 대기**
+- ⏳ Step 3 — 진도 추적 DB schema (`grammar_progress` 신설) + 레슨 뷰어 + 외우기 카드 + 5문제 테스트 UI
+- ⏳ Step 4 — Step 2 quality 승인 후 나머지 74 레슨 progressive commit (10 레슨/commit, ~ 8 commit)
+
+**P0-07~09 (영문법 PoC) 의미 변경**:
+- ~~P0-07 trigger 임베딩~~ → 텍스트북 학습 모델로 전환되어 임베딩 우선순위 ↓ (Phase 1 후순위)
+- ~~P0-08 LLM 통합~~ → MDX 정적 컨텐츠로 LLM 호출 X (비용 0)
+- ~~P0-09 5문제 KPI~~ → 텍스트북 75 레슨 사용자 학습 만족도로 전환
+
+**사용자 결정 대기**:
+1. **샘플 레슨 (3-4 tense-perfect-vs-past) quality 검토** — 톤·분량·실전문제 적절성. OK 신호 시 Step 4 자율 진행.
+2. P0-13c 시연 영상 수능 킬러 문제 1개 선정 (Legend Tutor 영상 — 헤밍웨이 컨텐츠 따로)
+3. 부산 소상공인 임대 검색 (Phase 1 결제 도입 timing)
+4. 헤밍웨이 portrait 이미지 (현재 ✒️ 이모지)
 
 **다음 세션 사용자 액션 (Phase 0 종료까지)**:
 1. P0-06 영문법 30 도구 JSON quality 검토 (필요 시 정정)
