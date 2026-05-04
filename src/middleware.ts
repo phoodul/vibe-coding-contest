@@ -2,14 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 /**
- * Phase G-06 — /euler → /legend 301 영구 redirect 매핑.
- *
- * 베이스: docs/architecture-g06-legend.md §8.1.
- * 정책: G06-25 에서 302 → 301 영구 전환 (G-06 production 배포 시점). SEO 가치 /legend 로 이전.
- * 제외: /euler-tutor (api 호환 보존, §8.2). 본 매핑에 포함되지 않으므로 그대로 유지.
+ * /euler* → /legend* 301 영구 redirect 매핑. SEO·외부 링크·즐겨찾기 보존.
+ * /api/euler-tutor/** 는 API 호환을 위해 유지 (Phase D 에서 정리).
  */
 const EULER_TO_LEGEND: Record<string, string> = {
   "/euler": "/legend",
+  "/euler-tutor": "/legend",
   "/euler/canvas": "/legend/canvas",
   "/euler/billing": "/legend/billing",
   "/euler/family": "/legend/family",

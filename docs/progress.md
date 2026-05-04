@@ -57,6 +57,33 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 16차 세션 진행 중 (2026-05-04~)
+
+사용자 요청: Legend Tutor를 전면 — Euler Tutor 제거 + 학년/과목 분리 + 수능 기출 연습 + 베타 후기를 Legend 안으로.
+
+8 task 분해 (`docs/task.md` 참조 — Phase A~D).
+
+### Phase A — Euler 제거 ✅
+- `/euler/*` 5개 + `/euler-tutor/*` 2개 라우트 삭제, 코드를 `/legend/*` 로 이전 (re-export → 진짜 구현)
+- `Handwrite*` 2 컴포넌트 → `components/legend/` 이동 (BetaChat 의존)
+- `lib/euler/*` 는 Legend 핵심 라이브러리 (embed, json, weakness-aggregator, retriever, sympy-client 등 50+ 의존) → 보존
+- middleware: `/euler*` + `/euler-tutor` → `/legend*` 301 redirect (SEO 보호)
+- landing/dashboard/guide 의 오일러 노출 제거 + Legend 카드로 통합
+
+### Phase B — 베타 후기 위치 이동 ✅
+- 랜딩의 베타 후기 카드 제거
+- Legend layout 헤더에 **베타 신청자 한정** "📝 후기 쓰기 / ⭐ 후기 보기" 버튼 추가 (`getUserAccessTier === 'beta'`)
+
+### Phase C — 학년/과목 + 튜터 선택 UI + 수능 기출 연습 탭 (진행 예정)
+- 9개 학년/과목 chip selector (중1·중2·중3·공통수학·수I·수II·확률통계·미적분·기하벡터)
+- 5거장 튜터 직접 선택 UI (사용자 결정: 라우팅 가중치 X, 명시적 선택)
+- Legend 메인 안 탭으로 수능 기출 연습 통합 (별도 라우트 X)
+- math_tools 카테고리 컬럼 마이그레이션 (필요 시)
+
+### Phase D — Euler API/DB 정리 (사용자 결정 대기)
+- `/api/euler-tutor/**` 11 라우트: 제거 vs `/api/legend` alias
+- `euler_solve_logs` · `euler_beta_invites` 테이블: drop vs 보존
+
 ## 15차 세션 종료 (2026-05-04 night)
 
 세션 길이 약 24시간 (5/3 오후 → 5/4 새벽). night mode 자율 진행 적극 활용.

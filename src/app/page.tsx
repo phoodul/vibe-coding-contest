@@ -277,7 +277,6 @@ function MiniDemoDraft() {
 
 const demoTypes: Record<string, string> = {
   "소크라테스 AI 튜터": "tutor",
-  "오일러 튜터": "euler",
   "마인드 맵": "mindmap",
   "영어 단어 학습": "vocab",
   "AI 영어 회화": "conversation",
@@ -303,22 +302,10 @@ const studentFeatures = [
     href: "/tutor",
   },
   {
-    title: "오일러 튜터",
-    description: "계산은 AI가 할게요. 수학 문제의 논리적 사고과정을 따뜻한 멘토와 함께 훈련합니다.",
-    icon: "euler",
-    href: "/euler-tutor",
-  },
-  {
     title: "Legend Tutor",
-    description: "라마누잔·가우스·폰 노이만·오일러·라이프니츠 — 5 명의 수학 거장 AI. 체험 무료, 베타 신청 시 거장 4명 + R1 리포트 + 추론 트리.",
+    description: "라마누잔·가우스·폰 노이만·오일러·라이프니츠 — 5 명의 수학 거장 AI. 학년·과목별 코칭과 수능 기출 연습.",
     icon: "🏛️",
     href: "/legend",
-  },
-  {
-    title: "베타 후기",
-    description: "5 명의 거장 튜터를 직접 사용한 베타 사용자들의 솔직한 별점·구매 의향·추천 튜터 후기 모음.",
-    icon: "⭐",
-    href: "/legend/reviews",
   },
   {
     title: "마인드 맵",

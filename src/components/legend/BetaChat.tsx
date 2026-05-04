@@ -25,7 +25,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import 'katex/dist/katex.min.css';
 import { PORTRAITS } from '@/lib/legend/portraits';
 import type { PerProblemReport, TutorName } from '@/lib/legend/types';
-import { InlineHandwritePanel } from '@/components/euler/InlineHandwritePanel';
+import { InlineHandwritePanel } from '@/components/legend/InlineHandwritePanel';
 import { SolutionSummaryButton } from './SolutionSummaryButton';
 import { PerProblemReportCard } from './PerProblemReportCard';
 import { StreamingMarkdown } from './StreamingMarkdown';
@@ -291,7 +291,7 @@ export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: Bet
               📝 후기
             </Link>
             <Link
-              href="/euler/report"
+              href="/legend/report"
               className="text-[11px] px-2.5 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors font-semibold"
             >
               📊 리포트
