@@ -79,10 +79,39 @@
 - C2: BetaChat / TrialChat 에 'AI 코칭 / 수능 기출' 탭 전환 + `PastExamPanel` 신설 (연도·과목·번호 필터, 2017~2026 한국 수능 정답 DB 활용) + 문제 클릭 시 채팅 prefill
 - C3: 시드 9 파일 (`data/math-tools-seed/`)이 사용자 요구 9 카테고리와 1:1 매핑. `src/lib/data/math-problems.ts` 정답 DB 별도 → 추가 마이그레이션 불요. 향후 백엔드 `subject_hint` 통합 시 `math_tools.area` 컬럼 검토.
 
-### 사용자 결정 대기 — Phase D
-- D1: `/api/euler-tutor/**` 11 라우트 — 제거 vs `/api/legend` alias?
-- D2: `euler_solve_logs` · `euler_beta_invites` 테이블 — drop vs 보존?
-- D3: 5거장 튜터 selector UI — Legend 메인 어디에 배치할지 (Beta 전용 vs Trial 도)? 현재 Beta 만 자유 선택, Trial은 라마누잔 고정. Trial에서도 학년/과목 + 수능 기출 탭은 노출.
+### Phase D — Euler 정리 + subject_hint 통합 ✅
+- D1: `/api/euler-tutor/*` 10 라우트 → `/api/legend/tutor/*` git mv (history 보존). 호출자 5곳 fetch URL 갱신. middleware 주석 갱신. (commit `eb555cc`)
+- D2: 사용자 결정 = drop A 옵션. 60명 추정 → 실제 2명 / 27 풀이 거의 본인+지인. ALTER TABLE RENAME + TRUNCATE 로 데이터 폐기 + 이름 정리 (drop+create는 누적 ALTER 재구축 비용 큼). `redeem_euler_beta` → `redeem_legend_beta` rename + 본문 갱신. `review_beta_application` 본문 갱신. 코드 13 파일 sed 일괄 치환. Supabase MCP 로 production 적용. (commit `ca67d35`)
+- D3: `subject_hint` 백엔드 통합 — `lib/legend/subject-labels.ts` 신설 (id → "중학교 1학년 수학" 매핑) + `route.ts` 가 body 받아 system prompt 에 주입. Manager(Haiku) 자동분류 보존하되 학생 선택 학년/과목 우선 안내.
+
+### 16차 세션 누적 — 6 commits
+| # | Hash | 영역 | 핵심 |
+|---|---|---|---|
+| 1 | `182a3cf` | refactor(legend) | Euler 라우트 제거 + 베타 후기를 Legend 안으로 |
+| 2 | `5329b41` | feat(legend) | 학년/과목 chip selector + subject_hint API hint |
+| 3 | `1df59ea` | feat(legend) | 수능 기출 연습 탭 통합 (PastExamPanel) |
+| 4 | `eb555cc` | refactor(api) | /api/euler-tutor → /api/legend/tutor 이전 |
+| 5 | `ca67d35` | feat(db) | euler_* → legend_* rename + 데이터 폐기 |
+| 6 | (다음) | feat(api) | subject_hint system prompt 주입 |
+
+### 다음 세션 (17차) 시작점 — D4 출판사 콘텐츠 비전 PRD
+사용자가 D2 결정 응답 시 밝힌 큰 비전:
+> 학년·과목 selector 의 진짜 목적은 **출판사 협업** — 그 학년 콘텐츠를 AI가 기본 개념까지 설명하고, 문제집의 문제를 하나씩 순차적으로 올려주며 학생과 함께 공부하는 진도 학습 시스템.
+
+이건 헤밍웨이 영문법 v2 (`docs/grammar-curriculum.md` 14단원 75레슨 + `content/grammar/*.md` MDX) **수학판**.
+
+**필요한 신규 자산** (다음 세션 설계):
+- `content/math/{학년}/{단원}/{차시}.md` — 출판사 콘텐츠 (MDX, 개념·예제·문제)
+- `legend_subject_progress` DB 테이블 (학생별 진도 추적)
+- Legend 메인 3번째 탭 "📚 진도 학습" (현재 'AI 코칭 / 수능 기출' + 신규)
+- 헤밍웨이 v2 와의 추상화 공유 — `curriculum-renderer` 같은 공통 컴포넌트
+- 출판사 협업 — 콘텐츠 라이선싱 (사업 단계, B2B2C)
+
+**다음 세션 작업**:
+1. `docs/architecture-platform.md` 갱신 — 출판사 콘텐츠 구조 + 진도 DB schema
+2. `docs/curriculum-content-spec.md` 신설 — MDX 형식·메타데이터·진도 추적 명세
+3. `docs/implementation_plan_phase1.md` 작성 — Phase 1 (출판사 PoC) 의 task 분해
+4. 헤밍웨이 v2 와 공통 추상화 검토 (curriculum-runtime 통합)
 
 ### Phase D — Euler API/DB 정리 (사용자 결정 대기)
 - `/api/euler-tutor/**` 11 라우트: 제거 vs `/api/legend` alias

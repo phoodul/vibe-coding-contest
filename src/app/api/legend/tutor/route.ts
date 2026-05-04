@@ -36,6 +36,7 @@ import { routeProblem } from "@/lib/legend/legend-router";
 import type { RouteDecision } from "@/lib/legend/types";
 import { shorthandToLatex } from "@/lib/math-input/shorthand-to-latex";
 import { evaluateGuardrail } from "@/lib/legend/guardrail";
+import { buildSubjectHintNote } from "@/lib/legend/subject-labels";
 
 const CRITIC_ENABLED = process.env.EULER_CRITIC_ENABLED === "true";
 const MANAGER_ENABLED = process.env.EULER_MANAGER_ENABLED !== "false"; // 기본 on
@@ -104,8 +105,17 @@ export async function POST(req: Request) {
   try {
     // P0-01b: client 가 area 를 보내지 않거나 '자유 질문' 으로 보내면
     // Manager(Haiku) 자동 분류 결과로 갱신. 명시적 자유 질문 의도는 client 가 별도 플래그로 표현.
-    const { messages: rawMessages, area: clientArea, useGpt, input_mode } = await req.json();
+    const {
+      messages: rawMessages,
+      area: clientArea,
+      useGpt,
+      input_mode,
+      subject_hint: subjectHint,
+    } = await req.json();
     let area: string | null = clientArea ?? null;
+    const subjectHintNote = buildSubjectHintNote(
+      typeof subjectHint === 'string' ? subjectHint : null,
+    );
 
     // G06-31: 학생 단축 표기 (RR(x), pi, II(0,1) f(x) dx 등) → 표준 LaTeX 정규화.
     // user 메시지의 텍스트만 변환. assistant 메시지는 모델 응답이므로 미변환.
@@ -697,7 +707,7 @@ ${cc.verified
 
 첫 메시지라면 따뜻하게 인사하고, 학생에게 문제를 보여달라고 요청하세요.
 "안녕! ${tutorName}예요. 😊 어떤 수학 문제를 같이 풀어볼까요? 문제를 알려주세요!"
-학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${inputModeNote}${lockNote}${shorthandNote}${solutionContext}${managerContext}${retrievedContext}${similarContext}${chainContext}${criticContext}`;
+학생이 한 번에 여러 문제를 보내면, 한 문제씩 풀자고 안내하세요.${subjectHintNote}${inputModeNote}${lockNote}${shorthandNote}${solutionContext}${managerContext}${retrievedContext}${similarContext}${chainContext}${criticContext}`;
 
     console.log(
       `[euler-tutor] persona=${tutorPersona} input_mode=${inputMode} critic=${CRITIC_ENABLED} mgr=${managerContext ? "Y" : "N"} retriever=${retrievedContext ? "Y" : "N"} similar=${similarContext ? "Y" : "N"} chain=${chainContext ? "Y" : "N"} messages=${messages.length}`
