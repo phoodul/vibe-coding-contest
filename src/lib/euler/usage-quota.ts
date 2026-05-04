@@ -7,9 +7,9 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/lib/legend/access-tier";
 
 const FREE_DAILY_LIMIT = parseInt(process.env.EULER_FREE_DAILY_LIMIT ?? "10", 10);
-const ADMIN_EMAILS = ["phoodul@gmail.com"];
 
 export interface QuotaCheck {
   allowed: boolean;
@@ -56,7 +56,7 @@ export async function checkFreeQuota(): Promise<QuotaCheck | null> {
   if (!user) return null;
 
   // Admin bypass — 운영자 본인은 한도 미적용
-  if (ADMIN_EMAILS.includes(user.email ?? "")) {
+  if (isAdminEmail(user.email)) {
     return { allowed: true, used: 0, limit: -1, is_paid: true };
   }
 

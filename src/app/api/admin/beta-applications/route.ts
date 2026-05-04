@@ -8,10 +8,9 @@
  * 응답: { applications: [...] }
  */
 import { createClient } from '@/lib/supabase/server';
+import { isAdminEmail } from '@/lib/legend/access-tier';
 
 export const runtime = 'nodejs';
-
-const ADMIN_EMAILS = ['phoodul@gmail.com'];
 
 export async function GET(req: Request) {
   const supabase = await createClient();
@@ -21,7 +20,7 @@ export async function GET(req: Request) {
   if (!user) {
     return Response.json({ error: 'unauthorized' }, { status: 401 });
   }
-  if (!ADMIN_EMAILS.includes(user.email ?? '')) {
+  if (!isAdminEmail(user.email)) {
     return Response.json({ error: 'forbidden' }, { status: 403 });
   }
 

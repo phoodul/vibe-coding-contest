@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/lib/legend/access-tier";
 
 export const metadata = { title: "Analytics | Admin" };
 export const dynamic = "force-dynamic";
-
-const ADMIN_EMAILS = ["phoodul@gmail.com"];
 
 type SignupRow = {
   email: string | null;
@@ -33,7 +32,7 @@ export default async function AnalyticsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
-  if (!ADMIN_EMAILS.includes(user.email ?? "")) {
+  if (!isAdminEmail(user.email)) {
     return (
       <main className="mx-auto max-w-3xl px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-white">접근 권한 없음</h1>

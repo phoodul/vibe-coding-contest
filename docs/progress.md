@@ -57,6 +57,48 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 17차 세션 진행 중 (2026-05-05~)
+
+### A1 — Admin email 다중화 (OAuth provider 충돌 fix) ✅
+
+**증상**: 사용자 본인이 Google 로그인 시 admin 통과, Kakao 로그인 시 admin 거부.
+
+**원인**:
+- Supabase Auth 는 OAuth provider 별 별도 user 생성. 같은 이메일이라도 자동 link 안 됨.
+- 사용자 Google 계정은 `phoodul@gmail.com`, **Kakao 계정 등록 이메일은 `phoodul@daum.net`** → 자동 link 도 작동 못 함.
+- Admin 가드는 14곳 TS hardcode `["phoodul@gmail.com"]` + 5 SQL RPC 의 `<> 'phoodul@gmail.com'` 으로만 인정 → Kakao user (email=null 또는 daum) 전부 거부.
+- 결과: Kakao 로그인 시 Legend 베타도 trial 강등, /admin/* 진입 거부.
+
+**Fix (B 옵션 = 정석)**:
+- `src/lib/legend/access-tier.ts` default 를 `phoodul@gmail.com,phoodul@daum.net` 두 이메일 hardcode (client component 도 통과).
+- TS 14곳 hardcode 제거 → 모두 `isAdminEmail()` 로 통일 (단일 소스 of truth).
+- Supabase 마이그레이션 `20260505_admin_email_multi.sql`:
+  - `is_admin_email(text)` immutable helper 신설 (lower-case 화이트리스트).
+  - 5 RPC 갱신 — `is_admin()`, `approve_candidate_tool`, `reject_candidate_tool`, `list_beta_applications`, `review_beta_application`.
+
+**검증**:
+- `is_admin_email` SQL: gmail=true / daum=true / daum_upper=true / not_admin=false / null=false ✅
+- production DB 에 hardcode `'phoodul@gmail.com'` 검사 RPC 0건 (helper 외부화 완료) ✅
+- vitest 419/420 통과 (1 실패 = `beta/review` mock 설정 문제, 본 작업과 무관) ✅
+- typecheck pass ✅
+
+**잔여 운영 액션**:
+- `LEGEND_ADMIN_EMAILS` Vercel env 는 default 만으로 충분 (본인 두 이메일 hardcode). 추가 admin 필요 시만 env 갱신.
+- production deploy 후 Kakao 로그인 본인 검증.
+
+### A2 — production 진단 결과 (16차 끝 → 17차 시작 사이 발견)
+
+검증에서 발견된 **결함 1건 (사용자 결정으로 미복원)**:
+- `beta_applications` 1건 approved (`youngout320@gmail.com`, 2026-05-01) 인데 D2 ALTER+TRUNCATE 사고로 `legend_beta_invites` row 누락 → 베타 권한 발휘 불가.
+- 사용자 결정: 복원하지 않음. 새 베타 모집부터 시작.
+- 신규 approve 흐름은 `review_beta_application` RPC 가 자동 invite insert 하므로 정상 작동 (이번 admin email fix 포함).
+
+### Legend Tutor 완료도 평가 (17차 세션 입구)
+
+**기능 측면 = 사실상 완료** (5거장 페르소나·trigger·KaTeX·subject_hint·수능 기출 600+ 정답 / 512 원문·베타 신청·30일 만료·가드레일·Mathpix·보고서·domain easyedu.ai apex).
+
+**잔여 = 운영·마케팅** (베타 실사용자 0명, P0-13c 시연 영상, GTM 자료, 결제 도입 = 부산 임대 후).
+
 ## 16차 세션 진행 중 (2026-05-04~)
 
 사용자 요청: Legend Tutor를 전면 — Euler Tutor 제거 + 학년/과목 분리 + 수능 기출 연습 + 베타 후기를 Legend 안으로.

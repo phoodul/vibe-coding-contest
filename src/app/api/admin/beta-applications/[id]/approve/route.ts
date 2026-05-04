@@ -8,10 +8,9 @@
  * 응답: { id, status, invite_code? }
  */
 import { createClient } from '@/lib/supabase/server';
+import { isAdminEmail } from '@/lib/legend/access-tier';
 
 export const runtime = 'nodejs';
-
-const ADMIN_EMAILS = ['phoodul@gmail.com'];
 
 interface ApproveBody {
   action?: 'approve' | 'reject';
@@ -31,7 +30,7 @@ export async function POST(
   if (!user) {
     return Response.json({ error: 'unauthorized' }, { status: 401 });
   }
-  if (!ADMIN_EMAILS.includes(user.email ?? '')) {
+  if (!isAdminEmail(user.email)) {
     return Response.json({ error: 'forbidden' }, { status: 403 });
   }
 

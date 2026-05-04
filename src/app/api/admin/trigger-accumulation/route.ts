@@ -6,9 +6,9 @@
  */
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { isAdminEmail } from '@/lib/legend/access-tier';
 
 export const maxDuration = 15;
-const ADMIN_EMAILS = ['phoodul@gmail.com'];
 
 interface AccumulationStats {
   total: number;
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user || !ADMIN_EMAILS.includes(user.email ?? '')) {
+  if (!user || !isAdminEmail(user.email)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

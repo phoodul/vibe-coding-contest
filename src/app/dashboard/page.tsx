@@ -9,13 +9,12 @@ import { createClient } from "@/lib/supabase/client";
 import { GlassCard } from "@/components/shared/glass-card";
 import { CrisisButton } from "@/components/shared/crisis-button";
 import { SUBJECTS } from "@/lib/ai/tutor-prompt";
+import { isAdminEmail } from "@/lib/legend/access-tier";
 
 interface Profile {
   display_name: string | null;
   role: "student" | "teacher";
 }
-
-const ADMIN_EMAILS = ["phoodul@gmail.com"];
 
 interface MenuItem {
   title: string;
@@ -99,7 +98,7 @@ export default function DashboardPage() {
     load();
   }, [router]);
 
-  const isAdmin = !!userEmail && ADMIN_EMAILS.includes(userEmail);
+  const isAdmin = isAdminEmail(userEmail);
 
   if (loading) {
     return (

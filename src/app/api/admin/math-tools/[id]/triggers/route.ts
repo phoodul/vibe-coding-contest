@@ -9,10 +9,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { embedText } from "@/lib/euler/embed";
+import { isAdminEmail } from "@/lib/legend/access-tier";
 
 export const maxDuration = 30;
 
-const ADMIN_EMAILS = ["phoodul@gmail.com"];
 const ALLOWED_SOURCES_DEV = ["developer", "정석", "해법서"] as const;
 
 interface TriggerInput {
@@ -47,7 +47,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const isAdmin = ADMIN_EMAILS.includes(user.email ?? "");
+  const isAdmin = isAdminEmail(user.email);
   let isContributor = false;
   if (!isAdmin) {
     const { data: profile } = await supabase

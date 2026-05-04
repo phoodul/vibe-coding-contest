@@ -12,8 +12,13 @@ import { createClient } from '@/lib/supabase/server';
 
 export type AccessTier = 'trial' | 'beta';
 
-/** 관리자 이메일 — LEGEND_ADMIN_EMAILS env 로 외부화 (콤마 구분). default phoodul@gmail.com. */
-const ADMIN_EMAILS = (process.env.LEGEND_ADMIN_EMAILS ?? 'phoodul@gmail.com')
+/**
+ * 관리자 이메일 — LEGEND_ADMIN_EMAILS env 로 외부화 (콤마 구분).
+ * default 에 두 이메일 모두 hardcode — client component 에서도 admin 본인이
+ * Google(@gmail.com) / Kakao(@daum.net) 어느 provider 로 로그인하든 통과.
+ * 추가 admin 은 LEGEND_ADMIN_EMAILS env 로 server-side 에서만 인정.
+ */
+const ADMIN_EMAILS = (process.env.LEGEND_ADMIN_EMAILS ?? 'phoodul@gmail.com,phoodul@daum.net')
   .split(',')
   .map((s) => s.trim().toLowerCase())
   .filter(Boolean);

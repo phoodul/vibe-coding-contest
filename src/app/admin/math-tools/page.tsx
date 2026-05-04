@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { isAdminEmail } from "@/lib/legend/access-tier";
 
 type Candidate = {
   id: string;
@@ -19,8 +20,6 @@ type Candidate = {
 };
 
 type Counts = { tools: number; triggers: number };
-
-const ADMIN_EMAILS = ["phoodul@gmail.com"];
 
 function suggestId(name: string): string {
   return name
@@ -48,7 +47,7 @@ export default function AdminMathToolsPage() {
         data: { user },
       } = await supabase.auth.getUser();
       if (cancelled) return;
-      if (!user || !ADMIN_EMAILS.includes(user.email ?? "")) {
+      if (!user || !isAdminEmail(user.email)) {
         setAuthChecked(true);
         setAuthorized(false);
         return;
