@@ -11,6 +11,7 @@ const SUBJECTS: { key: SubjectKey; label: string; icon: string }[] = [
   { key: "ethics", label: "생활과 윤리", icon: "⚖️" },
   { key: "biology", label: "생명과학Ⅰ", icon: "🧬" },
   { key: "korean", label: "언어와 매체", icon: "📖" },
+  { key: "earth-science", label: "지구과학Ⅰ", icon: "🌍" },
 ];
 
 export default function MindMapPage() {
