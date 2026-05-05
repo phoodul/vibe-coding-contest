@@ -57,6 +57,56 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 18차 세션 진행 (2026-05-06 새벽) — LaTeX fix + 수능 12건 + 지구과학Ⅰ 자체 제작 완성
+
+### 사용자 신고 두 건 fix (commit `cec2afc`)
+
+**1. Legend Tutor 채팅 LaTeX 렌더 결함**
+- 베타 사용자가 스크린샷 업로드 시 AI 응답의 `\(x^2\)` / `\[\sum\]` 가 채팅창에 raw 텍스트 노출.
+- 원인: `StreamingMarkdown` 의 `remarkMath` 가 `$..$` `$$..$$` 만 지원하고 `\(..\)` `\[..\]` 미지원.
+- Fix: `normalizeMathDelimiters()` 신설 — `\(..\)` → `$..$`, `\[..\]` → `$$..$$` 사전 정규화.
+- vitest 12건 신규 (math delimiter normalization), 기존 35건 보존.
+
+**2. 수능 기출 problem-texts.json 누락 18건**
+- raw md (`user_docs/suneung-math/parsed/*.md`) 분석 → 12건은 본문에 살아 있음, 6건은 mathpix 추출 자체 누락.
+- `scripts/extract-suneung-missing.ts` 작성 → 12건 자동 추출 → JSON 추가.
+- **잔존 6건** (PDF 페이지 자체 누락, 수동 입력 필요): `2018_가형_4`, `2020_가형_26`, `2022_공통_3`, `2023_공통_3`, `2025_공통_3`, `2026_공통_4`.
+
+### 지구과학Ⅰ 자체 제작 교과서 (commits `c0b3824`, `b23f63e`)
+
+사용자 night mode 결정 — 4번째 자체 제작 과목 = 지구과학Ⅰ. 헤밍웨이 v2 / 생활과 윤리 / 생명과학Ⅰ 패턴 재사용.
+
+**작업 분량**:
+- Spec docs: `docs/earth-science-textbook-spec.md` (5 chapter / 25 section / 명세 200 content)
+- Textbook: 5 파일 / 약 365KB (ch1 직접 + ch3 직접, ch2/4/5 implementer)
+  - Ch1 지권의 변동 (40 content / 66KB)
+  - Ch2 지구의 역사 (40 content / 80KB)
+  - Ch3 대기와 해양의 변화 (35 content / 62KB) — 직접 작성
+  - Ch4 대기와 해양의 상호작용 (41 content / 73KB)
+  - Ch5 별과 우주 (40 content / 83KB)
+- Structured (마인드맵): 5 파일 / 약 387KB (모두 implementer)
+- 통합 `earth-science.ts` + `EARTH_SCIENCE_TEXTBOOK` 노출
+- **총 196 content / 약 750KB / 약 200 페이지 분량 자체 제작 콘텐츠**
+
+**UI 통합**:
+- `src/lib/mind-map/build-tree.ts`: `SubjectKey` 에 `"earth-science"` 추가 + 5 ch import
+- `src/app/mind-map/page.tsx`: SUBJECTS 배열에 🌍 지구과학Ⅰ 추가
+- `src/lib/ai/tutor-prompt.ts`: SUBJECTS 에 지구과학Ⅰ + 5 topic (지권 변동·지구 역사·대기 해양 변화·상호작용·별과 우주)
+- 대시보드는 SUBJECTS 동적 사용 → 자동 노출
+
+**Implementer stall 회피 전략**: ch3/ch4/ch5 textbook + structured 동시 작성 시 한 번에 75K+ 자 출력 → watchdog 600s timeout 빈발. 분할 재실행 (textbook 단독 / structured 단독) 으로 모두 성공.
+
+**검증**:
+- typecheck pass
+- vitest 432/438 (6 실패는 기존 beta/review mock 이슈, 본 작업 무관)
+
+**다음 세션 진입점**:
+1. 수능 누락 6건 사용자 직접 입력 (2026 공4 외 5건)
+2. 지구과학Ⅰ production 검증 — `/mind-map` 🌍 탭 / `/tutor` 지구과학Ⅰ 시작
+3. 다음 자체 제작 과목 결정 (한국사·물리Ⅰ·화학Ⅰ 등)
+
+---
+
 ## 17차 세션 종료 (2026-05-05) — 28 commits / 헤밍웨이 v2 완성 + 수능 기출 통합
 
 ### Night mode 자율 작업 — commit 28건 (`dafee1d` ~ `19145ce`)
