@@ -11,7 +11,7 @@
  *      틀린 문제 있으면 "틀린 문제 다시 보기" → 정답·해설만 review
  *   4. "처음부터 다시" 가능
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -59,9 +59,25 @@ export function QuizPanel({ quiz }: Props) {
       return;
     }
     setCurrentIdx((i) => i + 1);
-    setSelected(null);
-    setSubmitted(false);
+    // selected/submitted 는 아래 useEffect 가 답안 보유 여부에 따라 자동 복원
   }
+
+  function handlePrev() {
+    if (currentIdx === 0) return;
+    setCurrentIdx((i) => i - 1);
+  }
+
+  // currentIdx 변경 시 — 이미 답한 문제는 채점 상태 복원, 아니면 초기화
+  useEffect(() => {
+    const ans = answers.get(quiz[currentIdx]?.id);
+    if (ans !== undefined) {
+      setSelected(ans);
+      setSubmitted(true);
+    } else {
+      setSelected(null);
+      setSubmitted(false);
+    }
+  }, [currentIdx, quiz, answers]);
 
   function handleRestart() {
     setMode('quiz');
@@ -353,6 +369,14 @@ export function QuizPanel({ quiz }: Props) {
 
       {/* 액션 버튼 */}
       <div className="flex gap-2">
+        <button
+          type="button"
+          disabled={currentIdx === 0}
+          onClick={handlePrev}
+          className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          ← 이전
+        </button>
         {!submitted ? (
           <button
             type="button"
