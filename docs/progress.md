@@ -57,7 +57,18 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
-## 18차 세션 진행 (2026-05-06 새벽) — LaTeX fix + 수능 12건 + 지구과학Ⅰ 자체 제작 완성
+## 18차 세션 종료 (2026-05-06) — 5 commits / LaTeX fix + 수능 12건 + 지구과학Ⅰ 자체 제작 200p
+
+### 누적 commit 5건 (`cec2afc` ~ `60dd2c4`)
+
+| # | Hash | 영역 | 핵심 |
+|---|---|---|---|
+| 1 | `cec2afc` | fix(legend) | StreamingMarkdown LaTeX 정규화 + 수능 12건 자동 추출 |
+| 2 | `c0b3824` | feat(textbook) | 지구과학Ⅰ Ch1 + spec docs |
+| 3 | `b23f63e` | feat(textbook) | 지구과학Ⅰ Ch2~5 + structured 5개 + UI 통합 |
+| 4 | `3564dc6` | docs | progress.md 18차 갱신 |
+| 5 | `60dd2c4` | docs | manual linking 활성화 완료 메모 |
+
 
 ### 사용자 신고 두 건 fix (commit `cec2afc`)
 
