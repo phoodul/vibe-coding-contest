@@ -70,6 +70,18 @@ export default function LoginPage() {
         <GlassCard hover={false}>
           <h1 className="text-2xl font-bold text-center mb-6">로그인</h1>
 
+          {/* 안내 — 같은 방식 로그인 권장 (OAuth 충돌 방지) */}
+          <div className="mb-4 rounded-lg border border-amber-400/30 bg-amber-400/5 p-3">
+            <p className="text-xs text-amber-100/90 leading-relaxed">
+              <span className="mr-1">💡</span>
+              <span className="font-semibold text-amber-200">학습진도를 저장하려면 같은 방식으로 로그인하세요.</span>
+              <br />
+              <span className="text-amber-100/60">
+                예: Google 로 가입했다면 Google 로만. 다른 방식으로 로그인하면 별도 계정이 만들어져 진도가 보이지 않을 수 있어요.
+              </span>
+            </p>
+          </div>
+
           {/* 소셜 로그인 */}
           <div className="space-y-2 mb-6">
             {socialProviders.map((p) => (
