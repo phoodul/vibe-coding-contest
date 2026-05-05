@@ -54,7 +54,7 @@ function readLesson(slug: string): { fm: LessonFrontmatter; body: string } | nul
   if (!parsed) return { fm: { slug }, body: raw };
   // frontmatter slug 가 있으면 그것을 우선 (수능 매핑은 frontmatter slug 기준).
   // 없으면 파일명 slug 사용.
-  return { fm: { slug, ...parsed.fm }, body: parsed.body };
+  return { fm: { ...parsed.fm, slug: parsed.fm.slug || slug }, body: parsed.body };
 }
 
 interface AdjacentLesson {
