@@ -8,8 +8,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { LessonView } from '@/components/grammar/LessonView';
+import { parseLessonMdx } from '@/lib/grammar/parse-lesson';
 
 interface LessonFrontmatter {
   slug: string;
@@ -76,6 +76,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   if (!lesson) notFound();
 
   const { fm, body } = lesson;
+  const parsed = parseLessonMdx(body);
   const unitLabel =
     fm.unit_index && fm.unit_title
       ? `단원 ${String(fm.unit_index).padStart(2, '0')} · ${fm.unit_title}`
@@ -116,12 +117,10 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           </h1>
         </header>
 
-        {/* 본문 */}
-        <article className="prose prose-invert prose-amber max-w-none prose-headings:text-amber-100 prose-headings:font-semibold prose-h2:mt-10 prose-h2:text-xl prose-h3:mt-6 prose-h3:text-base prose-p:leading-relaxed prose-p:text-white/85 prose-blockquote:border-amber-300/50 prose-blockquote:text-amber-100/90 prose-blockquote:bg-amber-400/5 prose-blockquote:rounded-r-lg prose-code:text-amber-200 prose-code:bg-white/5 prose-code:rounded prose-code:px-1 prose-code:before:content-none prose-code:after:content-none prose-table:text-sm prose-th:bg-white/5 prose-hr:border-white/10">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
-        </article>
+        {/* 설명 + 문제 풀이 탭 */}
+        <LessonView body={parsed.body} quiz={parsed.quiz} nextNote={parsed.nextNote} />
 
-        {/* 하단 — 다음 레슨 안내 + 목차 복귀 */}
+        {/* 하단 — 목차 복귀 */}
         <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-6 text-xs text-white/50">
           <Link href="/grammar" className="hover:text-white/80 transition-colors">
             ← 전체 커리큘럼
