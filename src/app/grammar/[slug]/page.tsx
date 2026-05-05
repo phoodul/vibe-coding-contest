@@ -52,7 +52,9 @@ function readLesson(slug: string): { fm: LessonFrontmatter; body: string } | nul
   const raw = fs.readFileSync(filePath, 'utf-8');
   const parsed = parseFrontmatter(raw);
   if (!parsed) return { fm: { slug }, body: raw };
-  return { fm: { ...parsed.fm, slug }, body: parsed.body };
+  // frontmatter slug 가 있으면 그것을 우선 (수능 매핑은 frontmatter slug 기준).
+  // 없으면 파일명 slug 사용.
+  return { fm: { slug, ...parsed.fm }, body: parsed.body };
 }
 
 interface AdjacentLesson {
@@ -158,8 +160,8 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           </h1>
         </header>
 
-        {/* 설명 + 문제 풀이 탭 */}
-        <LessonView body={parsed.body} quiz={parsed.quiz} nextNote={parsed.nextNote} slug={slug} />
+        {/* 설명 + 문제 풀이 탭 — slug 는 frontmatter 의 slug 사용 (수능 매핑 키) */}
+        <LessonView body={parsed.body} quiz={parsed.quiz} nextNote={parsed.nextNote} slug={fm.slug ?? slug} />
 
         {/* 하단 — 이전 / 목차 / 다음 레슨 */}
         <nav className="mt-12 grid grid-cols-3 gap-3 border-t border-white/10 pt-6">
