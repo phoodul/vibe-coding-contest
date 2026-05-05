@@ -520,6 +520,7 @@ function ReadingLogForm({
                   >
                     <div className="w-8 h-10 rounded bg-white/5 flex items-center justify-center shrink-0 text-sm">
                       {book.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={book.imageUrl} alt="" className="w-full h-full object-cover rounded" />
                       ) : (
                         "📕"

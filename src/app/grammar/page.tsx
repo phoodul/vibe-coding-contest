@@ -211,7 +211,7 @@ export default function GrammarPage() {
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-5 text-sm text-white/70 leading-relaxed">
           <p className="font-semibold text-white mb-2">📝 진행 안내</p>
           <ul className="text-xs text-white/60 space-y-1.5 list-disc pl-4">
-            <li>현재 작성된 레슨은 위 "지금 읽을 수 있는 레슨" 에서 모두 무료로 열람할 수 있어요.</li>
+            <li>현재 작성된 레슨은 위 &ldquo;지금 읽을 수 있는 레슨&rdquo; 에서 모두 무료로 열람할 수 있어요.</li>
             <li>나머지 레슨은 같은 형식으로 점진적으로 추가됩니다 (단원 → 레슨 800~1500자 + 대표 문장 + 5문제).</li>
             <li>향후 진도 추적·외우기 카드·5문제 인터랙티브 테스트 UI 가 추가될 예정이며, 그 시점에 무료 열람 범위와 유료 전환 정책을 결정합니다.</li>
           </ul>
