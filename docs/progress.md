@@ -57,15 +57,62 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
-## 17차 세션 진행 중 (2026-05-05~)
+## 17차 세션 종료 (2026-05-05) — 28 commits / 헤밍웨이 v2 완성 + 수능 기출 통합
 
-### Night mode 자율 작업 — commit 3건
+### Night mode 자율 작업 — commit 28건 (`dafee1d` ~ `19145ce`)
 
-| # | Hash | 영역 | 핵심 |
-|---|---|---|---|
-| 1 | `dafee1d` | feat(auth) | admin 판정 다중 이메일 (Google + Kakao 양쪽 통과) |
-| 2 | `9b32ec9` | feat(account) | OAuth provider manual linking UI (`/account` + IdentityManager) |
-| 3 | (다음) | docs(curriculum) | Phase 1 자체 제작 콘텐츠 spec + 매트릭스 + plan |
+| 영역 | 주요 핵심 |
+|---|---|
+| **인증·계정** (4) | admin 다중 이메일 + UserMenu 드롭다운 + /account 페이지 + 비밀번호 변경 + 학생 manual linking UI |
+| **인프라** (3) | textbook_progress 마이그레이션 + isAdminEmail client-safe 분리 + UserMenu user-id 판정 |
+| **운영 docs** (2) | Phase 1 spec 4종 (matrix·content-spec·implementation-plan + architecture 부록) + user-merge-runbook |
+| **헤밍웨이 v2** (12) | 베타 게이트 제거 → 무료 열람 + 인터랙티브 퀴즈 UI (설명/문제 풀이 탭 + 채점 + 결과 + 틀린 문제 다시 보기 + 이전·다음 문제) + **75 레슨 콘텐츠 양산** (단원 1~14) + 이전·다음 레슨 nav + 대시보드 복귀 링크 |
+| **수능 기출** (3) | 지난 10년 어법 기출 19건 매핑 + 인터랙티브 풀이 UI (SuneungSection) + 풀이 (왜 틀렸나 + 다른 선택지 노트) |
+| **lint·build fix** (3) | Vercel ESLint warning 정리 (admin/contributors useCallback, conversation any, BetaChat img 등) |
+| **URL 정비** (2) | 슬러그 매핑 fix (frontmatter slug 우선) + 75 파일 prefix 제거 rename |
+
+### B — 헤밍웨이 영문법 v2 완성 ⭐
+
+세션 후반에 사용자 요청으로 진행:
+- 메인 페이지 베타 게이트 제거 → 누구나 무료 열람 (commit `b23767b`)
+- 레슨 뷰어 신설 + parser (vitest 6/6) + LessonView (탭) + QuizPanel (인터랙티브 채점·결과·틀린 문제 다시 보기·이전·다음 문제) — `8b6c52f`
+- **75 레슨 모두 작성** — 14 단원 (commit 6건: `6872dab`·`08445dd`·`6da7cf1`·`6e8dc7b`·`4c98fc5`·`03c918b`)
+  - 14 단원 / 75 레슨 / 375 문제 / 약 100K 자 한국어 (≈ 200 페이지)
+- 75 파일 깔끔 rename (`07-02-participle-phrase.md` → `participle-phrase.md`) — `ee09e57`
+- 이전·다음 레슨 네비게이션 (3-column footer) — `0ca0731`
+- 대시보드 복귀 링크 + breadcrumb — `19145ce`
+
+**파일 위치**:
+- 콘텐츠: `content/grammar/<slug>.md` 75 파일
+- 컴포넌트: `src/components/grammar/{LessonView,QuizPanel,SuneungSection}.tsx`
+- Parser: `src/lib/grammar/parse-lesson.ts` + `__tests__/parse-lesson.test.ts` (6/6)
+- 페이지: `src/app/grammar/{page.tsx,[slug]/page.tsx}`
+
+### C — 수능 영어 어법 기출 통합 ⭐
+
+지난 10년 (2017~2026) + 2010~2016 어법 문제 19건 매핑 + 인터랙티브 풀이.
+
+| 슬러그 (단원) | 매핑된 수능 |
+|---|---|
+| `participle-phrase` (7-2 분사구문) | **5** ⭐ 핵심 빈출 |
+| `agreement-subject-verb` (12-1) | 5 |
+| `relative-what-compound` (8-6) | 3 |
+| `passive-basic` / `relative-that-which` | 각 2 |
+| 그 외 9 슬러그 | 각 1 |
+
+**핵심 발견**: "긴 주어 + 긴 수식어구 + 본동사 자리에 -ing 분사" 패턴 = 한국 수능 어법 빈출 26%.
+
+UI:
+- 레슨 설명 탭 끝에 "🎯 관련 수능 기출 (N)" 카드
+- 카드 펼침 → 본문 + 5 선택지 → 채점 → 옳은 형태 + 풀이 + 다른 선택지 노트
+- 출처: KICE (저작권 명시)
+
+**파일**:
+- 데이터: `src/lib/data/grammar-suneung.ts` (19 문제 — 본문·정답·오류·옳은 형태·풀이·매핑·다른 선택지 노트)
+- UI: `src/components/grammar/SuneungSection.tsx`
+- 자료 source: `user_docs/suneung-eng/test.md`
+
+⚠️ **2017 정답 메모**: 사용자 자료 ④ vs KICE 일반 ⑤. 본 데이터 ⑤ 기준 + reviewNeeded 메모. 사용자 검토 시 데이터 갱신.
 
 ### A1 — Admin email 다중화 (OAuth provider 충돌 fix) ✅
 
