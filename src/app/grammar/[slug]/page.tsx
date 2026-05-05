@@ -24,20 +24,12 @@ interface LessonFrontmatter {
 
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'grammar');
 
-function readLesson(slug: string): { fm: LessonFrontmatter; body: string } | null {
-  // 슬러그 검증 — 영문/숫자/하이픈만
-  if (!/^[a-z0-9-]+$/.test(slug)) return null;
-  const filePath = path.join(CONTENT_DIR, `${slug}.md`);
-  if (!fs.existsSync(filePath)) return null;
-  const raw = fs.readFileSync(filePath, 'utf-8');
-
-  // frontmatter (---) 단순 파싱
+function parseFrontmatter(raw: string): { fm: LessonFrontmatter; body: string } | null {
   const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!fmMatch) return { fm: { slug }, body: raw };
+  if (!fmMatch) return null;
   const fmText = fmMatch[1];
   const body = fmMatch[2];
-
-  const raw_fm: Record<string, string | number> = { slug };
+  const raw_fm: Record<string, string | number> = {};
   for (const line of fmText.split('\n')) {
     const m = line.match(/^([\w_]+):\s*(.*)$/);
     if (!m) continue;
@@ -50,6 +42,54 @@ function readLesson(slug: string): { fm: LessonFrontmatter; body: string } | nul
     }
   }
   return { fm: raw_fm as unknown as LessonFrontmatter, body };
+}
+
+function readLesson(slug: string): { fm: LessonFrontmatter; body: string } | null {
+  // 슬러그 검증 — 영문/숫자/하이픈만
+  if (!/^[a-z0-9-]+$/.test(slug)) return null;
+  const filePath = path.join(CONTENT_DIR, `${slug}.md`);
+  if (!fs.existsSync(filePath)) return null;
+  const raw = fs.readFileSync(filePath, 'utf-8');
+  const parsed = parseFrontmatter(raw);
+  if (!parsed) return { fm: { slug }, body: raw };
+  return { fm: { ...parsed.fm, slug }, body: parsed.body };
+}
+
+interface AdjacentLesson {
+  slug: string;
+  title: string;
+  unitIndex: number;
+  lessonIndex: number;
+}
+
+/** content/grammar 디렉터리 스캔 → 단원·레슨 인덱스 정렬 → 현재 슬러그 기준 prev/next 반환. */
+function getAdjacentLessons(currentSlug: string): {
+  prev: AdjacentLesson | null;
+  next: AdjacentLesson | null;
+} {
+  if (!fs.existsSync(CONTENT_DIR)) return { prev: null, next: null };
+  const all: AdjacentLesson[] = [];
+  for (const file of fs.readdirSync(CONTENT_DIR)) {
+    if (!file.endsWith('.md')) continue;
+    const slug = file.replace(/\.md$/, '');
+    const raw = fs.readFileSync(path.join(CONTENT_DIR, file), 'utf-8');
+    const parsed = parseFrontmatter(raw);
+    if (!parsed) continue;
+    const { fm } = parsed;
+    all.push({
+      slug,
+      title: fm.lesson_title ?? slug,
+      unitIndex: fm.unit_index ?? 0,
+      lessonIndex: fm.lesson_index ?? 0,
+    });
+  }
+  all.sort((a, b) => a.unitIndex - b.unitIndex || a.lessonIndex - b.lessonIndex);
+  const idx = all.findIndex((l) => l.slug === currentSlug);
+  if (idx === -1) return { prev: null, next: null };
+  return {
+    prev: idx > 0 ? all[idx - 1] : null,
+    next: idx < all.length - 1 ? all[idx + 1] : null,
+  };
 }
 
 export const dynamic = 'force-static';
@@ -77,6 +117,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
 
   const { fm, body } = lesson;
   const parsed = parseLessonMdx(body);
+  const { prev, next } = getAdjacentLessons(slug);
   const unitLabel =
     fm.unit_index && fm.unit_title
       ? `단원 ${String(fm.unit_index).padStart(2, '0')} · ${fm.unit_title}`
@@ -120,13 +161,53 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         {/* 설명 + 문제 풀이 탭 */}
         <LessonView body={parsed.body} quiz={parsed.quiz} nextNote={parsed.nextNote} slug={slug} />
 
-        {/* 하단 — 목차 복귀 */}
-        <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-6 text-xs text-white/50">
-          <Link href="/grammar" className="hover:text-white/80 transition-colors">
-            ← 전체 커리큘럼
+        {/* 하단 — 이전 / 목차 / 다음 레슨 */}
+        <nav className="mt-12 grid grid-cols-3 gap-3 border-t border-white/10 pt-6">
+          {prev ? (
+            <Link
+              href={`/grammar/${prev.slug}`}
+              className="rounded-xl border border-white/10 bg-white/5 p-3 hover:border-amber-300/40 hover:bg-amber-400/5 transition-colors group"
+            >
+              <div className="text-[10px] text-white/40 mb-0.5">← 이전 레슨</div>
+              <div className="text-xs text-white/70 group-hover:text-amber-100 truncate">
+                <span className="font-mono mr-1">
+                  {String(prev.unitIndex).padStart(2, '0')}-
+                  {String(prev.lessonIndex).padStart(2, '0')}
+                </span>
+                {prev.title}
+              </div>
+            </Link>
+          ) : (
+            <div />
+          )}
+
+          <Link
+            href="/grammar"
+            className="flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/60 hover:bg-white/10 hover:text-white/80 transition-colors"
+          >
+            📚 전체 커리큘럼
           </Link>
-          <span className="text-white/30">다음 레슨은 곧 추가됩니다</span>
-        </div>
+
+          {next ? (
+            <Link
+              href={`/grammar/${next.slug}`}
+              className="rounded-xl border border-amber-300/30 bg-amber-400/5 p-3 hover:border-amber-300/60 hover:bg-amber-400/10 transition-colors group text-right"
+            >
+              <div className="text-[10px] text-amber-300/70 mb-0.5">다음 레슨 →</div>
+              <div className="text-xs text-amber-100/90 group-hover:text-amber-50 truncate">
+                <span className="font-mono mr-1">
+                  {String(next.unitIndex).padStart(2, '0')}-
+                  {String(next.lessonIndex).padStart(2, '0')}
+                </span>
+                {next.title}
+              </div>
+            </Link>
+          ) : (
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/40 text-right">
+              🎉 마지막 레슨
+            </div>
+          )}
+        </nav>
       </div>
     </main>
   );
