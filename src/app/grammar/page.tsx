@@ -98,6 +98,16 @@ export default function GrammarPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-stone-950 to-zinc-950 text-white">
       <div className="max-w-4xl mx-auto px-4 py-10">
+        {/* 상단 nav — 대시보드 복귀 */}
+        <nav className="mb-6">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white/80 transition-colors"
+          >
+            ← 대시보드
+          </Link>
+        </nav>
+
         <header className="mb-10 text-center">
           <div className="inline-flex items-center gap-3 mb-4">
             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-300/30 to-orange-500/30 ring-2 ring-amber-300/40 flex items-center justify-center text-3xl">

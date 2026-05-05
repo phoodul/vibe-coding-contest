@@ -130,8 +130,12 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
       <div className="max-w-3xl mx-auto px-4 py-10">
         {/* 상단 nav */}
         <nav className="mb-6 flex items-center gap-3 text-xs text-white/50">
+          <Link href="/dashboard" className="hover:text-white/80 transition-colors">
+            🏠 대시보드
+          </Link>
+          <span className="text-white/20">·</span>
           <Link href="/grammar" className="hover:text-white/80 transition-colors">
-            ← 헤밍웨이 영문법
+            헤밍웨이 영문법
           </Link>
           {unitLabel && (
             <>
