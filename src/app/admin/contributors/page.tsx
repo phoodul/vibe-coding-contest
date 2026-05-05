@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
 interface Profile {
@@ -16,7 +16,7 @@ export default function ContributorsPage() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "contributors">("all");
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const url =
@@ -33,11 +33,11 @@ export default function ContributorsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [filter]);
 
   useEffect(() => {
     load();
-  }, [filter]);
+  }, [load]);
 
   async function toggle(id: string, current: boolean) {
     try {
