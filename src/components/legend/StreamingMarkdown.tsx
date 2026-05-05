@@ -28,6 +28,27 @@ const KATEX_REHYPE_OPTIONS = {
 };
 
 /**
+ * `\(...\)`, `\[...\]` → `$...$`, `$$...$$` 정규화.
+ *
+ * 배경: remarkMath 는 `$..$`, `$$..$$` 만 인식한다. LLM (Claude/GPT/Gemini) 은
+ * 자주 `\(x^2\)` / `\[\sum...\]` KaTeX 표준을 출력하고, Mathpix OCR 도 종종
+ * `\(..\)` 로 인라인 수식을 감싼다. 이 형태가 그대로 들어오면 markdown 단계에서
+ * 인식되지 못해 raw `\( x^2 \)` 텍스트가 채팅창에 노출된다.
+ *
+ * 우선순위 (display 가 inline 보다 먼저 매칭):
+ *   1. `\[...\]` → `$$...$$`
+ *   2. `\(...\)` → `$...$`
+ *
+ * 줄바꿈 보존: display 는 multiline 허용, inline 은 단일행만.
+ */
+export function normalizeMathDelimiters(content: string): string {
+  if (!content) return content;
+  return content
+    .replace(/\\\[([\s\S]+?)\\\]/g, (_, inner) => `$$${inner}$$`)
+    .replace(/\\\(([^\n]+?)\\\)/g, (_, inner) => `$${inner}$`);
+}
+
+/**
  * 스트리밍 도중 incomplete `$...$` (홀수 $) 감지 시 마지막 $ escape.
  * 다음 chunk 도착 시 자동 정상 LaTeX 복귀.
  */
@@ -54,10 +75,12 @@ export function StreamingMarkdown({
   // 스트리밍 중에는 한 프레임 지연시켜 React 가 idle 시간에 처리하게 함.
   // 종료 후에는 useDeferredValue 가 즉시 동기화 → 즉시 렌더.
   const deferred = useDeferredValue(content);
-  const safeContent = useMemo(
-    () => (streaming ? safeStreamMarkdown(deferred) : content),
-    [deferred, content, streaming],
-  );
+  const safeContent = useMemo(() => {
+    const base = streaming ? deferred : content;
+    // `\(..\)` / `\[..\]` → `$..$` / `$$..$$` 우선 정규화 (remarkMath 미지원 형식 보정)
+    const normalized = normalizeMathDelimiters(base);
+    return streaming ? safeStreamMarkdown(normalized) : normalized;
+  }, [deferred, content, streaming]);
 
   return (
     <ReactMarkdown
