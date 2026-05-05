@@ -245,6 +245,184 @@ export const SUNEUNG_QUESTIONS: SuneungQuestion[] = [
     relatedSlugs: ['relative-what-compound'],
     hasGrammar: true,
   },
+  // ── 2016 ────────────────────────────────────────
+  {
+    year: 2016,
+    number: 28,
+    passage: `The Greeks' focus on the salient object and its attributes led to ① their failure to understand the fundamental nature of causality. Aristotle explained that a stone falling through the air is due to the stone having the property of "gravity." But of course a piece of wood ② tossed into water floats instead of sinking. This phenomenon Aristotle explained as being due to the wood having the property of "levity"! In both cases the focus is ③ exclusively on the object, with no attention paid to the possibility that some force outside the object might be relevant. But the Chinese saw the world as consisting of continuously interacting substances, so their attempts to understand it ④ causing them to be oriented toward the complexities of the entire "field," that is, the context or environment as a whole. The notion ⑤ that events always occur in a field of forces would have been completely intuitive to the Chinese.
+
+* salient: 현저한, 두드러진  ** levity: 가벼움`,
+    choices: ['their', 'tossed', 'exclusively', 'causing', 'that'],
+    answer: 3, // ④
+    errorPart: 'causing',
+    correctedForm: 'caused',
+    explanation: `\`their attempts to understand it ____ them to be oriented\` 의 주어는 \`their attempts\` 이고, 그 뒤에 본동사가 와야 한다. \`causing\` 은 분사라 본동사 역할 X.
+
+문맥상 단순과거 → **\`caused\`**. 분사구문이 본동사 자리를 차지하는 한국 학생 단골 함정. \`their attempts ... caused them to be oriented\` (그들의 시도가 그들을 ~로 향하게 했다).`,
+    otherChoicesNote: `① their — 소유격 + failure 정상. ② tossed — wood (수동 — 던져진) → 과거분사 정상. ③ exclusively — focus is + 부사 정상. ⑤ that — the notion + that 절 (동격) 정상.`,
+    relatedSlugs: ['participle-phrase'],
+    hasGrammar: true,
+  },
+  // ── 2015 ────────────────────────────────────────
+  {
+    year: 2015,
+    number: 28,
+    passage: `During the early stages when the aquaculture industry was rapidly expanding, mistakes were made and these were costly both in terms of direct losses and in respect of the industry's image. High-density rearing led to outbreaks of infectious diseases that in some cases ① devastated not just the caged fish, but local wild fish populations too. The negative impact on local wildlife inhabiting areas ② close to the fish farms continues to be an ongoing public relations problem for the industry. Furthermore, a general lack of knowledge and insufficient care being taken when fish pens were initially constructed ③ meaning that pollution from excess feed and fish waste created huge barren underwater deserts. These were costly lessons to learn, but now stricter regulations are in place to ensure that fish pens are placed in sites ④ where there is good water flow to remove fish waste. This, in addition to other methods that decrease the overall amount of uneaten food, ⑤ has helped aquaculture to clean up its act.`,
+    choices: ['devastated', 'close', 'meaning', 'where', 'has helped'],
+    answer: 2, // ③
+    errorPart: 'meaning',
+    correctedForm: 'meant',
+    explanation: `\`a general lack of knowledge and insufficient care being taken when fish pens were initially constructed ____ that pollution ... created huge barren underwater deserts\`.
+
+긴 주어 \`a general lack of knowledge and insufficient care\` (복수 명사 묶음, 본 절에선 단일 의미로 단수 취급) + 본동사가 와야 한다. \`meaning\` 분사 → **\`meant\`** (단순과거).
+
+긴 수식 (being taken when fish pens were initially constructed) 에 가려 본동사가 와야 할 자리에 분사를 쓴 패턴.`,
+    otherChoicesNote: `① devastated — that 관계절의 본동사 (단순과거) 정상. ② close — 형용사 (areas close to ~) 명사 수식 정상. ④ where — 관계부사 (sites + where) 정상. ⑤ has helped — 주어 \`This, in addition to ~\` 단수 → has 정상.`,
+    relatedSlugs: ['participle-phrase'],
+    hasGrammar: true,
+  },
+  // ── 2014 A형 ───────────────────────────────────
+  {
+    year: 2014,
+    number: 27,
+    passage: `I hope you remember our discussion last Monday about the servicing of the washing machine ① supplied to us three months ago. I regret to say the machine is no longer working. As we agreed during the meeting, please send a service engineer as soon as possible to repair it. The product warranty says ② that you provide spare parts and materials for free, but charge for the engineer's labor. This sounds ③ unfair. I believe the machine's failure is caused by a manufacturing defect. Initially, it made a lot of noise, and later, it stopped ④ to operate entirely. As it is wholly the company's responsibility to correct the defect, I hope you will not make us ⑤ pay for the labor component of its repair.
+
+(2014 A형)`,
+    choices: ['supplied', 'that', 'unfair', 'to operate', 'pay'],
+    answer: 3, // ④
+    errorPart: 'to operate',
+    correctedForm: 'operating',
+    explanation: `\`it stopped ____ entirely\` — 세탁기가 작동을 **그만뒀다** 의미.
+
+\`stop\` 의 두 패턴이 의미가 다르다:
+- **stop + V-ing** = 하던 것을 멈추다 (작동 중단)
+- **stop + to V** = 하기 위해 멈추다 (다른 일을 하려고)
+
+본 문맥은 세탁기가 작동을 멈춘 것이므로 → **\`operating\`** (V-ing). \`to operate\` 는 "작동시키기 위해 멈췄다" 가 되어 의미 정반대 (세탁기가 어딘가 가서 작동시키려 멈춘 것?).`,
+    otherChoicesNote: `① supplied — washing machine + 과거분사 (수동, 공급된) 정상. ② that — says + 명사절 that 정상. ③ unfair — sounds + 형용사 (감각동사 + 형용사) 정상. ⑤ pay — make + O + 원형 V (사역 5형식) 정상.`,
+    relatedSlugs: ['gerund-vs-infinitive'],
+    hasGrammar: true,
+  },
+  // ── 2014 B형 ───────────────────────────────────
+  {
+    year: 2014,
+    number: 27,
+    passage: `Oxygen is what it is all about. Ironically, the stuff that gives us life eventually kills it. The ultimate life force lies in tiny cellular factories of energy, called mitochondria, ① that burn nearly all the oxygen we breathe in. But breathing has a price. The combustion of oxygen that keeps us alive and active ② sending out by-products called oxygen free radicals. They have Dr. Jekyll and Mr. Hyde characteristics. On the one hand, they help guarantee our survival. For example, when the body mobilizes ③ to fight off infectious agents, it generates a burst of free radicals to destroy the invaders very efficiently. On the other hand, free radicals move ④ uncontrollably through the body, attacking cells, rusting their proteins, piercing their membranes and corrupting their genetic code until the cells become dysfunctional and sometimes give up and die. These fierce radicals, ⑤ built into life as both protectors and avengers, are potent agents of aging.
+
+(2014 B형) * oxygen free radical: 활성 산소  ** membrane: (해부학) 얇은 막`,
+    choices: ['that', 'sending', 'to fight off', 'uncontrollably', 'built'],
+    answer: 1, // ②
+    errorPart: 'sending',
+    correctedForm: 'sends',
+    explanation: `\`The combustion of oxygen that keeps us alive and active ____ out by-products\` — 주어는 \`The combustion\` (단수). 관계절 \`that keeps us alive and active\` 가 끼어 있고, 그 다음 본동사가 와야 한다.
+
+\`sending\` 분사 → **\`sends\`** (3단 + s). 긴 관계절에 가려 본동사 자리를 분사로 채운 함정.`,
+    otherChoicesNote: `① that — mitochondria 를 수식하는 관계대명사 (계속적, 콤마 다음) 정상. ③ to fight off — 부사적 용법 (목적, ~을 위해) 정상. ④ uncontrollably — move 동사 수식 부사 정상. ⑤ built — These fierce radicals 를 수식하는 과거분사 (수동, 만들어진) 삽입구 정상.`,
+    relatedSlugs: ['participle-phrase', 'agreement-subject-verb'],
+    hasGrammar: true,
+  },
+  // ── 2013 ───────────────────────────────────────
+  {
+    year: 2013,
+    number: 21,
+    passage: `We take it for granted that film directors are in the game of recycling. Adapting novels ① is one of the most respectable of movie projects, while a book that calls itself the novelization of a film is considered barbarous. Being a hybrid art as well as a late one, film has always been in a dialogue with ② other narrative genres. Movies were first seen as an exceptionally potent kind of illusionist theatre, the rectangle of the screen corresponding to the proscenium of a stage, ③ which appear actors. Starting in the early silent period, plays were regularly "turned into" films. But ④ filming plays did not encourage the evolution of what truly was distinctive about a movie: the intervention of the camera ―its mobility of vision. As a source of plot, character, and dialogue, the novel seemed more ⑤ suitable. Many early successes of cinema were adaptations of popular novels.
+
+* proscenium: 앞 무대`,
+    choices: ['is', 'other', 'which', 'filming', 'suitable'],
+    answer: 2, // ③
+    errorPart: 'which',
+    correctedForm: 'where (또는 on which)',
+    explanation: `\`the proscenium of a stage, ____ appear actors\` — "그 앞 무대 **위에서** 배우들이 나타난다" 의미. 절 안의 동사 \`appear\` (자동사) 의 주어 actors 는 명확하므로 절 자체는 완전. 따라서 빈자리 필요한 \`which\` (관계대명사) 부적절.
+
+장소를 가리키는 부사 역할 → **\`where\`** (관계부사) 또는 **\`on which\`** (전치사 + 관계대명사) 가 맞다. 둘 다 "그 위에서 배우들이 나타난다" 의미.
+
+\`which\` 단독은 절 안에 빈 자리 (주어/목적어) 가 있어야 한다.`,
+    otherChoicesNote: `① is — Adapting novels (동명사 단수 주어) → is 정상. ② other — 다른 + 복수 명사 정상. ④ filming — 동명사 주어 (영화화하는 것) 정상. ⑤ suitable — seemed + 형용사 정상.`,
+    relatedSlugs: ['relative-adverb', 'relative-that-which'],
+    hasGrammar: true,
+  },
+  // ── 2012 ───────────────────────────────────────
+  {
+    year: 2012,
+    number: 21,
+    passage: `Researchers studied two mobile phone companies trying to solve a technological problem. One company developed what it called a 'technology shelf,' created by a small group of engineers, on which ① was placed possible technical solutions that other teams might use in the future. It also created an open-ended conversation among ② its engineers in which salespeople and designers were often included. The boundaries among business units were deliberately ambiguous because more than technical information was needed ③ to get a feeling for the problem. However, the other company proceeded with more seeming clarity and discipline, ④ dividing the problem into its parts. Different departments protected their territory. Individuals and teams, competing with each other, stopped sharing information. The two companies did eventually ⑤ solve the technological problem, but the latter company had more difficulty than the former.`,
+    choices: ['was placed', 'its', 'to get', 'dividing', 'solve'],
+    answer: 0, // ①
+    errorPart: 'was placed',
+    correctedForm: 'were placed',
+    explanation: `\`on which ____ possible technical solutions\` — 도치 구문. 진짜 주어는 \`possible technical solutions\` (복수). 도치돼서 동사가 앞으로 왔지만 단복수는 진짜 주어 기준.
+
+복수 주어 → **\`were placed\`**. 도치 시 동사를 앞 명사 (which 또는 단수 명사) 에 일치시키는 함정.
+
+원래 어순으로 풀면: \`possible technical solutions were placed on which\` (그 위에 가능한 기술 해법들이 놓였다).`,
+    otherChoicesNote: `② its — 회사를 가리키는 소유격 정상. ③ to get — 부사적 용법 (~을 위해) 정상. ④ dividing — 분사구문 (proceeded ... and divided) 정상. ⑤ solve — did + 원형 (강조의 do) 정상.`,
+    relatedSlugs: ['agreement-subject-verb', 'inversion-negative'],
+    hasGrammar: true,
+  },
+  // ── 2011 ───────────────────────────────────────
+  {
+    year: 2011,
+    number: 20,
+    passage: `The word 'courage' takes on added meaning if you keep in mind that it is derived from the Latin word 'cor' ① meaning 'heart.' The dictionary defines courage as a 'quality which enables one to pursue a right course of action, through ② which one may provoke disapproval, hostility, or contempt.' Over 300 years ago La Rochefoucauld went a step further when he said: "Perfect courage is to do unwitnessed what we should be capable of doing before all men." It is not easy ③ to show moral courage in the face of either indifference or opposition. But persons who are daring in taking a wholehearted stand for truth often ④ achieving results that surpass their expectations. On the other hand, halfhearted individuals are seldom distinguished for courage even when it involves ⑤ their own welfare. To be courageous under all circumstances requires strong determination.
+
+* provoke: 유발하다`,
+    choices: ['meaning', 'which', 'to show', 'achieving', 'their'],
+    answer: 3, // ④
+    errorPart: 'achieving',
+    correctedForm: 'achieve',
+    explanation: `\`persons who are daring in taking a wholehearted stand for truth often ____ results\` — 주어 \`persons\` (복수) + 빈도부사 often + 본동사가 와야 한다. 관계절 \`who are daring ... truth\` 가 끼어 있고 그 후 본동사 필요.
+
+\`achieving\` 분사 → **\`achieve\`**. 긴 관계절에 본동사 위치를 놓치는 함정.`,
+    otherChoicesNote: `① meaning — 분사구문 (= which means) 정상. ② which — 전치사 + 관계대명사 (through which) 정상. ③ to show — 진주어 to V (가주어 it) 정상. ⑤ their — 소유격 정상.`,
+    relatedSlugs: ['participle-phrase', 'agreement-subject-verb'],
+    hasGrammar: true,
+  },
+  // ── 2010 (21번 — 객관식 (A)/(B)/(C) 형식) ──────
+  {
+    year: 2010,
+    number: 21,
+    passage: `While awaiting the birth of a new baby, North American parents typically furnish a room as the infant's sleeping quarters. For decades, child-rearing advice from experts has **(A)** [encouraged / been encouraged] the nighttime separation of baby from parent. For example, a study recommends that babies be moved into their own room by three months of age. "By six months a child **(B)** [who / whom] regularly sleeps in her parents' room is likely to become dependent on this arrangement," reports the study. Yet parent-infant 'co-sleeping' is the norm for approximately 90 percent of the world's population. Cultures as **(C)** [diverse / diversely] as the Japanese, the Guatemalan Maya, and the Inuit of Northwestern Canada practice it.
+
+다음 (A), (B), (C) 의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?`,
+    choices: [
+      'encouraged … who … diverse',
+      'encouraged … whom … diversely',
+      'encouraged … who … diversely',
+      'been encouraged … who … diverse',
+      'been encouraged … whom … diverse',
+    ],
+    answer: 0, // ①
+    errorPart: '(A) been encouraged / (B) whom / (C) diversely 는 모두 오답',
+    correctedForm: '(A) encouraged / (B) who / (C) diverse',
+    explanation: `**(A) encouraged** — 주어 \`advice\` 가 \`the nighttime separation\` 을 권장하는 **능동** 의미. 따라서 \`has + p.p.\` (현재완료 능동) 의 \`has encouraged\`. \`been encouraged\` 면 수동 (조언이 권장 받음) 이라 어색.
+
+**(B) who** — \`a child ____ regularly sleeps\` — 관계절에서 sleeps 의 **주어** 자리. 주격 → **\`who\`**. \`whom\` 은 목적격 (절 안의 목적어 자리에 빈 자리).
+
+**(C) diverse** — \`Cultures as ____ as the Japanese, the Guatemalan Maya, and the Inuit\` — as ~ as 원급 비교 + 명사 cultures 를 수식 → **형용사 \`diverse\`**. \`diversely\` 부사 X.
+
+세 빈칸 모두 능동/수동·격·품사 차이를 묻는 복합 문제. 각 단원의 핵심 룰이 모두 적용된다.`,
+    otherChoicesNote: `이 문제는 (A) (B) (C) 세 영역 동시 점검: \`passive-basic\` (능동 vs 수동), \`relative-who-whom\` (주격 vs 목적격), \`parts-adjective\` (형용사 vs 부사). 한 문제가 세 단원의 핵심 함정을 동시에 다룬다.`,
+    relatedSlugs: ['parts-adjective', 'relative-who-whom', 'passive-basic'],
+    hasGrammar: true,
+  },
+  // ── 2010 (22번) ────────────────────────────────
+  {
+    year: 2010,
+    number: 22,
+    passage: `While manned space missions are more costly than unmanned ① ones, they are more successful. Robots and astronauts use ② much of the same equipment in space. But a human is much more capable of operating those instruments correctly and ③ to place them in appropriate and useful positions. Rarely ④ is a computer more sensitive and accurate than a human in managing the same geographical or environmental factors. Robots are also not equipped with capabilities like humans to solve problems ⑤ as they arise, and they often collect data that are unhelpful or irrelevant.`,
+    choices: ['ones', 'much', 'to place', 'is', 'as'],
+    answer: 2, // ③
+    errorPart: 'to place',
+    correctedForm: 'placing',
+    explanation: `\`a human is much more capable of operating those instruments correctly and ____ them in appropriate and useful positions\` — 등위접속사 \`and\` 의 병렬 구조.
+
+앞이 \`operating\` (V-ing — 동명사) 이므로 뒤도 같은 형태가 와야 한다 → **\`placing\`**.
+
+또한 \`be capable of + V-ing\` 는 고정 패턴 (전치사 of 뒤는 동명사). \`be capable of + to V\` 는 X.`,
+    otherChoicesNote: `① ones — manned space missions 의 unmanned ones (= unmanned missions) 대명사 정상. ② much — much of the same equipment (불가산 — much) 정상. ④ is — Rarely + 도치 (be 동사 + 주어) 정상. ⑤ as — \`as they arise\` (~할 때) 시간 부사절 정상.`,
+    relatedSlugs: ['gerund-idioms'],
+    hasGrammar: true,
+  },
   // ── 2017 ────────────────────────────────────────
   {
     year: 2017,
