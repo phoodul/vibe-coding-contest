@@ -305,6 +305,7 @@ export default function RecordPage() {
                   </button>
                   {imagePreview && (
                     <div className="flex items-center gap-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={imagePreview} alt="첨부 이미지" className="h-8 w-8 rounded object-cover border border-white/20" />
                       <button
                         onClick={() => { setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}

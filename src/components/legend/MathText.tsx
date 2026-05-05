@@ -91,7 +91,6 @@ export function MathText({ children, display = false, className }: Props) {
     <span className={className}>
       {segments.map((seg, i) => {
         if (seg.kind === 'text') {
-          // eslint-disable-next-line react/no-array-index-key
           return <span key={i}>{seg.content}</span>;
         }
         let html = '';
@@ -107,7 +106,6 @@ export function MathText({ children, display = false, className }: Props) {
           html = seg.content; // 렌더 실패 시 원본 텍스트
         }
         return (
-          // eslint-disable-next-line react/no-array-index-key
           <span key={i} dangerouslySetInnerHTML={{ __html: html }} />
         );
       })}

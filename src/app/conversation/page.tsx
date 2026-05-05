@@ -3,9 +3,9 @@
 declare global {
   interface Window {
     // SpeechRecognition 은 실험적 Web API — TypeScript lib.dom 에 표준화 X.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line
     SpeechRecognition: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line
     webkitSpeechRecognition: any;
   }
 }
