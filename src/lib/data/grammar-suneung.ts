@@ -217,28 +217,33 @@ export const SUNEUNG_QUESTIONS: SuneungQuestion[] = [
     relatedSlugs: ['passive-basic', 'agreement-tense'],
     hasGrammar: true,
   },
-  // ── 2018 (어휘 — 어법 X, 단원 매핑 제외) ──────────
+  // ── 2018 ────────────────────────────────────────
   {
     year: 2018,
-    number: 29,
-    passage: `Some prominent journalists say that archaeologists should work with treasure hunters because treasure hunters have accumulated valuable historical artifacts that can reveal much about the past. But archaeologists are not asked to cooperate with tomb robbers, who also have valuable historical artifacts. The quest for profit and the search for knowledge cannot coexist in archaeology because of the ① time factor. Rather incredibly, one archaeologist employed by a treasure hunting firm said that as long as archaeologists are given six months to study shipwrecked artifacts before they are sold, no historical knowledge is ② found! On the contrary, archaeologists and assistants from the INA (Institute of Nautical Archaeology) needed more than a decade of year-round conservation before they could even ③ catalog all the finds from an eleventh-century AD wreck they had excavated. Then, to interpret those finds, they had to ④ learn Russian, Bulgarian, and Romanian, without which they would never have learned the true nature of the site. Could a "commercial archaeologist" have ⑤ waited more than a decade or so before selling the finds?
-
-* prominent: 저명한  ** excavate : 발굴하다`,
+    number: 28,
+    passage: `Psychologists who study giving behavior ① have noticed that some people give substantial amounts to one or two charities, while others give small amounts to many charities. Those who donate to one or two charities seek evidence about what the charity is doing and ② what it is really having a positive impact. If the evidence indicates that the charity is really helping others, they make a substantial donation. Those who give small amounts to many charities are not so interested in whether what they are ③ doing helps others ─ psychologists call them warm glow givers. Knowing that they are giving makes ④ them feel good, regardless of the impact of their donation. In many cases the donation is so small ─ $10 or less ─ that if they stopped ⑤ to think, they would realize that the cost of processing the donation is likely to exceed any benefit it brings to the charity.`,
     choices: [
-      'time factor',
-      'found',
-      'catalog',
-      'learn',
-      'waited',
+      'have noticed',
+      'what',
+      'doing',
+      'them',
+      'to think',
     ],
     answer: 1, // ②
-    errorPart: 'found',
-    correctedForm: 'lost',
-    explanation: `이 문제는 **어법이 아니라 어휘** 문제. 문맥상 "역사적 지식이 ____" 라는데 6개월 안에 연구하면 잃어버리는 게 아니라는 그 사람의 주장이라 \`lost\` (잃어버린) 가 맞다. \`found\` (발견된) 는 의미 정반대.
+    errorPart: 'what',
+    correctedForm: 'whether',
+    explanation: `\`evidence about what the charity is doing **and ____ it is really having a positive impact**\` — 두 번째 절은 "그것이 정말 긍정적 영향을 미치는지 (아닌지)" 라는 **의문 명사절**이다. 이런 의미일 때 접속사는 \`whether\` (또는 if).
 
-이 문제는 어법 단원 매핑 대상이 아니라 어휘 학습용. 헤밍웨이 영문법 단원에는 노출하지 않는다.`,
-    relatedSlugs: [],
-    hasGrammar: false,
+\`what\` 은 선행사를 자체 포함한 관계대명사 = "~한 것". what 다음 절은 빈 자리 (주어 또는 목적어) 가 있어야 한다. 본 절 \`it is really having a positive impact\` 는 it (주어) + is having (동사) + a positive impact (목적어) 로 **이미 완전**. 따라서 what 부적절.
+
+\`whether\` 는 명사절 접속사로 "~인지 아닌지" 를 표현하며 절 안에 빈 자리가 필요 없다. 본 문장에 정확히 맞다.
+
+비교:
+- \`what the charity is doing\` (앞 절) — \`is doing\` 의 목적어 자리 빈 → what OK
+- \`whether it is really having a positive impact\` (뒷 절) — 절이 완전 → whether 필요`,
+    otherChoicesNote: `① have noticed — 주어 Psychologists (복수) + 현재완료 정상. ③ doing — \`what they are doing\` 명사절 (what 의 보어 자리 빈) 정상. ④ them — make + O + 원형 V (5형식 사역, them feel good) 정상. ⑤ to think — stop + to V = "~하기 위해 멈추다" 의 부사적 용법 (목적). 본 문맥에선 "잠시 멈춰서 생각해 본다" 의미라 정상. (\`stop V-ing\` 면 "~하던 것을 멈추다" — 의미 다름)`,
+    relatedSlugs: ['relative-what-compound'],
+    hasGrammar: true,
   },
   // ── 2017 ────────────────────────────────────────
   {
