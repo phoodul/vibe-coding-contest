@@ -118,7 +118,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
         </header>
 
         {/* 설명 + 문제 풀이 탭 */}
-        <LessonView body={parsed.body} quiz={parsed.quiz} nextNote={parsed.nextNote} />
+        <LessonView body={parsed.body} quiz={parsed.quiz} nextNote={parsed.nextNote} slug={slug} />
 
         {/* 하단 — 목차 복귀 */}
         <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-6 text-xs text-white/50">

@@ -11,7 +11,9 @@ import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { QuizPanel } from './QuizPanel';
+import { SuneungSection } from './SuneungSection';
 import type { QuizQuestion } from '@/lib/grammar/parse-lesson';
+import { getSuneungBySlug } from '@/lib/data/grammar-suneung';
 
 type Tab = 'study' | 'quiz';
 
@@ -19,10 +21,13 @@ interface Props {
   body: string;
   quiz: QuizQuestion[];
   nextNote?: string;
+  /** 현재 레슨 slug — 수능 기출 문제 매칭에 사용. */
+  slug?: string;
 }
 
-export function LessonView({ body, quiz, nextNote }: Props) {
+export function LessonView({ body, quiz, nextNote, slug }: Props) {
   const [tab, setTab] = useState<Tab>('study');
+  const suneungQuestions = slug ? getSuneungBySlug(slug) : [];
 
   return (
     <div className="space-y-6">
@@ -46,6 +51,9 @@ export function LessonView({ body, quiz, nextNote }: Props) {
           <article className="prose prose-invert prose-amber max-w-none prose-headings:text-amber-100 prose-headings:font-semibold prose-h2:mt-10 prose-h2:text-xl prose-h3:mt-6 prose-h3:text-base prose-p:leading-relaxed prose-p:text-white/85 prose-blockquote:border-amber-300/50 prose-blockquote:text-amber-100/90 prose-blockquote:bg-amber-400/5 prose-blockquote:rounded-r-lg prose-code:text-amber-200 prose-code:bg-white/5 prose-code:rounded prose-code:px-1 prose-code:before:content-none prose-code:after:content-none prose-table:text-sm prose-th:bg-white/5 prose-hr:border-white/10">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{body}</ReactMarkdown>
           </article>
+
+          {/* 관련 수능 기출 (매핑된 슬러그가 있을 때만) */}
+          <SuneungSection questions={suneungQuestions} />
 
           {nextNote && (
             <div className="mt-10 rounded-xl border border-white/10 bg-white/5 p-4">
