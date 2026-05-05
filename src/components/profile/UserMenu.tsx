@@ -16,11 +16,14 @@ import { createClient } from '@/lib/supabase/client';
 import { isAdminEmail } from '@/lib/legend/admin-emails';
 
 interface Props {
+  /** auth.users.id — null 이면 비-로그인 (로그인 버튼 표시). */
+  userId: string | null;
+  /** user.email — Kakao 처럼 provider 가 verified email 을 안 주면 null 가능. */
   email: string | null;
   displayName: string | null;
 }
 
-export function UserMenu({ email, displayName }: Props) {
+export function UserMenu({ userId, email, displayName }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -44,7 +47,7 @@ export function UserMenu({ email, displayName }: Props) {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
-  if (!email) {
+  if (!userId) {
     return (
       <Link
         href="/login"
@@ -56,7 +59,8 @@ export function UserMenu({ email, displayName }: Props) {
   }
 
   const isAdmin = isAdminEmail(email);
-  const initial = (displayName || email).slice(0, 1).toUpperCase();
+  const labelSource = displayName || email || '사용자';
+  const initial = labelSource.slice(0, 1).toUpperCase();
 
   async function handleLogout() {
     setOpen(false);
@@ -79,7 +83,7 @@ export function UserMenu({ email, displayName }: Props) {
           {initial}
         </span>
         <span className="hidden sm:block text-xs font-medium text-white/80 max-w-[120px] truncate">
-          {displayName || email}
+          {labelSource}
         </span>
         <svg
           aria-hidden="true"
@@ -106,7 +110,9 @@ export function UserMenu({ email, displayName }: Props) {
               <div className="text-sm font-semibold text-white truncate">
                 {displayName || '사용자'}
               </div>
-              <div className="text-[11px] text-white/50 truncate">{email}</div>
+              <div className="text-[11px] text-white/50 truncate">
+                {email ?? '(이메일 미공개)'}
+              </div>
             </div>
 
             {/* 메뉴 */}

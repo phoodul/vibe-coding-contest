@@ -15,6 +15,11 @@ interface Profile {
   role: "student" | "teacher";
 }
 
+interface AuthUser {
+  id: string;
+  email: string | null;
+}
+
 interface MenuItem {
   title: string;
   desc: string;
@@ -67,7 +72,7 @@ const cardVariants = {
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"student" | "teacher">("student");
 
@@ -79,7 +84,7 @@ export default function DashboardPage() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        setUserEmail(user.email ?? null);
+        setAuthUser({ id: user.id, email: user.email ?? null });
         const { data } = await supabase
           .from("profiles")
           .select("display_name, role")
@@ -104,7 +109,8 @@ export default function DashboardPage() {
     );
   }
 
-  const isLoggedIn = !!profile;
+  // user 객체 존재 = 로그인 (email 이 null 이라도 유효 — Kakao 처럼 verified email 미반환 케이스).
+  const isLoggedIn = !!authUser;
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-12 sm:py-20">
@@ -138,7 +144,11 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="shrink-0 pt-1">
-            <UserMenu email={userEmail} displayName={profile?.display_name ?? null} />
+            <UserMenu
+              userId={authUser?.id ?? null}
+              email={authUser?.email ?? null}
+              displayName={profile?.display_name ?? null}
+            />
           </div>
         </motion.div>
 
