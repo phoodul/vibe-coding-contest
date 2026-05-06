@@ -1,0 +1,418 @@
+{
+  "$schema": "earth-science-anchors.schema.v1",
+  "subject_anchor": "earth-science",
+  "subject_grade": "high",
+  "version": "phase-b3.draft.2026-05-06",
+  "purpose": "Phase B3 — Earth Science Maestro 30 trigger 시드. 자체 교과서 5 chapter 에서 추출한 수능 지구과학Ⅰ 핵심 도구. 정답으로 가는 최적 방법 학습 = trigger 라이브러리 본질.",
+  "personas": ["wegener", "galilei", "hubble"],
+  "anchors": [
+    {
+      "anchor": "지권의 변동",
+      "anchor_en": "Lithosphere",
+      "anchor_id": "lithosphere",
+      "primary_persona": "wegener",
+      "tools": [
+        {
+          "id": "es_litho_plate_boundary",
+          "name": "판 경계 3 분류 (발산·수렴·보존)",
+          "knowledge_layer": 1,
+          "tool_proposition": "두 판이 멀어지면 발산형(해령·열곡), 가까워지면 수렴형(섭입대·산맥), 어긋나면 보존형(변환단층) 으로 분류한다.",
+          "triggers": [
+            { "ko": "해령·동아프리카 열곡대가 보이면 발산형 경계", "en": "Mid-ocean ridge or rift valley → divergent boundary." },
+            { "ko": "안데스·히말라야·일본 해구가 보이면 수렴형", "en": "Andes, Himalaya, Japan trench → convergent boundary." },
+            { "ko": "샌앤드리어스 단층이 보이면 보존형 (변환단층)", "en": "San Andreas fault → transform (conservative) boundary." }
+          ],
+          "common_mistake_example": "히말라야를 발산 경계로 오해 (X) → 인도-유라시아 대륙 충돌 = 수렴 (O)"
+        },
+        {
+          "id": "es_litho_convergent_subtype",
+          "name": "수렴 경계 세부 분류 (대륙-대륙·대륙-해양·해양-해양)",
+          "knowledge_layer": 2,
+          "tool_proposition": "수렴 경계는 충돌하는 판의 종류로 3 분류 — 대륙-대륙(습곡 산맥), 대륙-해양(안데스형 호상열도), 해양-해양(섬호+해구).",
+          "triggers": [
+            { "ko": "히말라야형 = 대륙-대륙 수렴 → 두꺼운 습곡 산맥, 화산 X", "en": "Continent-continent convergence → fold mountains, no volcanism." },
+            { "ko": "안데스형 = 대륙-해양 수렴 → 호상 산맥 + 화산", "en": "Continent-ocean → arc mountains with volcanism (Andes-type)." },
+            { "ko": "해양-해양 수렴 → 섬호 + 해구 (일본·필리핀)", "en": "Ocean-ocean → island arc + trench (Japan, Philippines)." }
+          ],
+          "common_mistake_example": "안데스 산맥에서 화산 활동 X 라고 답함 (X) → 섭입대 마그마 발생으로 화산 활동 활발 (O)"
+        },
+        {
+          "id": "es_litho_seafloor_age",
+          "name": "해양 지각 나이 ↔ 해령 거리 비례",
+          "knowledge_layer": 1,
+          "tool_proposition": "해양 지각의 나이는 해령에서 멀수록 커진다 (해저 확장설 핵심 증거). 자기 역전 줄무늬도 해령 양쪽 대칭.",
+          "triggers": [
+            { "ko": "해령에서 멀수록 해양 지각 나이 ↑", "en": "The further from the ridge, the older the oceanic crust." },
+            { "ko": "자기 역전 줄무늬가 해령 양쪽으로 대칭", "en": "Magnetic reversal stripes are symmetric across the ridge." },
+            { "ko": "가장 오래된 해양 지각도 약 2억 년 미만 (대륙보다 훨씬 어림)", "en": "Even the oldest ocean crust is younger than ~200 Myr (vs. continental crust > 4 Gyr)." }
+          ],
+          "common_mistake_example": "해양 지각이 대륙 지각보다 오래되었다고 답함 (X) → 해양 지각은 섭입으로 끊임없이 재순환되어 훨씬 어림 (O)"
+        },
+        {
+          "id": "es_litho_hotspot",
+          "name": "열점 (hotspot) — 판 이동 흔적",
+          "knowledge_layer": 2,
+          "tool_proposition": "열점은 판 아래 고정된 마그마 분출원. 판이 이동하면 화산 사슬이 일직선으로 형성되며, 사슬의 나이 구배가 판 이동 방향·속도를 알려준다.",
+          "triggers": [
+            { "ko": "하와이 화산 사슬 = 열점 + 태평양판 북서 이동의 증거", "en": "Hawaii volcanic chain = hotspot + Pacific plate moving NW." },
+            { "ko": "사슬에서 가장 어린 화산이 현재 열점 위치", "en": "The youngest volcano in the chain marks the current hotspot location." },
+            { "ko": "판 경계와 무관한 위치의 화산 → 열점 의심", "en": "Volcanism not on a plate boundary → suspect a hotspot." }
+          ],
+          "common_mistake_example": "하와이를 판 경계 화산으로 분류 (X) → 태평양판 내부 열점 (O)"
+        },
+        {
+          "id": "es_litho_benioff",
+          "name": "베니오프대 — 지진 진원 깊이로 섭입각 추정",
+          "knowledge_layer": 3,
+          "tool_proposition": "수렴 경계에서 진원이 해구→내륙 방향으로 깊어지는 분포(베니오프대) 가 보이면 섭입각·섭입 방향을 추정한다.",
+          "triggers": [
+            { "ko": "해구→내륙으로 진원 깊이 ↑ → 섭입대 존재 (베니오프대)", "en": "Earthquake foci deepening from trench inland → subduction zone (Benioff zone)." },
+            { "ko": "진원 깊이 변화율 ↑ → 섭입각 ↑ (가파른 섭입)", "en": "Steeper depth gradient → steeper subduction angle." },
+            { "ko": "심발 지진(>300km) = 섭입대만 가능", "en": "Deep earthquakes (>300km) only occur in subduction zones." }
+          ],
+          "common_mistake_example": "심발 지진을 발산 경계에서 일어난다고 답함 (X) → 발산 경계는 천발 지진만 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "지구의 역사",
+      "anchor_en": "Earth History",
+      "anchor_id": "earth-history",
+      "primary_persona": "wegener",
+      "tools": [
+        {
+          "id": "es_hist_radiometric",
+          "name": "방사성 동위원소 반감기 → 절대연령",
+          "knowledge_layer": 2,
+          "tool_proposition": "방사성 동위원소가 반감기마다 절반씩 붕괴. 모원소:자원소 비율로 시료의 절대연령(년) 을 계산한다.",
+          "triggers": [
+            { "ko": "모원소:자원소 = 1:1 → 1 반감기 경과", "en": "Parent:daughter = 1:1 → one half-life elapsed." },
+            { "ko": "모원소:자원소 = 1:3 → 2 반감기 경과", "en": "Parent:daughter = 1:3 → two half-lives elapsed." },
+            { "ko": "U-238(45억 년) 은 오래된 암석, C-14(5730 년) 는 최근 유기물", "en": "U-238 (4.5 Gyr half-life) for old rocks; C-14 (5730 yr) for recent organic remains." }
+          ],
+          "common_mistake_example": "C-14 으로 1억 년 전 암석 측정 시도 (X) → 반감기 너무 짧아 측정 불가, U-Pb 등 사용 (O)"
+        },
+        {
+          "id": "es_hist_index_facies_fossil",
+          "name": "표준 화석 vs 시상 화석",
+          "knowledge_layer": 1,
+          "tool_proposition": "표준 화석은 분포 짧고 넓음 → 시간(지질시대) 지표. 시상 화석은 분포 길고 좁음 → 환경(서식지) 지표.",
+          "triggers": [
+            { "ko": "삼엽충·암모나이트 → 표준 화석 (시대 지표)", "en": "Trilobite, ammonite → index fossil (time indicator)." },
+            { "ko": "산호·고사리 → 시상 화석 (환경 지표)", "en": "Coral, fern → facies fossil (environment indicator)." },
+            { "ko": "분포 시기 짧고 분포 지역 넓음 = 표준 화석 조건", "en": "Short time range + wide geographic spread = good index fossil." }
+          ],
+          "common_mistake_example": "산호 화석으로 시대 결정 (X) → 산호는 환경(따뜻한 얕은 바다) 지표, 시대 결정은 표준 화석 (O)"
+        },
+        {
+          "id": "es_hist_superposition_cross",
+          "name": "지사학 4 법칙 (누중·관입·부정합·동물군 천이)",
+          "knowledge_layer": 2,
+          "tool_proposition": "수평 누중(아래가 오래됨), 관입(관입암 < 모암 나이), 부정합(시간 공백), 동물군 천이(화석 변화 = 시간 흐름) 로 상대 연령을 결정.",
+          "triggers": [
+            { "ko": "관입암 < 관입된 모암 나이 (관입 법칙)", "en": "Intrusion is younger than the rock it cuts through." },
+            { "ko": "지층 위 = 새로움, 아래 = 오래됨 (누중)", "en": "Upper layer is younger than the one below (superposition)." },
+            { "ko": "부정합 = 시간 공백 (퇴적 중단·침식·재퇴적)", "en": "Unconformity = gap in time (erosion + redeposition)." }
+          ],
+          "common_mistake_example": "관입암 위 부정합을 모르고 단순 누중만 적용 (X) → 부정합 식별 후 시간 공백 인정 (O)"
+        },
+        {
+          "id": "es_hist_geologic_time",
+          "name": "지질 시대 구분 (선캄·고생·중생·신생)",
+          "knowledge_layer": 1,
+          "tool_proposition": "지질 시대는 대표 화석·환경 변화로 4 단계 — 선캄(원시 생명) / 고생(삼엽충·양치류) / 중생(공룡·암모나이트) / 신생(포유류·인류).",
+          "triggers": [
+            { "ko": "삼엽충 → 고생대", "en": "Trilobite → Paleozoic." },
+            { "ko": "공룡·암모나이트 → 중생대", "en": "Dinosaur, ammonite → Mesozoic." },
+            { "ko": "포유류 번성 → 신생대", "en": "Mammal flourishing → Cenozoic." }
+          ],
+          "common_mistake_example": "암모나이트를 신생대 화석으로 답함 (X) → 중생대 말 K-Pg 대멸종으로 절멸 (O)"
+        },
+        {
+          "id": "es_hist_section_analysis",
+          "name": "지질 단면 해석 5단계",
+          "knowledge_layer": 3,
+          "tool_proposition": "지질 단면은 ① 누중 적용 → ② 관입 식별 → ③ 단층 식별 → ④ 부정합 식별 → ⑤ 절대연령 데이터로 검증, 의 5 단계로 해석.",
+          "triggers": [
+            { "ko": "단면 해석 1단계 = 누중 적용 (지층 순서)", "en": "Step 1: apply superposition (layer order)." },
+            { "ko": "관입암을 발견하면 모암보다 어린 것으로 그래프에 표시", "en": "Mark intrusions as younger than host rock." },
+            { "ko": "부정합 식별 후 양쪽 화석으로 시간 공백 추정", "en": "After identifying unconformity, estimate time gap from fossils on both sides." }
+          ],
+          "common_mistake_example": "단면에서 관입을 누중으로 처리 (X) → 관입 법칙 우선 적용 후 누중 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "대기",
+      "anchor_en": "Atmosphere",
+      "anchor_id": "atmosphere",
+      "primary_persona": "galilei",
+      "tools": [
+        {
+          "id": "es_atm_energy_budget",
+          "name": "위도별 에너지 수지 → 대기 순환 3 cell",
+          "knowledge_layer": 2,
+          "tool_proposition": "저위도는 에너지 흑자(들어오는 태양복사 > 방출 지구복사), 고위도는 적자. 이 불균형이 해들리·페렐·극세포 3 cell + 위도별 풍계를 만든다.",
+          "triggers": [
+            { "ko": "저위도 흑자 + 고위도 적자 → 에너지 수송 (대기·해양 순환)", "en": "Low-latitude surplus + high-latitude deficit → energy transport (atmosphere + ocean)." },
+            { "ko": "0°-30° = 해들리 cell (무역풍)", "en": "0°-30° = Hadley cell (trade winds)." },
+            { "ko": "30°-60° = 페렐 cell (편서풍)", "en": "30°-60° = Ferrel cell (westerlies)." }
+          ],
+          "common_mistake_example": "위도별 에너지 수지를 단순 태양복사만 비교 (X) → 들어오는 태양복사 vs 나가는 지구복사 차이 (O)"
+        },
+        {
+          "id": "es_atm_wind_belt",
+          "name": "위도별 풍계 (편서풍·무역풍·극풍)",
+          "knowledge_layer": 1,
+          "tool_proposition": "30°-60° = 편서풍, 0°-30° = 무역풍(NE/SE), 60°-90° = 극풍(편동). 코리올리 효과로 북·남반구 방향 다름.",
+          "triggers": [
+            { "ko": "한국·일본은 편서풍대 → 서→동 이동", "en": "Korea, Japan in westerly belt → weather moves W→E." },
+            { "ko": "북반구 무역풍 = 북동풍 (NE)", "en": "Northern Hemisphere trades = NE wind." },
+            { "ko": "코리올리 → 북반구 우편향, 남반구 좌편향", "en": "Coriolis: deflects right in NH, left in SH." }
+          ],
+          "common_mistake_example": "한국 황사를 무역풍 영향으로 답함 (X) → 편서풍 (중국 → 한국, 서→동) (O)"
+        },
+        {
+          "id": "es_atm_stability",
+          "name": "대기 안정도 (기온감률 비교)",
+          "knowledge_layer": 2,
+          "tool_proposition": "환경기온감률 < 단열감률(1°C/100m) 이면 안정, > 이면 불안정. 불안정할 때 대류·뇌우·구름 활발.",
+          "triggers": [
+            { "ko": "환경 기온감률 작음 + 단열감률 큼 → 안정", "en": "Env. lapse < adiabatic lapse → stable." },
+            { "ko": "환경 기온감률 큼 + 단열감률 작음 → 불안정 (대류 활발)", "en": "Env. lapse > adiabatic lapse → unstable (active convection)." },
+            { "ko": "역전층 = 위가 더 따뜻 → 강한 안정 → 스모그·미세먼지 정체", "en": "Inversion layer = warmer above → very stable → smog accumulates." }
+          ],
+          "common_mistake_example": "역전층에서 대류 활발하다고 답함 (X) → 강한 안정 → 대류 억제 (O)"
+        },
+        {
+          "id": "es_atm_adiabatic",
+          "name": "단열 변화 → 구름 형성",
+          "knowledge_layer": 2,
+          "tool_proposition": "공기가 상승하면 단열팽창으로 냉각 (1°C/100m). 이슬점 도달 시 구름 형성. 하강 시 단열압축으로 가열 → 구름 소멸.",
+          "triggers": [
+            { "ko": "상승 → 단열팽창 → 냉각 → 구름 형성", "en": "Rising air → adiabatic expansion → cooling → cloud formation." },
+            { "ko": "이슬점 도달 고도 = 구름 밑면", "en": "Dew point altitude = cloud base." },
+            { "ko": "산을 넘어 하강하는 공기는 푄 현상 (가열·건조)", "en": "Air descending leeward = foehn (warm, dry)." }
+          ],
+          "common_mistake_example": "푄 현상 후 기온 더 낮다고 답함 (X) → 단열압축으로 가열, 출발 때보다 더 따뜻 가능 (O)"
+        },
+        {
+          "id": "es_atm_front",
+          "name": "기단·전선 4 분류",
+          "knowledge_layer": 2,
+          "tool_proposition": "전선은 한랭(찬 공기 진입) / 온난(따뜻한 공기 진입) / 정체 / 폐색 (한랭이 온난을 따라잡음). 전선 지나는 순서로 기온·기압·풍향 변화.",
+          "triggers": [
+            { "ko": "한랭전선 통과 → 기온 급강·기압 상승·풍향 NW 으로 변화", "en": "Cold front passage → temp drops, pressure rises, wind shifts to NW." },
+            { "ko": "온난전선 통과 → 기온 점진 상승·구름 점진 변화 (권운→층운)", "en": "Warm front → gradual warming, cloud sequence Cirrus→Stratus." },
+            { "ko": "폐색전선 = 한랭이 온난을 따라잡음 → 사이클론 소멸 단계", "en": "Occluded front = cold catches warm → cyclone decay phase." }
+          ],
+          "common_mistake_example": "한랭전선과 온난전선 통과 시 기압 변화 같다고 답함 (X) → 한랭 후 상승, 온난 후 하강 → 상승 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "해양",
+      "anchor_en": "Ocean",
+      "anchor_id": "ocean",
+      "primary_persona": "galilei",
+      "tools": [
+        {
+          "id": "es_ocean_surface_gyre",
+          "name": "표층 해류 환류 (gyre)",
+          "knowledge_layer": 2,
+          "tool_proposition": "표층 해류는 풍계 + 코리올리로 환류 형성. 북반구 시계방향, 남반구 반시계. 한류·난류 분리.",
+          "triggers": [
+            { "ko": "북반구 환류 시계방향 (북태평양·북대서양)", "en": "NH gyres rotate clockwise (North Pacific, North Atlantic)." },
+            { "ko": "동안 = 난류 (멕시코 만류·구로시오), 서안 = 한류 (캘리포니아·카나리)", "en": "Western boundary = warm current; eastern = cold current." },
+            { "ko": "한류·난류 만나는 곳 = 좋은 어장 (영양염 풍부)", "en": "Cold + warm convergence = rich fishery (nutrients)." }
+          ],
+          "common_mistake_example": "구로시오를 한류로 답함 (X) → 일본 동안 난류 (O)"
+        },
+        {
+          "id": "es_ocean_thermohaline",
+          "name": "심층 순환 — 컨베이어 벨트",
+          "knowledge_layer": 3,
+          "tool_proposition": "고위도(북대서양·남극 주변) 에서 차가운 고염분 해수가 침강 → 전 지구 심층 순환. 약 1000년 주기 컨베이어 벨트.",
+          "triggers": [
+            { "ko": "북대서양 그린란드 부근 = 심층수 형성", "en": "North Atlantic near Greenland = deep water formation." },
+            { "ko": "차가워질수록·염분 ↑ → 밀도 ↑ → 침강", "en": "Colder + saltier → denser → sinks." },
+            { "ko": "심층 순환 약화 = 빙하기 trigger 가능 (영화 The Day After Tomorrow 모티프)", "en": "Weakened thermohaline → possible cooling trigger." }
+          ],
+          "common_mistake_example": "표층 해류와 심층 순환 시간 척도 같다고 답함 (X) → 표층 수년, 심층 ~1000년 (O)"
+        },
+        {
+          "id": "es_ocean_seawater_property",
+          "name": "해수 성질 (수온·염분·밀도)",
+          "knowledge_layer": 1,
+          "tool_proposition": "수온은 위도+계절+깊이로 변화. 염분은 강수-증발 균형 (적도 ↓, 아열대 ↑). 밀도는 수온 ↓ + 염분 ↑.",
+          "triggers": [
+            { "ko": "아열대(20-30°) 염분 최대 → 증발 > 강수", "en": "Subtropics (20-30°) max salinity → evaporation > precipitation." },
+            { "ko": "적도 부근 염분 ↓ → 강수 > 증발", "en": "Equator low salinity → precipitation > evaporation." },
+            { "ko": "수심 ↑ → 수온 ↓ → 밀도 ↑ (심해 안정)", "en": "Depth ↑ → temp ↓ → density ↑ (stable deep ocean)." }
+          ],
+          "common_mistake_example": "적도 염분이 가장 높다고 답함 (X) → 강수가 많아 오히려 낮음, 아열대가 max (O)"
+        },
+        {
+          "id": "es_ocean_currents_cold_warm",
+          "name": "한류·난류 영향 → 기후·어장",
+          "knowledge_layer": 2,
+          "tool_proposition": "난류 = 온난 다습 기후 (영국이 위도에 비해 따뜻), 한류 = 냉량 건조 (사하라 서안 사막). 만나는 곳 = 어장.",
+          "triggers": [
+            { "ko": "북대서양 난류 → 영국·노르웨이 동결 X (위도보다 따뜻)", "en": "North Atlantic Drift → UK/Norway warmer than latitude implies." },
+            { "ko": "벵겔라 한류 → 나미브 사막 (대륙 서안 건조)", "en": "Benguela Current → Namib Desert (cold current = arid)." },
+            { "ko": "북서태평양 한·난류 만남 (오야시오·구로시오) → 일본 근해 어장", "en": "Oyashio + Kuroshio convergence → Japan fishery." }
+          ],
+          "common_mistake_example": "한류 지역을 따뜻하다고 답함 (X) → 한류 = 인접 대륙 냉량 건조 (O)"
+        },
+        {
+          "id": "es_ocean_tide",
+          "name": "조석 (밀물·썰물)",
+          "knowledge_layer": 2,
+          "tool_proposition": "조석은 달·태양 인력 + 원심력의 합. 사리(보름·그믐, 달+태양 일직선) > 조차 큼, 조금(상현·하현) > 작음.",
+          "triggers": [
+            { "ko": "보름·그믐 = 사리 (달+태양 일직선) → 조차 max", "en": "Full/New moon = spring tide (Sun+Moon aligned) → max tidal range." },
+            { "ko": "상현·하현 = 조금 → 조차 min", "en": "First/Last quarter = neap tide → min tidal range." },
+            { "ko": "달 인력 > 태양 인력 (거리 차이 효과)", "en": "Moon's tidal force > Sun's (distance effect)." }
+          ],
+          "common_mistake_example": "조석을 태양 인력만으로 설명 (X) → 달 인력이 주, 태양은 보조 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "대기·해양 상호작용 + 기후 변화",
+      "anchor_en": "Air-Sea Interaction & Climate",
+      "anchor_id": "interaction",
+      "primary_persona": "galilei",
+      "tools": [
+        {
+          "id": "es_inter_upwelling",
+          "name": "용승·침강 (Ekman 수송)",
+          "knowledge_layer": 3,
+          "tool_proposition": "편서풍 + 코리올리 → 표층 해수 90° 편향 이동(Ekman). 해안에서 표층이 빠지면 심층 영양염 풍부 해수 보충 = 용승. 어장 형성.",
+          "triggers": [
+            { "ko": "남미 페루 연안 = 용승대 (찬 영양염 풍부)", "en": "Peru coast = upwelling zone (cold, nutrient-rich)." },
+            { "ko": "용승 = 표층 차가움 + 어장 풍부", "en": "Upwelling = cool surface + rich fishery." },
+            { "ko": "엘니뇨 시 페루 용승 약화 → 어획 ↓ + 페루 폭우", "en": "El Niño weakens Peru upwelling → reduced fish + heavy rain." }
+          ],
+          "common_mistake_example": "용승대가 따뜻하다고 답함 (X) → 심층 차가운 해수 솟아오름 → 표층 냉각 (O)"
+        },
+        {
+          "id": "es_inter_el_nino",
+          "name": "엘니뇨·라니냐 (ENSO)",
+          "knowledge_layer": 3,
+          "tool_proposition": "평년 = 무역풍 강 → 동태평양(페루) 차가움, 서태평양(인도네시아) 따뜻. 엘니뇨 = 무역풍 약 → 동태평양 따뜻해짐 → 강수대 동쪽 이동 → 페루 폭우 + 인도네시아 가뭄. 라니냐 = 반대.",
+          "triggers": [
+            { "ko": "엘니뇨 = 동태평양 해수온 ↑ + 페루 폭우 + 인도네시아 가뭄", "en": "El Niño = warmer eastern Pacific + Peru floods + Indonesia drought." },
+            { "ko": "라니냐 = 무역풍 강화 + 동태평양 더 차가워짐 + 평상시 강화", "en": "La Niña = stronger trades + cooler eastern Pacific (intensified normal pattern)." },
+            { "ko": "엘니뇨 → 한국 따뜻한 겨울 가능", "en": "El Niño → possible mild winter in Korea." }
+          ],
+          "common_mistake_example": "엘니뇨로 페루 가뭄, 인도네시아 폭우라고 답함 (X) → 반대 (O)"
+        },
+        {
+          "id": "es_inter_seasonal",
+          "name": "지구 자전·공전 → 계절·일주변동",
+          "knowledge_layer": 1,
+          "tool_proposition": "지구 자전축 23.5° 기울어 공전 → 계절 변화 (북반구 여름 = 남반구 겨울). 자전 → 일주변동(낮·밤).",
+          "triggers": [
+            { "ko": "북반구 여름 = 남반구 겨울 (자전축 기울기)", "en": "NH summer = SH winter (axial tilt)." },
+            { "ko": "하지(6/22) 북반구 태양 남중고도 max", "en": "Summer solstice (June 22) = max solar altitude in NH." },
+            { "ko": "춘분·추분 = 낮·밤 길이 같음 (전 지구)", "en": "Equinoxes = equal day/night globally." }
+          ],
+          "common_mistake_example": "여름 = 지구가 태양에 가까워서 라고 답함 (X) → 자전축 기울기, 거리 영향 미미 (O)"
+        },
+        {
+          "id": "es_inter_monsoon",
+          "name": "계절풍 (몬순)",
+          "knowledge_layer": 2,
+          "tool_proposition": "계절풍은 대륙·해양 비열차로 발생. 여름 = 대륙 가열 → 저기압 → 해양→대륙 풍 (남동·남서 계절풍). 겨울 = 대륙 냉각 → 고기압 → 대륙→해양 풍 (북서 계절풍).",
+          "triggers": [
+            { "ko": "한국 여름 남동·남서 계절풍 (해양에서 대륙으로 = 다습)", "en": "Korea summer monsoon = SE/SW from ocean (humid)." },
+            { "ko": "한국 겨울 북서 계절풍 (대륙에서 해양으로 = 한랭 건조)", "en": "Korea winter monsoon = NW from continent (cold, dry)." },
+            { "ko": "계절풍은 비열차 + 압력 차이로 형성", "en": "Monsoon caused by land/sea heat capacity difference + pressure gradient." }
+          ],
+          "common_mistake_example": "여름 계절풍을 북서풍으로 답함 (X) → 남동·남서풍 (해양→대륙) (O)"
+        },
+        {
+          "id": "es_inter_climate_change",
+          "name": "기후 변화 — 자연 vs 인위",
+          "knowledge_layer": 3,
+          "tool_proposition": "기후 변화 요인 = 천문(밀란코비치 주기) + 지질(화산·대륙이동) + 태양활동 + 인위(온실가스). 인위 요인 = 산업혁명 이후 CO₂ 급증.",
+          "triggers": [
+            { "ko": "밀란코비치 = 자전축 기울기·세차·이심률 → 빙하기 주기", "en": "Milankovitch = obliquity·precession·eccentricity → ice age cycles." },
+            { "ko": "산업혁명 이후 CO₂ ↑ → 온실효과 강화 → 평균 기온 ↑", "en": "Post-industrial CO₂ rise → enhanced greenhouse → global warming." },
+            { "ko": "양 되먹임 = 빙하 녹음 → 알베도 ↓ → 흡수 ↑ → 더 녹음", "en": "Positive feedback: ice melts → albedo ↓ → more absorption → more melting." }
+          ],
+          "common_mistake_example": "현재 온난화를 자연 변동으로만 설명 (X) → 인위적 CO₂ 기여가 주된 요인 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "별과 우주",
+      "anchor_en": "Stars and Universe",
+      "anchor_id": "astronomy",
+      "primary_persona": "hubble",
+      "tools": [
+        {
+          "id": "es_astro_hr_diagram",
+          "name": "H-R 도 → 별의 진화 단계",
+          "knowledge_layer": 2,
+          "tool_proposition": "H-R도(분광형/온도 - 광도) 위치로 별 진화 단계 판정. 주계열(대각선) → 거성·초거성(우상) → 백색왜성(좌하).",
+          "triggers": [
+            { "ko": "주계열 = 대각선 (좌상-우하). 별 일생 90% 머무름", "en": "Main sequence = diagonal. Stars spend 90% of life here." },
+            { "ko": "거성·초거성 = 우상 (낮은 온도, 큰 광도)", "en": "Giants/supergiants = upper right (cool but luminous)." },
+            { "ko": "백색왜성 = 좌하 (높은 온도, 작은 광도)", "en": "White dwarfs = lower left (hot but faint)." }
+          ],
+          "common_mistake_example": "거성을 좌상에 배치 (X) → 우상 (낮은 온도, 큰 광도) (O)"
+        },
+        {
+          "id": "es_astro_spectral_parallax",
+          "name": "분광형·광도 → 분광 시차로 거리 추정",
+          "knowledge_layer": 3,
+          "tool_proposition": "분광형(온도)으로 H-R도 위 위치 추정 → 절대 등급(M) 추정. 겉보기 등급(m) 과 차로 거리 모듈러스(m-M=5log(d/10)) 적용 → 거리.",
+          "triggers": [
+            { "ko": "분광 시차 절차 = 분광형 → 절대등급 → m-M → 거리", "en": "Spectroscopic parallax: spectral type → M → m-M → distance." },
+            { "ko": "m-M=0 → 10 pc, m-M=5 → 100 pc, m-M=10 → 1 kpc", "en": "m-M=0→10 pc, =5→100 pc, =10→1 kpc." },
+            { "ko": "삼각 시차 한계(~100pc) 너머는 분광 시차 사용", "en": "Beyond trigonometric parallax (~100pc), use spectroscopic." }
+          ],
+          "common_mistake_example": "삼각 시차로 1 Mpc 거리 측정 시도 (X) → 한계 100 pc, 분광 시차 사용 (O)"
+        },
+        {
+          "id": "es_astro_galaxy_classification",
+          "name": "허블 은하 분류 (타원·나선·불규칙)",
+          "knowledge_layer": 1,
+          "tool_proposition": "허블은 외부 은하를 모양으로 분류 — 타원(E0~E7), 나선(Sa~Sc), 막대나선(SBa~SBc), 불규칙(Irr). 타원 = 늙은 별, 나선 = 어린 별 + 가스 풍부.",
+          "triggers": [
+            { "ko": "은하수 = 막대나선 은하 (SBb~SBc 추정)", "en": "Milky Way = barred spiral (SBb-SBc)." },
+            { "ko": "타원 은하 = 늙은 별, 가스·먼지 X", "en": "Elliptical = old stars, no gas/dust." },
+            { "ko": "나선 은하 = 어린 별 + 별 형성 활발", "en": "Spiral = young stars + active star formation." }
+          ],
+          "common_mistake_example": "은하수를 타원 은하로 분류 (X) → 막대나선 (O)"
+        },
+        {
+          "id": "es_astro_redshift_hubble",
+          "name": "적색편이 z → 후퇴속도 → Hubble 법칙",
+          "knowledge_layer": 3,
+          "tool_proposition": "외부 은하 스펙트럼 적색편이 z = (Δλ/λ₀). v = cz (저속 근사). v = H₀·d (Hubble 법칙) → 거리 d 추정. 우주 팽창의 직접 증거.",
+          "triggers": [
+            { "ko": "적색편이 z 큼 → 후퇴속도 v 큼 → 거리 멀음", "en": "Larger z → larger v → greater distance." },
+            { "ko": "Hubble 상수 H₀ ≈ 70 km/s/Mpc", "en": "Hubble constant H₀ ≈ 70 km/s/Mpc." },
+            { "ko": "적색편이 = 광원이 멀어짐 → 파장 늘어남 (도플러)", "en": "Redshift = recession → wavelength stretched (Doppler)." }
+          ],
+          "common_mistake_example": "적색편이를 항상 도플러로 해석 (X) → 우주론적 적색편이는 공간 팽창에 의한 것 (O)"
+        },
+        {
+          "id": "es_astro_big_bang_evidence",
+          "name": "빅뱅 우주론 3 증거",
+          "knowledge_layer": 2,
+          "tool_proposition": "빅뱅 증거 = ① 우주배경복사(CMB, 2.7K), ② 가벼운 원소 함량(H 75%, He 25%) 일치, ③ 외부 은하 후퇴 (Hubble 법칙).",
+          "triggers": [
+            { "ko": "CMB = 빅뱅 38만년 후 광자 자유 이동 시작 흔적", "en": "CMB = relic from photon decoupling 380kyr after Big Bang." },
+            { "ko": "H 75% + He 25% = 빅뱅 핵합성 예측과 일치", "en": "75% H + 25% He matches BBN prediction." },
+            { "ko": "은하 후퇴 = 우주 팽창의 직접 관측 (Hubble)", "en": "Galaxy recession = direct observation of expansion (Hubble)." }
+          ],
+          "common_mistake_example": "CMB 를 별빛 합성으로 답함 (X) → 빅뱅 잔광, 별 형성 이전부터 존재 (O)"
+        }
+      ]
+    }
+  ]
+}
