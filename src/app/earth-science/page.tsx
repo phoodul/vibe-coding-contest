@@ -1,0 +1,136 @@
+/**
+ * 19차 (2026-05-06) — Earth Science Maestro PoC 진입.
+ *
+ * Phase B 진행 중: 베게너·갈릴레이·허블 페르소나 + 자체 교과서 (200p) trigger
+ * 시드 추출 + 도표 5단계 system prompt + BetaChat subject 통합 작업 진행 중.
+ *
+ * 본 페이지는 PoC 골격 — Phase B 단계별 commit 따라 채팅 통합 추가.
+ */
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+
+export const dynamic = 'force-dynamic';
+
+const PERSONAS = [
+  {
+    name: '베게너',
+    role: '대륙이동의 발견자',
+    domain: '지권의 변동 · 판구조론',
+    icon: '🌋',
+  },
+  {
+    name: '갈릴레이',
+    role: '근대 천문학의 시조',
+    domain: '천체 관측 · 망원경',
+    icon: '🔭',
+  },
+  {
+    name: '허블',
+    role: '우주 팽창의 발견자',
+    domain: '외부 은하 · 적색편이',
+    icon: '🌌',
+  },
+];
+
+const CHAPTERS = [
+  { ch: 1, title: '지권의 변동', persona: '베게너' },
+  { ch: 2, title: '지구의 역사' },
+  { ch: 3, title: '대기와 해양의 변화' },
+  { ch: 4, title: '대기와 해양의 상호작용' },
+  { ch: 5, title: '별과 우주', persona: '갈릴레이 · 허블' },
+];
+
+export default async function EarthScienceMainPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login?next=/earth-science');
+  }
+
+  return (
+    <div className="space-y-8">
+      {/* Hero */}
+      <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
+          🌍 Earth Science Maestro · Phase B 진행 중
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          베게너·갈릴레이·허블과 함께 푸는 지구과학
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-white/70">
+          수능 지구과학Ⅰ 의 그래프·층서 단면·천체 도식을 함께 읽고,
+          정답으로 가는 최적의 길을 단계별로 배우는 maestro 입니다.
+          <br />
+          개념 학습은 <Link href="/tutor" className="text-cyan-300 underline">소크라테스 튜터</Link> /
+          전체 구조 탐색은 <Link href="/mind-map?subject=earth-science" className="text-emerald-300 underline">마인드맵</Link>{' '}
+          과 짝을 이룹니다.
+        </p>
+      </section>
+
+      {/* 페르소나 3거장 */}
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/50">
+          3 거장
+        </h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {PERSONAS.map((p) => (
+            <div
+              key={p.name}
+              className="rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
+            >
+              <div className="text-3xl">{p.icon}</div>
+              <div className="mt-2 text-base font-semibold">{p.name}</div>
+              <div className="mt-1 text-xs text-white/60">{p.role}</div>
+              <div className="mt-2 text-[11px] text-emerald-300/80">{p.domain}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 5 챕터 */}
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/50">
+          학습 영역 (자체 교과서 196 content / 200p)
+        </h2>
+        <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {CHAPTERS.map((c) => (
+            <li
+              key={c.ch}
+              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+            >
+              <div>
+                <div className="text-sm font-semibold">
+                  Chapter {c.ch}. {c.title}
+                </div>
+                {c.persona && (
+                  <div className="mt-0.5 text-[11px] text-white/50">
+                    주 페르소나: {c.persona}
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Phase B 진행 안내 */}
+      <section className="rounded-2xl border border-amber-400/30 bg-amber-400/5 p-5">
+        <h3 className="text-sm font-semibold text-amber-200">Phase B 진행 중</h3>
+        <ul className="mt-2 space-y-1 text-xs text-white/70">
+          <li>• B1 페이지 골격 (현재) — 마인드맵·교과서 cross-link</li>
+          <li>• B2 페르소나 portrait 등록 (베게너·갈릴레이·허블)</li>
+          <li>• B3 trigger 시드 30개+ — 자체 교과서 5 ch 추출</li>
+          <li>• B4 system prompt + 도표 5단계 + 단위 standard</li>
+          <li>• B5 BetaChat subject 통합 + 베타 게이트 활성화</li>
+        </ul>
+        <p className="mt-3 text-[11px] text-white/50">
+          채팅 통합 완료 전까지 개념 학습은 소크라테스 튜터, 전체 구조는 마인드맵을 활용해 주세요.
+        </p>
+      </section>
+    </div>
+  );
+}
