@@ -113,6 +113,8 @@ export async function POST(req: Request) {
       subject_hint: subjectHint,
       // 19차 — Maestro subject. 미지정 또는 'math' = 기존 Legend 흐름.
       subject: maestroSubject,
+      // 19차 — Maestro 4 인물 (wegener / galilei / hubble / sagan)
+      selected_tutor: maestroTutor,
     } = await req.json();
     let area: string | null = clientArea ?? null;
     const subjectHintNote = buildSubjectHintNote(
@@ -147,31 +149,43 @@ export async function POST(req: Request) {
     const tutorPersona = useGpt ? "gauss" : "euler";
     const inputMode = input_mode ?? "text";
 
-    // 19차 Phase B5-c — Maestro (subject !== 'math') 단순 stream 분기.
-    // Manager·retriever·critic·chain 모두 skip. system prompt 만 maestro baseline.
-    // 4 인물 모델 매핑 (위치 왼→오른쪽): Sonnet 4.6 / Gemini 3.1 Pro / Opus 4.7 / GPT-5.5.
-    // 현재는 useGpt 단일 toggle 로 페르소나 결정 (B5-h 에서 selectedTutor 통합 예정).
+    // 19차 Phase B5-c/h — Maestro (subject !== 'math') 단순 stream 분기.
+    // Manager·retriever·critic·chain skip. system prompt 만 maestro baseline.
+    // 4 인물 모델 매핑 (왼→오른쪽): wegener=Sonnet 4.6 / galilei=Gemini 3.1 Pro
+    // / hubble=Opus 4.7 / sagan=GPT-5.5.
     const isMaestro =
       typeof maestroSubject === 'string' && maestroSubject !== 'math';
     if (isMaestro) {
       const { buildMaestroSystemPrompt } = await import('@/lib/maestro/system-prompts');
-      const maestroTutor = (useGpt ? 'sagan' : 'wegener') as
-        | 'wegener'
-        | 'galilei'
-        | 'hubble'
-        | 'sagan';
+      const tutorId = (typeof maestroTutor === 'string' && ['wegener', 'galilei', 'hubble', 'sagan'].includes(maestroTutor))
+        ? (maestroTutor as 'wegener' | 'galilei' | 'hubble' | 'sagan')
+        : 'wegener';
       const maestroSystem = buildMaestroSystemPrompt({
         subject: maestroSubject as 'earth-science' | 'biology' | 'physics' | 'chemistry',
-        tutor: maestroTutor,
+        tutor: tutorId,
       });
-      const sonnetModelIdM =
-        process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
-      const openaiModelIdM = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
-      const modelM = (useGpt
-        ? openai(openaiModelIdM)
-        : anthropic(sonnetModelIdM)) as LanguageModelV1;
+
+      // 페르소나 → 모델 매핑
+      const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
+      const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7-20260201';
+      const gptId = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
+      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3.1-pro';
+
+      let maestroModel: LanguageModelV1;
+      if (tutorId === 'wegener') {
+        maestroModel = anthropic(sonnetId) as LanguageModelV1;
+      } else if (tutorId === 'hubble') {
+        maestroModel = anthropic(opusId) as LanguageModelV1;
+      } else if (tutorId === 'sagan') {
+        maestroModel = openai(gptId) as LanguageModelV1;
+      } else {
+        // galilei = Gemini 3.1 Pro (@ai-sdk/google)
+        const { google } = await import('@ai-sdk/google');
+        maestroModel = google(geminiId) as unknown as LanguageModelV1;
+      }
+
       const resultM = streamText({
-        model: modelM,
+        model: maestroModel,
         system: maestroSystem,
         messages: messages as Parameters<typeof streamText>[0]['messages'],
       });

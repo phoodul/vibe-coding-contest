@@ -10,9 +10,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { getUserAccessTier, getBetaInviteMeta } from '@/lib/legend/access-tier';
-import { BetaChat } from '@/components/legend/BetaChat';
-import { TrialChat } from '@/components/legend/TrialChat';
+import { getUserAccessTier } from '@/lib/legend/access-tier';
+import { MaestroChat } from '@/components/maestro/MaestroChat';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,7 +71,6 @@ export default async function EarthScienceMainPage() {
 
   const tier = await getUserAccessTier(user.id);
   const userProp = { id: user.id, email: user.email ?? null };
-  const betaMeta = tier === 'beta' ? await getBetaInviteMeta(user.id) : null;
 
   return (
     <div className="space-y-8">
@@ -149,20 +147,12 @@ export default async function EarthScienceMainPage() {
         </ol>
       </section>
 
-      {/* 채팅 (BetaChat / TrialChat 분기) */}
+      {/* 4 인물 + 코칭 대화 + 수능 기출 */}
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/50">
-          maestro 와 함께 풀이하기
+          Maestro 와 함께 풀이하기 {tier === 'beta' ? '· 베타' : '· 체험판'}
         </h2>
-        {tier === 'beta' ? (
-          <BetaChat
-            user={userProp}
-            betaMeta={betaMeta ?? undefined}
-            subject="earth-science"
-          />
-        ) : (
-          <TrialChat user={userProp} subject="earth-science" />
-        )}
+        <MaestroChat subject="earth-science" user={userProp} />
       </section>
     </div>
   );
