@@ -190,9 +190,12 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
   const isMaestro = subject !== 'math';
   const maestroTutorList = isMaestro ? (MAESTRO_TUTORS_BY_SUBJECT[subject] ?? []) : [];
   const [useGpt, setUseGpt] = useState(false);
-  // 19차 — math 면 5 거장 (default ramanujan_intuit). maestro 면 subject 별 1번 인물.
+  // 19차 (2026-05-07) 사용자 결정:
+  // - Sonnet 인물 (index 0) = "곧 출시" disabled. 향후 vision 강화 후 활성.
+  // - Gemini 인물 (index 1) = default + "추천" badge.
+  // - Opus (index 2) / GPT-5.5 (index 3) = 거장.
   const [selectedTutor, setSelectedTutor] = useState<MaestroTutorName>(
-    isMaestro ? (maestroTutorList[0] ?? 'wegener') : 'ramanujan_intuit',
+    isMaestro ? (maestroTutorList[1] ?? maestroTutorList[0] ?? 'galilei') : 'ramanujan_intuit',
   );
   const [selectedSubject, setSelectedSubject] = useState<string>(
     isMaestro ? `${subject}-I` : 'free',
@@ -420,30 +423,23 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               : '화학';
       const variant = sel.variant === 'I' ? 'Ⅰ' : 'Ⅱ';
       const header = `[${sel.year}학년도 수능 ${subjectKo}${variant} ${sel.number}번]`;
-      const key = `${sel.subject}_${sel.variant}_${sel.year}_${sel.number}`;
 
       try {
-        // 1) 문제 영역 image URL (question 단위)
+        // 19차 (2026-05-07) 사용자 결정 — vision only.
+        // markdown text part 제거 (Upstage parsing 부정확 → LLM 혼란 가능).
+        // LLM 의 vision 능력 만으로 한국어 시험지 풀이 충분 (Gemini 3.1 Pro · Opus 4.7 · GPT-5.5).
+        // markdown 은 향후 검색·trigger 매칭·OCR 정밀화 별도 용도 보존.
         const { getSuneungQuestionImage } = await import('@/lib/data/suneung-question-manifest');
         const imageUrl = getSuneungQuestionImage(sel.subject, sel.variant, sel.year, sel.number);
 
-        // 2) Upstage parsed markdown (본문·보기) + cleanup
-        const textsModule = (await import('@/lib/data/suneung-problem-texts-science.json'))
-          .default as Record<string, { markdown: string }>;
-        const rawMarkdown = textsModule[key]?.markdown ?? '';
-        const cleanedMarkdown = cleanupSuneungMarkdown(rawMarkdown);
-
-        const requestText = cleanedMarkdown
-          ? `${header}\n\n${cleanedMarkdown}\n\n이 문제를 함께 풀어주세요!`
-          : `${header}\n\n이 문제를 함께 풀어주세요. 시험지 영역을 이미지로 첨부했어요!`;
+        const requestText = `${header} 이 문제를 함께 풀어주세요.`;
 
         if (!imageUrl) {
-          // 영역 PNG 미업로드 → 텍스트만 (markdown 또는 fallback)
           await append({ role: 'user', content: requestText });
           return;
         }
 
-        // multimodal — image (영역 PNG) + text (header + cleaned markdown)
+        // multimodal — image (영역 PNG) + 짧은 text 헤더만
         const contentParts: Array<{ type: string; image?: string; text?: string }> = [
           { type: 'image' as const, image: imageUrl },
           { type: 'text' as const, text: requestText },
@@ -453,7 +449,6 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
           content: contentParts as unknown as string,
         });
       } catch {
-        // manifest 모듈 없음 → 텍스트만
         await append({ role: 'user', content: header });
       }
     },
@@ -606,34 +601,62 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
             </span>
           </div>
           <div className={`grid gap-2 ${isMaestro ? 'grid-cols-4' : 'grid-cols-5'}`}>
-            {(isMaestro ? maestroTutorList : ALL_TUTORS).map((t) => {
+            {(isMaestro ? maestroTutorList : ALL_TUTORS).map((t, idx) => {
               const p = isMaestro
                 ? getPortraitFor(subject, t as MaestroTutorName)
                 : PORTRAITS[t as TutorName];
               const active = selectedTutor === t;
+              // 19차 (2026-05-07): maestro 첫 인물 (Sonnet) 은 "곧 출시" disabled.
+              // 둘째 인물 (Gemini) 은 "추천" badge.
+              const isComingSoon = isMaestro && idx === 0;
+              const isRecommended = isMaestro && idx === 1;
               return (
                 <motion.button
                   key={t}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={isComingSoon ? undefined : { y: -2 }}
+                  whileTap={isComingSoon ? undefined : { scale: 0.97 }}
                   type="button"
-                  onClick={() => handleTutorClick(t as MaestroTutorName)}
-                  className={`group flex flex-col items-center gap-1.5 rounded-xl border p-2.5 transition-colors ${
-                    active
-                      ? 'border-amber-300/60 bg-amber-400/10 ring-2 ring-amber-300/30'
-                      : 'border-white/10 bg-white/5 hover:border-amber-300/40 hover:bg-amber-400/5'
+                  disabled={isComingSoon}
+                  onClick={() => !isComingSoon && handleTutorClick(t as MaestroTutorName)}
+                  className={`group relative flex flex-col items-center gap-1.5 rounded-xl border p-2.5 transition-colors ${
+                    isComingSoon
+                      ? 'cursor-not-allowed border-white/5 bg-white/5 opacity-50'
+                      : active
+                        ? 'border-amber-300/60 bg-amber-400/10 ring-2 ring-amber-300/30'
+                        : 'border-white/10 bg-white/5 hover:border-amber-300/40 hover:bg-amber-400/5'
                   }`}
                   data-testid={`tutor-${t}`}
+                  title={
+                    isComingSoon
+                      ? `${p.label_ko} — 곧 출시 (모델 준비 중)`
+                      : isRecommended
+                        ? `${p.label_ko} — 추천`
+                        : p.label_ko
+                  }
                 >
+                  {isComingSoon && (
+                    <span className="absolute right-1 top-1 rounded-full bg-slate-700/80 px-1.5 py-0.5 text-[8px] font-semibold text-white/70">
+                      곧
+                    </span>
+                  )}
+                  {isRecommended && (
+                    <span className="absolute right-1 top-1 rounded-full bg-emerald-500/80 px-1.5 py-0.5 text-[8px] font-semibold text-white">
+                      추천
+                    </span>
+                  )}
                   <Image
                     src={p.src}
                     alt={p.alt}
                     width={44}
                     height={44}
-                    className="rounded-full object-cover ring-2 ring-white/10"
+                    className={`rounded-full object-cover ring-2 ${
+                      isComingSoon ? 'ring-white/5 grayscale' : 'ring-white/10'
+                    }`}
                   />
                   <span className="text-xs font-medium text-white">{p.label_ko}</span>
-                  <span className="text-[9px] leading-tight text-white/50">{p.tier_label}</span>
+                  <span className="text-[9px] leading-tight text-white/50">
+                    {isComingSoon ? '곧 출시' : p.tier_label}
+                  </span>
                 </motion.button>
               );
             })}
