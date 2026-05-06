@@ -98,6 +98,44 @@ const SUBJECT_VARIANT_LABEL: Record<string, { label: string; icon: string }> = {
   'chemistry-II': { label: '화학Ⅱ', icon: '⚗️' },
 };
 
+/**
+ * 19차 (2026-05-07) — Upstage Document Parse markdown cleanup.
+ *
+ * 사용자 보고:
+ *   - footer ("* 확인 사항", "이 문제지에 관한 저작권은 한국교육과정평가원에 있습니다") 노출
+ *   - 보기 ①~⑤ 깨짐 ("① 」 □ ④ ㄱ, □ ⑤ ㄴ, □")
+ *   - 페이지 헤더·번호 노출
+ *   - "![image](/image/placeholder)" 가짜 이미지 링크
+ *
+ * 이미지가 별도 첨부되므로 markdown 은 본문·보기 텍스트만 깔끔하게.
+ */
+function cleanupSuneungMarkdown(md: string): string {
+  if (!md) return md;
+  let s = md;
+  // footer 제거
+  s = s.replace(/\*\s*확인 사항:.*?(?:\n|$)/g, '');
+  s = s.replace(/이 문제지에 관한 저작권은 한국교육과정평가원에.*?(?:\n|$)/g, '');
+  s = s.replace(/한국교육과정평가원.*?(?:\n|$)/g, '');
+  // 페이지 헤더 (대학수학능력시험 / 과학탐구 영역 / 문제지)
+  s = s.replace(/\d+학년도\s*대학수학능력시험.*?(?:\n|$)/g, '');
+  s = s.replace(/과학탐구\s*영역.*?(?:\n|$)/g, '');
+  s = s.replace(/제\s*\d+\s*교시.*?(?:\n|$)/g, '');
+  s = s.replace(/^\s*문제지\s*$/gm, '');
+  s = s.replace(/홀수형|짝수형/g, '');
+  // 페이지 번호 (단독 숫자 라인)
+  s = s.replace(/^\s*\d+\s*$/gm, '');
+  s = s.replace(/^\s*\d+\s*\/\s*\d+\s*$/gm, '');
+  // 가짜 image placeholder
+  s = s.replace(/!\[image\]\([^)]*placeholder[^)]*\)/g, '');
+  s = s.replace(/!\[\]\([^)]*placeholder[^)]*\)/g, '');
+  // 깨진 보기 line 감지 — ① 또는 (1) 다음 비정상 문자 (□ 」 등) 가 다수면 line 제거
+  // 시험지 정상 보기는 "① ㄱ", "② ㄴ" 등 깔끔. 깨진 case 제거.
+  s = s.replace(/^.*[①②③④⑤].*[□「」].*$/gm, '');
+  // 여러 빈 줄 → 하나
+  s = s.replace(/\n{3,}/g, '\n\n');
+  return s.trim();
+}
+
 function getMaestroVariants(subject: Subject): Array<{ id: string; label: string; icon: string }> {
   if (subject === 'math') return [];
   const out: Array<{ id: string; label: string; icon: string }> = [];
@@ -386,13 +424,14 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
         const { getSuneungQuestionImage } = await import('@/lib/data/suneung-question-manifest');
         const imageUrl = getSuneungQuestionImage(sel.subject, sel.variant, sel.year, sel.number);
 
-        // 2) Upstage parsed markdown (본문·보기)
+        // 2) Upstage parsed markdown (본문·보기) + cleanup
         const textsModule = (await import('@/lib/data/suneung-problem-texts-science.json'))
           .default as Record<string, { markdown: string }>;
-        const markdown = textsModule[key]?.markdown ?? '';
+        const rawMarkdown = textsModule[key]?.markdown ?? '';
+        const cleanedMarkdown = cleanupSuneungMarkdown(rawMarkdown);
 
-        const requestText = markdown
-          ? `${header}\n\n${markdown}\n\n이 문제를 함께 풀어주세요!`
+        const requestText = cleanedMarkdown
+          ? `${header}\n\n${cleanedMarkdown}\n\n이 문제를 함께 풀어주세요!`
           : `${header}\n\n이 문제를 함께 풀어주세요. 시험지 영역을 이미지로 첨부했어요!`;
 
         if (!imageUrl) {
@@ -401,7 +440,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
           return;
         }
 
-        // multimodal — image (영역 PNG) + text (header + markdown 본문·보기)
+        // multimodal — image (영역 PNG) + text (header + cleaned markdown)
         const contentParts: Array<{ type: string; image?: string; text?: string }> = [
           { type: 'image' as const, image: imageUrl },
           { type: 'text' as const, text: requestText },
