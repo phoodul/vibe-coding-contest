@@ -24,3 +24,11 @@ export {
   PERSONAS_BY_SUBJECT,
   getPersonasForSubject,
 } from '@/lib/legend/portraits';
+
+// 19차 (2026-05-06) — Vision LLM (표·그림 분석) 인프라
+export type { FigureKind, VisionInput, VisionOutput, VisionExtracted } from './vision';
+export {
+  FIGURE_ANALYSIS_5_STEPS,
+  SUBJECT_FIGURE_HINTS,
+  analyzeVision,
+} from './vision';
