@@ -143,19 +143,24 @@ export function getSuneungPages(
 }
 
 /**
- * 한 시험지에서 특정 문제 번호가 있을 가능성이 높은 페이지 URL 들.
- * PDF 페이지에 문제 N 번이 정확히 어디 있는지는 OCR 없이는 알 수 없으므로,
- * 일단 전체 페이지를 반환 (Vision LLM 이 multimodal 입력으로 처리).
- *
- * 향후 OCR 으로 문제 번호 ↔ 페이지 매핑 정밀화 가능.
+ * 한 시험지에서 특정 문제 번호가 있을 가능성이 높은 페이지 URL 1개.
+ * 가정: 5문제/페이지 (1~5→page-1, 6~10→page-2, 11~15→page-3, 16~20→page-4).
+ * 정확도 ~80%+. 잘못된 페이지면 학생이 직접 캡쳐 추가.
  */
 export function getSuneungPagesForNumber(
   subject: Subject,
   variant: ExamVariant,
   year: number,
-  _number: number,
+  number: number,
 ): string[] {
-  return getSuneungPages(subject, variant, year);
+  const allPages = getSuneungPages(subject, variant, year);
+  if (allPages.length === 0) return [];
+  const pageIndex = Math.min(
+    Math.max(0, Math.ceil(number / 5) - 1),
+    allPages.length - 1,
+  );
+  const url = allPages[pageIndex];
+  return url ? [url] : [];
 }
 `;
 }

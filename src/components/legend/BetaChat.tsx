@@ -365,7 +365,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
   }
 
   // ScienceExamPanel onSelect 핸들러 — maestro past-exam 선택
-  // 19차 (2026-05-07): manifest 에서 PDF 페이지 URL 자동 첨부 (multimodal)
+  // 19차 (2026-05-07): question 단위 image + Upstage markdown 자동 첨부 (multimodal)
   const handleSelectScienceExam = useCallback(
     async (sel: ExamSelection) => {
       setActiveView('chat');
@@ -378,26 +378,33 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               ? '물리학'
               : '화학';
       const variant = sel.variant === 'I' ? 'Ⅰ' : 'Ⅱ';
-      const text = `[${sel.year}학년도 수능 ${subjectKo}${variant} ${sel.number}번]\n\n이 문제를 함께 풀어주세요. 시험지 페이지를 첨부했어요.`;
+      const header = `[${sel.year}학년도 수능 ${subjectKo}${variant} ${sel.number}번]`;
+      const key = `${sel.subject}_${sel.variant}_${sel.year}_${sel.number}`;
 
-      // manifest 에서 페이지 URL 가져오기 (dynamic import — manifest 가 클 수 있음)
       try {
-        const { getSuneungPagesForNumber } = await import('@/lib/data/suneung-pdf-manifest');
-        const urls = getSuneungPagesForNumber(sel.subject, sel.variant, sel.year, sel.number);
+        // 1) 문제 영역 image URL (question 단위)
+        const { getSuneungQuestionImage } = await import('@/lib/data/suneung-question-manifest');
+        const imageUrl = getSuneungQuestionImage(sel.subject, sel.variant, sel.year, sel.number);
 
-        if (urls.length === 0) {
-          // manifest 미보유 → 텍스트만 전달 (학생이 직접 캡쳐)
-          await append({
-            role: 'user',
-            content: `${text}\n\n(시험지 페이지가 아직 등록되지 않았어요. 직접 캡쳐해서 올려주실래요?)`,
-          });
+        // 2) Upstage parsed markdown (본문·보기)
+        const textsModule = (await import('@/lib/data/suneung-problem-texts-science.json'))
+          .default as Record<string, { markdown: string }>;
+        const markdown = textsModule[key]?.markdown ?? '';
+
+        const requestText = markdown
+          ? `${header}\n\n${markdown}\n\n이 문제를 함께 풀어주세요!`
+          : `${header}\n\n이 문제를 함께 풀어주세요. 시험지 영역을 이미지로 첨부했어요!`;
+
+        if (!imageUrl) {
+          // 영역 PNG 미업로드 → 텍스트만 (markdown 또는 fallback)
+          await append({ role: 'user', content: requestText });
           return;
         }
 
-        // multimodal — 이미지 N개 + 텍스트 1개. AI SDK content array 형식
+        // multimodal — image (영역 PNG) + text (header + markdown 본문·보기)
         const contentParts: Array<{ type: string; image?: string; text?: string }> = [
-          ...urls.map((url) => ({ type: 'image' as const, image: url })),
-          { type: 'text' as const, text },
+          { type: 'image' as const, image: imageUrl },
+          { type: 'text' as const, text: requestText },
         ];
         await append({
           role: 'user',
@@ -405,7 +412,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
         });
       } catch {
         // manifest 모듈 없음 → 텍스트만
-        await append({ role: 'user', content: text });
+        await append({ role: 'user', content: header });
       }
     },
     [append],
