@@ -34,7 +34,13 @@ interface User {
 const LEGEND_TUTORS: TutorName[] = ['gauss', 'von_neumann', 'euler', 'leibniz'];
 const SUBJECT_STORAGE_KEY = 'legend_selected_subject';
 
-export function TrialChat({ user: _user }: { user: User }) {
+interface TrialChatProps {
+  user: User;
+  /** 19차 Maestro subject. 미지정 시 'math'. */
+  subject?: import('@/lib/legend/types').Subject;
+}
+
+export function TrialChat({ user: _user, subject = 'math' }: TrialChatProps) {
   const [trialQuotaError, setTrialQuotaError] = useState<{
     message: string;
     apply_url?: string;
@@ -66,6 +72,8 @@ export function TrialChat({ user: _user }: { user: User }) {
         useGpt: false,
         input_mode: 'text',
         subject_hint: selectedSubject === 'free' ? null : selectedSubject,
+        // 19차 — maestro subject. 'math' (default) = Legend.
+        subject,
       },
       onError: (error) => {
         // 402 응답을 fetch 가 throw 하지 않으므로 onError 는 네트워크/스트림 에러용.

@@ -111,6 +111,8 @@ export async function POST(req: Request) {
       useGpt,
       input_mode,
       subject_hint: subjectHint,
+      // 19차 — Maestro subject. 미지정 또는 'math' = 기존 Legend 흐름.
+      subject: maestroSubject,
     } = await req.json();
     let area: string | null = clientArea ?? null;
     const subjectHintNote = buildSubjectHintNote(
@@ -144,6 +146,37 @@ export async function POST(req: Request) {
     const tutorName = useGpt ? "가우스 튜터" : "오일러 튜터";
     const tutorPersona = useGpt ? "gauss" : "euler";
     const inputMode = input_mode ?? "text";
+
+    // 19차 Phase B5-c — Maestro (subject !== 'math') 단순 stream 분기.
+    // Manager·retriever·critic·chain 모두 skip. system prompt 만 maestro baseline.
+    // 4 인물 모델 매핑 (위치 왼→오른쪽): Sonnet 4.6 / Gemini 3.1 Pro / Opus 4.7 / GPT-5.5.
+    // 현재는 useGpt 단일 toggle 로 페르소나 결정 (B5-h 에서 selectedTutor 통합 예정).
+    const isMaestro =
+      typeof maestroSubject === 'string' && maestroSubject !== 'math';
+    if (isMaestro) {
+      const { buildMaestroSystemPrompt } = await import('@/lib/maestro/system-prompts');
+      const maestroTutor = (useGpt ? 'sagan' : 'wegener') as
+        | 'wegener'
+        | 'galilei'
+        | 'hubble'
+        | 'sagan';
+      const maestroSystem = buildMaestroSystemPrompt({
+        subject: maestroSubject as 'earth-science' | 'biology' | 'physics' | 'chemistry',
+        tutor: maestroTutor,
+      });
+      const sonnetModelIdM =
+        process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
+      const openaiModelIdM = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
+      const modelM = (useGpt
+        ? openai(openaiModelIdM)
+        : anthropic(sonnetModelIdM)) as LanguageModelV1;
+      const resultM = streamText({
+        model: modelM,
+        system: maestroSystem,
+        messages: messages as Parameters<typeof streamText>[0]['messages'],
+      });
+      return resultM.toDataStreamResponse();
+    }
 
     // C-12: Free 일일 한도 — 첫 user turn 일 때만 체크 (후속 코칭 턴은 통과)
     const isFirstUserTurn = messages.filter((m: { role: string }) => m.role === "assistant").length === 0;

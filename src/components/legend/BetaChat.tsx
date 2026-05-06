@@ -79,7 +79,19 @@ function extractFirstUserText(messages: Array<{ role: string; content: unknown }
 
 const SUBJECT_STORAGE_KEY = 'legend_selected_subject';
 
-export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: BetaMeta }) {
+import type { Subject } from '@/lib/legend/types';
+
+interface BetaChatProps {
+  user: User;
+  betaMeta?: BetaMeta;
+  /**
+   * 19차 — Maestro 4 과목 (math / earth-science / biology / physics / chemistry).
+   * 미지정 시 'math' (Legend = 기본 동작, 회귀 0).
+   */
+  subject?: Subject;
+}
+
+export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatProps) {
   const [useGpt, setUseGpt] = useState(false);
   const [selectedTutor, setSelectedTutor] = useState<TutorName>('ramanujan_intuit');
   const [selectedSubject, setSelectedSubject] = useState<string>('free');
@@ -123,6 +135,8 @@ export function BetaChat({ user: _user, betaMeta }: { user: User; betaMeta?: Bet
         useGpt,
         input_mode: 'text',
         subject_hint: selectedSubject === 'free' ? null : selectedSubject,
+        // 19차 — maestro subject. 'math' (default) 면 기존 Legend 흐름.
+        subject,
       },
     });
 

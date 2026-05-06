@@ -10,6 +10,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { getUserAccessTier, getBetaInviteMeta } from '@/lib/legend/access-tier';
+import { BetaChat } from '@/components/legend/BetaChat';
+import { TrialChat } from '@/components/legend/TrialChat';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,12 +70,16 @@ export default async function EarthScienceMainPage() {
     redirect('/login?next=/earth-science');
   }
 
+  const tier = await getUserAccessTier(user.id);
+  const userProp = { id: user.id, email: user.email ?? null };
+  const betaMeta = tier === 'beta' ? await getBetaInviteMeta(user.id) : null;
+
   return (
     <div className="space-y-8">
       {/* Hero */}
       <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
         <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
-          🌍 Earth Science Maestro · Phase B 진행 중
+          🌍 Earth Science Maestro · 베타 PoC
         </div>
         <h1 className="text-2xl font-bold tracking-tight">
           베게너·갈릴레이·허블·세이건과 함께 푸는 지구과학
@@ -142,19 +149,20 @@ export default async function EarthScienceMainPage() {
         </ol>
       </section>
 
-      {/* Phase B 진행 안내 */}
-      <section className="rounded-2xl border border-amber-400/30 bg-amber-400/5 p-5">
-        <h3 className="text-sm font-semibold text-amber-200">Phase B 진행 중</h3>
-        <ul className="mt-2 space-y-1 text-xs text-white/70">
-          <li>• B1 페이지 골격 (현재) — 마인드맵·교과서 cross-link</li>
-          <li>• B2 페르소나 portrait 등록 (베게너·갈릴레이·허블)</li>
-          <li>• B3 trigger 시드 30개+ — 자체 교과서 5 ch 추출</li>
-          <li>• B4 system prompt + 도표 5단계 + 단위 standard</li>
-          <li>• B5 BetaChat subject 통합 + 베타 게이트 활성화</li>
-        </ul>
-        <p className="mt-3 text-[11px] text-white/50">
-          채팅 통합 완료 전까지 개념 학습은 소크라테스 튜터, 전체 구조는 마인드맵을 활용해 주세요.
-        </p>
+      {/* 채팅 (BetaChat / TrialChat 분기) */}
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/50">
+          maestro 와 함께 풀이하기
+        </h2>
+        {tier === 'beta' ? (
+          <BetaChat
+            user={userProp}
+            betaMeta={betaMeta ?? undefined}
+            subject="earth-science"
+          />
+        ) : (
+          <TrialChat user={userProp} subject="earth-science" />
+        )}
       </section>
     </div>
   );
