@@ -8,6 +8,54 @@
  */
 
 // ────────────────────────────────────────────────────────────────────────────
+// Subject — 19차 (2026-05-06) maestro 4과목 일반화 도입
+// ────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Maestro subject — 4 maestro (물리·화학·생물·지구과학) + 미래 확장 (국어·영어).
+ * Legend Tutor = `subject='math'` 인스턴스. 19차 이전 모든 코드는 'math' 가정.
+ */
+export type Subject =
+  | 'math'
+  | 'physics'
+  | 'chemistry'
+  | 'biology'
+  | 'earth-science'
+  | 'korean'    // Phase 5+ (세종·정약용·이이)
+  | 'english';  // Phase 5+ (셰익스피어·처칠·촘스키)
+
+/** Phase 1~Phase D 에서 활성화된 subject */
+export const ACTIVE_SUBJECTS: readonly Subject[] = [
+  'math',
+  'physics',
+  'chemistry',
+  'biology',
+  'earth-science',
+] as const;
+
+/** subject → 한글 라벨 (학생 화면) */
+export const SUBJECT_LABEL_KO: Record<Subject, string> = {
+  math: '수학',
+  physics: '물리',
+  chemistry: '화학',
+  biology: '생명과학',
+  'earth-science': '지구과학',
+  korean: '국어',
+  english: '영어',
+};
+
+/** subject → URL slug ( `/legend` · `/physics` 등 ) */
+export const SUBJECT_URL_SLUG: Record<Subject, string> = {
+  math: 'legend',          // 기존 URL 보존 (/legend)
+  physics: 'physics',
+  chemistry: 'chemistry',
+  biology: 'biology',
+  'earth-science': 'earth-science',
+  korean: 'korean',
+  english: 'english',
+};
+
+// ────────────────────────────────────────────────────────────────────────────
 // 튜터 · tier · 영역
 // ────────────────────────────────────────────────────────────────────────────
 
@@ -18,6 +66,8 @@ export type TutorName =
   | 'von_neumann'      // Tier 2: GPT-5.5 agentic
   | 'euler'            // Tier 2: Opus 4.7 agentic
   | 'leibniz';         // Tier 2: Sonnet 4.6 agentic
+// 19차 — 4 maestro (earth-science / biology / physics / chemistry) 페르소나는 Phase B/C 에서 추가.
+// 각 추가 시 (1) TutorName union 확장 (2) PORTRAITS Record entry (3) PERSONAS_BY_SUBJECT 매핑 갱신.
 
 export type Tier = 0 | 1 | 2;
 

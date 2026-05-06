@@ -6,7 +6,7 @@
  * 모든 portrait 는 public/ 하위 PD 자료. 라이선스는 public/LICENSES.md 참조.
  * label_ko + model_short 는 UI 표기용 (Δ1 QuotaIndicator·TutorBadge 일관성).
  */
-import type { TutorName } from './types';
+import type { Subject, TutorName } from './types';
 
 export interface TutorPortrait {
   /** /public 경로 (Next/Image src 로 그대로 사용) */
@@ -83,6 +83,34 @@ export const PORTRAITS: Record<TutorName, TutorPortrait> = {
     tier_label: '거장',
   },
 };
+
+/**
+ * 19차 (2026-05-06) — Maestro 4 과목 페르소나 매핑.
+ *
+ * math = 5거장 (Legend, 기존 보존)
+ * earth-science / biology / physics / chemistry = Phase B/C 에서 페르소나·portrait 채움.
+ *
+ * 페르소나 추가 절차:
+ *   1. types.ts: TutorName union 확장
+ *   2. portraits.ts: PORTRAITS entry 추가 (src·alt·label_ko·persona_desc·tier_label)
+ *   3. PERSONAS_BY_SUBJECT 매핑 갱신
+ */
+export const PERSONAS_BY_SUBJECT: Record<Subject, readonly TutorName[]> = {
+  math: ['ramanujan_calc', 'ramanujan_intuit', 'gauss', 'von_neumann', 'euler', 'leibniz'],
+  'earth-science': [], // Phase B: 베게너·갈릴레이·허블
+  biology: [],         // Phase C-Biology: 다윈·멘델·왓슨
+  physics: [],         // Phase C-Physics: 파인만·뉴턴·아인슈타인
+  chemistry: [],       // Phase C-Chemistry: 멘델레예프·라부아지에·폴링
+  korean: [],          // Phase 5+: 세종·정약용·이이
+  english: [],         // Phase 5+: 셰익스피어·처칠·촘스키
+};
+
+/**
+ * 한 subject 의 모든 페르소나 목록 (UI · TutorPickerModal 용).
+ */
+export function getPersonasForSubject(subject: Subject): readonly TutorName[] {
+  return PERSONAS_BY_SUBJECT[subject];
+}
 
 /**
  * label_ko 만 빠르게 조회 (TutorBadge import 비용 최소화 시).

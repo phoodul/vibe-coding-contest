@@ -57,6 +57,31 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 19차 세션 진행 중 (2026-05-06) — Maestro 4 과목 신설 ⭐
+
+사용자 요청: Legend Tutor 와 동일한 패턴으로 **Physics / Chemistry / Biology / Earth Science Maestro** 4 도구 추가. 향후 Korean (세종·정약용·이이) + English (셰익스피어·처칠·촘스키) 까지 7 maestro 우주.
+
+### 핵심 결정 (2026-05-06)
+- 인프라 일반화: `lib/legend` → `lib/maestro` (Legend = `subject='math'` adapter)
+- PoC 순서: **Earth Science → Biology → Physics → Chemistry**
+- 페르소나 3인 통일 (math 만 5인 유지)
+- URL: `/physics`, `/chemistry`, `/biology`, `/earth-science` (단독·짧음)
+- Biology = 다윈·멘델·왓슨 / Earth Science = 베게너·갈릴레이·허블
+- 입력 = 캡쳐+필기 (Legend HandwriteCanvas 재사용) — PDF 일괄 OCR 후순위
+- 표·그림 분석 강화 = Vision LLM (Gauss 듀얼 튜터 패턴 추출)
+- KaTeX mhchem 활성화 (`\ce{}` `<=>`)
+
+### 진행
+- ✅ `docs/implementation_plan_maestro.md` 작성 (Phase A 11 task / B 5 / C 15 / D 3 = 33 task / 3.5주)
+- ✅ `docs/task.md` 작성
+- ✅ memory 3 entry 추가 (`project_maestro_4subjects`, `project_korean_maestro`, `project_english_maestro`)
+- 🔄 Phase A1 진행 중 (`lib/legend` subject-aware 일반화)
+
+### 푸시 누락 6 commits (origin/main) → 2026-05-06 push 완료 (`075620a..eae18c2`)
+지구과학 production 미반영 문제 = origin/main 미푸시였음. 푸시 후 Vercel 자동 배포.
+
+---
+
 ## 18차 세션 종료 (2026-05-06) — 5 commits / LaTeX fix + 수능 12건 + 지구과학Ⅰ 자체 제작 200p
 
 ### 누적 commit 5건 (`cec2afc` ~ `60dd2c4`)

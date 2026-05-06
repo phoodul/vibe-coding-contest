@@ -11,3 +11,5 @@ export { matchSimilarProblem } from './stage0-similar';
 export { classifyDifficulty } from './stage1-manager';
 export { runRamanujanProbe } from './stage2-probe';
 export { detectEscalation } from './escalation-detector';
+// 19차 (2026-05-06) — maestro subject 일반화
+export { PERSONAS_BY_SUBJECT, getPersonasForSubject } from './portraits';
