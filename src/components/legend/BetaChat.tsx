@@ -112,26 +112,29 @@ const SUBJECT_VARIANT_LABEL: Record<string, { label: string; icon: string }> = {
 function cleanupSuneungMarkdown(md: string): string {
   if (!md) return md;
   let s = md;
-  // footer 제거
-  s = s.replace(/\*\s*확인 사항:.*?(?:\n|$)/g, '');
-  s = s.replace(/이 문제지에 관한 저작권은 한국교육과정평가원에.*?(?:\n|$)/g, '');
+  // 1. markdown heading prefix 제거 (# / ## / ### 등) — 학생 화면에 큰 글씨로 렌더되는 원인
+  s = s.replace(/^#{1,6}\s+/gm, '');
+  // 2. footer "* 확인 사항" 이후 끝까지 모두 제거 (multiline)
+  s = s.replace(/\*\s*확인\s*사항[\s\S]*$/g, '');
+  s = s.replace(/이 문제지에 관한 저작권[\s\S]*$/g, '');
   s = s.replace(/한국교육과정평가원.*?(?:\n|$)/g, '');
-  // 페이지 헤더 (대학수학능력시험 / 과학탐구 영역 / 문제지)
+  // 3. ○ 안내 (답안지 기입·확인 등)
+  s = s.replace(/^\s*[○●]\s+답안지.*$/gm, '');
+  s = s.replace(/^\s*[○●]\s+.*기입.*$/gm, '');
+  // 4. 페이지 헤더 (대학수학능력시험·과학탐구 영역·교시·홀짝)
   s = s.replace(/\d+학년도\s*대학수학능력시험.*?(?:\n|$)/g, '');
   s = s.replace(/과학탐구\s*영역.*?(?:\n|$)/g, '');
   s = s.replace(/제\s*\d+\s*교시.*?(?:\n|$)/g, '');
   s = s.replace(/^\s*문제지\s*$/gm, '');
   s = s.replace(/홀수형|짝수형/g, '');
-  // 페이지 번호 (단독 숫자 라인)
+  // 5. 페이지 번호 (단독 숫자 라인)
   s = s.replace(/^\s*\d+\s*$/gm, '');
   s = s.replace(/^\s*\d+\s*\/\s*\d+\s*$/gm, '');
-  // 가짜 image placeholder
-  s = s.replace(/!\[image\]\([^)]*placeholder[^)]*\)/g, '');
-  s = s.replace(/!\[\]\([^)]*placeholder[^)]*\)/g, '');
-  // 깨진 보기 line 감지 — ① 또는 (1) 다음 비정상 문자 (□ 」 등) 가 다수면 line 제거
-  // 시험지 정상 보기는 "① ㄱ", "② ㄴ" 등 깔끔. 깨진 case 제거.
+  // 6. 가짜 image placeholder (Upstage 가 자주 생성)
+  s = s.replace(/!\[[^\]]*\]\([^)]*placeholder[^)]*\)/g, '');
+  // 7. 깨진 보기 line — ①~⑤ + □·「」·말줄임 동시 등장 라인 제거
   s = s.replace(/^.*[①②③④⑤].*[□「」].*$/gm, '');
-  // 여러 빈 줄 → 하나
+  // 8. 빈 줄 정리 (3개+ → 2개)
   s = s.replace(/\n{3,}/g, '\n\n');
   return s.trim();
 }
