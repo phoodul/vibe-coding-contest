@@ -59,7 +59,7 @@
 
 ## 19차 세션 종료 (2026-05-06~07) — Maestro 4 과목 fully functional ⭐
 
-### 누적 23 commits / 핵심 성과
+### 누적 25 commits / 핵심 성과
 - ✅ **4 maestro 페이지 신설** — Earth Science / Biology / Physics / Chemistry
 - ✅ **16 인물 페르소나 + 4 모델 매핑** (Sonnet/Gemini/Opus/GPT-5.5)
 - ✅ **1598 수능 정답 DB** (4 과목 × Ⅰ/Ⅱ × 10년 = 1600, 결측 2건 = 출제 오류 자동 차단)
@@ -68,7 +68,11 @@
 - ✅ **80 PDF 정규화** (4 과목 × Ⅰ/Ⅱ × 10년)
 - ✅ **mhchem 활성화** (`\ce{}` 화학식 렌더)
 - ✅ **Vision LLM 인프라** (FigureKind 9종 + 도표 5단계)
-- ✅ **30 trigger 시드** (Earth Science 6 anchor × 5 도구 / 90 명제)
+- ✅ **120 trigger 도구 시드** — 4 maestro × 6 anchor × 5 도구 / 240+ 명제
+  - Earth Science 30 (지권·지구사·대기·해양·상호작용·천체)
+  - Biology 30 (유전·분자·생리·진화·생태·생명공학)
+  - Physics 30 (역학·전자기·파동·열·현대·핵)
+  - Chemistry 30 (원자·결합·반응·평형·산화환원·유기)
 
 ### 인물 매핑 (모든 maestro 4 모델 동일)
 | 과목 | 1번 (Sonnet, 기본) | 2번 (Gemini) | 3번 (Opus) | 4번 (GPT-5.5) |
