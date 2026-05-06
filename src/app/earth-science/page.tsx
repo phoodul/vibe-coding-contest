@@ -6,39 +6,55 @@
  *
  * 본 페이지는 PoC 골격 — Phase B 단계별 commit 따라 채팅 통합 추가.
  */
+import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * 4 인물 = 4 가지 다른 사고방식의 가이드.
+ * 영역 매칭이 아니며, 학생은 어떤 인물에게도 어떤 단원이든 질문 가능.
+ * 차이는 코칭 스타일 — 호기심 자극 + 학생이 직접 선택 (또는 자동 라우팅).
+ */
 const PERSONAS = [
   {
+    src: '/wegener-portrait.jpg',
     name: '베게너',
-    role: '대륙이동의 발견자',
-    domain: '지권의 변동 · 판구조론',
-    icon: '🌋',
+    tagline: '대륙을 움직인 사색가',
+    hint: '꼼꼼하게, 한 단계씩 — 일상 풀이의 동반자',
+    tier: '기본',
   },
   {
+    src: '/galilei-portrait.jpg',
     name: '갈릴레이',
-    role: '근대 천문학의 시조',
-    domain: '천체 관측 · 망원경',
-    icon: '🔭',
+    tagline: '하늘을 처음 들여다본 거장',
+    hint: '관찰과 추론으로 함정을 가려낸다',
+    tier: '거장',
   },
   {
+    src: '/hubble-portrait.jpg',
     name: '허블',
-    role: '우주 팽창의 발견자',
-    domain: '외부 은하 · 적색편이',
-    icon: '🌌',
+    tagline: '우주가 팽창함을 본 사람',
+    hint: '도표·그래프 깊이 읽기',
+    tier: '거장',
+  },
+  {
+    src: '/sagan-portrait.jpg',
+    name: '칼 세이건',
+    tagline: '코스모스의 이야기꾼',
+    hint: '큰 그림·맥락으로 풀이를 설계',
+    tier: '거장',
   },
 ];
 
 const CHAPTERS = [
-  { ch: 1, title: '지권의 변동', persona: '베게너' },
+  { ch: 1, title: '지권의 변동' },
   { ch: 2, title: '지구의 역사' },
   { ch: 3, title: '대기와 해양의 변화' },
   { ch: 4, title: '대기와 해양의 상호작용' },
-  { ch: 5, title: '별과 우주', persona: '갈릴레이 · 허블' },
+  { ch: 5, title: '별과 우주' },
 ];
 
 export default async function EarthScienceMainPage() {
@@ -59,7 +75,7 @@ export default async function EarthScienceMainPage() {
           🌍 Earth Science Maestro · Phase B 진행 중
         </div>
         <h1 className="text-2xl font-bold tracking-tight">
-          베게너·갈릴레이·허블과 함께 푸는 지구과학
+          베게너·갈릴레이·허블·세이건과 함께 푸는 지구과학
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-white/70">
           수능 지구과학Ⅰ 의 그래프·층서 단면·천체 도식을 함께 읽고,
@@ -71,24 +87,40 @@ export default async function EarthScienceMainPage() {
         </p>
       </section>
 
-      {/* 페르소나 3거장 */}
+      {/* 4 인물 */}
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/50">
-          3 거장
+          4 인물 — 4 가지 사고방식
         </h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {PERSONAS.map((p) => (
             <div
               key={p.name}
-              className="rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
+              className="overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-colors hover:bg-white/10"
             >
-              <div className="text-3xl">{p.icon}</div>
-              <div className="mt-2 text-base font-semibold">{p.name}</div>
-              <div className="mt-1 text-xs text-white/60">{p.role}</div>
-              <div className="mt-2 text-[11px] text-emerald-300/80">{p.domain}</div>
+              <div className="relative aspect-[4/5] w-full bg-slate-800">
+                <Image
+                  src={p.src}
+                  alt={p.name}
+                  fill
+                  sizes="(max-width: 640px) 50vw, 25vw"
+                  className="object-cover"
+                />
+                <span className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-semibold tracking-wider text-white/80">
+                  {p.tier}
+                </span>
+              </div>
+              <div className="px-3 py-3">
+                <div className="text-sm font-semibold">{p.name}</div>
+                <div className="mt-0.5 text-[11px] text-emerald-300/80">{p.tagline}</div>
+                <div className="mt-2 text-[11px] leading-snug text-white/60">{p.hint}</div>
+              </div>
             </div>
           ))}
         </div>
+        <p className="mt-3 text-[11px] text-white/40">
+          어느 인물에게도 어떤 단원이든 질문할 수 있어요. 사고방식의 차이를 즐겨보세요.
+        </p>
       </section>
 
       {/* 5 챕터 */}
@@ -102,15 +134,8 @@ export default async function EarthScienceMainPage() {
               key={c.ch}
               className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3"
             >
-              <div>
-                <div className="text-sm font-semibold">
-                  Chapter {c.ch}. {c.title}
-                </div>
-                {c.persona && (
-                  <div className="mt-0.5 text-[11px] text-white/50">
-                    주 페르소나: {c.persona}
-                  </div>
-                )}
+              <div className="text-sm font-semibold">
+                Chapter {c.ch}. {c.title}
               </div>
             </li>
           ))}

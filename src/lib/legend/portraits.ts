@@ -90,37 +90,50 @@ export const PORTRAITS: Record<TutorName, TutorPortrait> = {
 };
 
 /**
- * 19차 Phase B — Earth Science Maestro 3 거장.
+ * 19차 Phase B — Earth Science Maestro 4 인물 portrait.
  *
- * Legend (수학) 의 PORTRAITS Record 와 분리. tutor-orchestrator·fallback·report
- * 는 수학 전용이므로 본 Record 는 영향 없음. UI (TutorBadge·TutorPickerModal)
- * 는 BetaChat subject prop 통합 시 (Phase B5) 본 Record 도 lookup 하도록 확장.
+ * 사용자 결정 (2026-05-06):
+ *  - 인물 = 영역 잘 하는 사람이 아니라 모델의 차이. 단순 대표 인물.
+ *  - 학생에게 모델은 공개 X — 호기심 자극.
+ *  - 모델 매핑 (위치 왼→오른쪽): Sonnet 4.6 (기본) / Gemini 3.1 Pro / Opus 4.7 / GPT-5.5
  *
- * Portrait 은 placeholder SVG. 진짜 이미지는 사용자 업로드 후 src 교체.
+ * Portrait 라이선스 (모두 PD ✅):
+ *  - wegener: Wikimedia Commons "Alfred_Wegener_ca.1924-30.jpg" — pre-1931 익명
+ *  - galilei: Sustermans 1636 초상 — 작가 사망 1681
+ *  - hubble: Hagemeyer 1931 사진 — pre-1977 미국 출판 + no notice
+ *  - sagan: NASA/JPL 1980 (Planetary Society 창립) — 미국 연방정부 PD
  */
 export const EARTH_SCIENCE_PORTRAITS: Record<EarthScienceTutorName, TutorPortrait> = {
   wegener: {
-    src: '/earth-science-portrait-placeholder.svg',
-    alt: '베게너 (대륙이동)',
+    src: '/wegener-portrait.jpg',
+    alt: '알프레드 베게너',
     label_ko: '베게너',
     model_short: 'Sonnet 4.6',
-    persona_desc: '대륙이동의 발견자',
+    persona_desc: '대륙을 움직인 사색가',
     tier_label: '기본',
   },
   galilei: {
-    src: '/earth-science-portrait-placeholder.svg',
-    alt: '갈릴레이 (천체 관측)',
+    src: '/galilei-portrait.jpg',
+    alt: '갈릴레오 갈릴레이',
     label_ko: '갈릴레이',
-    model_short: 'Opus 4.7',
-    persona_desc: '근대 천문학의 시조',
+    model_short: 'Gemini 3.1 Pro',
+    persona_desc: '하늘을 처음 들여다본 거장',
     tier_label: '거장',
   },
   hubble: {
-    src: '/earth-science-portrait-placeholder.svg',
-    alt: '허블 (우주 팽창)',
+    src: '/hubble-portrait.jpg',
+    alt: '에드윈 허블',
     label_ko: '허블',
-    model_short: 'Gemini 3.1 Pro',
-    persona_desc: '우주 팽창의 발견자',
+    model_short: 'Opus 4.7',
+    persona_desc: '우주가 팽창함을 본 사람',
+    tier_label: '거장',
+  },
+  sagan: {
+    src: '/sagan-portrait.jpg',
+    alt: '칼 세이건',
+    label_ko: '칼 세이건',
+    model_short: 'GPT-5.5',
+    persona_desc: '코스모스의 이야기꾼',
     tier_label: '거장',
   },
 };
@@ -138,7 +151,7 @@ export const EARTH_SCIENCE_PORTRAITS: Record<EarthScienceTutorName, TutorPortrai
  */
 export const PERSONAS_BY_SUBJECT: Record<Subject, readonly MaestroTutorName[]> = {
   math: ['ramanujan_calc', 'ramanujan_intuit', 'gauss', 'von_neumann', 'euler', 'leibniz'],
-  'earth-science': ['wegener', 'galilei', 'hubble'], // Phase B 활성화
+  'earth-science': ['wegener', 'galilei', 'hubble', 'sagan'], // Phase B 활성화 — 4 인물
   biology: [],         // Phase C-Biology: 다윈·멘델·왓슨
   physics: [],         // Phase C-Physics: 파인만·뉴턴·아인슈타인
   chemistry: [],       // Phase C-Chemistry: 멘델레예프·라부아지에·폴링

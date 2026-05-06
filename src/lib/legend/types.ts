@@ -68,11 +68,20 @@ export type MathTutorName =
   | 'euler'            // Tier 2: Opus 4.7 agentic
   | 'leibniz';         // Tier 2: Sonnet 4.6 agentic
 
-/** 19차 Phase B — Earth Science Maestro 3 거장 (별도 Record 로 관리, Legend 와 분리) */
+/**
+ * 19차 Phase B — Earth Science Maestro 4 인물.
+ *
+ * 영역 매칭이 아닌 모델의 차이만 — 학생에게 모델은 공개하지 않음 (호기심 자극).
+ * 위치 (왼쪽 → 오른쪽): wegener (Sonnet 4.6 기본) →
+ * galilei (Gemini 3.1 Pro) → hubble (Opus 4.7) → sagan (GPT-5.5).
+ *
+ * 향후 모델 업그레이드 시 매핑만 갱신하여 일관성 유지.
+ */
 export type EarthScienceTutorName =
-  | 'wegener'          // 대륙이동 · 지권의 변동
-  | 'galilei'          // 천체 관측 · 근대 천문학
-  | 'hubble';          // 우주 팽창 · 외부 은하
+  | 'wegener'          // Sonnet 4.6 — 기본 (사용량 넉넉)
+  | 'galilei'          // Gemini 3.1 Pro — 거장
+  | 'hubble'           // Opus 4.7 — 거장
+  | 'sagan';           // GPT-5.5 — 거장
 
 /**
  * Legend (수학) 페르소나 alias.

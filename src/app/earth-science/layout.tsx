@@ -2,9 +2,9 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Earth Science Maestro — 베게너·갈릴레이·허블',
+  title: 'Earth Science Maestro — 베게너·갈릴레이·허블·세이건',
   description:
-    '대륙이동의 베게너, 천체 관측의 갈릴레이, 우주 팽창의 허블 — 3 거장과 함께 푸는 수능 지구과학Ⅰ',
+    '4 가지 사고방식의 가이드와 함께 푸는 수능 지구과학Ⅰ — 정답으로 가는 최적의 길을 단계별로 학습',
 };
 
 export default function EarthScienceLayout({ children }: { children: ReactNode }) {
@@ -19,7 +19,7 @@ export default function EarthScienceLayout({ children }: { children: ReactNode }
             🌍 Earth Science Maestro
           </Link>
           <span className="hidden text-xs text-white/50 sm:inline">
-            베게너·갈릴레이·허블이 함께 푸는 지구과학
+            4 가지 사고방식과 함께 푸는 수능 지구과학
           </span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">

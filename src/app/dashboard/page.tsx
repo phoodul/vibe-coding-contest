@@ -32,7 +32,7 @@ interface MenuItem {
 const studentItems: MenuItem[] = [
   { title: "소크라테스 AI 튜터", desc: "질문으로 이끄는 AI 학습", icon: "socrates", href: "/tutor" },
   { title: "Legend Tutor", desc: "5명의 거장 — 라마누잔·가우스·폰 노이만·오일러·라이프니츠", icon: "🏛️", href: "/legend" },
-  { title: "Earth Science Maestro", desc: "베게너·갈릴레이·허블 — 수능 지구과학 문제풀이 가이드", icon: "🌍", href: "/earth-science" },
+  { title: "Earth Science Maestro", desc: "베게너·갈릴레이·허블·세이건 — 수능 지구과학 문제풀이 가이드", icon: "🌍", href: "/earth-science" },
   { title: "마인드 맵", desc: "교과서 전체 구조를 한눈에 탐색", icon: "🧠", href: "/mind-map" },
   { title: "영어 단어 학습", desc: "18,000 단어 레벨별 에베레스트 등반", icon: "🏔️", href: "/vocabulary" },
   { title: "AI 영어 회화", desc: "내 수준에 맞는 음성 영어 대화", icon: "🎙️", href: "/conversation" },
