@@ -308,6 +308,30 @@ const studentFeatures = [
     href: "/legend",
   },
   {
+    title: "Physics Maestro",
+    description: "페르미·아인슈타인·파인만·뉴턴 — 4 거장의 물리학Ⅰ·Ⅱ 수능 문제풀이 코칭. 영역 PNG + Upstage markdown 자동 첨부.",
+    icon: "⚛️",
+    href: "/physics",
+  },
+  {
+    title: "Chemistry Maestro",
+    description: "마리 퀴리·라부아지에·폴링·멘델레예프 — 4 거장의 화학Ⅰ·Ⅱ 수능 문제풀이 코칭.",
+    icon: "🧪",
+    href: "/chemistry",
+  },
+  {
+    title: "Biology Maestro",
+    description: "파스퇴르·멘델·왓슨·다윈 — 4 거장의 생명과학Ⅰ·Ⅱ 수능 문제풀이 코칭.",
+    icon: "🧬",
+    href: "/biology",
+  },
+  {
+    title: "Earth Science Maestro",
+    description: "베게너·갈릴레이·허블·세이건 — 4 거장의 지구과학Ⅰ·Ⅱ 수능 문제풀이 코칭.",
+    icon: "🌍",
+    href: "/earth-science",
+  },
+  {
     title: "마인드 맵",
     description: "교과서 전체 구조를 인터랙티브 마인드 맵으로 탐색하며 핵심 내용을 한눈에 파악합니다.",
     icon: "🧠",
