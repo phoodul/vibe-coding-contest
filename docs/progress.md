@@ -75,7 +75,15 @@
 - ✅ `docs/implementation_plan_maestro.md` 작성 (Phase A 11 task / B 5 / C 15 / D 3 = 33 task / 3.5주)
 - ✅ `docs/task.md` 작성
 - ✅ memory 3 entry 추가 (`project_maestro_4subjects`, `project_korean_maestro`, `project_english_maestro`)
-- 🔄 Phase A1 진행 중 (`lib/legend` subject-aware 일반화)
+- ✅ Phase A 핵심 인프라 4 commits push (A6/A7/A10 은 Phase B 진입 시 통합):
+  - `113e653` A1a-c — Subject type / PERSONAS_BY_SUBJECT / SUBJECT_LABEL_KO / URL slug
+  - `51d57eb` A1d + A2 + A5 — trigger-accumulator subject 매개변수 + lib/maestro adapter + DB 마이그레이션 SQL
+  - `59e2f2d` A8 — KaTeX mhchem 활성화 + 7 회귀 테스트
+  - `1dadcc0` A9 — Vision LLM 인프라 골격 (FigureKind 9종 + 도표 5단계 + Subject 별 hints)
+- 🔜 Phase B 시작점 — Earth Science PoC (`/earth-science` 페이지 · 베게너·갈릴레이·허블 페르소나 · 자체 교과서 trigger 시드 추출)
+
+### ⚠️ 사용자 액션 필요
+- **A5 SQL 마이그레이션** (`supabase/migrations/20260506_maestro_subject_columns.sql`) production 적용 — Supabase Dashboard SQL Editor 에서 직접 실행 (legend_* 7 테이블에 subject 컬럼 추가, 회귀 0)
 
 ### 푸시 누락 6 commits (origin/main) → 2026-05-06 push 완료 (`075620a..eae18c2`)
 지구과학 production 미반영 문제 = origin/main 미푸시였음. 푸시 후 Vercel 자동 배포.

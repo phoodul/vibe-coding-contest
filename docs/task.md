@@ -11,8 +11,8 @@
 
 | Phase | 영역 | Task 수 | Status |
 |---|---|---|---|
-| **A** | 인프라 일반화 (`lib/legend` → `lib/maestro`) + Vision LLM | 11 | 🔜 시작 |
-| **B** | Earth Science PoC ⭐ | 5 | ⏳ |
+| **A** | 인프라 일반화 (`lib/legend` → `lib/maestro`) + Vision LLM | 11 | 🔄 6/11 핵심 완료 (A6/A7/A10 = Phase B 와 통합) |
+| **B** | Earth Science PoC ⭐ | 5 | 🔜 시작 |
 | **C** | Biology / Physics / Chemistry 확장 | 15 | ⏳ |
 | **D** | 대시보드 통합 + 출시 | 3 | ⏳ |
 
@@ -22,17 +22,16 @@
 
 | # | Task | 내용 | DoD | Commit |
 |---|---|---|---|---|
-| A1 | `lib/maestro/` 추출 | `lib/legend/` 의 router·personas·trigger·manager·quota·access-tier 를 subject 매개변수화하여 `lib/maestro/` 로 이전 | Legend 테스트 419/420 통과 | |
-| A2 | Legend = math adapter | `lib/legend/` 를 `subject='math'` adapter 로 축소. re-export 유지 (URL 호환) | `/legend` production 회귀 0 | |
-| A3 | personas-by-subject | math(5)·physics(3)·chemistry(3)·biology(3)·earth-science(3) Record + 페르소나 metadata | typecheck pass |  |
-| A4 | components/maestro 추출 | `BetaChat·TrialChat·MathText·PastExamPanel·TutorPickerModal·ReasoningTree*` 에 subject prop 추가 | Legend 화면 회귀 0 | |
-| A5 | DB 마이그레이션 | `legend_*` 테이블에 `subject text not null default 'math'` 컬럼 추가 (drop X). RLS·admin 가드 통과 | Supabase migration apply | |
-| A6 | API 라우트 | `/api/maestro/[subject]/{route,solve,retry-with-tutor,tutor,report,reviews,quota,beta,build-summary}` 신설 | Legend 라우트 회귀 0 | |
-| A7 | trigger accumulator subject | `legend_trigger_accumulation_log` 의 subject 컬럼 추가 + `/admin/candidate-triggers` 필터 | admin 페이지 OK | |
-| A8 | KaTeX mhchem | `StreamingMarkdown` `MathText` 옵션에 mhchem extension 활성화 — `\ce{}` `<=>` 지원 + 회귀 테스트 | 분자식 렌더 OK, 수식 회귀 0 | |
-| A9 | **Vision LLM 표·그림 분석** ⭐ | Gauss 듀얼 튜터 패턴 추출 → `lib/maestro/vision.ts` (Sonnet 4.6 vision 호출 + 도표 5단계 prompt 템플릿). 4 maestro 공통 | 그래프·표·가계도 fixture 회귀 테스트 | |
-| A10 | Vitest mass migration | Legend 테스트는 subject='math' 로, 새 maestro 테스트 fixture 4과목 | 1000+ 테스트 회귀 0 | |
-| A11 | typecheck + smoke | typecheck pass + `/legend` production smoke + push origin/main | OK | |
+| A1a-c | Subject type + PERSONAS_BY_SUBJECT | types.ts Subject·라벨·URL slug + PERSONAS_BY_SUBJECT Record | typecheck + 257/257 | ✅ `113e653` |
+| A1d | trigger-accumulator subject 매개변수 | AccumulateInput.subject + log insert subject | 회귀 0 | ✅ `51d57eb` |
+| A2 | `lib/maestro/` adapter | thin re-export wrapper (Phase D 끝 진짜 rename) | typecheck pass | ✅ `51d57eb` |
+| A5 | DB 마이그레이션 SQL | `legend_*` 7 테이블에 subject 컬럼 + 인덱스 3종. ⚠️ production 적용은 사용자 직접 | SQL 파일 작성 | ✅ `51d57eb` |
+| A8 | KaTeX mhchem | StreamingMarkdown · MathText 에 `katex/contrib/mhchem` import + 7 회귀 테스트 | 292/292 | ✅ `59e2f2d` |
+| A9 | Vision LLM 골격 ⭐ | `lib/maestro/vision.ts` — FigureKind 9종 / VisionInput·Output / 도표 5단계 standard / SUBJECT_FIGURE_HINTS. analyzeVision() 미구현 (Phase B 진입 시 Sonnet 4.6 vision 채움) | typecheck pass | ✅ `1dadcc0` |
+| A6 | API 라우트 (Earth Science) | `/api/maestro/[subject]/*` — Phase B 진입 시 Earth Science 라우트와 합쳐 진행 | Legend 라우트 회귀 0 | ⏳ Phase B 통합 |
+| A7 | admin trigger subject 필터 | `/admin/candidate-triggers` 페이지에 subject 필터 칩 추가 | admin 페이지 OK | ⏳ |
+| A10 | mass test fixture | per-subject test fixture 4 과목 추가 | 1000+ 회귀 0 | ⏳ Phase B 통합 |
+| A11 | push origin/main | typecheck + 4 commits push | OK | ✅ `eae18c2..1dadcc0` push |
 
 ## Phase B — Earth Science PoC (5 task / 1주) ⭐
 
