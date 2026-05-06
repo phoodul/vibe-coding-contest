@@ -23,14 +23,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import 'katex/dist/katex.min.css';
-import { PORTRAITS } from '@/lib/legend/portraits';
-import type { PerProblemReport, TutorName } from '@/lib/legend/types';
+import { PORTRAITS, EARTH_SCIENCE_PORTRAITS } from '@/lib/legend/portraits';
+import type {
+  PerProblemReport,
+  TutorName,
+  EarthScienceTutorName,
+  MaestroTutorName,
+  Subject,
+} from '@/lib/legend/types';
 import { InlineHandwritePanel } from '@/components/legend/InlineHandwritePanel';
 import { SolutionSummaryButton } from './SolutionSummaryButton';
 import { PerProblemReportCard } from './PerProblemReportCard';
 import { StreamingMarkdown } from './StreamingMarkdown';
 import { MATH_AREAS } from '@/lib/ai/euler-prompt';
 import { PastExamPanel } from './PastExamPanel';
+import { ScienceExamPanel, type ExamSelection } from '@/components/maestro/ScienceExamPanel';
 import problemTexts from '@/lib/data/problem-texts.json';
 import type { MathProblem } from '@/lib/data/math-problems';
 
@@ -52,6 +59,35 @@ const ALL_TUTORS: TutorName[] = [
   'euler',
   'leibniz',
 ];
+
+const EARTH_SCIENCE_TUTORS: EarthScienceTutorName[] = [
+  'wegener',
+  'galilei',
+  'hubble',
+  'sagan',
+];
+
+const SUBJECT_VARIANT_LABEL: Record<string, { label: string; icon: string }> = {
+  'earth-science-I': { label: '지구과학Ⅰ', icon: '🌍' },
+  'earth-science-II': { label: '지구과학Ⅱ', icon: '🌌' },
+  'biology-I': { label: '생명과학Ⅰ', icon: '🧬' },
+  'biology-II': { label: '생명과학Ⅱ', icon: '🧪' },
+  'physics-I': { label: '물리학Ⅰ', icon: '⚛️' },
+  'physics-II': { label: '물리학Ⅱ', icon: '🔬' },
+  'chemistry-I': { label: '화학Ⅰ', icon: '🧫' },
+  'chemistry-II': { label: '화학Ⅱ', icon: '⚗️' },
+};
+
+function getMaestroVariants(subject: Subject): Array<{ id: string; label: string; icon: string }> {
+  if (subject === 'math') return [];
+  const out: Array<{ id: string; label: string; icon: string }> = [];
+  for (const v of ['I', 'II']) {
+    const key = `${subject}-${v}`;
+    const meta = SUBJECT_VARIANT_LABEL[key];
+    if (meta) out.push({ id: key, ...meta });
+  }
+  return out;
+}
 
 /**
  * G06-33a (Δ10) — build-summary 입력용 problem_text 추출.
@@ -79,8 +115,6 @@ function extractFirstUserText(messages: Array<{ role: string; content: unknown }
 
 const SUBJECT_STORAGE_KEY = 'legend_selected_subject';
 
-import type { Subject } from '@/lib/legend/types';
-
 interface BetaChatProps {
   user: User;
   betaMeta?: BetaMeta;
@@ -92,27 +126,46 @@ interface BetaChatProps {
 }
 
 export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatProps) {
+  const isMaestro = subject !== 'math';
   const [useGpt, setUseGpt] = useState(false);
-  const [selectedTutor, setSelectedTutor] = useState<TutorName>('ramanujan_intuit');
-  const [selectedSubject, setSelectedSubject] = useState<string>('free');
+  // 19차 — math 면 5 거장 (default ramanujan_intuit). maestro 면 4 인물 (default wegener).
+  const [selectedTutor, setSelectedTutor] = useState<MaestroTutorName>(
+    isMaestro ? 'wegener' : 'ramanujan_intuit',
+  );
+  const [selectedSubject, setSelectedSubject] = useState<string>(
+    isMaestro ? `${subject}-I` : 'free',
+  );
   const [activeView, setActiveView] = useState<'chat' | 'past-exam'>('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 학년/과목 선택 localStorage hydration
+  // portrait lookup — math 면 PORTRAITS, maestro 면 EARTH_SCIENCE_PORTRAITS
+  const currentPortrait = useMemo(() => {
+    if (isMaestro && subject === 'earth-science') {
+      const t = selectedTutor as EarthScienceTutorName;
+      return EARTH_SCIENCE_PORTRAITS[t] ?? EARTH_SCIENCE_PORTRAITS.wegener;
+    }
+    return PORTRAITS[selectedTutor as TutorName] ?? PORTRAITS.ramanujan_intuit;
+  }, [isMaestro, subject, selectedTutor]);
+
+  // 학년/과목 선택 localStorage hydration (math 만 적용)
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (isMaestro) return;
     const saved = window.localStorage.getItem(SUBJECT_STORAGE_KEY);
     if (saved && MATH_AREAS.some((a) => a.id === saved)) {
       setSelectedSubject(saved);
     }
-  }, []);
+  }, [isMaestro]);
 
-  const handleSubjectClick = useCallback((id: string) => {
-    setSelectedSubject(id);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(SUBJECT_STORAGE_KEY, id);
-    }
-  }, []);
+  const handleSubjectClick = useCallback(
+    (id: string) => {
+      setSelectedSubject(id);
+      if (typeof window !== 'undefined' && !isMaestro) {
+        window.localStorage.setItem(SUBJECT_STORAGE_KEY, id);
+      }
+    },
+    [isMaestro],
+  );
 
   // G06-33: 풀이 정리 인라인 카드 상태 (마지막 assistant 메시지 1개만 유지)
   const [inlineReport, setInlineReport] = useState<PerProblemReport | null>(null);
@@ -137,6 +190,8 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
         subject_hint: selectedSubject === 'free' ? null : selectedSubject,
         // 19차 — maestro subject. 'math' (default) 면 기존 Legend 흐름.
         subject,
+        // 19차 — maestro 일 때 4 인물 페르소나 ID 전달
+        selected_tutor: isMaestro ? selectedTutor : undefined,
       },
     });
 
@@ -281,17 +336,37 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
     [imagePreview, sendImage, handleSubmit],
   );
 
-  function handleTutorClick(tutor: TutorName) {
+  function handleTutorClick(tutor: MaestroTutorName) {
     setSelectedTutor(tutor);
-    // 라마누잔 = 직관 (Sonnet 4.6 기본). 가우스 (Gemini) / 폰 노이만 (GPT-5.5) /
-    // 오일러 (Opus 4.7) / 라이프니츠 (Sonnet 4.6 agentic) — Tier 2 본격 분기는 G-07.
-    // 현재는 ramanujan/euler/leibniz = Sonnet, gauss/von_neumann = GPT 토글 매핑.
+    // math (Legend) 토글 매핑 — gauss/von_neumann = GPT
     if (tutor === 'gauss' || tutor === 'von_neumann') {
       setUseGpt(true);
     } else {
       setUseGpt(false);
     }
+    // maestro 4 인물 = useGpt 무시. selected_tutor 가 모델 결정 (API 라우트).
   }
+
+  // ScienceExamPanel onSelect 핸들러 — maestro past-exam 선택
+  const handleSelectScienceExam = useCallback(
+    (sel: ExamSelection) => {
+      setActiveView('chat');
+      setTimeout(() => {
+        const subjectKo =
+          sel.subject === 'earth-science'
+            ? '지구과학'
+            : sel.subject === 'biology'
+              ? '생명과학'
+              : sel.subject === 'physics'
+                ? '물리학'
+                : '화학';
+        const variant = sel.variant === 'I' ? 'Ⅰ' : 'Ⅱ';
+        const content = `[${sel.year}학년도 수능 ${subjectKo}${variant} ${sel.number}번]\n\n이 문제를 함께 풀어보고 싶어요. 문제 페이지를 캡쳐해서 올릴게요!`;
+        append({ role: 'user', content });
+      }, 200);
+    },
+    [append],
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 text-white flex flex-col">
@@ -306,24 +381,32 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
           </Link>
           <div className="flex items-center gap-2">
             <Image
-              src={PORTRAITS[selectedTutor].src}
-              alt={PORTRAITS[selectedTutor].alt}
+              src={currentPortrait.src}
+              alt={currentPortrait.alt}
               width={28}
               height={28}
               className="rounded-full object-cover ring-2 ring-amber-400/30"
             />
             <div className="text-center leading-tight">
               <h1 className="text-sm font-bold bg-gradient-to-r from-amber-300 to-orange-300 bg-clip-text text-transparent">
-                Legend Tutor — 베타
+                {isMaestro
+                  ? subject === 'earth-science'
+                    ? 'Earth Science Maestro'
+                    : subject === 'biology'
+                      ? 'Biology Maestro'
+                      : subject === 'physics'
+                        ? 'Physics Maestro'
+                        : 'Chemistry Maestro'
+                  : 'Legend Tutor — 베타'}
               </h1>
               <p className="text-[10px] text-white/50">
-                {PORTRAITS[selectedTutor].label_ko} · {PORTRAITS[selectedTutor].tier_label}
+                {currentPortrait.label_ko} · {currentPortrait.tier_label}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            {/* Δ28 — 베타 만료 카운트다운 (≤ 7일 임박 시 amber, 평시 emerald) */}
-            {betaMeta?.is_active && betaMeta.days_left !== null && (
+            {/* Δ28 — 베타 만료 카운트다운 (math 베타 만 적용) */}
+            {!isMaestro && betaMeta?.is_active && betaMeta.days_left !== null && (
               <span
                 className={`text-[11px] px-2.5 py-1 rounded-full border font-semibold ${
                   betaMeta.days_left <= 0
@@ -342,19 +425,22 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               </span>
             )}
             <Link
-              href="/legend/triggers"
+              href={isMaestro ? `/${subject}/triggers` : '/legend/triggers'}
               className="text-[11px] px-2.5 py-1 rounded-full border border-violet-400/40 bg-violet-400/10 text-violet-200 hover:bg-violet-400/20 transition-colors font-semibold"
             >
               🎯 Trigger
             </Link>
+            {/* 후기 — math (Legend 베타) 만 노출. Maestro 는 베타테스트 X (사용자 결정 2026-05-06) */}
+            {!isMaestro && (
+              <Link
+                href="/legend/beta/review"
+                className="text-[11px] px-2.5 py-1 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 transition-colors font-semibold"
+              >
+                📝 후기
+              </Link>
+            )}
             <Link
-              href="/legend/beta/review"
-              className="text-[11px] px-2.5 py-1 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 transition-colors font-semibold"
-            >
-              📝 후기
-            </Link>
-            <Link
-              href="/legend/report"
+              href={isMaestro ? `/${subject}/report` : '/legend/report'}
               className="text-[11px] px-2.5 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors font-semibold"
             >
               📊 리포트
@@ -372,40 +458,66 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
             <span className="text-[10px] text-white/40">선택하면 그 과목 맞춤 코칭으로 진행돼요</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {MATH_AREAS.map((a) => {
-              const active = selectedSubject === a.id;
-              return (
-                <button
-                  key={a.id}
-                  type="button"
-                  onClick={() => handleSubjectClick(a.id)}
-                  title={a.desc}
-                  className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                    active
-                      ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/40'
-                      : 'border-white/10 bg-white/5 text-white/70 hover:border-cyan-300/30 hover:bg-cyan-400/5'
-                  }`}
-                  data-testid={`beta-subject-${a.id}`}
-                >
-                  <span className="mr-1">{a.icon}</span>
-                  {a.name}
-                </button>
-              );
-            })}
+            {isMaestro
+              ? getMaestroVariants(subject).map((v) => {
+                  const active = selectedSubject === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => handleSubjectClick(v.id)}
+                      className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                        active
+                          ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/40'
+                          : 'border-white/10 bg-white/5 text-white/70 hover:border-cyan-300/30 hover:bg-cyan-400/5'
+                      }`}
+                      data-testid={`maestro-subject-${v.id}`}
+                    >
+                      <span className="mr-1">{v.icon}</span>
+                      {v.label}
+                    </button>
+                  );
+                })
+              : MATH_AREAS.map((a) => {
+                  const active = selectedSubject === a.id;
+                  return (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => handleSubjectClick(a.id)}
+                      title={a.desc}
+                      className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                        active
+                          ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/40'
+                          : 'border-white/10 bg-white/5 text-white/70 hover:border-cyan-300/30 hover:bg-cyan-400/5'
+                      }`}
+                      data-testid={`beta-subject-${a.id}`}
+                    >
+                      <span className="mr-1">{a.icon}</span>
+                      {a.name}
+                    </button>
+                  );
+                })}
           </div>
         </div>
       </section>
 
-      {/* 5 튜터 선택 카드 */}
+      {/* 거장 선택 카드 (math = 5명 / maestro = 4명) */}
       <section className="max-w-4xl mx-auto w-full px-4 pt-2 pb-3">
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4">
           <div className="mb-3 flex items-center gap-2">
             <span className="text-amber-300/90">⭐</span>
-            <span className="text-sm font-bold text-white">5 명의 거장 — 자유롭게 선택하세요</span>
+            <span className="text-sm font-bold text-white">
+              {isMaestro
+                ? '4 명의 거장 — 자유롭게 선택하세요'
+                : '5 명의 거장 — 자유롭게 선택하세요'}
+            </span>
           </div>
-          <div className="grid grid-cols-5 gap-2">
-            {ALL_TUTORS.map((t) => {
-              const p = PORTRAITS[t];
+          <div className={`grid gap-2 ${isMaestro ? 'grid-cols-4' : 'grid-cols-5'}`}>
+            {(isMaestro ? EARTH_SCIENCE_TUTORS : ALL_TUTORS).map((t) => {
+              const p = isMaestro
+                ? EARTH_SCIENCE_PORTRAITS[t as EarthScienceTutorName]
+                : PORTRAITS[t as TutorName];
               const active = selectedTutor === t;
               return (
                 <motion.button
@@ -413,13 +525,13 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.97 }}
                   type="button"
-                  onClick={() => handleTutorClick(t)}
+                  onClick={() => handleTutorClick(t as MaestroTutorName)}
                   className={`group flex flex-col items-center gap-1.5 rounded-xl border p-2.5 transition-colors ${
                     active
                       ? 'border-amber-300/60 bg-amber-400/10 ring-2 ring-amber-300/30'
                       : 'border-white/10 bg-white/5 hover:border-amber-300/40 hover:bg-amber-400/5'
                   }`}
-                  data-testid={`beta-tutor-${t}`}
+                  data-testid={`tutor-${t}`}
                 >
                   <Image
                     src={p.src}
@@ -429,9 +541,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
                     className="rounded-full object-cover ring-2 ring-white/10"
                   />
                   <span className="text-xs font-medium text-white">{p.label_ko}</span>
-                  <span className="text-[9px] leading-tight text-white/50">
-                    {p.tier_label}
-                  </span>
+                  <span className="text-[9px] leading-tight text-white/50">{p.tier_label}</span>
                 </motion.button>
               );
             })}
@@ -469,7 +579,11 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
 
       {activeView === 'past-exam' ? (
         <section className="max-w-4xl mx-auto w-full flex-1 px-4 pb-6">
-          <PastExamPanel onSelectProblem={handleSelectExamProblem} />
+          {isMaestro ? (
+            <ScienceExamPanel subject={subject} onSelect={handleSelectScienceExam} />
+          ) : (
+            <PastExamPanel onSelectProblem={handleSelectExamProblem} />
+          )}
         </section>
       ) : (
         <>
@@ -484,15 +598,15 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
             >
               <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border border-amber-400/30 ring-2 ring-amber-400/10">
                 <Image
-                  src={PORTRAITS[selectedTutor].src}
-                  alt={PORTRAITS[selectedTutor].alt}
+                  src={currentPortrait.src}
+                  alt={currentPortrait.alt}
                   width={64}
                   height={64}
                   className="object-cover w-full h-full"
                 />
               </div>
               <p className="text-sm text-white/70 mb-1">
-                안녕하세요. {PORTRAITS[selectedTutor].label_ko}이에요. 어떤 문제를 같이 풀어볼까요?
+                안녕하세요. {currentPortrait.label_ko}이에요. 어떤 문제를 같이 풀어볼까요?
               </p>
               <p className="text-xs text-white/40">
                 위에서 다른 튜터를 선택할 수도 있어요.
@@ -518,8 +632,8 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
                   {m.role === 'assistant' && (
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400/30 flex-shrink-0 mt-1">
                       <Image
-                        src={PORTRAITS[selectedTutor].src}
-                        alt={PORTRAITS[selectedTutor].alt}
+                        src={currentPortrait.src}
+                        alt={currentPortrait.alt}
                         width={32}
                         height={32}
                         className="object-cover w-full h-full"
@@ -551,8 +665,8 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               >
                 <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400/30 flex-shrink-0">
                   <Image
-                    src={PORTRAITS[selectedTutor].src}
-                    alt={PORTRAITS[selectedTutor].alt}
+                    src={currentPortrait.src}
+                    alt={currentPortrait.alt}
                     width={32}
                     height={32}
                     className="object-cover w-full h-full"
@@ -570,10 +684,11 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
           {/* G06-35b — selectedTutor 전달: 채팅 튜터와 정리 튜터 일관성 강제 */}
           {/* Δ13 — firstUserText (원문제) 전달: 짧은 마지막 user → 난이도 1 오판정 fix */}
           {/* Δ14 — conversation 전달: 학생 막힘 5 차원 (stuck_step·trigger·AI hint·resolution) */}
-          {canShowSummaryButton && firstUserText && !inlineReport && (
+          {/* maestro 는 SolutionSummaryButton 미사용 (수학 전용 인프라). math 만 노출. */}
+          {!isMaestro && canShowSummaryButton && firstUserText && !inlineReport && (
             <SolutionSummaryButton
               problemText={firstUserText}
-              selectedTutor={selectedTutor}
+              selectedTutor={selectedTutor as TutorName}
               conversation={messages}
               onSummaryReady={(report) => setInlineReport(report)}
             />
