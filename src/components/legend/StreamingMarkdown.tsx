@@ -44,9 +44,33 @@ const KATEX_REHYPE_OPTIONS = {
  *
  * 줄바꿈 보존: display 는 multiline 허용, inline 은 단일행만.
  */
+/**
+ * 19차 (2026-05-07) — multimodal 메시지 (이미지 + 텍스트 array) 가 들어올 때
+ * `.replace is not a function` 에러 회피. content 가 array 면 text 부분만 합침.
+ */
+function coerceToString(content: unknown): string {
+  if (typeof content === 'string') return content;
+  if (!content) return '';
+  if (Array.isArray(content)) {
+    // AI SDK multimodal: [{type:'text', text:...}, {type:'image', image:...}, ...]
+    return content
+      .map((p: unknown) => {
+        if (typeof p === 'string') return p;
+        if (p && typeof p === 'object' && 'type' in p) {
+          const part = p as { type: string; text?: string };
+          if (part.type === 'text' && typeof part.text === 'string') return part.text;
+        }
+        return '';
+      })
+      .join('\n');
+  }
+  return String(content);
+}
+
 export function normalizeMathDelimiters(content: string): string {
-  if (!content) return content;
-  return content
+  const str = coerceToString(content);
+  if (!str) return str;
+  return str
     .replace(/\\\[([\s\S]+?)\\\]/g, (_, inner) => `$$${inner}$$`)
     .replace(/\\\(([^\n]+?)\\\)/g, (_, inner) => `$${inner}$`);
 }
@@ -56,17 +80,19 @@ export function normalizeMathDelimiters(content: string): string {
  * 다음 chunk 도착 시 자동 정상 LaTeX 복귀.
  */
 export function safeStreamMarkdown(content: string): string {
-  if (!content) return content;
-  const stripped = content.replace(/\$\$/g, '').replace(/\\\$/g, '');
+  const str = coerceToString(content);
+  if (!str) return str;
+  const stripped = str.replace(/\$\$/g, '').replace(/\\\$/g, '');
   const dollarCount = (stripped.match(/\$/g) ?? []).length;
-  if (dollarCount % 2 === 0) return content;
-  const lastIdx = content.lastIndexOf('$');
-  if (lastIdx < 0) return content;
-  return content.slice(0, lastIdx) + '\\$' + content.slice(lastIdx + 1);
+  if (dollarCount % 2 === 0) return str;
+  const lastIdx = str.lastIndexOf('$');
+  if (lastIdx < 0) return str;
+  return str.slice(0, lastIdx) + '\\$' + str.slice(lastIdx + 1);
 }
 
 export interface StreamingMarkdownProps {
-  content: string;
+  /** 19차: multimodal array 도 받음. coerceToString 으로 안전 처리. */
+  content: string | unknown;
   /** 스트리밍 중 (true) 면 useDeferredValue + safe 처리. 종료 시 (false) 즉시 풀 렌더. */
   streaming?: boolean;
 }
@@ -77,13 +103,13 @@ export function StreamingMarkdown({
 }: StreamingMarkdownProps): ReactElement {
   // 스트리밍 중에는 한 프레임 지연시켜 React 가 idle 시간에 처리하게 함.
   // 종료 후에는 useDeferredValue 가 즉시 동기화 → 즉시 렌더.
-  const deferred = useDeferredValue(content);
+  const safeStr = coerceToString(content);
+  const deferred = useDeferredValue(safeStr);
   const safeContent = useMemo(() => {
-    const base = streaming ? deferred : content;
-    // `\(..\)` / `\[..\]` → `$..$` / `$$..$$` 우선 정규화 (remarkMath 미지원 형식 보정)
+    const base = streaming ? deferred : safeStr;
     const normalized = normalizeMathDelimiters(base);
     return streaming ? safeStreamMarkdown(normalized) : normalized;
-  }, [deferred, content, streaming]);
+  }, [deferred, safeStr, streaming]);
 
   return (
     <ReactMarkdown
