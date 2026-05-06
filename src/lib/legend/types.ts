@@ -69,19 +69,19 @@ export type MathTutorName =
   | 'leibniz';         // Tier 2: Sonnet 4.6 agentic
 
 /**
- * 19차 Phase B — Earth Science Maestro 4 인물.
+ * 19차 Phase B/C — 4 maestro 페르소나 (각 4 인물).
  *
- * 영역 매칭이 아닌 모델의 차이만 — 학생에게 모델은 공개하지 않음 (호기심 자극).
- * 위치 (왼쪽 → 오른쪽): wegener (Sonnet 4.6 기본) →
- * galilei (Gemini 3.1 Pro) → hubble (Opus 4.7) → sagan (GPT-5.5).
- *
- * 향후 모델 업그레이드 시 매핑만 갱신하여 일관성 유지.
+ * 영역 매칭 X — 모든 인물이 모든 단원 답변 가능. 모델 차이만.
+ * 4 인물 = 4 모델 1:1 매핑 (모든 maestro 동일 위치 순서):
+ *   - 1번 (Sonnet 4.6, 기본 사용량 ↑)
+ *   - 2번 (Gemini 3.1 Pro, 거장)
+ *   - 3번 (Opus 4.7, 거장)
+ *   - 4번 (GPT-5.5, 거장)
  */
-export type EarthScienceTutorName =
-  | 'wegener'          // Sonnet 4.6 — 기본 (사용량 넉넉)
-  | 'galilei'          // Gemini 3.1 Pro — 거장
-  | 'hubble'           // Opus 4.7 — 거장
-  | 'sagan';           // GPT-5.5 — 거장
+export type EarthScienceTutorName = 'wegener' | 'galilei' | 'hubble' | 'sagan';
+export type BiologyTutorName = 'darwin' | 'mendel' | 'watson' | 'pasteur';
+export type PhysicsTutorName = 'newton' | 'einstein' | 'feynman' | 'fermi';
+export type ChemistryTutorName = 'mendeleev' | 'lavoisier' | 'pauling' | 'curie';
 
 /**
  * Legend (수학) 페르소나 alias.
@@ -96,7 +96,12 @@ export type TutorName = MathTutorName;
  * 모든 maestro 페르소나의 union — PERSONAS_BY_SUBJECT 매핑·UI(TutorPickerModal) 용.
  * 추가 maestro (Biology / Physics / Chemistry / Korean / English) 진입 시 union 확장.
  */
-export type MaestroTutorName = MathTutorName | EarthScienceTutorName;
+export type MaestroTutorName =
+  | MathTutorName
+  | EarthScienceTutorName
+  | BiologyTutorName
+  | PhysicsTutorName
+  | ChemistryTutorName;
 
 export type Tier = 0 | 1 | 2;
 

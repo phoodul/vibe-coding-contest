@@ -11,6 +11,9 @@ import type {
   TutorName,
   MaestroTutorName,
   EarthScienceTutorName,
+  BiologyTutorName,
+  PhysicsTutorName,
+  ChemistryTutorName,
 } from './types';
 
 export interface TutorPortrait {
@@ -138,6 +141,114 @@ export const EARTH_SCIENCE_PORTRAITS: Record<EarthScienceTutorName, TutorPortrai
   },
 };
 
+/** Phase C-Biology — 다윈·멘델·왓슨·파스퇴르 (4 인물) */
+export const BIOLOGY_PORTRAITS: Record<BiologyTutorName, TutorPortrait> = {
+  darwin: {
+    src: '/darwin-portrait.jpg',
+    alt: '찰스 다윈',
+    label_ko: '다윈',
+    model_short: 'Sonnet 4.6',
+    persona_desc: '진화를 발견한 박물학자',
+    tier_label: '기본',
+  },
+  mendel: {
+    src: '/mendel-portrait.jpg',
+    alt: '그레고어 멘델',
+    label_ko: '멘델',
+    model_short: 'Gemini 3.1 Pro',
+    persona_desc: '유전을 셈한 수도사',
+    tier_label: '거장',
+  },
+  watson: {
+    src: '/watson-portrait.jpg',
+    alt: '제임스 왓슨',
+    label_ko: '왓슨',
+    model_short: 'Opus 4.7',
+    persona_desc: 'DNA 이중나선의 발견자',
+    tier_label: '거장',
+  },
+  pasteur: {
+    src: '/pasteur-portrait.jpg',
+    alt: '루이 파스퇴르',
+    label_ko: '파스퇴르',
+    model_short: 'GPT-5.5',
+    persona_desc: '미생물의 비밀을 푼 화학자',
+    tier_label: '거장',
+  },
+};
+
+/** Phase C-Physics — 뉴턴·아인슈타인·파인만·페르미 (4 인물) */
+export const PHYSICS_PORTRAITS: Record<PhysicsTutorName, TutorPortrait> = {
+  newton: {
+    src: '/newton-portrait.jpg',
+    alt: '아이작 뉴턴',
+    label_ko: '뉴턴',
+    model_short: 'Sonnet 4.6',
+    persona_desc: '운동의 법칙을 세운 사람',
+    tier_label: '기본',
+  },
+  einstein: {
+    src: '/einstein-portrait.jpg',
+    alt: '알버트 아인슈타인',
+    label_ko: '아인슈타인',
+    model_short: 'Gemini 3.1 Pro',
+    persona_desc: '시공간을 새로 본 거인',
+    tier_label: '거장',
+  },
+  feynman: {
+    src: '/feynman-portrait.jpg',
+    alt: '리처드 파인만',
+    label_ko: '파인만',
+    model_short: 'Opus 4.7',
+    persona_desc: '직관과 다이어그램의 천재',
+    tier_label: '거장',
+  },
+  fermi: {
+    src: '/fermi-portrait.jpg',
+    alt: '엔리코 페르미',
+    label_ko: '페르미',
+    model_short: 'GPT-5.5',
+    persona_desc: '핵과 추정의 거장',
+    tier_label: '거장',
+  },
+};
+
+/** Phase C-Chemistry — 멘델레예프·라부아지에·폴링·마리 퀴리 (4 인물) */
+export const CHEMISTRY_PORTRAITS: Record<ChemistryTutorName, TutorPortrait> = {
+  mendeleev: {
+    src: '/mendeleev-portrait.jpg',
+    alt: '드미트리 멘델레예프',
+    label_ko: '멘델레예프',
+    model_short: 'Sonnet 4.6',
+    persona_desc: '주기율표의 설계자',
+    tier_label: '기본',
+  },
+  lavoisier: {
+    src: '/lavoisier-portrait.jpg',
+    alt: '앙투안 라부아지에',
+    label_ko: '라부아지에',
+    model_short: 'Gemini 3.1 Pro',
+    persona_desc: '근대 화학의 아버지',
+    tier_label: '거장',
+  },
+  pauling: {
+    src: '/pauling-portrait.jpg',
+    alt: '라이너스 폴링',
+    label_ko: '폴링',
+    model_short: 'Opus 4.7',
+    persona_desc: '결합과 구조의 통찰가',
+    tier_label: '거장',
+  },
+  curie: {
+    src: '/curie-portrait.jpg',
+    alt: '마리 퀴리',
+    label_ko: '마리 퀴리',
+    model_short: 'GPT-5.5',
+    persona_desc: '라듐과 방사성의 개척자',
+    tier_label: '거장',
+  },
+};
+
 /**
  * 19차 (2026-05-06) — Maestro 4 과목 페르소나 매핑.
  *
@@ -151,10 +262,10 @@ export const EARTH_SCIENCE_PORTRAITS: Record<EarthScienceTutorName, TutorPortrai
  */
 export const PERSONAS_BY_SUBJECT: Record<Subject, readonly MaestroTutorName[]> = {
   math: ['ramanujan_calc', 'ramanujan_intuit', 'gauss', 'von_neumann', 'euler', 'leibniz'],
-  'earth-science': ['wegener', 'galilei', 'hubble', 'sagan'], // Phase B 활성화 — 4 인물
-  biology: [],         // Phase C-Biology: 다윈·멘델·왓슨
-  physics: [],         // Phase C-Physics: 파인만·뉴턴·아인슈타인
-  chemistry: [],       // Phase C-Chemistry: 멘델레예프·라부아지에·폴링
+  'earth-science': ['wegener', 'galilei', 'hubble', 'sagan'],
+  biology: ['darwin', 'mendel', 'watson', 'pasteur'],
+  physics: ['newton', 'einstein', 'feynman', 'fermi'],
+  chemistry: ['mendeleev', 'lavoisier', 'pauling', 'curie'],
   korean: [],          // Phase 5+: 세종·정약용·이이
   english: [],         // Phase 5+: 셰익스피어·처칠·촘스키
 };
@@ -175,12 +286,11 @@ export function getMaestroPortrait(
   subject: Subject,
   tutor: MaestroTutorName,
 ): TutorPortrait | undefined {
-  if (subject === 'math') {
-    return PORTRAITS[tutor as TutorName];
-  }
-  if (subject === 'earth-science') {
-    return EARTH_SCIENCE_PORTRAITS[tutor as EarthScienceTutorName];
-  }
+  if (subject === 'math') return PORTRAITS[tutor as TutorName];
+  if (subject === 'earth-science') return EARTH_SCIENCE_PORTRAITS[tutor as EarthScienceTutorName];
+  if (subject === 'biology') return BIOLOGY_PORTRAITS[tutor as BiologyTutorName];
+  if (subject === 'physics') return PHYSICS_PORTRAITS[tutor as PhysicsTutorName];
+  if (subject === 'chemistry') return CHEMISTRY_PORTRAITS[tutor as ChemistryTutorName];
   return undefined;
 }
 

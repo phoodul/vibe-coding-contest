@@ -13,6 +13,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { Subject } from '@/lib/legend/types';
+import { getScienceAnswer } from '@/lib/data/science-exam-answers';
 
 const SCIENCE_SUBJECTS: ReadonlyArray<Subject> = [
   'earth-science',
@@ -57,6 +58,9 @@ export function ScienceExamPanel({ subject, onSelect }: ScienceExamPanelProps) {
   const subjectLabel = SUBJECT_LABEL[subject];
 
   function handleNumberClick(n: number) {
+    // 결측 정답 (= 문제 오류) 일 때 클릭 차단
+    const ans = getScienceAnswer(subject, variant, year, n);
+    if (ans === undefined) return;
     setNumber(n);
     onSelect({ subject, variant, year, number: n });
   }
@@ -137,28 +141,36 @@ export function ScienceExamPanel({ subject, onSelect }: ScienceExamPanelProps) {
         <div className="grid grid-cols-5 gap-1.5 sm:grid-cols-8 md:grid-cols-10">
           {NUMBERS.map((n, i) => {
             const active = n === number;
+            const ans = getScienceAnswer(subject, variant, year, n);
+            const isError = ans === undefined;
             return (
               <motion.button
                 key={n}
                 type="button"
                 onClick={() => handleNumberClick(n)}
+                disabled={isError}
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.01 }}
-                whileHover={{ y: -1 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={isError ? undefined : { y: -1 }}
+                whileTap={isError ? undefined : { scale: 0.95 }}
                 className={`group relative aspect-square rounded-lg border text-sm font-bold transition-colors ${
-                  active
-                    ? 'border-emerald-300/70 bg-emerald-400/20 text-emerald-100 ring-1 ring-emerald-300/40'
-                    : 'border-white/10 bg-white/5 text-white/60 hover:border-emerald-300/30 hover:bg-emerald-400/5 hover:text-white'
+                  isError
+                    ? 'border-rose-400/30 bg-rose-500/5 text-rose-300/60 cursor-not-allowed'
+                    : active
+                      ? 'border-emerald-300/70 bg-emerald-400/20 text-emerald-100 ring-1 ring-emerald-300/40'
+                      : 'border-white/10 bg-white/5 text-white/60 hover:border-emerald-300/30 hover:bg-emerald-400/5 hover:text-white'
                 }`}
-                title={`${n}번`}
+                title={isError ? `${n}번 — 문제 오류 (정답 없음)` : `${n}번`}
               >
-                {n}
+                {isError ? '⚠' : n}
               </motion.button>
             );
           })}
         </div>
+        <p className="mt-2 text-[10px] text-rose-300/60">
+          ⚠ 표시는 출제 오류로 정답이 없는 문제입니다 (업로드 불가).
+        </p>
 
         <p className="mt-3 text-[11px] text-white/50">
           PDF 보고 해당 문제 페이지를 화면 캡쳐 → 채팅창에 붙여넣으세요. maestro 가 함께 풀이를 코칭합니다.

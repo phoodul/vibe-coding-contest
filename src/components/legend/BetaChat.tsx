@@ -23,11 +23,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import 'katex/dist/katex.min.css';
-import { PORTRAITS, EARTH_SCIENCE_PORTRAITS } from '@/lib/legend/portraits';
+import {
+  PORTRAITS,
+  EARTH_SCIENCE_PORTRAITS,
+  BIOLOGY_PORTRAITS,
+  PHYSICS_PORTRAITS,
+  CHEMISTRY_PORTRAITS,
+  getMaestroPortrait,
+} from '@/lib/legend/portraits';
 import type {
   PerProblemReport,
   TutorName,
   EarthScienceTutorName,
+  BiologyTutorName,
+  PhysicsTutorName,
+  ChemistryTutorName,
   MaestroTutorName,
   Subject,
 } from '@/lib/legend/types';
@@ -60,12 +70,22 @@ const ALL_TUTORS: TutorName[] = [
   'leibniz',
 ];
 
-const EARTH_SCIENCE_TUTORS: EarthScienceTutorName[] = [
-  'wegener',
-  'galilei',
-  'hubble',
-  'sagan',
-];
+/** subject 별 4 인물 순서 — UI 카드 위치 + 모델 매핑 (1번=Sonnet, 2번=Gemini, 3번=Opus, 4번=GPT-5.5) */
+const MAESTRO_TUTORS_BY_SUBJECT: Record<string, readonly MaestroTutorName[]> = {
+  'earth-science': ['wegener', 'galilei', 'hubble', 'sagan'],
+  biology: ['darwin', 'mendel', 'watson', 'pasteur'],
+  physics: ['newton', 'einstein', 'feynman', 'fermi'],
+  chemistry: ['mendeleev', 'lavoisier', 'pauling', 'curie'],
+};
+
+function getPortraitFor(subject: Subject, tutor: MaestroTutorName) {
+  if (subject === 'math') return PORTRAITS[tutor as TutorName];
+  if (subject === 'earth-science') return EARTH_SCIENCE_PORTRAITS[tutor as EarthScienceTutorName];
+  if (subject === 'biology') return BIOLOGY_PORTRAITS[tutor as BiologyTutorName];
+  if (subject === 'physics') return PHYSICS_PORTRAITS[tutor as PhysicsTutorName];
+  if (subject === 'chemistry') return CHEMISTRY_PORTRAITS[tutor as ChemistryTutorName];
+  return PORTRAITS.ramanujan_intuit;
+}
 
 const SUBJECT_VARIANT_LABEL: Record<string, { label: string; icon: string }> = {
   'earth-science-I': { label: '지구과학Ⅰ', icon: '🌍' },
@@ -127,10 +147,11 @@ interface BetaChatProps {
 
 export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatProps) {
   const isMaestro = subject !== 'math';
+  const maestroTutorList = isMaestro ? (MAESTRO_TUTORS_BY_SUBJECT[subject] ?? []) : [];
   const [useGpt, setUseGpt] = useState(false);
-  // 19차 — math 면 5 거장 (default ramanujan_intuit). maestro 면 4 인물 (default wegener).
+  // 19차 — math 면 5 거장 (default ramanujan_intuit). maestro 면 subject 별 1번 인물.
   const [selectedTutor, setSelectedTutor] = useState<MaestroTutorName>(
-    isMaestro ? 'wegener' : 'ramanujan_intuit',
+    isMaestro ? (maestroTutorList[0] ?? 'wegener') : 'ramanujan_intuit',
   );
   const [selectedSubject, setSelectedSubject] = useState<string>(
     isMaestro ? `${subject}-I` : 'free',
@@ -138,14 +159,10 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
   const [activeView, setActiveView] = useState<'chat' | 'past-exam'>('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // portrait lookup — math 면 PORTRAITS, maestro 면 EARTH_SCIENCE_PORTRAITS
+  // portrait lookup — subject 분기 (math / earth-science / biology / physics / chemistry)
   const currentPortrait = useMemo(() => {
-    if (isMaestro && subject === 'earth-science') {
-      const t = selectedTutor as EarthScienceTutorName;
-      return EARTH_SCIENCE_PORTRAITS[t] ?? EARTH_SCIENCE_PORTRAITS.wegener;
-    }
-    return PORTRAITS[selectedTutor as TutorName] ?? PORTRAITS.ramanujan_intuit;
-  }, [isMaestro, subject, selectedTutor]);
+    return getPortraitFor(subject, selectedTutor);
+  }, [subject, selectedTutor]);
 
   // 학년/과목 선택 localStorage hydration (math 만 적용)
   useEffect(() => {
@@ -514,9 +531,9 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
             </span>
           </div>
           <div className={`grid gap-2 ${isMaestro ? 'grid-cols-4' : 'grid-cols-5'}`}>
-            {(isMaestro ? EARTH_SCIENCE_TUTORS : ALL_TUTORS).map((t) => {
+            {(isMaestro ? maestroTutorList : ALL_TUTORS).map((t) => {
               const p = isMaestro
-                ? EARTH_SCIENCE_PORTRAITS[t as EarthScienceTutorName]
+                ? getPortraitFor(subject, t as MaestroTutorName)
                 : PORTRAITS[t as TutorName];
               const active = selectedTutor === t;
               return (

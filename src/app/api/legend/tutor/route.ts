@@ -157,31 +157,54 @@ export async function POST(req: Request) {
       typeof maestroSubject === 'string' && maestroSubject !== 'math';
     if (isMaestro) {
       const { buildMaestroSystemPrompt } = await import('@/lib/maestro/system-prompts');
-      const tutorId = (typeof maestroTutor === 'string' && ['wegener', 'galilei', 'hubble', 'sagan'].includes(maestroTutor))
-        ? (maestroTutor as 'wegener' | 'galilei' | 'hubble' | 'sagan')
-        : 'wegener';
+
+      // 12 인물 → 4 모델 매핑 (4 maestro × 4 인물 = 위치별 동일 모델)
+      // Sonnet:  wegener / darwin / newton / mendeleev
+      // Gemini:  galilei / mendel / einstein / lavoisier
+      // Opus:    hubble / watson / feynman / pauling
+      // GPT-5.5: sagan / pasteur / fermi / curie
+      const SONNET_TUTORS = ['wegener', 'darwin', 'newton', 'mendeleev'];
+      const GEMINI_TUTORS = ['galilei', 'mendel', 'einstein', 'lavoisier'];
+      const OPUS_TUTORS = ['hubble', 'watson', 'feynman', 'pauling'];
+      const GPT_TUTORS = ['sagan', 'pasteur', 'fermi', 'curie'];
+      const ALL_MAESTRO_TUTORS = [
+        ...SONNET_TUTORS,
+        ...GEMINI_TUTORS,
+        ...OPUS_TUTORS,
+        ...GPT_TUTORS,
+      ];
+
+      const tutorId =
+        typeof maestroTutor === 'string' && ALL_MAESTRO_TUTORS.includes(maestroTutor)
+          ? maestroTutor
+          : 'wegener';
+
+      // system prompt — Earth Science 만 EARTH_SCIENCE_PERSONAS 보유. 다른 maestro 는
+      // 우선 Earth Science 페르소나로 fallback (B5-a 의 EARTH_SCIENCE_PERSONAS).
+      // Phase C 에서 4 과목 페르소나 모두 추가 예정.
+      const promptTutor =
+        maestroSubject === 'earth-science'
+          ? (tutorId as 'wegener' | 'galilei' | 'hubble' | 'sagan')
+          : ('wegener' as const);
       const maestroSystem = buildMaestroSystemPrompt({
         subject: maestroSubject as 'earth-science' | 'biology' | 'physics' | 'chemistry',
-        tutor: tutorId,
+        tutor: promptTutor,
       });
 
-      // 페르소나 → 모델 매핑
       const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
       const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7-20260201';
       const gptId = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
       const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3.1-pro';
 
       let maestroModel: LanguageModelV1;
-      if (tutorId === 'wegener') {
+      if (SONNET_TUTORS.includes(tutorId)) {
         maestroModel = anthropic(sonnetId) as LanguageModelV1;
-      } else if (tutorId === 'hubble') {
+      } else if (OPUS_TUTORS.includes(tutorId)) {
         maestroModel = anthropic(opusId) as LanguageModelV1;
-      } else if (tutorId === 'sagan') {
+      } else if (GPT_TUTORS.includes(tutorId)) {
         maestroModel = openai(gptId) as LanguageModelV1;
       } else {
-        // galilei = Gemini 3.1 Pro (@ai-sdk/google).
-        // Legend 의 call-model.ts 가 GEMINI_API_KEY 로 호출 → maestro 도 동일
-        // env 명시적 전달 (별도 GOOGLE_GENERATIVE_AI_API_KEY 설정 불필요).
+        // Gemini — Legend 와 동일 GEMINI_API_KEY 재사용
         const { createGoogleGenerativeAI } = await import('@ai-sdk/google');
         const googleClient = createGoogleGenerativeAI({
           apiKey: process.env.GEMINI_API_KEY,
