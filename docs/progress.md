@@ -57,6 +57,47 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 19차 세션 종료 (2026-05-06~07) — Maestro 4 과목 fully functional ⭐
+
+### 누적 23 commits / 핵심 성과
+- ✅ **4 maestro 페이지 신설** — Earth Science / Biology / Physics / Chemistry
+- ✅ **16 인물 페르소나 + 4 모델 매핑** (Sonnet/Gemini/Opus/GPT-5.5)
+- ✅ **1598 수능 정답 DB** (4 과목 × Ⅰ/Ⅱ × 10년 = 1600, 결측 2건 = 출제 오류 자동 차단)
+- ✅ **320 PDF 페이지 → Vercel Blob 업로드** (Seoul, Public, 16분, 320 entry)
+- ✅ **multimodal 자동 첨부** (학생이 번호 클릭 → 시험지 페이지 자동 첨부)
+- ✅ **80 PDF 정규화** (4 과목 × Ⅰ/Ⅱ × 10년)
+- ✅ **mhchem 활성화** (`\ce{}` 화학식 렌더)
+- ✅ **Vision LLM 인프라** (FigureKind 9종 + 도표 5단계)
+- ✅ **30 trigger 시드** (Earth Science 6 anchor × 5 도구 / 90 명제)
+
+### 인물 매핑 (모든 maestro 4 모델 동일)
+| 과목 | 1번 (Sonnet, 기본) | 2번 (Gemini) | 3번 (Opus) | 4번 (GPT-5.5) |
+|---|---|---|---|---|
+| Earth Science | 베게너 | 갈릴레이 | 허블 | 세이건 |
+| Biology | **파스퇴르** | 멘델 | 왓슨 | 다윈 |
+| Physics | **페르미** | 아인슈타인 | 파인만 | 뉴턴 |
+| Chemistry | **마리 퀴리** | 라부아지에 | 폴링 | 멘델레예프 |
+
+### Production 상태
+- https://easyedu.ai/dashboard — 학생 도구 13 → **17개**
+- 4 maestro URL: `/earth-science` `/physics` `/chemistry` `/biology`
+- BetaChat 모든 기능 그대로 (HandwriteCanvas / 사진 / Ctrl+V / 일 한도 / 입력 가이드)
+- 후기 link 만 maestro 에서 hide (베타테스트 X)
+
+### 19차 사용자 액션
+- ✅ Vercel Blob store 생성 (Seoul, Public)
+- ✅ `vercel env pull .env.local` (BLOB_READ_WRITE_TOKEN)
+- ✅ answers.xlsx 직접 입력 (1598 정답 / 결측 2 = 출제 오류)
+- ⏳ A5 SQL 마이그레이션 (`20260506_maestro_subject_columns.sql`) Supabase Dashboard 적용
+
+### 남은 작업 (Phase D / 4+)
+- Biology/Physics/Chemistry trigger 시드 (Earth Science 패턴 확장)
+- 문제 번호 ↔ PDF 페이지 정밀 매핑 (OCR)
+- maestro 별 trigger·report 페이지 분리 (현재 Legend 통합)
+- production smoke 검증
+
+---
+
 ## 19차 세션 진행 중 (2026-05-06) — Maestro 4 과목 신설 ⭐
 
 사용자 요청: Legend Tutor 와 동일한 패턴으로 **Physics / Chemistry / Biology / Earth Science Maestro** 4 도구 추가. 향후 Korean (세종·정약용·이이) + English (셰익스피어·처칠·촘스키) 까지 7 maestro 우주.
