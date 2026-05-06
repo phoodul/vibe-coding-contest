@@ -180,16 +180,14 @@ export async function POST(req: Request) {
           ? maestroTutor
           : 'wegener';
 
-      // system prompt — Earth Science 만 EARTH_SCIENCE_PERSONAS 보유. 다른 maestro 는
-      // 우선 Earth Science 페르소나로 fallback (B5-a 의 EARTH_SCIENCE_PERSONAS).
-      // Phase C 에서 4 과목 페르소나 모두 추가 예정.
-      const promptTutor =
-        maestroSubject === 'earth-science'
-          ? (tutorId as 'wegener' | 'galilei' | 'hubble' | 'sagan')
-          : ('wegener' as const);
+      // system prompt — 4 maestro 모두 자기 페르소나 (2026-05-07 Phase C-prompt 완료)
       const maestroSystem = buildMaestroSystemPrompt({
         subject: maestroSubject as 'earth-science' | 'biology' | 'physics' | 'chemistry',
-        tutor: promptTutor,
+        tutor: tutorId as
+          | 'wegener' | 'galilei' | 'hubble' | 'sagan'
+          | 'pasteur' | 'mendel' | 'watson' | 'darwin'
+          | 'fermi' | 'einstein' | 'feynman' | 'newton'
+          | 'curie' | 'lavoisier' | 'pauling' | 'mendeleev',
       });
 
       const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';

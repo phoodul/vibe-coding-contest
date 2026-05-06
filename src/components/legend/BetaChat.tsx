@@ -365,22 +365,48 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
   }
 
   // ScienceExamPanel onSelect 핸들러 — maestro past-exam 선택
+  // 19차 (2026-05-07): manifest 에서 PDF 페이지 URL 자동 첨부 (multimodal)
   const handleSelectScienceExam = useCallback(
-    (sel: ExamSelection) => {
+    async (sel: ExamSelection) => {
       setActiveView('chat');
-      setTimeout(() => {
-        const subjectKo =
-          sel.subject === 'earth-science'
-            ? '지구과학'
-            : sel.subject === 'biology'
-              ? '생명과학'
-              : sel.subject === 'physics'
-                ? '물리학'
-                : '화학';
-        const variant = sel.variant === 'I' ? 'Ⅰ' : 'Ⅱ';
-        const content = `[${sel.year}학년도 수능 ${subjectKo}${variant} ${sel.number}번]\n\n이 문제를 함께 풀어보고 싶어요. 문제 페이지를 캡쳐해서 올릴게요!`;
-        append({ role: 'user', content });
-      }, 200);
+      const subjectKo =
+        sel.subject === 'earth-science'
+          ? '지구과학'
+          : sel.subject === 'biology'
+            ? '생명과학'
+            : sel.subject === 'physics'
+              ? '물리학'
+              : '화학';
+      const variant = sel.variant === 'I' ? 'Ⅰ' : 'Ⅱ';
+      const text = `[${sel.year}학년도 수능 ${subjectKo}${variant} ${sel.number}번]\n\n이 문제를 함께 풀어주세요. 시험지 페이지를 첨부했어요.`;
+
+      // manifest 에서 페이지 URL 가져오기 (dynamic import — manifest 가 클 수 있음)
+      try {
+        const { getSuneungPagesForNumber } = await import('@/lib/data/suneung-pdf-manifest');
+        const urls = getSuneungPagesForNumber(sel.subject, sel.variant, sel.year, sel.number);
+
+        if (urls.length === 0) {
+          // manifest 미보유 → 텍스트만 전달 (학생이 직접 캡쳐)
+          await append({
+            role: 'user',
+            content: `${text}\n\n(시험지 페이지가 아직 등록되지 않았어요. 직접 캡쳐해서 올려주실래요?)`,
+          });
+          return;
+        }
+
+        // multimodal — 이미지 N개 + 텍스트 1개. AI SDK content array 형식
+        const contentParts: Array<{ type: string; image?: string; text?: string }> = [
+          ...urls.map((url) => ({ type: 'image' as const, image: url })),
+          { type: 'text' as const, text },
+        ];
+        await append({
+          role: 'user',
+          content: contentParts as unknown as string,
+        });
+      } catch {
+        // manifest 모듈 없음 → 텍스트만
+        await append({ role: 'user', content: text });
+      }
     },
     [append],
   );
@@ -442,7 +468,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               </span>
             )}
             <Link
-              href={isMaestro ? `/${subject}/triggers` : '/legend/triggers'}
+              href="/legend/triggers"
               className="text-[11px] px-2.5 py-1 rounded-full border border-violet-400/40 bg-violet-400/10 text-violet-200 hover:bg-violet-400/20 transition-colors font-semibold"
             >
               🎯 Trigger
@@ -457,7 +483,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               </Link>
             )}
             <Link
-              href={isMaestro ? `/${subject}/report` : '/legend/report'}
+              href="/legend/report"
               className="text-[11px] px-2.5 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors font-semibold"
             >
               📊 리포트
