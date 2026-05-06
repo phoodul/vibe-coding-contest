@@ -179,9 +179,14 @@ export async function POST(req: Request) {
       } else if (tutorId === 'sagan') {
         maestroModel = openai(gptId) as LanguageModelV1;
       } else {
-        // galilei = Gemini 3.1 Pro (@ai-sdk/google)
-        const { google } = await import('@ai-sdk/google');
-        maestroModel = google(geminiId) as unknown as LanguageModelV1;
+        // galilei = Gemini 3.1 Pro (@ai-sdk/google).
+        // Legend 의 call-model.ts 가 GEMINI_API_KEY 로 호출 → maestro 도 동일
+        // env 명시적 전달 (별도 GOOGLE_GENERATIVE_AI_API_KEY 설정 불필요).
+        const { createGoogleGenerativeAI } = await import('@ai-sdk/google');
+        const googleClient = createGoogleGenerativeAI({
+          apiKey: process.env.GEMINI_API_KEY,
+        });
+        maestroModel = googleClient(geminiId) as unknown as LanguageModelV1;
       }
 
       const resultM = streamText({
