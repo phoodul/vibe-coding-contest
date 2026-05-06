@@ -141,14 +141,14 @@ export const EARTH_SCIENCE_PORTRAITS: Record<EarthScienceTutorName, TutorPortrai
   },
 };
 
-/** Phase C-Biology — 다윈·멘델·왓슨·파스퇴르 (4 인물) */
+/** Phase C-Biology — 파스퇴르(기본)·멘델·왓슨·다윈 (4 인물). 사용자 결정 2026-05-07 */
 export const BIOLOGY_PORTRAITS: Record<BiologyTutorName, TutorPortrait> = {
-  darwin: {
-    src: '/darwin-portrait.jpg',
-    alt: '찰스 다윈',
-    label_ko: '다윈',
+  pasteur: {
+    src: '/pasteur-portrait.jpg',
+    alt: '루이 파스퇴르',
+    label_ko: '파스퇴르',
     model_short: 'Sonnet 4.6',
-    persona_desc: '진화를 발견한 박물학자',
+    persona_desc: '미생물의 비밀을 푼 화학자',
     tier_label: '기본',
   },
   mendel: {
@@ -167,24 +167,24 @@ export const BIOLOGY_PORTRAITS: Record<BiologyTutorName, TutorPortrait> = {
     persona_desc: 'DNA 이중나선의 발견자',
     tier_label: '거장',
   },
-  pasteur: {
-    src: '/pasteur-portrait.jpg',
-    alt: '루이 파스퇴르',
-    label_ko: '파스퇴르',
+  darwin: {
+    src: '/darwin-portrait.jpg',
+    alt: '찰스 다윈',
+    label_ko: '다윈',
     model_short: 'GPT-5.5',
-    persona_desc: '미생물의 비밀을 푼 화학자',
+    persona_desc: '진화를 발견한 박물학자',
     tier_label: '거장',
   },
 };
 
-/** Phase C-Physics — 뉴턴·아인슈타인·파인만·페르미 (4 인물) */
+/** Phase C-Physics — 페르미(기본)·아인슈타인·파인만·뉴턴 (4 인물). 사용자 결정 2026-05-07 */
 export const PHYSICS_PORTRAITS: Record<PhysicsTutorName, TutorPortrait> = {
-  newton: {
-    src: '/newton-portrait.jpg',
-    alt: '아이작 뉴턴',
-    label_ko: '뉴턴',
+  fermi: {
+    src: '/fermi-portrait.jpg',
+    alt: '엔리코 페르미',
+    label_ko: '페르미',
     model_short: 'Sonnet 4.6',
-    persona_desc: '운동의 법칙을 세운 사람',
+    persona_desc: '핵과 추정의 거장',
     tier_label: '기본',
   },
   einstein: {
@@ -203,24 +203,24 @@ export const PHYSICS_PORTRAITS: Record<PhysicsTutorName, TutorPortrait> = {
     persona_desc: '직관과 다이어그램의 천재',
     tier_label: '거장',
   },
-  fermi: {
-    src: '/fermi-portrait.jpg',
-    alt: '엔리코 페르미',
-    label_ko: '페르미',
+  newton: {
+    src: '/newton-portrait.jpg',
+    alt: '아이작 뉴턴',
+    label_ko: '뉴턴',
     model_short: 'GPT-5.5',
-    persona_desc: '핵과 추정의 거장',
+    persona_desc: '운동의 법칙을 세운 사람',
     tier_label: '거장',
   },
 };
 
-/** Phase C-Chemistry — 멘델레예프·라부아지에·폴링·마리 퀴리 (4 인물) */
+/** Phase C-Chemistry — 마리 퀴리(기본)·라부아지에·폴링·멘델레예프 (4 인물). 사용자 결정 2026-05-07 */
 export const CHEMISTRY_PORTRAITS: Record<ChemistryTutorName, TutorPortrait> = {
-  mendeleev: {
-    src: '/mendeleev-portrait.jpg',
-    alt: '드미트리 멘델레예프',
-    label_ko: '멘델레예프',
+  curie: {
+    src: '/curie-portrait.jpg',
+    alt: '마리 퀴리',
+    label_ko: '마리 퀴리',
     model_short: 'Sonnet 4.6',
-    persona_desc: '주기율표의 설계자',
+    persona_desc: '라듐과 방사성의 개척자',
     tier_label: '기본',
   },
   lavoisier: {
@@ -239,12 +239,12 @@ export const CHEMISTRY_PORTRAITS: Record<ChemistryTutorName, TutorPortrait> = {
     persona_desc: '결합과 구조의 통찰가',
     tier_label: '거장',
   },
-  curie: {
-    src: '/curie-portrait.jpg',
-    alt: '마리 퀴리',
-    label_ko: '마리 퀴리',
+  mendeleev: {
+    src: '/mendeleev-portrait.jpg',
+    alt: '드미트리 멘델레예프',
+    label_ko: '멘델레예프',
     model_short: 'GPT-5.5',
-    persona_desc: '라듐과 방사성의 개척자',
+    persona_desc: '주기율표의 설계자',
     tier_label: '거장',
   },
 };
@@ -263,9 +263,9 @@ export const CHEMISTRY_PORTRAITS: Record<ChemistryTutorName, TutorPortrait> = {
 export const PERSONAS_BY_SUBJECT: Record<Subject, readonly MaestroTutorName[]> = {
   math: ['ramanujan_calc', 'ramanujan_intuit', 'gauss', 'von_neumann', 'euler', 'leibniz'],
   'earth-science': ['wegener', 'galilei', 'hubble', 'sagan'],
-  biology: ['darwin', 'mendel', 'watson', 'pasteur'],
-  physics: ['newton', 'einstein', 'feynman', 'fermi'],
-  chemistry: ['mendeleev', 'lavoisier', 'pauling', 'curie'],
+  biology: ['pasteur', 'mendel', 'watson', 'darwin'],
+  physics: ['fermi', 'einstein', 'feynman', 'newton'],
+  chemistry: ['curie', 'lavoisier', 'pauling', 'mendeleev'],
   korean: [],          // Phase 5+: 세종·정약용·이이
   english: [],         // Phase 5+: 셰익스피어·처칠·촘스키
 };

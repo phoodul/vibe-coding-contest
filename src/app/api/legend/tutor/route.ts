@@ -163,10 +163,11 @@ export async function POST(req: Request) {
       // Gemini:  galilei / mendel / einstein / lavoisier
       // Opus:    hubble / watson / feynman / pauling
       // GPT-5.5: sagan / pasteur / fermi / curie
-      const SONNET_TUTORS = ['wegener', 'darwin', 'newton', 'mendeleev'];
+      // 사용자 결정 2026-05-07: Biology=파스퇴르 / Physics=페르미 / Chemistry=마리 퀴리 가 기본 (Sonnet)
+      const SONNET_TUTORS = ['wegener', 'pasteur', 'fermi', 'curie'];
       const GEMINI_TUTORS = ['galilei', 'mendel', 'einstein', 'lavoisier'];
       const OPUS_TUTORS = ['hubble', 'watson', 'feynman', 'pauling'];
-      const GPT_TUTORS = ['sagan', 'pasteur', 'fermi', 'curie'];
+      const GPT_TUTORS = ['sagan', 'darwin', 'newton', 'mendeleev'];
       const ALL_MAESTRO_TUTORS = [
         ...SONNET_TUTORS,
         ...GEMINI_TUTORS,

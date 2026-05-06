@@ -73,9 +73,9 @@ const ALL_TUTORS: TutorName[] = [
 /** subject 별 4 인물 순서 — UI 카드 위치 + 모델 매핑 (1번=Sonnet, 2번=Gemini, 3번=Opus, 4번=GPT-5.5) */
 const MAESTRO_TUTORS_BY_SUBJECT: Record<string, readonly MaestroTutorName[]> = {
   'earth-science': ['wegener', 'galilei', 'hubble', 'sagan'],
-  biology: ['darwin', 'mendel', 'watson', 'pasteur'],
-  physics: ['newton', 'einstein', 'feynman', 'fermi'],
-  chemistry: ['mendeleev', 'lavoisier', 'pauling', 'curie'],
+  biology: ['pasteur', 'mendel', 'watson', 'darwin'],
+  physics: ['fermi', 'einstein', 'feynman', 'newton'],
+  chemistry: ['curie', 'lavoisier', 'pauling', 'mendeleev'],
 };
 
 function getPortraitFor(subject: Subject, tutor: MaestroTutorName) {
