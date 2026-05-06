@@ -21,6 +21,8 @@
 import katex from 'katex';
 import { useMemo } from 'react';
 import 'katex/dist/katex.min.css';
+// 19차 (2026-05-06) — KaTeX mhchem extension. \ce{} 화학식·반응식·이온·동위원소 지원.
+import 'katex/contrib/mhchem';
 
 interface Props {
   children?: string | null;

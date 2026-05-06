@@ -20,6 +20,9 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+// 19차 (2026-05-06) — KaTeX mhchem extension. \ce{} 화학식·반응식·이온·동위원소 지원.
+// 4 maestro (특히 Chemistry / Biology / Physics) 모두 활용. side-effect import (KaTeX 글로벌에 매크로 등록).
+import 'katex/contrib/mhchem';
 
 const KATEX_REHYPE_OPTIONS = {
   throwOnError: false,
