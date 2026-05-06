@@ -14,7 +14,12 @@
  *   - English Maestro (Phase 5+, 셰익스피어·처칠·촘스키)
  */
 
-export type { Subject } from '@/lib/legend/types';
+export type {
+  Subject,
+  MathTutorName,
+  EarthScienceTutorName,
+  MaestroTutorName,
+} from '@/lib/legend/types';
 export {
   ACTIVE_SUBJECTS,
   SUBJECT_LABEL_KO,
@@ -23,6 +28,8 @@ export {
 export {
   PERSONAS_BY_SUBJECT,
   getPersonasForSubject,
+  getMaestroPortrait,
+  EARTH_SCIENCE_PORTRAITS,
 } from '@/lib/legend/portraits';
 
 // 19차 (2026-05-06) — Vision LLM (표·그림 분석) 인프라

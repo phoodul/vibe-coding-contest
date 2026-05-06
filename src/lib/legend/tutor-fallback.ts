@@ -17,7 +17,7 @@
  *
  * 영향 격리: src/lib/legend/ 전용. 외부 의존 없음.
  */
-import type { TutorName } from './types';
+import type { TutorName, MathTutorName } from './types';
 import type { ModelMode, ModelProvider } from './call-model';
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -39,7 +39,7 @@ import type { ModelMode, ModelProvider } from './call-model';
 //     "같은 라마누잔 intuit + 다른 model" 동적 swap (페르소나 유지). RAMANUJAN_INTUIT_MODEL_SWAP
 //     상수가 정의하며 callTutorWithFallback 의 catch 가 분기 처리한다.
 
-export const FALLBACK_MATRIX: Record<TutorName, TutorName[]> = {
+export const FALLBACK_MATRIX: Record<MathTutorName, MathTutorName[]> = {
   ramanujan_calc: ['ramanujan_intuit'],
   // G06-30: 라마누잔 intuit 은 model swap 으로 처리 (RAMANUJAN_INTUIT_MODEL_SWAP).
   // FALLBACK_MATRIX 항목은 "튜터→튜터" 시멘틱이라 빈 배열로 두고, getNextFallback 도 null 반환.
@@ -83,8 +83,8 @@ export function getRamanujanIntuitSwap(): RamanujanIntuitSwap {
 // ────────────────────────────────────────────────────────────────────────────
 
 export interface FallbackEvent {
-  primary: TutorName;
-  fallback_to: TutorName;
+  primary: MathTutorName;
+  fallback_to: MathTutorName;
   reason:
     | 'gemini_429'
     | 'openai_rate_limit'
@@ -107,9 +107,9 @@ export interface FallbackEvent {
  * @returns 1단계 fallback 튜터 / null
  */
 export function getNextFallback(
-  tutor: TutorName,
+  tutor: MathTutorName,
   attempt: number,
-): TutorName | null {
+): MathTutorName | null {
   const candidates = FALLBACK_MATRIX[tutor];
   if (!candidates || candidates.length === 0) return null;
   // 1단계 자동만 허용 — attempt >= 1 이면 이미 1단계 fallback 시도한 것.
@@ -169,7 +169,7 @@ export function classifyError(error: any): FallbackEvent['reason'] {
 // UI 메시지 (stream payload 용 — G06-11 에서 SSE 삽입)
 // ────────────────────────────────────────────────────────────────────────────
 
-const TUTOR_LABEL_KO: Record<TutorName, string> = {
+const TUTOR_LABEL_KO: Record<MathTutorName, string> = {
   ramanujan_calc: '라마누잔',
   ramanujan_intuit: '라마누잔',
   gauss: '가우스',

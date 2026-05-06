@@ -59,15 +59,35 @@ export const SUBJECT_URL_SLUG: Record<Subject, string> = {
 // 튜터 · tier · 영역
 // ────────────────────────────────────────────────────────────────────────────
 
-export type TutorName =
+/** Legend (수학) 5 거장 — 19차 이전부터 사용된 핵심 페르소나. TUTOR_CONFIG·FALLBACK·PORTRAITS 의 Record key. */
+export type MathTutorName =
   | 'ramanujan_calc'   // Tier 0: Haiku + SymPy
   | 'ramanujan_intuit' // Tier 1: Opus 4.7 baseline
   | 'gauss'            // Tier 2: Gemini 3.1 Pro agentic
   | 'von_neumann'      // Tier 2: GPT-5.5 agentic
   | 'euler'            // Tier 2: Opus 4.7 agentic
   | 'leibniz';         // Tier 2: Sonnet 4.6 agentic
-// 19차 — 4 maestro (earth-science / biology / physics / chemistry) 페르소나는 Phase B/C 에서 추가.
-// 각 추가 시 (1) TutorName union 확장 (2) PORTRAITS Record entry (3) PERSONAS_BY_SUBJECT 매핑 갱신.
+
+/** 19차 Phase B — Earth Science Maestro 3 거장 (별도 Record 로 관리, Legend 와 분리) */
+export type EarthScienceTutorName =
+  | 'wegener'          // 대륙이동 · 지권의 변동
+  | 'galilei'          // 천체 관측 · 근대 천문학
+  | 'hubble';          // 우주 팽창 · 외부 은하
+
+/**
+ * Legend (수학) 페르소나 alias.
+ *
+ * 기존 코드 다수가 `TutorName` 을 import 하고 있어 호환성 위해 alias 유지.
+ * Maestro 4 과목 페르소나는 EarthScienceTutorName / BiologyTutorName / ... 별도 type
+ * + 별도 Record (예: EARTH_SCIENCE_PORTRAITS) 로 분리.
+ */
+export type TutorName = MathTutorName;
+
+/**
+ * 모든 maestro 페르소나의 union — PERSONAS_BY_SUBJECT 매핑·UI(TutorPickerModal) 용.
+ * 추가 maestro (Biology / Physics / Chemistry / Korean / English) 진입 시 union 확장.
+ */
+export type MaestroTutorName = MathTutorName | EarthScienceTutorName;
 
 export type Tier = 0 | 1 | 2;
 
@@ -133,7 +153,8 @@ export interface TriggerLabel {
 export interface TutorCallInput {
   user_id: string;
   problem_text: string;
-  tutor: TutorName;
+  /** Legend (수학) 페르소나 한정. 다른 maestro 는 별도 호출자에서 처리. */
+  tutor: MathTutorName;
   call_kind: 'primary' | 'second_opinion' | 'retry';
   routing_decision_id: string;
   /** second_opinion 시 비교용 prior session 들 */
@@ -148,7 +169,7 @@ export interface TutorCallResult {
   /** G06-09 — 1단계 자동 fallback 발생 시 set. 정상 호출 시 undefined. */
   fallback_event?: import('./tutor-fallback').FallbackEvent;
   /** G06-09 — 실제 응답한 튜터 (fallback 시 primary 와 다름). 정상 시 input.tutor 와 동일. */
-  actual_tutor?: TutorName;
+  actual_tutor?: MathTutorName;
 }
 
 // ────────────────────────────────────────────────────────────────────────────

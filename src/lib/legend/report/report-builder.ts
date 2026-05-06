@@ -38,13 +38,14 @@ import type {
   StudentStruggleSummary,
   TriggerCard,
   TutorName,
+  MathTutorName,
 } from '@/lib/legend/types';
 
 // ────────────────────────────────────────────────────────────────────────────
 // 튜터 라벨 + provider 매핑
 // ────────────────────────────────────────────────────────────────────────────
 
-export const TUTOR_LABELS_KO: Record<TutorName, { label: string; model: string }> = {
+export const TUTOR_LABELS_KO: Record<MathTutorName, { label: string; model: string }> = {
   ramanujan_calc: { label: '라마누잔 (계산)', model: 'Haiku 4.5 + SymPy' },
   ramanujan_intuit: { label: '라마누잔 (직관)', model: 'Opus 4.7' },
   gauss: { label: '가우스', model: 'Gemini 3.1 Pro' },

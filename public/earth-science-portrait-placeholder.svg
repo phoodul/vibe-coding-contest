@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.9"/>
+      <stop offset="60%" stop-color="#0f766e" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#0c0a09" stop-opacity="1"/>
+    </radialGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#g)"/>
+  <text x="100" y="115" font-size="64" text-anchor="middle" font-family="Apple Color Emoji,Segoe UI Emoji,sans-serif">🌍</text>
+  <text x="100" y="160" font-size="11" text-anchor="middle" fill="#a7f3d0" font-family="system-ui" letter-spacing="2">EARTH SCIENCE</text>
+</svg>

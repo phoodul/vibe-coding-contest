@@ -6,7 +6,12 @@
  * 모든 portrait 는 public/ 하위 PD 자료. 라이선스는 public/LICENSES.md 참조.
  * label_ko + model_short 는 UI 표기용 (Δ1 QuotaIndicator·TutorBadge 일관성).
  */
-import type { Subject, TutorName } from './types';
+import type {
+  Subject,
+  TutorName,
+  MaestroTutorName,
+  EarthScienceTutorName,
+} from './types';
 
 export interface TutorPortrait {
   /** /public 경로 (Next/Image src 로 그대로 사용) */
@@ -85,6 +90,42 @@ export const PORTRAITS: Record<TutorName, TutorPortrait> = {
 };
 
 /**
+ * 19차 Phase B — Earth Science Maestro 3 거장.
+ *
+ * Legend (수학) 의 PORTRAITS Record 와 분리. tutor-orchestrator·fallback·report
+ * 는 수학 전용이므로 본 Record 는 영향 없음. UI (TutorBadge·TutorPickerModal)
+ * 는 BetaChat subject prop 통합 시 (Phase B5) 본 Record 도 lookup 하도록 확장.
+ *
+ * Portrait 은 placeholder SVG. 진짜 이미지는 사용자 업로드 후 src 교체.
+ */
+export const EARTH_SCIENCE_PORTRAITS: Record<EarthScienceTutorName, TutorPortrait> = {
+  wegener: {
+    src: '/earth-science-portrait-placeholder.svg',
+    alt: '베게너 (대륙이동)',
+    label_ko: '베게너',
+    model_short: 'Sonnet 4.6',
+    persona_desc: '대륙이동의 발견자',
+    tier_label: '기본',
+  },
+  galilei: {
+    src: '/earth-science-portrait-placeholder.svg',
+    alt: '갈릴레이 (천체 관측)',
+    label_ko: '갈릴레이',
+    model_short: 'Opus 4.7',
+    persona_desc: '근대 천문학의 시조',
+    tier_label: '거장',
+  },
+  hubble: {
+    src: '/earth-science-portrait-placeholder.svg',
+    alt: '허블 (우주 팽창)',
+    label_ko: '허블',
+    model_short: 'Gemini 3.1 Pro',
+    persona_desc: '우주 팽창의 발견자',
+    tier_label: '거장',
+  },
+};
+
+/**
  * 19차 (2026-05-06) — Maestro 4 과목 페르소나 매핑.
  *
  * math = 5거장 (Legend, 기존 보존)
@@ -95,9 +136,9 @@ export const PORTRAITS: Record<TutorName, TutorPortrait> = {
  *   2. portraits.ts: PORTRAITS entry 추가 (src·alt·label_ko·persona_desc·tier_label)
  *   3. PERSONAS_BY_SUBJECT 매핑 갱신
  */
-export const PERSONAS_BY_SUBJECT: Record<Subject, readonly TutorName[]> = {
+export const PERSONAS_BY_SUBJECT: Record<Subject, readonly MaestroTutorName[]> = {
   math: ['ramanujan_calc', 'ramanujan_intuit', 'gauss', 'von_neumann', 'euler', 'leibniz'],
-  'earth-science': [], // Phase B: 베게너·갈릴레이·허블
+  'earth-science': ['wegener', 'galilei', 'hubble'], // Phase B 활성화
   biology: [],         // Phase C-Biology: 다윈·멘델·왓슨
   physics: [],         // Phase C-Physics: 파인만·뉴턴·아인슈타인
   chemistry: [],       // Phase C-Chemistry: 멘델레예프·라부아지에·폴링
@@ -108,8 +149,26 @@ export const PERSONAS_BY_SUBJECT: Record<Subject, readonly TutorName[]> = {
 /**
  * 한 subject 의 모든 페르소나 목록 (UI · TutorPickerModal 용).
  */
-export function getPersonasForSubject(subject: Subject): readonly TutorName[] {
+export function getPersonasForSubject(subject: Subject): readonly MaestroTutorName[] {
   return PERSONAS_BY_SUBJECT[subject];
+}
+
+/**
+ * subject + tutor → portrait lookup (UI 용).
+ * Legend (math) 는 PORTRAITS, Earth Science 는 EARTH_SCIENCE_PORTRAITS 에서 조회.
+ * 향후 Biology/Physics/Chemistry 도 동일 패턴으로 분기 추가.
+ */
+export function getMaestroPortrait(
+  subject: Subject,
+  tutor: MaestroTutorName,
+): TutorPortrait | undefined {
+  if (subject === 'math') {
+    return PORTRAITS[tutor as TutorName];
+  }
+  if (subject === 'earth-science') {
+    return EARTH_SCIENCE_PORTRAITS[tutor as EarthScienceTutorName];
+  }
+  return undefined;
 }
 
 /**

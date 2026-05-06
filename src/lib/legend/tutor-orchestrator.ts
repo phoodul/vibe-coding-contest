@@ -27,6 +27,7 @@ import { createClient } from '@/lib/supabase/server';
 import { callModel } from './call-model';
 import type {
   TutorName,
+  MathTutorName,
   Tier,
   TutorCallInput,
   TutorCallResult,
@@ -52,7 +53,7 @@ interface TutorConfigEntry {
   provider: ModelProvider;
 }
 
-export const TUTOR_CONFIG: Record<TutorName, TutorConfigEntry> = {
+export const TUTOR_CONFIG: Record<MathTutorName, TutorConfigEntry> = {
   ramanujan_calc: {
     tier: 0,
     model: process.env.ANTHROPIC_HAIKU_MODEL_ID ?? 'claude-haiku-4-5-20251201',
@@ -100,7 +101,7 @@ export const TUTOR_CONFIG: Record<TutorName, TutorConfigEntry> = {
 // 튜터별 페르소나 (1~2 문단, 학생 코칭 톤)
 // ────────────────────────────────────────────────────────────────────────────
 
-const TUTOR_PERSONAS: Record<TutorName, string> = {
+const TUTOR_PERSONAS: Record<MathTutorName, string> = {
   ramanujan_calc: `당신은 라마누잔 — 계산의 달인이자 학생 친화 튜터입니다.
 주어진 문제를 단계적으로 풀이하되, 단순 계산 (다항·미분·적분·방정식 해) 은 도구로 정확히 처리.
 마지막 줄에 반드시 "최종 답: <값>".`,
@@ -126,8 +127,13 @@ const TUTOR_PERSONAS: Record<TutorName, string> = {
 마지막 step 에서만 "최종 답: <값>" 한 줄.`,
 };
 
-/** P0-04 (2026-05-04): 회귀 테스트에서 페르소나 일관성 검증을 위해 export. */
-export function buildSystemPrompt(tutor: TutorName): string {
+/**
+ * P0-04 (2026-05-04): 회귀 테스트에서 페르소나 일관성 검증을 위해 export.
+ *
+ * 19차: TutorName 이 maestro 페르소나 포함하도록 확장됨. 본 함수는 수학 페르소나 전용
+ * (MathTutorName) — 다른 maestro 페르소나는 별도 prompt 모듈 (Phase B/C 에서 추가).
+ */
+export function buildSystemPrompt(tutor: MathTutorName): string {
   return TUTOR_PERSONAS[tutor];
 }
 
