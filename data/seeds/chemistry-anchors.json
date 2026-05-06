@@ -1,0 +1,382 @@
+{
+  "$schema": "chemistry-anchors.schema.v1",
+  "subject_anchor": "chemistry",
+  "subject_grade": "high",
+  "version": "phase-c.draft.2026-05-07",
+  "purpose": "Phase C-Chemistry — 수능 화학Ⅰ·Ⅱ 핵심 도구 / trigger 명제. 정답으로 가는 최적 방법.",
+  "personas": ["curie", "lavoisier", "pauling", "mendeleev"],
+  "anchors": [
+    {
+      "anchor": "원자 구조·주기율",
+      "anchor_id": "atomic-structure",
+      "primary_persona": "mendeleev",
+      "tools": [
+        {
+          "id": "chem_atom_electron_config",
+          "name": "전자 배치 — Aufbau + Hund + Pauli",
+          "knowledge_layer": 2,
+          "tool_proposition": "전자는 낮은 에너지 오비탈부터 (Aufbau). 같은 에너지 오비탈은 홀로 한 개씩 (Hund). 한 오비탈에 최대 2개 + 스핀 반대 (Pauli).",
+          "triggers": [
+            { "ko": "원자번호 → 전자 배치 1s² 2s² 2p⁶ 3s² ... 순서", "en": "Aufbau order: 1s 2s 2p 3s 3p 4s 3d ..." },
+            { "ko": "Hund 규칙: 같은 에너지 오비탈에 1개씩 채운 후 짝짓기", "en": "Hund's rule: half-fill before pairing." }
+          ],
+          "common_mistake_example": "Cr 의 전자 배치를 [Ar] 4s² 3d⁴ 라 답 (X) → [Ar] 4s¹ 3d⁵ 안정 (O)"
+        },
+        {
+          "id": "chem_atom_periodic_trend",
+          "name": "주기율 — 반지름·이온화에너지·전기음성도",
+          "knowledge_layer": 2,
+          "tool_proposition": "원자반지름: 같은 주기 →(왼→오) 감소 / 같은 족 ↓ 증가. 이온화에너지·전기음성도: 반대 (오·↑ 증가).",
+          "triggers": [
+            { "ko": "같은 주기 → 양성자 ↑ → 인력 ↑ → 반지름 ↓", "en": "Across period: more protons → stronger pull → smaller radius." },
+            { "ko": "전기음성도 최대 = F (불소). 0족 = 측정 X (반응 X)", "en": "Highest electronegativity: F. Noble gases (group 0): not measured." }
+          ],
+          "common_mistake_example": "같은 주기에서 반지름 증가한다 답 (X) → 감소 (O)"
+        },
+        {
+          "id": "chem_atom_isotope",
+          "name": "동위원소 — 양성자 동일·중성자 다름",
+          "knowledge_layer": 1,
+          "tool_proposition": "같은 원소 (원자번호 동일) 인데 질량수 다른 원자. 화학적 성질 동일 / 핵 안정성·반감기 다름.",
+          "triggers": [
+            { "ko": "원소 기호 \\ce{^{12}_6C} ⟷ \\ce{^{14}_6C} = 동위원소 (양성자 6 동일)", "en": "Same Z, different mass = isotopes." },
+            { "ko": "동위원소는 화학 반응에서 거의 동일 행동", "en": "Isotopes behave nearly identically chemically." }
+          ],
+          "common_mistake_example": "동위원소가 화학적 성질 다르다 답 (X) → 거의 동일 (O)"
+        },
+        {
+          "id": "chem_atom_quantum_number",
+          "name": "양자수 — n·l·m·s 4 종",
+          "knowledge_layer": 3,
+          "tool_proposition": "주양자수 n (껍질, 1·2·3...) / 부양자수 l (오비탈 모양, 0=s, 1=p, 2=d) / 자기양자수 m (-l ~ +l) / 스핀 s (±1/2).",
+          "triggers": [
+            { "ko": "n=2 → l=0 (s) 또는 l=1 (p) 가능", "en": "n=2 allows l=0 (s) or l=1 (p)." },
+            { "ko": "p 오비탈 (l=1) → m=-1, 0, +1 → 3 개 오비탈", "en": "p orbital (l=1): m = -1, 0, +1 → 3 orbitals." }
+          ],
+          "common_mistake_example": "p 오비탈이 1개라 답 (X) → 3개 (px, py, pz) (O)"
+        },
+        {
+          "id": "chem_atom_ionization_pattern",
+          "name": "순차 이온화에너지 — 큰 점프 = 비활성기체 도달",
+          "knowledge_layer": 3,
+          "tool_proposition": "순차 IE 그래프에서 갑자기 크게 뛰는 곳 = 다음 껍질의 전자 떼는 시점 = 비활성기체 배치 도달. 족 결정.",
+          "triggers": [
+            { "ko": "Na 의 IE1 작음·IE2 갑자기 큼 → 1족 (Ne 배치 도달)", "en": "Na: small IE1, big jump at IE2 → group 1 (Ne config reached)." },
+            { "ko": "IE 순차 큰 점프 = 다음 주기 시작 = 족 = 점프 직전 번호", "en": "Big jump in successive IEs = group number." }
+          ],
+          "common_mistake_example": "Na 의 IE2 가 IE1 과 비슷하다 답 (X) → 갑자기 큼 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "화학 결합·분자 구조",
+      "anchor_id": "bonding",
+      "primary_persona": "pauling",
+      "tools": [
+        {
+          "id": "chem_bond_ionic_covalent",
+          "name": "결합 종류 — 이온 vs 공유 vs 금속",
+          "knowledge_layer": 1,
+          "tool_proposition": "전기음성도 차 ≥ 1.7 → 이온. 0~1.7 → 극성/비극성 공유. 금속 + 금속 → 금속결합 (자유전자).",
+          "triggers": [
+            { "ko": "\\ce{NaCl} → 이온결합 (Na 1.0 / Cl 3.0, 차 2.0)", "en": "NaCl: ionic (electronegativity diff > 1.7)." },
+            { "ko": "\\ce{H2O} → 극성 공유 (H 2.1 / O 3.5, 차 1.4)", "en": "H₂O: polar covalent (Δχ ~1.4)." }
+          ],
+          "common_mistake_example": "H₂O 를 이온결합이라 답 (X) → 극성 공유 (O)"
+        },
+        {
+          "id": "chem_bond_vsepr",
+          "name": "VSEPR — 전자쌍 반발로 분자 모양",
+          "knowledge_layer": 2,
+          "tool_proposition": "중심 원자 주위 전자쌍 (결합쌍 + 비공유쌍) 이 최대로 멀어지도록 배치. 비공유쌍이 결합쌍보다 더 큰 반발.",
+          "triggers": [
+            { "ko": "\\ce{CH4} = 정사면체 (4 결합쌍, 109.5°)", "en": "CH₄: tetrahedral (109.5°)." },
+            { "ko": "\\ce{H2O} = 굽은형 (2 결합쌍 + 2 비공유, ~104.5° < 109.5°)", "en": "H₂O: bent (~104.5°, lone pair compression)." }
+          ],
+          "common_mistake_example": "H₂O 를 직선형이라 답 (X) → 굽은형 (O)"
+        },
+        {
+          "id": "chem_bond_polarity_dipole",
+          "name": "분자 극성 — 결합 극성 + 모양",
+          "knowledge_layer": 2,
+          "tool_proposition": "결합 극성 (전기음성도 차) + 분자 모양 (대칭) → 분자 극성 결정. 대칭 분자는 무극성, 비대칭은 극성.",
+          "triggers": [
+            { "ko": "\\ce{CO2} = 직선 대칭 → 결합 극성 있어도 분자 무극성", "en": "CO₂: linear symmetric → nonpolar molecule despite polar bonds." },
+            { "ko": "\\ce{H2O} = 굽은형 비대칭 → 극성", "en": "H₂O: bent → polar molecule." }
+          ],
+          "common_mistake_example": "CO₂ 를 극성이라 답 (X) → 무극성 (대칭) (O)"
+        },
+        {
+          "id": "chem_bond_intermolecular",
+          "name": "분자간 힘 — 수소결합 > 쌍극자 > 분산력",
+          "knowledge_layer": 2,
+          "tool_proposition": "수소결합 (H + N·O·F) > 쌍극자-쌍극자 > 분산력 (London). 강할수록 끓는점 ↑.",
+          "triggers": [
+            { "ko": "\\ce{H2O} 끓는점 ↑↑ = 수소결합 (\\ce{H-O...H})", "en": "Water's high BP = hydrogen bonding (H to O lone pair)." },
+            { "ko": "\\ce{H2S} 는 수소결합 X (S 전기음성도 부족) → 끓는점 \\ce{H2O} 보다 ↓", "en": "H₂S: no H-bond (S not electronegative enough) → lower BP than H₂O." }
+          ],
+          "common_mistake_example": "H₂S 가 수소결합 한다 답 (X) → S 는 H 결합 X (O)"
+        },
+        {
+          "id": "chem_bond_resonance",
+          "name": "공명 — 여러 Lewis 구조의 평균",
+          "knowledge_layer": 3,
+          "tool_proposition": "한 Lewis 구조로 표현 안 되는 분자 (이온) 는 여러 구조의 평균 (공명). 결합 차수 = 평균값.",
+          "triggers": [
+            { "ko": "\\ce{O3} 는 두 공명 구조의 평균 → 두 결합 길이 동일", "en": "Ozone: resonance hybrid → both O-O bonds equal length." },
+            { "ko": "벤젠 \\ce{C6H6} 는 6 공명 → 모든 C-C 결합 동일", "en": "Benzene: 6 resonance → all C-C bonds equal." }
+          ],
+          "common_mistake_example": "오존의 두 결합 길이가 다르다 답 (X) → 공명으로 동일 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "반응·열화학·몰",
+      "anchor_id": "reactions",
+      "primary_persona": "lavoisier",
+      "tools": [
+        {
+          "id": "chem_rxn_balance",
+          "name": "반응식 균형 — 질량 보존",
+          "knowledge_layer": 1,
+          "tool_proposition": "반응 전후 각 원자 수 동일. 계수만 조정 (분자식 변경 X). 산화환원은 전자 수도 균형.",
+          "triggers": [
+            { "ko": "\\ce{N2 + 3H2 -> 2NH3} (N 2:2, H 6:6 균형)", "en": "N₂ + 3H₂ → 2NH₃ (atoms balanced)." },
+            { "ko": "균형 시 분자식 변경 X — 계수만 조정", "en": "Only adjust coefficients, never change formulas." }
+          ],
+          "common_mistake_example": "분자식 첨자를 바꿔서 균형 (X) → 계수만 조정 (O)"
+        },
+        {
+          "id": "chem_rxn_mole_concept",
+          "name": "몰 개념 — 1몰 = 6.02×10²³ + 22.4 L (STP)",
+          "knowledge_layer": 1,
+          "tool_proposition": "1몰 = 아보가드로 수 (6.02×10²³ 개) = 분자량 g (질량) = 22.4 L (기체 STP). mol·g·L 변환 핵심.",
+          "triggers": [
+            { "ko": "분자량 = 1몰의 질량 (g)", "en": "Molar mass (g/mol) = mass of 1 mole in grams." },
+            { "ko": "기체 1몰 STP = 22.4 L (모든 기체 동일, 이상기체)", "en": "1 mol gas at STP = 22.4 L (any gas, ideal)." }
+          ],
+          "common_mistake_example": "기체 종류마다 1몰 부피 다르다 답 (X) → STP 에서 22.4 L 동일 (O)"
+        },
+        {
+          "id": "chem_rxn_limiting_reagent",
+          "name": "한계 반응물 — 가장 적은 mol 의 계수비",
+          "knowledge_layer": 2,
+          "tool_proposition": "각 반응물 mol / 계수 계산 → 최소값이 한계. 한계 반응물이 모두 소비되면 반응 종료.",
+          "triggers": [
+            { "ko": "각 반응물 mol / 계수 → 최소 = 한계", "en": "For each reactant: mol / coefficient → smallest = limiting." },
+            { "ko": "초과 반응물은 일부 남음", "en": "Excess reactant: partially remains after reaction." }
+          ],
+          "common_mistake_example": "반응물 mol 만 비교해서 한계 결정 (X) → 계수로 나눠야 (O)"
+        },
+        {
+          "id": "chem_rxn_enthalpy",
+          "name": "엔탈피 변화 — ΔH > 0 흡열 / < 0 발열",
+          "knowledge_layer": 2,
+          "tool_proposition": "발열 반응 ΔH < 0 (에너지 방출). 흡열 ΔH > 0. 헤스 법칙: 경로 무관, ΔH 합 = 전체 ΔH.",
+          "triggers": [
+            { "ko": "발열 ΔH < 0 (계는 에너지 잃음 → 주위는 열 받음)", "en": "Exothermic ΔH < 0 (system loses, surroundings gain)." },
+            { "ko": "헤스 법칙 = 여러 단계 ΔH 합 = 전체 ΔH", "en": "Hess law: sum of step ΔH = overall ΔH." }
+          ],
+          "common_mistake_example": "발열 반응의 ΔH > 0 이라 답 (X) → < 0 (O)"
+        },
+        {
+          "id": "chem_rxn_rate_kinetics",
+          "name": "반응속도 — 농도·온도·촉매·표면적",
+          "knowledge_layer": 2,
+          "tool_proposition": "농도 ↑ / 온도 ↑ (10°C 당 약 2배) / 촉매 사용 / 표면적 ↑ → 반응속도 ↑. 활성화 에너지 낮추면 빨라짐.",
+          "triggers": [
+            { "ko": "촉매는 활성화 에너지 ↓ → 정·역반응 모두 빨라짐", "en": "Catalyst lowers Ea for both forward and reverse." },
+            { "ko": "온도 10°C ↑ → 속도 약 2배", "en": "+10°C → ~2× rate (Arrhenius)." }
+          ],
+          "common_mistake_example": "촉매가 평형 위치를 바꾼다 답 (X) → 속도만 변경 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "평형·산염기",
+      "anchor_id": "equilibrium-acid-base",
+      "primary_persona": "lavoisier",
+      "tools": [
+        {
+          "id": "chem_eq_le_chatelier",
+          "name": "르샤틀리에 — 자극 → 반대 방향 평형 이동",
+          "knowledge_layer": 2,
+          "tool_proposition": "평형계에 자극 (농도·압력·온도) → 자극 줄이는 방향으로 평형 이동. 촉매는 평형 X.",
+          "triggers": [
+            { "ko": "반응물 ↑ → 정반응 (평형이 반응물 줄이는 쪽)", "en": "Add reactant → forward shift (consumes reactant)." },
+            { "ko": "압력 ↑ → 기체 mol 적은 쪽 평형 이동", "en": "Increase pressure → shift to fewer gas moles." }
+          ],
+          "common_mistake_example": "촉매로 평형 위치 변한다 답 (X) → 속도만 (O)"
+        },
+        {
+          "id": "chem_eq_keq_expression",
+          "name": "평형 상수 K — 생성물/반응물 농도비",
+          "knowledge_layer": 2,
+          "tool_proposition": "aA + bB <=> cC + dD 에서 Keq = [C]^c [D]^d / [A]^a [B]^b. 고체·순수 액체 제외. K 큼 → 생성물 우세.",
+          "triggers": [
+            { "ko": "K >> 1 → 생성물 우세 (정반응 거의 완결)", "en": "K >> 1 → products dominate." },
+            { "ko": "K 는 온도만의 함수 (농도·압력 변화 X)", "en": "K depends only on temperature." }
+          ],
+          "common_mistake_example": "K 가 농도 변화로 변한다 답 (X) → 온도만 (O)"
+        },
+        {
+          "id": "chem_eq_ph_calculation",
+          "name": "pH = -log[H+] — 강산·강염기 + 약산",
+          "knowledge_layer": 2,
+          "tool_proposition": "pH = -log[H+]. 강산은 100% 이온화. 약산은 Ka 활용 (ICE 표 + 근사). pH + pOH = 14 (25°C).",
+          "triggers": [
+            { "ko": "강산 0.01 M HCl → pH = 2 (-log 0.01)", "en": "0.01 M HCl → pH 2 (strong acid full ionization)." },
+            { "ko": "pH + pOH = 14 (25°C 물의 자가이온화)", "en": "pH + pOH = 14 at 25°C (Kw = 10⁻¹⁴)." }
+          ],
+          "common_mistake_example": "0.01 M HCl 의 pH 를 1 이라 답 (X) → 2 (O)"
+        },
+        {
+          "id": "chem_eq_buffer",
+          "name": "완충 용액 — 약산 + 짝염기 (또는 반대)",
+          "knowledge_layer": 3,
+          "tool_proposition": "약산 + 그 짝염기 (또는 반대). 산·염기 첨가 시 pH 변화 작음. Henderson-Hasselbalch: pH = pKa + log([A-]/[HA]).",
+          "triggers": [
+            { "ko": "[A-]/[HA] = 1 → pH = pKa (완충 최적)", "en": "[A-]/[HA] = 1 → pH = pKa (best buffering)." },
+            { "ko": "혈액 pH 7.4 = HCO3-/H2CO3 완충계", "en": "Blood pH 7.4 buffered by HCO₃⁻/H₂CO₃." }
+          ],
+          "common_mistake_example": "강산 + 강염기로 완충 만든다 답 (X) → 약산 + 짝염기 (O)"
+        },
+        {
+          "id": "chem_eq_solubility_ksp",
+          "name": "용해도곱 Ksp — 이온의 곱 = 평형",
+          "knowledge_layer": 3,
+          "tool_proposition": "난용성 염 \\ce{AB(s) <=> A+ + B-} → Ksp = [A+][B-]. 이온 곱 > Ksp → 침전. 공통이온 효과 = 용해도 ↓.",
+          "triggers": [
+            { "ko": "이온 곱 < Ksp → 더 녹음. > Ksp → 침전", "en": "Q < Ksp → more dissolves; Q > Ksp → precipitate." },
+            { "ko": "공통이온 첨가 → 평형 좌향 → 용해도 ↓", "en": "Common ion shifts equilibrium left → less dissolves." }
+          ],
+          "common_mistake_example": "공통이온 첨가로 용해도 증가 답 (X) → 감소 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "산화환원·전기화학",
+      "anchor_id": "redox",
+      "primary_persona": "curie",
+      "tools": [
+        {
+          "id": "chem_redox_oxidation_number",
+          "name": "산화수 — 단원자 이온 = 전하, H = +1, O = -2 (예외 H2O2)",
+          "knowledge_layer": 2,
+          "tool_proposition": "산화수 규칙: 홑원소 = 0, 단원자 이온 = 전하, H = +1 (금속수화물 -1), O = -2 (과산화물 -1, OF2 +2). 합 = 분자 전하.",
+          "triggers": [
+            { "ko": "\\ce{H2SO4} 의 S 산화수: H +1×2, O -2×4 → S = +6", "en": "H₂SO₄: S oxidation number = +6 (balance to 0)." },
+            { "ko": "\\ce{Fe2O3} 의 Fe 산화수: O -2×3 = -6 → 2Fe = +6 → Fe = +3", "en": "Fe₂O₃: Fe = +3." }
+          ],
+          "common_mistake_example": "H₂O₂ 의 O 산화수를 -2 라 답 (X) → -1 (과산화물) (O)"
+        },
+        {
+          "id": "chem_redox_oxidant_reductant",
+          "name": "산화제·환원제 — 전자 받는 쪽 vs 잃는 쪽",
+          "knowledge_layer": 2,
+          "tool_proposition": "산화 = 전자 잃음 (산화수 ↑). 환원 = 전자 얻음 (산화수 ↓). 산화제 = 환원되는 쪽. 환원제 = 산화되는 쪽.",
+          "triggers": [
+            { "ko": "산화수 ↑ = 산화 = 환원제 역할", "en": "Oxidation # increases → oxidized → reducing agent role." },
+            { "ko": "산화수 ↓ = 환원 = 산화제 역할", "en": "Oxidation # decreases → reduced → oxidizing agent role." }
+          ],
+          "common_mistake_example": "산화제가 자기 자신이 산화된다 답 (X) → 환원됨 (O)"
+        },
+        {
+          "id": "chem_redox_galvanic_cell",
+          "name": "갈바니 전지 — 산화 (-) / 환원 (+)",
+          "knowledge_layer": 3,
+          "tool_proposition": "갈바니 (자발적): (-) 극 = 산화 = 전자 방출. (+) 극 = 환원 = 전자 받음. E°cell = E°cathode - E°anode > 0 → 자발.",
+          "triggers": [
+            { "ko": "자발적 반응 = E°cell > 0 = 갈바니 전지", "en": "Spontaneous: E°cell > 0 → galvanic cell." },
+            { "ko": "Daniel 전지: \\ce{Zn -> Zn^2+ + 2e-} (-극) / \\ce{Cu^2+ + 2e- -> Cu} (+극)", "en": "Daniell: Zn anode, Cu cathode." }
+          ],
+          "common_mistake_example": "갈바니 전지의 (+) 극에서 산화 일어난다 답 (X) → (-) 극 (O)"
+        },
+        {
+          "id": "chem_redox_electrolysis",
+          "name": "전기분해 — 비자발적, 외부 전원",
+          "knowledge_layer": 3,
+          "tool_proposition": "전기분해는 외부 전원으로 비자발 반응 진행. (+) 극 = 산화 (산화반응) / (-) 극 = 환원 (반대로). NaCl 수용액 = 양극 Cl₂ / 음극 H₂.",
+          "triggers": [
+            { "ko": "전기분해 (+) 극 = 산화 (갈바니와 반대 부호)", "en": "Electrolysis: anode (+) = oxidation (opposite sign from galvanic)." },
+            { "ko": "물 전기분해 → \\ce{2H2O -> 2H2 + O2} (전체)", "en": "Water electrolysis: 2H₂O → 2H₂ + O₂." }
+          ],
+          "common_mistake_example": "전기분해도 자발적이라 답 (X) → 비자발 (외부 전원) (O)"
+        },
+        {
+          "id": "chem_redox_faraday",
+          "name": "패러데이 법칙 — 1F = 1몰 전자 = 96500 C",
+          "knowledge_layer": 3,
+          "tool_proposition": "전기량 Q = It (A·s = C). 1 F = 96500 C = 1 mol 전자. 환원·산화 mol 수 = Q / (n × 96500).",
+          "triggers": [
+            { "ko": "\\ce{Cu^2+ + 2e- -> Cu} → 1 mol Cu 석출에 2 F (193000 C) 필요", "en": "Cu²⁺ → Cu requires 2F (193000 C) per mole." },
+            { "ko": "전기량 Q = 전류 I × 시간 t (단위: 쿨롱 C)", "en": "Charge Q = I × t (Coulombs)." }
+          ],
+          "common_mistake_example": "Cu 1 mol 석출에 1 F 필요라 답 (X) → 2 F (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "유기화학",
+      "anchor_id": "organic",
+      "primary_persona": "pauling",
+      "tools": [
+        {
+          "id": "chem_org_hydrocarbon_classification",
+          "name": "탄화수소 — 알케인·알켄·알카인 + 방향족",
+          "knowledge_layer": 1,
+          "tool_proposition": "포화 (알케인 \\ce{C_nH_{2n+2}}) / 이중결합 (알켄 \\ce{C_nH_{2n}}) / 삼중결합 (알카인) / 방향족 (벤젠 환). 일반식 외워 분자식 추정.",
+          "triggers": [
+            { "ko": "C5 알케인 → \\ce{C5H12} (펜테인)", "en": "C5 alkane: C₅H₁₂ (pentane)." },
+            { "ko": "C5 알켄 → \\ce{C5H10} (펜텐)", "en": "C5 alkene: C₅H₁₀ (pentene)." }
+          ],
+          "common_mistake_example": "알켄을 \\ce{C_nH_{2n+2}} 라 답 (X) → \\ce{C_nH_{2n}} (O)"
+        },
+        {
+          "id": "chem_org_functional_group",
+          "name": "작용기 — -OH·-CHO·-COOH·-COO-·-NH2",
+          "knowledge_layer": 2,
+          "tool_proposition": "유기 분자 성질은 작용기로 결정. 알코올 (-OH), 알데하이드 (-CHO), 카복실산 (-COOH), 에스터 (-COO-), 아민 (-NH₂).",
+          "triggers": [
+            { "ko": "-COOH = 카복실산 = 산성 (pH < 7)", "en": "-COOH = carboxylic acid = acidic." },
+            { "ko": "-OH = 알코올 또는 페놀 (산성도 페놀 > 알코올)", "en": "-OH: alcohol (neutral) or phenol (acidic)." }
+          ],
+          "common_mistake_example": "-OH 가 모두 산성이라 답 (X) → 알코올은 중성 (O)"
+        },
+        {
+          "id": "chem_org_isomerism",
+          "name": "이성질체 — 구조 vs 입체 (cis-trans, 광학)",
+          "knowledge_layer": 3,
+          "tool_proposition": "분자식 같고 구조 다름. 구조 이성 (탄소 골격·작용기 위치) / 입체 이성 (cis-trans, 광학 R/S).",
+          "triggers": [
+            { "ko": "\\ce{C4H10} = n-butane vs iso-butane (구조 이성)", "en": "C₄H₁₀: n-butane vs isobutane (structural isomers)." },
+            { "ko": "이중결합에 다른 치환기 → cis/trans (기하 이성)", "en": "Double bond + different substituents → cis/trans isomerism." }
+          ],
+          "common_mistake_example": "분자식만 같으면 같은 분자라 답 (X) → 이성질체 가능 (O)"
+        },
+        {
+          "id": "chem_org_polymer",
+          "name": "고분자 — 단량체의 반복 (중합)",
+          "knowledge_layer": 2,
+          "tool_proposition": "단량체가 반복 결합 → 고분자. 첨가 중합 (\\ce{C=C} 부수며) vs 축합 중합 (물 등 작은 분자 빠지며).",
+          "triggers": [
+            { "ko": "에틸렌 \\ce{CH2=CH2} → 폴리에틸렌 (첨가 중합)", "en": "Ethylene → polyethylene (addition polymerization)." },
+            { "ko": "나일론·단백질 = 축합 중합 (-H2O)", "en": "Nylon, proteins: condensation polymerization (-H₂O)." }
+          ],
+          "common_mistake_example": "축합 중합에서 물 안 나온다 답 (X) → 작은 분자 (-H₂O 등) 방출 (O)"
+        },
+        {
+          "id": "chem_org_acid_base_organic",
+          "name": "유기 산·염기 — 카복실산 vs 아민",
+          "knowledge_layer": 2,
+          "tool_proposition": "카복실산 (-COOH) = 약산 (Ka 약). 아민 (-NH2) = 약염기 (전자쌍 받음). 페놀 = 알코올보다 산성 (공명 안정화).",
+          "triggers": [
+            { "ko": "-COOH > 페놀 > 알코올 (산성도 순)", "en": "Acidity: carboxylic acid > phenol > alcohol." },
+            { "ko": "-NH2 = 약염기 (질소 전자쌍 → 양성자 받음)", "en": "Amine = weak base (lone pair on N accepts H⁺)." }
+          ],
+          "common_mistake_example": "알코올이 카복실산보다 강산이라 답 (X) → 카복실산이 강 (O)"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,382 @@
+{
+  "$schema": "biology-anchors.schema.v1",
+  "subject_anchor": "biology",
+  "subject_grade": "high",
+  "version": "phase-c.draft.2026-05-07",
+  "purpose": "Phase C-Biology — 수능 생명과학Ⅰ·Ⅱ 핵심 도구 30개 / trigger 명제. 정답으로 가는 최적 방법 학습 = trigger 라이브러리 본질.",
+  "personas": ["pasteur", "mendel", "watson", "darwin"],
+  "anchors": [
+    {
+      "anchor": "유전",
+      "anchor_id": "genetics",
+      "primary_persona": "mendel",
+      "tools": [
+        {
+          "id": "bio_gen_pedigree_recessive",
+          "name": "가계도 — 부모 정상·자녀 발현 → 열성",
+          "knowledge_layer": 2,
+          "tool_proposition": "가계도에서 부모가 모두 정상인데 자녀가 발현하면 열성 유전. 부모는 둘 다 보인자.",
+          "triggers": [
+            { "ko": "부모 정상 + 자녀 발현 → 열성 (둘 다 보인자)", "en": "Both parents unaffected + child affected → recessive (both heterozygous carriers)." },
+            { "ko": "남자에 발현 빈도 ↑ → X-염색체 열성 1순위 의심", "en": "Affected males >> females → X-linked recessive first." }
+          ],
+          "common_mistake_example": "부모 정상·자녀 발현인데 우성 유전이라 답 (X) → 열성 (O)"
+        },
+        {
+          "id": "bio_gen_pedigree_dominant",
+          "name": "가계도 — 부모 1명 발현·자녀 다수 발현 → 우성",
+          "knowledge_layer": 2,
+          "tool_proposition": "한 부모만 발현인데 자녀의 약 절반 발현 → 우성. 발현 부모는 이형접합 가능.",
+          "triggers": [
+            { "ko": "한 부모 발현 + 자녀 약 50% 발현 → 우성", "en": "One affected parent + ~50% affected children → dominant." },
+            { "ko": "발현이 세대 건너뜀 → 우성 X (열성 또는 자연발생)", "en": "Skip-generation pattern rules out dominant inheritance." }
+          ],
+          "common_mistake_example": "세대 건너뜀 패턴을 우성으로 답 (X) → 열성 (O)"
+        },
+        {
+          "id": "bio_gen_blood_type",
+          "name": "ABO 혈액형 — 복대립유전 + 우성 위계",
+          "knowledge_layer": 2,
+          "tool_proposition": "ABO 는 IA·IB·i 3 대립유전자. IA·IB 는 i 에 우성, IA·IB 는 공동우성. 부모 표현형 → 자녀 가능 표현형 표 사용.",
+          "triggers": [
+            { "ko": "AB × O = AO 또는 BO → 자녀는 A 또는 B (절대 AB·O 아님)", "en": "AB × O always gives A or B (never AB or O)." },
+            { "ko": "A × B 부모에서 O 자녀 가능 (둘 다 IAi·IBi 이형)", "en": "A × B parents can yield O child only if both heterozygous (IAi · IBi)." }
+          ],
+          "common_mistake_example": "AB × O 부모에서 AB 자녀 가능이라 답 (X) → 절대 불가 (O)"
+        },
+        {
+          "id": "bio_gen_independent_assortment",
+          "name": "독립 유전 — 곱의 법칙 (이형접합 9:3:3:1)",
+          "knowledge_layer": 2,
+          "tool_proposition": "두 유전자가 다른 염색체에 있으면 독립. AaBb × AaBb 자손 표현형 비 = 9:3:3:1.",
+          "triggers": [
+            { "ko": "ABO + Rh 동시 → 독립 → P(A 형 + Rh+) = P(A) × P(Rh+)", "en": "ABO + Rh independent → multiply individual probabilities." },
+            { "ko": "AaBb × AaBb → 9:3:3:1 = 9 A_B_ : 3 A_bb : 3 aaB_ : 1 aabb", "en": "Dihybrid AaBb × AaBb yields 9:3:3:1 phenotypic ratio." }
+          ],
+          "common_mistake_example": "ABO + 혈우병 결합 확률을 더해서 답 (X) → 곱의 법칙 적용 (O)"
+        },
+        {
+          "id": "bio_gen_linked_crossover",
+          "name": "연관·교차 — 같은 염색체 + 교차율로 거리",
+          "knowledge_layer": 3,
+          "tool_proposition": "두 유전자가 같은 염색체면 연관. 교차에 의해 재조합 자손 발생. 재조합 빈도 = 교차율 = 두 유전자 거리 (cM).",
+          "triggers": [
+            { "ko": "재조합 자손 비율 < 25% → 연관 (독립 X)", "en": "Recombinant frequency < 25% → linked (not independent)." },
+            { "ko": "교차율 (cM) = 재조합 자손 수 / 전체 자손 수 × 100", "en": "Map distance (cM) = recombinants / total × 100." }
+          ],
+          "common_mistake_example": "재조합 자손 비율 작은데 독립으로 답 (X) → 연관 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "세포·분자",
+      "anchor_id": "cell-molecular",
+      "primary_persona": "watson",
+      "tools": [
+        {
+          "id": "bio_cell_dna_replication",
+          "name": "DNA 복제 — 반보존적 + 5'→3' 방향성",
+          "knowledge_layer": 2,
+          "tool_proposition": "DNA 복제는 반보존적 (각 가닥이 주형). 폴리머라제는 5'→3' 만 합성. 선도 가닥 연속 / 후행 가닥 불연속 (오카자키).",
+          "triggers": [
+            { "ko": "복제 후 두 사슬 = 1 모가닥 + 1 새가닥 (반보존적)", "en": "Each daughter has 1 parental + 1 new strand (semiconservative)." },
+            { "ko": "후행 가닥 = 오카자키 조각 → DNA 라이게이스 연결", "en": "Lagging strand = Okazaki fragments joined by DNA ligase." }
+          ],
+          "common_mistake_example": "복제가 보존적 (모두 새 가닥 / 모두 모 가닥) 이라 답 (X) → 반보존적 (O)"
+        },
+        {
+          "id": "bio_cell_transcription",
+          "name": "전사 — DNA → mRNA, 3'→5' 주형 읽기",
+          "knowledge_layer": 2,
+          "tool_proposition": "RNA 폴리머라제가 DNA 주형을 3'→5' 으로 읽으며 mRNA 5'→3' 합성. T → U 치환.",
+          "triggers": [
+            { "ko": "주형 가닥 (3'→5') 의 상보 = mRNA (5'→3', T→U)", "en": "Template (3'→5') complement = mRNA (5'→3', T→U)." },
+            { "ko": "DNA: ATCG → mRNA: UAGC (상보)", "en": "DNA ATCG → mRNA UAGC (complement, T→U)." }
+          ],
+          "common_mistake_example": "전사에서 T 가 그대로 mRNA 에 들어간다 답 (X) → U 로 치환 (O)"
+        },
+        {
+          "id": "bio_cell_translation",
+          "name": "번역 — 코돈 → 아미노산 (3 염기 1 단위)",
+          "knowledge_layer": 1,
+          "tool_proposition": "리보솜이 mRNA 코돈 (3 염기) 을 읽어 tRNA 의 아미노산 운반. 시작 코돈 AUG (메티오닌). 종결 코돈 UAA·UAG·UGA.",
+          "triggers": [
+            { "ko": "mRNA 길이 N → 아미노산 N/3 - 1 (종결 코돈 제외)", "en": "mRNA length N → ~N/3 - 1 amino acids (excluding stop codon)." },
+            { "ko": "종결 코돈 = UAA · UAG · UGA — 아미노산 미운반", "en": "Stop codons UAA / UAG / UGA do not code for amino acids." }
+          ],
+          "common_mistake_example": "종결 코돈도 아미노산으로 번역된다 답 (X) → 종결 (O)"
+        },
+        {
+          "id": "bio_cell_division_mitosis_meiosis",
+          "name": "체세포분열 vs 감수분열 — 염색체 수 + DNA 양",
+          "knowledge_layer": 2,
+          "tool_proposition": "체세포분열 = 2n → 2n (염색체 수 유지, 1회 분열). 감수분열 = 2n → n (염색체 수 절반, 2회 분열, 4 생식세포).",
+          "triggers": [
+            { "ko": "2n 유지 + DNA 양 변화 그래프 → 체세포분열", "en": "Constant 2n + DNA cycle pattern → mitosis." },
+            { "ko": "2n → n + 4 세포 형성 → 감수분열", "en": "2n → n + 4 daughter cells → meiosis." }
+          ],
+          "common_mistake_example": "감수분열을 1회 분열로 답 (X) → 2회 (O)"
+        },
+        {
+          "id": "bio_cell_membrane_transport",
+          "name": "세포막 수송 — 수동 vs 능동 + 포화 곡선",
+          "knowledge_layer": 2,
+          "tool_proposition": "수동 수송 = 농도 기울기 따라 (확산·삼투). 능동 수송 = ATP 사용 (역기울기). 운반체 단백질 → 포화 곡선.",
+          "triggers": [
+            { "ko": "농도 차이 ↑ + 속도 ↑ 무한 → 단순 확산", "en": "Rate increases linearly with conc. gradient → simple diffusion." },
+            { "ko": "농도 차이 ↑ + 속도 포화 → 운반체 매개 (촉진 확산 또는 능동)", "en": "Rate plateaus → carrier-mediated transport (saturation)." }
+          ],
+          "common_mistake_example": "포화 곡선을 단순 확산으로 답 (X) → 운반체 매개 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "항상성·생리",
+      "anchor_id": "physiology",
+      "primary_persona": "pasteur",
+      "tools": [
+        {
+          "id": "bio_phy_homeostasis_negative",
+          "name": "음성 피드백 — 항상성 핵심",
+          "knowledge_layer": 2,
+          "tool_proposition": "체내 변화 → 감지 → 반대 방향 반응으로 정상 회복. 혈당·체온·삼투압 모두 음성 피드백.",
+          "triggers": [
+            { "ko": "혈당 ↑ → 인슐린 ↑ → 혈당 ↓ (음성 피드백)", "en": "High blood glucose → insulin → glucose drops (negative feedback)." },
+            { "ko": "체온 ↓ → 떨림 + 혈관 수축 → 체온 ↑", "en": "Low body temp → shivering + vasoconstriction → temp rises." }
+          ],
+          "common_mistake_example": "혈당 ↑ 시 글루카곤이 분비된다 답 (X) → 인슐린 (O)"
+        },
+        {
+          "id": "bio_phy_neuron_action_potential",
+          "name": "활동전위 — Na+ 유입 → K+ 유출",
+          "knowledge_layer": 3,
+          "tool_proposition": "자극 → Na+ 채널 열림 → 탈분극 (+상승) → K+ 채널 열림 → 재분극 (-하강) → 후과분극 → 안정.",
+          "triggers": [
+            { "ko": "탈분극 = Na+ 유입 / 재분극 = K+ 유출", "en": "Depolarization = Na+ influx / repolarization = K+ efflux." },
+            { "ko": "역치 미만 자극 → 활동전위 X (모 아니면 도)", "en": "Below threshold → no action potential (all-or-nothing)." }
+          ],
+          "common_mistake_example": "재분극을 Na+ 유출로 답 (X) → K+ 유출 (O)"
+        },
+        {
+          "id": "bio_phy_immune_specific",
+          "name": "특이적 면역 — B 세포 (체액성) vs T 세포 (세포성)",
+          "knowledge_layer": 2,
+          "tool_proposition": "B 세포 = 항체 분비 (체액성). 보조 T 세포 = B 활성화 + 세포독성 T. 1차 < 2차 면역 반응 (기억 세포).",
+          "triggers": [
+            { "ko": "항체 분비 = 형질세포 (B → 분화)", "en": "Plasma cells (differentiated B cells) secrete antibodies." },
+            { "ko": "2차 노출 시 항체 농도 ↑↑ + 빠름 → 기억 세포", "en": "Stronger/faster 2nd response = memory cells." }
+          ],
+          "common_mistake_example": "T 세포가 항체를 분비한다 답 (X) → B (형질세포) (O)"
+        },
+        {
+          "id": "bio_phy_kidney_filtration",
+          "name": "신장 — 여과·재흡수·분비",
+          "knowledge_layer": 2,
+          "tool_proposition": "사구체 여과 (혈장의 작은 분자) → 세뇨관 재흡수 (포도당 100%·물·이온) → 분비 → 오줌. 단백질·혈구 = 여과 X.",
+          "triggers": [
+            { "ko": "단백질 + 혈구 = 여과 X (큰 분자)", "en": "Proteins + blood cells NOT filtered (too large)." },
+            { "ko": "포도당 100% 재흡수 → 정상 오줌에 포도당 X", "en": "100% glucose reabsorbed → none in normal urine." }
+          ],
+          "common_mistake_example": "정상 오줌에 단백질이 있다 답 (X) → 여과 안 됨 (O)"
+        },
+        {
+          "id": "bio_phy_circulation_double",
+          "name": "이중 순환 — 폐순환 + 체순환",
+          "knowledge_layer": 1,
+          "tool_proposition": "포유류 = 이중 순환. 폐순환: 우심실 → 폐 → 좌심방 (CO2→O2). 체순환: 좌심실 → 전신 → 우심방.",
+          "triggers": [
+            { "ko": "폐정맥 = 산소 ↑ (폐 → 좌심방)", "en": "Pulmonary VEIN = oxygenated (lung → left atrium)." },
+            { "ko": "폐동맥 = 산소 ↓ (우심실 → 폐, 동맥인데 정맥혈)", "en": "Pulmonary ARTERY = deoxygenated (right ventricle → lung)." }
+          ],
+          "common_mistake_example": "폐동맥에 산소 풍부한 혈액 흐른다 답 (X) → 정맥혈 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "진화",
+      "anchor_id": "evolution",
+      "primary_persona": "darwin",
+      "tools": [
+        {
+          "id": "bio_evo_natural_selection",
+          "name": "자연선택 — 변이·유전·생존경쟁·차등번식",
+          "knowledge_layer": 1,
+          "tool_proposition": "자연선택 4 조건: ① 개체 변이 ② 변이의 유전 가능성 ③ 자원 한계 → 경쟁 ④ 적응적 변이 보유 개체의 차등 번식.",
+          "triggers": [
+            { "ko": "자연선택 작용 = 변이 + 유전 + 차등 번식 모두 필요", "en": "Natural selection requires variation + heritability + differential reproduction." },
+            { "ko": "환경 변화 → 적응 형질 보유 개체 ↑ 빈도", "en": "Environmental change shifts allele frequencies toward adaptive variants." }
+          ],
+          "common_mistake_example": "획득 형질이 유전된다 답 (X, 라마르크) → 변이는 우연 발생 (O)"
+        },
+        {
+          "id": "bio_evo_hardy_weinberg",
+          "name": "하디-바인베르크 평형 — p² + 2pq + q² = 1",
+          "knowledge_layer": 3,
+          "tool_proposition": "이상 집단 (돌연변이·이주·선택·우연·임의 교배 X) 에서 대립유전자 빈도 일정. p² (AA) + 2pq (Aa) + q² (aa) = 1.",
+          "triggers": [
+            { "ko": "q² (aa 발현) → q = √q² → p = 1 - q → 보인자 빈도 = 2pq", "en": "Frequency of aa = q² → solve for q → p = 1 - q → carrier freq = 2pq." },
+            { "ko": "q² 빈도 작음 → 보인자 (2pq) 가 발현자보다 훨씬 많음", "en": "Rare disease → many more carriers (2pq) than affected (q²)." }
+          ],
+          "common_mistake_example": "보인자 빈도를 q² 로 답 (X) → 2pq (O)"
+        },
+        {
+          "id": "bio_evo_speciation",
+          "name": "종 분화 — 지리적 격리 → 생식적 격리",
+          "knowledge_layer": 2,
+          "tool_proposition": "한 종의 지리적 격리 → 각 집단 독립 진화 → 생식적 격리 (교배 X 또는 자손 불임) → 별개 종.",
+          "triggers": [
+            { "ko": "지리적 격리 → 유전자 흐름 차단 → 분화", "en": "Geographic isolation cuts gene flow → divergence." },
+            { "ko": "두 집단 교배해도 자손 불임 → 별개 종", "en": "Hybrid sterility (or inviability) → distinct species." }
+          ],
+          "common_mistake_example": "두 집단이 외형 달라 별개 종이라 답 (X) → 생식적 격리 기준 (O)"
+        },
+        {
+          "id": "bio_evo_phylogeny_tree",
+          "name": "계통수 해석 — 분기점 = 공통 조상",
+          "knowledge_layer": 2,
+          "tool_proposition": "계통수의 분기점 = 두 분류군의 가장 가까운 공통 조상. 분기점이 가까울수록 진화적으로 가까움.",
+          "triggers": [
+            { "ko": "공통 분기점이 가까울수록 → 진화적 거리 짧음", "en": "Closer common node = closer evolutionary relationship." },
+            { "ko": "외형 유사 vs 공통 조상 — 수렴 진화는 외형 유사하나 공통 조상 멀음", "en": "Convergent evolution = similar form but distant ancestry." }
+          ],
+          "common_mistake_example": "외형 유사 = 가까운 친척이라 답 (X) → 분기점 비교 (O)"
+        },
+        {
+          "id": "bio_evo_genetic_drift",
+          "name": "유전적 부동 — 작은 집단의 우연 변동",
+          "knowledge_layer": 3,
+          "tool_proposition": "작은 집단에서 우연 사건으로 대립유전자 빈도 변동. 병목 효과·창시자 효과 = 부동의 극단 사례.",
+          "triggers": [
+            { "ko": "집단 크기 ↓ → 부동 영향 ↑", "en": "Smaller population = stronger genetic drift." },
+            { "ko": "병목 효과 = 재해로 집단 급감 → 우연한 빈도 변화", "en": "Bottleneck = catastrophic reduction → random freq shifts." }
+          ],
+          "common_mistake_example": "유전적 부동을 자연선택으로 답 (X) → 우연 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "생태",
+      "anchor_id": "ecology",
+      "primary_persona": "darwin",
+      "tools": [
+        {
+          "id": "bio_eco_population_growth",
+          "name": "개체군 생장 — J형 (지수) vs S형 (로지스틱)",
+          "knowledge_layer": 2,
+          "tool_proposition": "자원 무한 → J형 (지수). 자원 한계 (환경 수용 능력 K) → S형. K 도달 시 출생 = 사망.",
+          "triggers": [
+            { "ko": "초기 빠른 증가 + K 에서 정체 → S형 (로지스틱)", "en": "Rapid early growth + plateau at K → logistic (S-shape)." },
+            { "ko": "자원 무한 가정 → J형 (실험실 단기)", "en": "Unlimited resources (lab) → J-curve (exponential)." }
+          ],
+          "common_mistake_example": "S형 곡선의 K 에서도 계속 증가한다 답 (X) → 정체 (O)"
+        },
+        {
+          "id": "bio_eco_food_web_energy",
+          "name": "에너지 흐름 — 영양단계마다 약 10% 전달",
+          "knowledge_layer": 2,
+          "tool_proposition": "생산자 → 1차 소비자 → 2차 소비자... 각 영양단계마다 약 10% 전달 (90% 호흡·열 손실). 피라미드.",
+          "triggers": [
+            { "ko": "영양단계 ↑ → 에너지 ↓ (약 1/10 씩)", "en": "Each trophic level retains ~10% of energy from below." },
+            { "ko": "최상위 포식자 = 가장 적은 에너지 → 개체 수 적음", "en": "Top predators have least energy → smallest population." }
+          ],
+          "common_mistake_example": "영양단계 모두 에너지 동일하다 답 (X) → 1/10 씩 감소 (O)"
+        },
+        {
+          "id": "bio_eco_succession",
+          "name": "천이 — 1차 (불모지) vs 2차 (재해 후)",
+          "knowledge_layer": 2,
+          "tool_proposition": "1차 천이 = 흙 X (용암·빙하 후) → 지의류·이끼 → 초본 → 관목 → 음수림. 2차 = 흙 보유 (산불·벌목 후) → 빠른 복구.",
+          "triggers": [
+            { "ko": "1차 천이의 개척자 = 지의류·이끼 (질소 고정·풍화)", "en": "Primary succession pioneers = lichens/mosses (weathering, N-fix)." },
+            { "ko": "2차 천이는 1차보다 빠름 (토양 보유)", "en": "Secondary succession faster than primary (soil intact)." }
+          ],
+          "common_mistake_example": "산불 후 천이를 1차로 답 (X) → 2차 (O)"
+        },
+        {
+          "id": "bio_eco_nitrogen_cycle",
+          "name": "질소 순환 — 고정·동화·암모니아화·질산화·탈질",
+          "knowledge_layer": 3,
+          "tool_proposition": "대기 N2 → 고정 (뿌리혹박테리아) → NH3 → 질산화균 → NO3- → 식물 동화 → 분해자 → 다시 NH3 → 탈질균 → N2.",
+          "triggers": [
+            { "ko": "콩과 식물 = 뿌리혹박테리아 공생 → 질소 고정", "en": "Legume root nodules host N-fixing bacteria." },
+            { "ko": "탈질균 = NO3- → N2 (대기로)", "en": "Denitrifying bacteria reduce NO3- to N2 (atmosphere)." }
+          ],
+          "common_mistake_example": "탈질균을 질소 고정균으로 답 (X) → 반대 방향 (O)"
+        },
+        {
+          "id": "bio_eco_interaction",
+          "name": "상호작용 — 경쟁·포식·공생 (상리·편리·기생)",
+          "knowledge_layer": 1,
+          "tool_proposition": "두 종의 상호작용은 +/0/- 부호 매트릭스. 상리 (++)·기생 (+/-)·편리 (+/0)·경쟁 (--)·포식 (+/-).",
+          "triggers": [
+            { "ko": "+/- 관계 = 포식 또는 기생 (구분 = 죽임 / 생존)", "en": "+/- = predation (kills) or parasitism (survives in host)." },
+            { "ko": "++ = 상리공생 (둘 다 이득), 콩과·박테리아 / 흰동가리·말미잘", "en": "++ = mutualism (both benefit). Legume/bacteria, clownfish/anemone." }
+          ],
+          "common_mistake_example": "기생을 ++ 관계라 답 (X) → +/- (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "분자생물학·생명공학",
+      "anchor_id": "molecular-biotech",
+      "primary_persona": "watson",
+      "tools": [
+        {
+          "id": "bio_mol_pcr",
+          "name": "PCR — DNA 증폭 3단계",
+          "knowledge_layer": 2,
+          "tool_proposition": "PCR = ① 변성 (95°C, 두 가닥 분리) ② 결합 (50~60°C, 프라이머 부착) ③ 신장 (72°C, Taq 폴리머라제). 사이클당 2배 증폭.",
+          "triggers": [
+            { "ko": "n 사이클 후 DNA 양 = 2^n 배", "en": "After n cycles → 2^n fold amplification." },
+            { "ko": "Taq 폴리머라제 = 고온 (95°C) 견딤 → PCR 핵심", "en": "Taq polymerase = thermostable → enables PCR cycling." }
+          ],
+          "common_mistake_example": "PCR 의 변성 단계를 RNA 합성으로 답 (X) → DNA 분리 (O)"
+        },
+        {
+          "id": "bio_mol_restriction_enzyme",
+          "name": "제한효소 — 특정 인식 서열 + 점성말단",
+          "knowledge_layer": 2,
+          "tool_proposition": "제한효소는 특정 회문 서열 인식 후 절단. 점성말단 (sticky end) 형성 → 같은 효소로 자른 DNA 끼리 결합 가능.",
+          "triggers": [
+            { "ko": "회문 서열 (5'-GAATTC-3' / 3'-CTTAAG-5') = EcoRI 인식", "en": "Palindrome (e.g., GAATTC/CTTAAG) = EcoRI recognition site." },
+            { "ko": "같은 제한효소로 자른 DNA 끼리만 점성말단 결합", "en": "Sticky ends from same enzyme can ligate." }
+          ],
+          "common_mistake_example": "다른 제한효소로 자른 DNA 의 점성말단이 결합한다 답 (X) → 같은 효소 (O)"
+        },
+        {
+          "id": "bio_mol_recombinant",
+          "name": "재조합 DNA — 벡터 + 외래 유전자",
+          "knowledge_layer": 3,
+          "tool_proposition": "벡터 (플라스미드) + 외래 유전자 → 같은 제한효소로 절단 → DNA 라이게이스로 결합 → 숙주 (대장균) 형질전환.",
+          "triggers": [
+            { "ko": "재조합 = 벡터 + 외래 유전자 = 숙주 형질전환", "en": "Recombinant DNA = vector + insert ligated → transform host." },
+            { "ko": "DNA 라이게이스 = 점성말단 인산다이에스터 결합", "en": "DNA ligase joins sticky ends (phosphodiester bond)." }
+          ],
+          "common_mistake_example": "DNA 라이게이스가 DNA 를 자른다 답 (X) → 결합 (O)"
+        },
+        {
+          "id": "bio_mol_gene_expression_regulation",
+          "name": "유전자 발현 조절 — lac 오페론",
+          "knowledge_layer": 3,
+          "tool_proposition": "원핵의 오페론 = 프로모터 + 작동부위 + 구조 유전자. 억제 단백질이 작동부위 결합 → 전사 X. 락토오스 → 억제 단백질 해리 → 전사 O.",
+          "triggers": [
+            { "ko": "락토오스 X → 억제 단백질 활성 → 전사 차단", "en": "No lactose → repressor binds operator → no transcription." },
+            { "ko": "락토오스 O → 알로락토오스가 억제 단백질 변형 → 전사 활성", "en": "Lactose present → allolactose inactivates repressor → transcription." }
+          ],
+          "common_mistake_example": "락토오스 X 일 때 lac 오페론 발현된다 답 (X) → 차단 (O)"
+        },
+        {
+          "id": "bio_mol_mutation_types",
+          "name": "돌연변이 — 점·치환·삽입·결실 + 침묵·미스센스·넌센스",
+          "knowledge_layer": 3,
+          "tool_proposition": "치환은 코돈 변화 → 침묵 (같은 아미노산) / 미스센스 (다른 아미노산) / 넌센스 (종결). 삽입·결실 = 프레임 시프트 (이후 모두 변경).",
+          "triggers": [
+            { "ko": "1 염기 삽입·결실 → 프레임 시프트 (이후 코돈 모두 변경)", "en": "1-base indel → frameshift (all downstream codons altered)." },
+            { "ko": "치환 → 종결 코돈 → 단백질 짧아짐 (넌센스 돌연변이)", "en": "Substitution to stop codon → truncated protein (nonsense)." }
+          ],
+          "common_mistake_example": "1 염기 삽입을 침묵 돌연변이로 답 (X) → 프레임 시프트 (O)"
+        }
+      ]
+    }
+  ]
+}

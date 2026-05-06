@@ -1,0 +1,382 @@
+{
+  "$schema": "physics-anchors.schema.v1",
+  "subject_anchor": "physics",
+  "subject_grade": "high",
+  "version": "phase-c.draft.2026-05-07",
+  "purpose": "Phase C-Physics — 수능 물리학Ⅰ·Ⅱ 핵심 도구 / trigger 명제. 정답으로 가는 최적 방법.",
+  "personas": ["fermi", "einstein", "feynman", "newton"],
+  "anchors": [
+    {
+      "anchor": "역학",
+      "anchor_id": "mechanics",
+      "primary_persona": "newton",
+      "tools": [
+        {
+          "id": "phy_mech_newton_2nd",
+          "name": "뉴턴 제2법칙 — F = ma 자유물체도",
+          "knowledge_layer": 1,
+          "tool_proposition": "물체에 작용하는 알짜 힘 = 질량 × 가속도. 자유물체도로 모든 힘을 그리고 방향별 성분 분해 후 F=ma 적용.",
+          "triggers": [
+            { "ko": "여러 힘 작용 → 자유물체도 → 알짜 힘 = ma", "en": "Multiple forces → free-body diagram → net force = ma." },
+            { "ko": "마찰면 위 가속 → mg sinθ - μmg cosθ = ma", "en": "Block on incline with friction: mg sinθ − μmg cosθ = ma." }
+          ],
+          "common_mistake_example": "한 방향만 보고 mg = ma 적용 (X) → 모든 힘 합산 (O)"
+        },
+        {
+          "id": "phy_mech_momentum_conservation",
+          "name": "운동량 보존 — 충돌·폭발",
+          "knowledge_layer": 2,
+          "tool_proposition": "외력 무시할 수 있는 계에서 충돌·폭발 전후 총 운동량 보존. m1v1 + m2v2 = m1v1' + m2v2'.",
+          "triggers": [
+            { "ko": "충돌·폭발 → 외력 무시 → 운동량 보존", "en": "Collision/explosion + negligible external force → momentum conserved." },
+            { "ko": "탄성 충돌 = 운동량 + 운동에너지 모두 보존 / 비탄성 = 운동량만", "en": "Elastic = both momentum + KE conserved; inelastic = only momentum." }
+          ],
+          "common_mistake_example": "비탄성 충돌에서 운동에너지 보존이라 답 (X) → 운동량만 보존 (O)"
+        },
+        {
+          "id": "phy_mech_energy_conservation",
+          "name": "역학적 에너지 보존 — KE + PE = 일정",
+          "knowledge_layer": 2,
+          "tool_proposition": "보존력 (중력·탄성력) 만 작용하면 역학적 에너지 (운동 + 위치) 보존. 마찰 있으면 열로 손실.",
+          "triggers": [
+            { "ko": "h 높이에서 자유낙하 → mgh = (1/2)mv² → v = √(2gh)", "en": "Free fall from h → mgh = ½mv² → v = √(2gh)." },
+            { "ko": "마찰 작용 → 운동에너지 + 마찰열 (손실)", "en": "Friction present → KE + heat loss = initial energy." }
+          ],
+          "common_mistake_example": "마찰 있는데 역학적 에너지 보존이라 답 (X) → 열로 손실 (O)"
+        },
+        {
+          "id": "phy_mech_circular_motion",
+          "name": "등속원운동 — 구심력 = mv²/r",
+          "knowledge_layer": 2,
+          "tool_proposition": "원운동 시 항상 중심 향하는 알짜 힘 (구심력) = mv²/r = mω²r. 어떤 힘이 구심력 역할인지 식별.",
+          "triggers": [
+            { "ko": "등속원운동 = 속력 일정·속도 변화 (방향) → 구심 가속도", "en": "Uniform circular motion: constant speed, changing direction → centripetal accel." },
+            { "ko": "곡선 도로 = 마찰력이 구심력 역할", "en": "Curved road: friction provides centripetal force." }
+          ],
+          "common_mistake_example": "등속원운동에 알짜 힘 0 이라 답 (X) → 구심력 작용 (O)"
+        },
+        {
+          "id": "phy_mech_simple_harmonic",
+          "name": "단진동 — F = -kx, 주기 T = 2π√(m/k)",
+          "knowledge_layer": 3,
+          "tool_proposition": "복원력이 변위에 비례 (F = -kx) → 단진동. 주기 T = 2π√(m/k). 진폭 무관.",
+          "triggers": [
+            { "ko": "용수철 진동 → T = 2π√(m/k) (질량·용수철 상수만)", "en": "Spring SHM: T = 2π√(m/k), independent of amplitude." },
+            { "ko": "단진자 → T = 2π√(L/g) (길이·중력만)", "en": "Pendulum: T = 2π√(L/g), independent of mass." }
+          ],
+          "common_mistake_example": "단진자 주기가 질량에 의존한다 답 (X) → 길이만 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "전자기",
+      "anchor_id": "electromagnetism",
+      "primary_persona": "feynman",
+      "tools": [
+        {
+          "id": "phy_em_coulomb_field",
+          "name": "쿨롱 법칙 + 전기장 — 1/r² 법칙",
+          "knowledge_layer": 2,
+          "tool_proposition": "두 점전하 사이 힘 F = kq1q2/r². 전기장 E = F/q = kQ/r². 동성 척력 / 이성 인력.",
+          "triggers": [
+            { "ko": "거리 2배 → 힘 1/4 (1/r² 법칙)", "en": "Distance ×2 → force ÷4 (inverse square)." },
+            { "ko": "양전하 주위 E 방향 = 바깥 (벗어나는 방향)", "en": "E-field points away from positive charge." }
+          ],
+          "common_mistake_example": "거리 2배에 힘 1/2 라 답 (X) → 1/4 (O)"
+        },
+        {
+          "id": "phy_em_circuit_kirchhoff",
+          "name": "키르히호프 법칙 — 폐회로 + 분기점",
+          "knowledge_layer": 2,
+          "tool_proposition": "분기점: 들어가는 전류 = 나가는 전류. 폐회로: 기전력 합 = 전압강하 합. 회로 분석 핵심.",
+          "triggers": [
+            { "ko": "직렬 = 같은 전류 / 병렬 = 같은 전압", "en": "Series = same current; parallel = same voltage." },
+            { "ko": "병렬 저항 합 = 1/(1/R1 + 1/R2 + ...) (역수 합의 역수)", "en": "Parallel resistance: 1/Rtot = Σ 1/Ri." }
+          ],
+          "common_mistake_example": "병렬 저항 합을 단순 합으로 답 (X) → 역수 합의 역수 (O)"
+        },
+        {
+          "id": "phy_em_magnetic_force",
+          "name": "자기장 속 전하 — F = qv × B (오른손 법칙)",
+          "knowledge_layer": 2,
+          "tool_proposition": "운동하는 전하에 자기력 작용. F = qvB sinθ. 방향 = v × B (오른손 법칙). 양전하 = v × B / 음전하 = 반대.",
+          "triggers": [
+            { "ko": "v ∥ B → F = 0 (sinθ = 0)", "en": "v parallel to B → no magnetic force (sin0=0)." },
+            { "ko": "v ⊥ B → 원운동 (구심력 = 자기력)", "en": "v perpendicular to B → circular motion (Lorentz force = centripetal)." }
+          ],
+          "common_mistake_example": "정지 전하에 자기력 작용한다 답 (X) → v=0 → F=0 (O)"
+        },
+        {
+          "id": "phy_em_induction_lenz",
+          "name": "전자기 유도 — 자기선속 변화 → 기전력",
+          "knowledge_layer": 3,
+          "tool_proposition": "자기선속 Φ = BA cosθ. 변화율 dΦ/dt = 유도 기전력 (절댓값). 렌츠 법칙: 유도 전류는 자기선속 변화 반대 방향.",
+          "triggers": [
+            { "ko": "자기장 ↑ → 유도 전류는 자기장 ↓ 방향 만들기 (반대)", "en": "Increasing flux → induced current opposes (Lenz law)." },
+            { "ko": "코일 안에서 자석 가까이 → 자기선속 ↑ → 척력 방향 유도 자장", "en": "Magnet approaching coil → flux up → induced current creates repulsive field." }
+          ],
+          "common_mistake_example": "유도 전류가 자기선속 변화 같은 방향 만든다 답 (X) → 반대 (O)"
+        },
+        {
+          "id": "phy_em_electromagnetic_wave",
+          "name": "전자기파 — 진동수·파장·속력 c = fλ",
+          "knowledge_layer": 1,
+          "tool_proposition": "진공 속 모든 전자기파 속력 c = 3×10⁸ m/s. c = fλ. 매질 통과 시 속력·파장 변화 / 진동수 불변.",
+          "triggers": [
+            { "ko": "매질 통과 시 진동수 불변·파장 변화", "en": "Through medium: frequency unchanged, wavelength changes." },
+            { "ko": "감마선 > X선 > 자외선 > 가시광선 > 적외선 > 마이크로파 > 라디오 (진동수 ↓)", "en": "Frequency: gamma > X > UV > visible > IR > microwave > radio." }
+          ],
+          "common_mistake_example": "매질 통과 시 진동수 변한다 답 (X) → 불변 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "파동",
+      "anchor_id": "waves",
+      "primary_persona": "feynman",
+      "tools": [
+        {
+          "id": "phy_wave_interference",
+          "name": "간섭 — 보강 (mλ) vs 상쇄 ((m+1/2)λ)",
+          "knowledge_layer": 2,
+          "tool_proposition": "두 파원에서 거리 차이 = mλ → 보강 / (m+1/2)λ → 상쇄. 영의 이중 슬릿 실험.",
+          "triggers": [
+            { "ko": "경로 차이가 파장의 정수배 → 보강 간섭", "en": "Path difference = integer × λ → constructive interference." },
+            { "ko": "경로 차이가 반파장 홀수배 → 상쇄 간섭", "en": "Path difference = (m+½)λ → destructive interference." }
+          ],
+          "common_mistake_example": "반파장 차이를 보강이라 답 (X) → 상쇄 (O)"
+        },
+        {
+          "id": "phy_wave_doppler",
+          "name": "도플러 효과 — 가까이 진동수 ↑, 멀어짐 진동수 ↓",
+          "knowledge_layer": 2,
+          "tool_proposition": "음원·관측자 상대 운동 → 관측 진동수 변화. 가까워짐 → ↑ / 멀어짐 → ↓. 천체의 적색편이도 같은 원리.",
+          "triggers": [
+            { "ko": "구급차가 가까워질 때 사이렌 음 ↑ → 도플러", "en": "Ambulance approaching → siren higher pitch (Doppler)." },
+            { "ko": "별 적색편이 (파장 ↑) → 멀어짐 = 후퇴", "en": "Stellar redshift (longer λ) = receding (recession)." }
+          ],
+          "common_mistake_example": "도플러 효과가 음원 진동수를 바꾼다 답 (X) → 관측치만 변화 (O)"
+        },
+        {
+          "id": "phy_wave_refraction_snell",
+          "name": "굴절 — 스넬 법칙 n1 sinθ1 = n2 sinθ2",
+          "knowledge_layer": 2,
+          "tool_proposition": "매질 변화 → 속력 변화 → 굴절. 굴절률 n = c/v. 광속 매질 (n ↓) → 큰 매질 (n ↑) 으로 가면 굴절각 ↓ (법선 쪽).",
+          "triggers": [
+            { "ko": "공기 → 물 (n ↑) → 굴절각 ↓ (법선 쪽으로 꺾임)", "en": "Air → water (higher n) → bends toward normal." },
+            { "ko": "전반사 발생 = 큰 n 매질 → 작은 n 매질 + 입사각 > 임계각", "en": "Total internal reflection: high-n → low-n + incidence > critical angle." }
+          ],
+          "common_mistake_example": "공기 → 물 통과 시 굴절각 커진다 답 (X) → 작아짐 (O)"
+        },
+        {
+          "id": "phy_wave_standing",
+          "name": "정상파 — 양 끝 고정 vs 한 끝 열림",
+          "knowledge_layer": 3,
+          "tool_proposition": "양 끝 고정 (현) → λn = 2L/n (n=1,2,...). 한 끝 열린 관 → λn = 4L/(2n-1) (홀수 배음만).",
+          "triggers": [
+            { "ko": "현 (양 끝 고정) 의 기본 진동수 f1 = v/2L", "en": "String (both ends fixed): fundamental f1 = v/2L." },
+            { "ko": "한 끝 열린 관은 짝수 배음 X (1·3·5·... 만)", "en": "Open-closed tube: only odd harmonics (1,3,5,...)." }
+          ],
+          "common_mistake_example": "한 끝 열린 관에서 짝수 배음이 있다 답 (X) → 홀수만 (O)"
+        },
+        {
+          "id": "phy_wave_diffraction",
+          "name": "회절 — 슬릿 폭 ↓ → 회절 ↑",
+          "knowledge_layer": 2,
+          "tool_proposition": "파동이 장애물·슬릿 통과 시 휘는 현상. 슬릿 폭과 파장 비교 = 슬릿 폭 ≤ 파장 → 회절 두드러짐.",
+          "triggers": [
+            { "ko": "슬릿 폭 ↓ + 파장 ↑ → 회절 ↑", "en": "Narrower slit + longer λ → more diffraction." },
+            { "ko": "장애물 뒤에 음파 도달 = 회절 (긴 파장 → 잘 휨)", "en": "Sound bends around obstacles (long λ → strong diffraction)." }
+          ],
+          "common_mistake_example": "슬릿 폭 클수록 회절 잘 된다 답 (X) → 작을수록 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "열·열역학",
+      "anchor_id": "thermodynamics",
+      "primary_persona": "fermi",
+      "tools": [
+        {
+          "id": "phy_thermo_first_law",
+          "name": "열역학 1법칙 — ΔU = Q - W",
+          "knowledge_layer": 2,
+          "tool_proposition": "내부에너지 변화 = 가한 열 - 한 일. Q > 0 (열 받음), W > 0 (외부에 일함). 부호 규약 핵심.",
+          "triggers": [
+            { "ko": "단열 변화 → Q = 0 → ΔU = -W (일하면 내부에너지 감소)", "en": "Adiabatic: Q=0 → ΔU = -W." },
+            { "ko": "등온 변화 → ΔU = 0 → Q = W", "en": "Isothermal: ΔU=0 → Q = W (all heat → work)." }
+          ],
+          "common_mistake_example": "단열 변화에서 온도 변화 0 이라 답 (X) → 등온이 ΔU=0 (O)"
+        },
+        {
+          "id": "phy_thermo_ideal_gas",
+          "name": "이상기체 — PV = nRT",
+          "knowledge_layer": 2,
+          "tool_proposition": "이상기체 상태방정식 PV = nRT. P·V·T 비례 관계 분석. 등온 PV 일정 / 등압 V/T 일정 / 등적 P/T 일정.",
+          "triggers": [
+            { "ko": "등온 압축 → P ↑ × V ↓ (PV 일정, 보일 법칙)", "en": "Isothermal compression: PV = const (Boyle)." },
+            { "ko": "등압 가열 → V/T = 일정 (샤를 법칙) → V ↑", "en": "Isobaric heating: V/T = const (Charles) → V increases." }
+          ],
+          "common_mistake_example": "등압에서 PV 일정이라 답 (X) → V/T 일정 (O)"
+        },
+        {
+          "id": "phy_thermo_entropy_2nd",
+          "name": "열역학 2법칙 — 엔트로피 항상 증가",
+          "knowledge_layer": 3,
+          "tool_proposition": "고립계 엔트로피 항상 증가 (또는 일정). 100% 효율 열기관 X. 카르노 효율 = 1 - Tc/Th (절대온도).",
+          "triggers": [
+            { "ko": "열기관 효율 < 100% (카르노 한계)", "en": "Heat engine efficiency < 100% (Carnot limit)." },
+            { "ko": "냉장고 → 외부에 일 가하지 않으면 작동 X", "en": "Refrigerator requires external work (2nd law)." }
+          ],
+          "common_mistake_example": "100% 효율 열기관 가능하다 답 (X) → 2법칙 위반 (O)"
+        },
+        {
+          "id": "phy_thermo_specific_heat",
+          "name": "비열 — Q = mcΔT, 잠열 Q = mL",
+          "knowledge_layer": 1,
+          "tool_proposition": "온도 변화 시 Q = mcΔT. 상태 변화 (고체↔액체↔기체) 시 온도 변화 X, Q = mL (잠열).",
+          "triggers": [
+            { "ko": "물의 비열 = 4180 J/kg·K (큰 값) → 천천히 데워짐", "en": "Water's high specific heat (4180 J/kg·K) → slow temp change." },
+            { "ko": "0°C 얼음 → 0°C 물 = 잠열만 (온도 X)", "en": "Ice → water at 0°C: latent heat only, no temp change." }
+          ],
+          "common_mistake_example": "얼음 녹는 동안 온도 올라간다 답 (X) → 0°C 유지 (O)"
+        },
+        {
+          "id": "phy_thermo_heat_transfer",
+          "name": "열 전달 — 전도·대류·복사",
+          "knowledge_layer": 1,
+          "tool_proposition": "전도 = 매질 통한 직접 (금속 ↑). 대류 = 유체 흐름. 복사 = 전자기파 (진공 가능, 태양열).",
+          "triggers": [
+            { "ko": "진공 통한 열전달 = 복사 (태양 → 지구)", "en": "Heat through vacuum = radiation (Sun → Earth)." },
+            { "ko": "금속이 빨리 데워짐 = 전도성 ↑", "en": "Metals heat fast = high thermal conductivity." }
+          ],
+          "common_mistake_example": "진공에서 대류로 열전달이라 답 (X) → 복사만 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "현대물리",
+      "anchor_id": "modern",
+      "primary_persona": "einstein",
+      "tools": [
+        {
+          "id": "phy_mod_photoelectric",
+          "name": "광전 효과 — 임계 진동수 + 운동에너지 = hf - W",
+          "knowledge_layer": 3,
+          "tool_proposition": "빛의 진동수 > 임계 (f0) 때만 전자 방출. 광전자 KE = hf - W (일함수). 빛의 입자성 (광자) 증거.",
+          "triggers": [
+            { "ko": "빛 세기 ↑ → 광전자 수 ↑ (KE 변화 X)", "en": "Higher intensity → more photoelectrons (not higher KE)." },
+            { "ko": "빛 진동수 ↑ → 광전자 KE ↑ (KE = hf - W)", "en": "Higher frequency → higher KE (KE = hf − W)." }
+          ],
+          "common_mistake_example": "빛 세기 ↑ 시 광전자 KE ↑ 라 답 (X) → 진동수 의존 (O)"
+        },
+        {
+          "id": "phy_mod_de_broglie",
+          "name": "물질파 — λ = h/p (드브로이)",
+          "knowledge_layer": 3,
+          "tool_proposition": "모든 물질이 파동성. 파장 λ = h/p (h = 플랑크 상수, p = 운동량). 큰 운동량 → 짧은 파장.",
+          "triggers": [
+            { "ko": "전자 가속 → 운동량 ↑ → 물질파 파장 ↓", "en": "Faster electrons → higher p → shorter de Broglie λ." },
+            { "ko": "거시 물체는 λ 너무 짧아 파동성 관측 X", "en": "Macroscopic objects: λ too small to observe wave nature." }
+          ],
+          "common_mistake_example": "물질파가 거시 물체에서도 관측된다 답 (X) → 미시만 (O)"
+        },
+        {
+          "id": "phy_mod_uncertainty",
+          "name": "불확정성 원리 — Δx · Δp ≥ ħ/2",
+          "knowledge_layer": 3,
+          "tool_proposition": "위치와 운동량을 동시에 정확히 알 수 없음. Δx · Δp ≥ ħ/2. 측정 자체가 상태 변화.",
+          "triggers": [
+            { "ko": "위치 정확히 측정 → 운동량 불확정 ↑", "en": "Precise position → high momentum uncertainty (Δx ↓ → Δp ↑)." },
+            { "ko": "측정 정확도 한계는 도구 X, 자연의 본질", "en": "Uncertainty is fundamental, not measurement limitation." }
+          ],
+          "common_mistake_example": "더 정밀한 도구로 위치·운동량 모두 정확 측정 가능이라 답 (X) → 불가능 (O)"
+        },
+        {
+          "id": "phy_mod_atomic_spectrum",
+          "name": "수소 원자 스펙트럼 — En = -13.6/n² eV",
+          "knowledge_layer": 3,
+          "tool_proposition": "수소 원자 에너지 준위 En = -13.6/n². 전이 시 광자 에너지 hf = E_초기 - E_최종. 발머·라이먼·파셴 계열.",
+          "triggers": [
+            { "ko": "n=2→n=1 전이 = 라이먼 (자외선)", "en": "n=2→1 transition = Lyman series (UV)." },
+            { "ko": "n=∞→n=2 전이 = 발머 한계 (가시광)", "en": "n=∞→2 = Balmer limit (visible)." }
+          ],
+          "common_mistake_example": "에너지 준위가 양수라 답 (X) → 음수 (속박 상태) (O)"
+        },
+        {
+          "id": "phy_mod_relativity_basic",
+          "name": "특수상대성 — 시간 지연 + 길이 수축",
+          "knowledge_layer": 3,
+          "tool_proposition": "광속 일정 + 모든 관성계 동일. 빠른 운동계의 시계는 느리게 흐름 (시간 지연). 운동 방향 길이 수축.",
+          "triggers": [
+            { "ko": "빠른 우주선 = 정지 관측자가 보면 시간 느리게", "en": "Fast spaceship: stationary observer sees clock running slow." },
+            { "ko": "광속은 모든 관성계에서 동일 (c = 3×10⁸ m/s)", "en": "Speed of light = c in all inertial frames." }
+          ],
+          "common_mistake_example": "광속이 관측자 운동에 따라 변한다 답 (X) → 절대 일정 (O)"
+        }
+      ]
+    },
+    {
+      "anchor": "핵·입자",
+      "anchor_id": "nuclear",
+      "primary_persona": "fermi",
+      "tools": [
+        {
+          "id": "phy_nuc_radioactive_decay",
+          "name": "방사성 붕괴 — 반감기 T½",
+          "knowledge_layer": 2,
+          "tool_proposition": "반감기마다 양 절반. N(t) = N0 · (1/2)^(t/T½). α (He 핵) / β (전자 또는 양전자) / γ (광자).",
+          "triggers": [
+            { "ko": "n 반감기 후 = 1/2^n 비율 잔존", "en": "After n half-lives: (1/2)^n remaining." },
+            { "ko": "α 붕괴 = 질량수 -4, 양성자 -2 / β- = 양성자 +1", "en": "α decay: mass −4, proton −2; β− decay: proton +1." }
+          ],
+          "common_mistake_example": "2 반감기 후 1/3 남는다 답 (X) → 1/4 (O)"
+        },
+        {
+          "id": "phy_nuc_mass_energy",
+          "name": "질량-에너지 등가 — E = mc²",
+          "knowledge_layer": 3,
+          "tool_proposition": "질량 m 이 에너지 E = mc² 와 등가. 핵반응에서 질량 결손 → 에너지 방출. 결합 에너지 = 핵자 결합 안정도.",
+          "triggers": [
+            { "ko": "핵반응 전후 질량 결손 = 방출 에너지 (E = Δm · c²)", "en": "Mass defect → released energy (E = Δm·c²)." },
+            { "ko": "결합 에너지 / 핵자 수 그래프 → Fe (56) 최고 안정", "en": "Binding energy per nucleon: peak at Fe-56 (most stable)." }
+          ],
+          "common_mistake_example": "핵반응에서 질량 보존된다 답 (X) → 일부 에너지로 (O)"
+        },
+        {
+          "id": "phy_nuc_fission_fusion",
+          "name": "핵분열 vs 핵융합 — 큰 핵 분열 / 작은 핵 융합",
+          "knowledge_layer": 2,
+          "tool_proposition": "핵분열 = 큰 핵 (U-235) 이 중성자 흡수 후 분열 (연쇄반응). 핵융합 = 작은 핵 (수소) 이 큰 핵 (헬륨) 으로 결합 (태양).",
+          "triggers": [
+            { "ko": "원자력 발전 = 핵분열 (U-235 + 중성자)", "en": "Nuclear power = fission (U-235 + neutron)." },
+            { "ko": "태양 에너지 원천 = 핵융합 (수소 → 헬륨)", "en": "Sun's energy = fusion (H → He)." }
+          ],
+          "common_mistake_example": "원자력 발전을 핵융합으로 답 (X) → 핵분열 (O)"
+        },
+        {
+          "id": "phy_nuc_quark_lepton",
+          "name": "표준 모형 — 쿼크 6종 + 렙톤 6종",
+          "knowledge_layer": 3,
+          "tool_proposition": "물질 기본 입자 = 쿼크 (u·d·s·c·t·b) + 렙톤 (전자·뮤온·타우 + 중성미자 3). 양성자 = uud, 중성자 = udd.",
+          "triggers": [
+            { "ko": "양성자 = 쿼크 uud (전하 +2/3 +2/3 -1/3 = +1)", "en": "Proton = uud (charges +2/3 +2/3 −1/3 = +1)." },
+            { "ko": "전자는 렙톤 (쿼크 X)", "en": "Electron is a lepton, not a quark." }
+          ],
+          "common_mistake_example": "전자가 쿼크라 답 (X) → 렙톤 (O)"
+        },
+        {
+          "id": "phy_nuc_neutrino",
+          "name": "중성미자 — β 붕괴에서 방출, 거의 검출 X",
+          "knowledge_layer": 3,
+          "tool_proposition": "β 붕괴 시 에너지·운동량 보존 위해 중성미자 방출 (Pauli 가설, Reines·Cowan 검출). 거의 상호작용 X.",
+          "triggers": [
+            { "ko": "β- 붕괴 = 중성자 → 양성자 + 전자 + 반중성미자", "en": "β− decay: n → p + e− + antineutrino." },
+            { "ko": "중성미자는 거의 모든 물질을 통과 (작용 단면적 작음)", "en": "Neutrinos pass through almost everything (tiny cross-section)." }
+          ],
+          "common_mistake_example": "β 붕괴에서 중성미자가 검출되기 쉽다 답 (X) → 거의 X (O)"
+        }
+      ]
+    }
+  ]
+}
