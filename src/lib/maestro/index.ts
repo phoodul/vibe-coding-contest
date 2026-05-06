@@ -39,3 +39,6 @@ export {
   SUBJECT_FIGURE_HINTS,
   analyzeVision,
 } from './vision';
+
+// 19차 Phase B5-a — Maestro 4 인물 system prompts (Earth Science 활성화)
+export { buildMaestroSystemPrompt, EARTH_SCIENCE_PERSONAS } from './system-prompts';
