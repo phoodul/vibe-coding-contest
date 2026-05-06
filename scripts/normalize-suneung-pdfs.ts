@@ -63,8 +63,10 @@ function findPDFs(dir: string, year: number, out: FoundPDF[]) {
       findPDFs(full, year, out);
       continue;
     }
-    if (!entry.endsWith('.pdf')) continue;
-    const m = entry.match(/^(\d{2})\s/);
+    // case-insensitive (.pdf / .PDF 모두 매치)
+    if (!entry.toLowerCase().endsWith('.pdf')) continue;
+    // 첫 두 자리 (01~08) — 공백 유무 무관
+    const m = entry.match(/^(\d{2})/);
     if (!m) continue;
     const map = NUMBER_TO_SUBJECT[m[1]];
     if (!map) continue;
