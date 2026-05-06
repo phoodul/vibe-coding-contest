@@ -690,9 +690,45 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
                         : 'bg-white/5 border border-white/10 text-white'
                     }`}
                   >
-                    <div className="prose prose-invert prose-sm max-w-none">
-                      <StreamingMarkdown content={m.content} streaming={isStreamingNow} />
-                    </div>
+                    {/* 19차 (2026-05-07): multimodal user 메시지 — 이미지 + 텍스트 모두 표시 */}
+                    {Array.isArray(m.content) ? (
+                      <div className="space-y-2">
+                        {(m.content as Array<{ type?: string; image?: string; text?: string }>).map(
+                          (p, i) => {
+                            if (p.type === 'image' && typeof p.image === 'string') {
+                              return (
+                                <a
+                                  key={i}
+                                  href={p.image}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block"
+                                >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={p.image}
+                                    alt={`첨부 ${i + 1}`}
+                                    className="rounded-lg max-w-full h-auto border border-white/10"
+                                  />
+                                </a>
+                              );
+                            }
+                            if (p.type === 'text' && typeof p.text === 'string') {
+                              return (
+                                <div key={i} className="prose prose-invert prose-sm max-w-none">
+                                  <StreamingMarkdown content={p.text} streaming={isStreamingNow} />
+                                </div>
+                              );
+                            }
+                            return null;
+                          },
+                        )}
+                      </div>
+                    ) : (
+                      <div className="prose prose-invert prose-sm max-w-none">
+                        <StreamingMarkdown content={m.content} streaming={isStreamingNow} />
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               );
