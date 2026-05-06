@@ -20,6 +20,7 @@
  */
 import { createClient } from '@/lib/supabase/server';
 import { embedText } from '@/lib/euler/embed';
+import type { Subject } from './types';
 
 const DEDUP_THRESHOLD = parseFloat(process.env.LEGEND_TRIGGER_DEDUP ?? '0.85');
 const PROMOTE_THRESHOLD = parseInt(
@@ -35,6 +36,8 @@ export interface AccumulateInput {
   user_id?: string;
   /** problem 식별자 (source_problem_keys 누적) */
   problem_hash?: string;
+  /** 19차 — maestro subject. 미지정 시 'math' (Legend 호환). */
+  subject?: Subject;
 }
 
 export interface AccumulateResult {
@@ -309,6 +312,7 @@ async function logAccumulationOutcome(
       user_id: input.user_id ?? null,
       problem_hash: input.problem_hash?.slice(0, 64) ?? null,
       detail: result.detail ?? null,
+      subject: input.subject ?? 'math',
     });
   } catch (e) {
     console.warn('[trigger-accumulator] outcome log failed:', (e as Error).message);
