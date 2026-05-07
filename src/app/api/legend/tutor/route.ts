@@ -248,18 +248,13 @@ export async function POST(req: Request) {
         exam_meta: examMeta,
       });
 
-      // 20차 v5 — verifiable stable model IDs (AI SDK v4 docs 검증 완료):
-      // - Sonnet 4.5 stable (anthropic): 'claude-sonnet-4-5-20250929'
-      // - Opus 4.5 stable (anthropic): 'claude-opus-4-5-20250929'
-      // - Gemini 2.5 Pro stable (@ai-sdk/google v1): 'gemini-2.5-pro'
-      // - GPT-4o stable (@ai-sdk/openai v1): 'gpt-4o'
-      // 이전 default ('gemini-3-1-pro' / 'claude-sonnet-4-6-20260101' / 'gpt-5.5')
-      // 는 모두 invalid ID 또는 출시 전 모델 → API silent hang → 빈 응답.
-      // env 가 설정되어 있으면 그 값이 우선 (production 에서 더 새 모델 사용 시).
-      const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-5-20250929';
-      const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-5-20250929';
-      const gptId = process.env.OPENAI_MODEL_ID || 'gpt-4o';
-      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-2.5-pro';
+      // 20차 v6 — model ID 는 사용자 원래 값 (최신 모델) 복구. 이전 v5 의 stable
+      // 강등은 사용자 의도와 어긋나 revert. 진짜 원인은 model ID 가 아닌
+      // multimodal image 처리 + safetySettings 누락 (Legend 의 callGemini 패턴 비교).
+      const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
+      const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7-20260201';
+      const gptId = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
+      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3-1-pro';
 
       // 환경변수 + model ID 진단 logging (값은 출력 X — 존재 여부만)
       console.log(
@@ -267,6 +262,7 @@ export async function POST(req: Request) {
       );
 
       let maestroModel: LanguageModelV1;
+      const isGemini = GEMINI_TUTORS.includes(tutorId);
       if (SONNET_TUTORS.includes(tutorId)) {
         maestroModel = anthropic(sonnetId) as LanguageModelV1;
       } else if (OPUS_TUTORS.includes(tutorId)) {
@@ -274,18 +270,26 @@ export async function POST(req: Request) {
       } else if (GPT_TUTORS.includes(tutorId)) {
         maestroModel = openai(gptId) as LanguageModelV1;
       } else {
-        // Gemini — Legend 와 동일 GEMINI_API_KEY 재사용
+        // Gemini — Legend callGemini 와 동일하게 safety BLOCK_NONE × 4
+        // (수능 과학 false positive — 방사성·면역·핵분열·항원 등 차단 방지)
         const googleClient = createGoogleGenerativeAI({
           apiKey: process.env.GEMINI_API_KEY,
         });
-        maestroModel = googleClient(geminiId) as unknown as LanguageModelV1;
+        maestroModel = googleClient(geminiId, {
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          ],
+        }) as unknown as LanguageModelV1;
       }
 
-      // 20차 fix v3 — AI SDK v4 docs 패턴 정확히 따름:
-      //   1) 마지막 user message 분리 + 새 CoreUserMessage 객체 합성 (in-place mutate X)
-      //   2) image: new URL(imageUrl) — URL 객체 (string URL 도 허용되지만 docs 권장)
-      //   3) initialMessages 는 useChat 의 raw message (자동 UIMessage→CoreMessage 변환 활용)
-      //   참고: vercel/ai cookbook 22-stream-text-with-image-prompt
+      // 20차 v6 — image 를 server 에서 fetch + base64 inline 으로 변환.
+      // URL part 는 일부 모델/SDK 에서 fetch hang 가능 (특히 v4 google provider).
+      // base64 inline 은 모든 vision 모델 (Sonnet/Opus/GPT-4o/Gemini) 가
+      // 가장 안정적으로 처리. 사용자 단서: "Gemini 직접 호출 = OK" 는
+      // base64 inline 형식. 우리도 동일 패턴.
       const rawMaestroMessages = messages as Array<{ role: string; content: unknown; id?: string }>;
       let finalMessages: Array<unknown>;
       if (
@@ -293,7 +297,6 @@ export async function POST(req: Request) {
         attachedImageUrl.length > 0 &&
         rawMaestroMessages.length > 0
       ) {
-        // 마지막 user message 의 index 찾기
         let lastUserIdx = -1;
         for (let i = rawMaestroMessages.length - 1; i >= 0; i--) {
           if (rawMaestroMessages[i].role === 'user') {
@@ -309,16 +312,36 @@ export async function POST(req: Request) {
             typeof lastUser.content === 'string'
               ? lastUser.content
               : '이 문제를 함께 풀어주세요.';
-          let urlObj: URL | string = attachedImageUrl;
+
+          // image fetch + base64 변환 (안정적 vision 입력 형식)
+          let imageContent: string | URL = attachedImageUrl;
           try {
-            urlObj = new URL(attachedImageUrl);
-          } catch {
-            // URL 파싱 실패 시 string fallback
+            const fetchT0 = Date.now();
+            const imgResp = await fetch(attachedImageUrl);
+            if (!imgResp.ok) {
+              throw new Error(`fetch status ${imgResp.status}`);
+            }
+            const arrayBuf = await imgResp.arrayBuffer();
+            const base64 = Buffer.from(arrayBuf).toString('base64');
+            imageContent = base64;
+            console.log(
+              `[maestro-tutor] image fetched ${Date.now() - fetchT0}ms — base64.length=${base64.length} (${(base64.length / 1024).toFixed(1)}KB)`,
+            );
+          } catch (e) {
+            console.warn(
+              `[maestro-tutor] image fetch fail, fallback to URL: ${(e as Error).message}`,
+            );
+            try {
+              imageContent = new URL(attachedImageUrl);
+            } catch {
+              // string URL fallback
+            }
           }
+
           const newLastUser = {
             role: 'user' as const,
             content: [
-              { type: 'image' as const, image: urlObj },
+              { type: 'image' as const, image: imageContent, mimeType: 'image/png' },
               { type: 'text' as const, text: lastUserText },
             ],
           };
