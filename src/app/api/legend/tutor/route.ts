@@ -269,54 +269,89 @@ export async function POST(req: Request) {
         maestroModel = googleClient(geminiId) as unknown as LanguageModelV1;
       }
 
-      // 20차 fix — body.attached_image_url 을 직접 vision part 로 합성.
-      // useChat v4 의 experimental_attachments / content-array 두 우회 모두 production
-      // 에서 LLM 까지 image 가 도달하지 않음. body 직접 전달이 가장 확실한 패턴.
-      const maestroMessages = (messages as Array<{ role: string; content: unknown }>).map(
-        (m) => ({ ...m }),
-      );
+      // 20차 fix v3 — AI SDK v4 docs 패턴 정확히 따름:
+      //   1) 마지막 user message 분리 + 새 CoreUserMessage 객체 합성 (in-place mutate X)
+      //   2) image: new URL(imageUrl) — URL 객체 (string URL 도 허용되지만 docs 권장)
+      //   3) initialMessages 는 useChat 의 raw message (자동 UIMessage→CoreMessage 변환 활용)
+      //   참고: vercel/ai cookbook 22-stream-text-with-image-prompt
+      const rawMaestroMessages = messages as Array<{ role: string; content: unknown; id?: string }>;
+      let finalMessages: Array<unknown>;
       if (
         typeof attachedImageUrl === 'string' &&
         attachedImageUrl.length > 0 &&
-        maestroMessages.length > 0
+        rawMaestroMessages.length > 0
       ) {
-        // 마지막 user message 를 찾아 vision part 합성.
-        for (let i = maestroMessages.length - 1; i >= 0; i--) {
-          const m = maestroMessages[i];
-          if (m.role !== 'user') continue;
-          const textContent = typeof m.content === 'string' ? m.content : '';
-          m.content = [
-            { type: 'image', image: attachedImageUrl },
-            { type: 'text', text: textContent || '이 문제를 함께 풀어주세요.' },
-          ] as unknown as string;
-          break;
+        // 마지막 user message 의 index 찾기
+        let lastUserIdx = -1;
+        for (let i = rawMaestroMessages.length - 1; i >= 0; i--) {
+          if (rawMaestroMessages[i].role === 'user') {
+            lastUserIdx = i;
+            break;
+          }
         }
+        if (lastUserIdx === -1) {
+          finalMessages = rawMaestroMessages;
+        } else {
+          const lastUser = rawMaestroMessages[lastUserIdx];
+          const lastUserText =
+            typeof lastUser.content === 'string'
+              ? lastUser.content
+              : '이 문제를 함께 풀어주세요.';
+          let urlObj: URL | string = attachedImageUrl;
+          try {
+            urlObj = new URL(attachedImageUrl);
+          } catch {
+            // URL 파싱 실패 시 string fallback
+          }
+          const newLastUser = {
+            role: 'user' as const,
+            content: [
+              { type: 'image' as const, image: urlObj },
+              { type: 'text' as const, text: lastUserText },
+            ],
+          };
+          finalMessages = [
+            ...rawMaestroMessages.slice(0, lastUserIdx),
+            newLastUser,
+            ...rawMaestroMessages.slice(lastUserIdx + 1),
+          ];
+        }
+      } else {
+        finalMessages = rawMaestroMessages;
       }
+
       try {
-        const lastUser = [...maestroMessages].reverse().find((m) => m.role === 'user');
+        const lastUser = [...finalMessages]
+          .reverse()
+          .find((m) => (m as { role?: string }).role === 'user') as
+          | { content?: unknown }
+          | undefined;
         const hasImage =
           Array.isArray(lastUser?.content) &&
-          (lastUser.content as unknown as Array<{ type?: string }>).some(
-            (p) => p.type === 'image',
-          );
+          (lastUser.content as Array<{ type?: string }>).some((p) => p.type === 'image');
         console.log(
-          `[maestro-tutor] subject=${maestroSubject} tutor=${tutorId} messages=${maestroMessages.length} hasImage=${hasImage} attachedUrl=${attachedImageUrl ? 'Y' : 'N'}`,
+          `[maestro-tutor] subject=${maestroSubject} tutor=${tutorId} messages=${finalMessages.length} hasImage=${hasImage} attachedUrl=${attachedImageUrl ? 'Y' : 'N'} urlIsURL=${attachedImageUrl ? (() => { try { new URL(attachedImageUrl); return 'Y'; } catch { return 'N'; } })() : '-'}`,
         );
       } catch {}
 
       const resultM = streamText({
         model: maestroModel,
         system: maestroSystem,
-        messages: maestroMessages as Parameters<typeof streamText>[0]['messages'],
+        messages: finalMessages as Parameters<typeof streamText>[0]['messages'],
         onError: (event) => {
-          console.error('[maestro-tutor] stream error:', event);
+          console.error('[maestro-tutor] stream error:', JSON.stringify(event));
+        },
+        onFinish: (result) => {
+          console.log(
+            `[maestro-tutor] onFinish — finishReason=${result.finishReason} text.length=${result.text?.length ?? 0} usage=${JSON.stringify(result.usage)}`,
+          );
         },
       });
       return resultM.toDataStreamResponse({
         getErrorMessage: (error) => {
           console.error('[maestro-tutor] toDataStream error:', error);
-          const msg = error instanceof Error ? error.message : String(error);
-          return `[maestro] 모델 응답 실패 — ${msg.slice(0, 200)}`;
+          const msg = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+          return `⚠️ Maestro 모델 응답 실패 — ${msg.slice(0, 300)}`;
         },
       });
      } catch (e) {
