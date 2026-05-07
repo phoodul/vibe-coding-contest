@@ -117,6 +117,31 @@ production OAuth 로그인이 자동화 환경에서 어려워 다음 항목은 
 3. 사용자 본인 계정으로 비검증 항목 5건 점검
 4. trial 분기 추가 / 인증 redirect UX 결정
 
+### ⭐⭐ 두 번째 결정타 (commit 407a6cb 후속) — 사용자 재신고 "이미지도 안 올라오고 가이드도 안 됨"
+
+`experimental_attachments` 옵션은 v4의 `handleSubmit`에는 안정 지원되지만, `append`에서는 직렬화 누락 케이스가 있어 production에서 LLM까지 image가 도달하지 않았음.
+
+**최종 fix — server 직접 합성 패턴**:
+
+| 파일 | 변경 |
+|---|---|
+| `BetaChat.tsx` | `append(msg, { body: { attached_image_url: imageUrl } })` — useChat의 body merge로 server에 직접 URL 전달. UI: `attachedByMsgId` state로 message id 별 image preview 카드 추가. |
+| `route.ts` (maestro 분기) | `attached_image_url` body 추출 → 마지막 user message의 `content`를 `[{type:'image', image: url}, {type:'text', text}]` 로 server에서 직접 합성. `convertToCoreMessages` import 제거. |
+| `route.ts` | 첫 user 메시지에서 `[2026학년도 수능 지구과학 I 20번]` 정규식 파싱 → `exam_meta` 추출 → `buildMaestroSystemPrompt`에 전달. |
+| `system-prompts.ts` | `examNote` 강화: "첨부 이미지를 직접 읽고 분석" + "첫 응답 형식 4단계" (페르소나 인사 → 자료 정리 → 1단계 시작 → 사고 유도형 질문 마무리). first-turn echo 방지. |
+
+**왜 수학(Legend)은 되고 과학(Maestro)은 안 됐나** (사용자 의문):
+- Legend 분기 = text only (manager + retriever + chain + streamText). attachment 없음 → useChat의 string content만 사용 → 정상 작동.
+- Maestro 분기 = image attachment 필수. useChat v4의 multimodal API (`experimental_attachments`/array content)가 production에서 일관되게 LLM까지 전달되지 않음.
+
+**우회 패턴이 안전한 이유**:
+- useChat은 `content: string`만 다룸 → JSON 직렬화 안전
+- attachment URL은 별도 body field → useChat이 변경 없이 그대로 server로 전송
+- server에서 CoreMessage 형식의 vision part로 합성 → AI SDK v4 streamText의 표준 multimodal 입력
+- 모델 계약(Sonnet 4.6 / Gemini 3.1 Pro / Opus 4.7 / GPT-5.5 vision)에 모두 호환
+
+---
+
 ### ⭐ 결정타 fix — multimodal 가이드 누락 근본 원인 (commit 4cffb43 직후)
 
 **사용자 보고**: "문제를 띄워도 아무런 가이드가 없어"
@@ -148,6 +173,26 @@ JSON.stringify 직렬화로 raw JSON 텍스트가 user message 로 전달 → LL
 → 페르소나·5단계 cue·가이드 정상 응답.
 
 **검증**: typecheck 통과. production 검증은 사용자 본인 계정 필요.
+
+### 추가 fix — 영역 PNG footer 잘라내기
+
+**사용자 보고**: 영역 PNG 하단에 `*확인 사항 / 답안지의 해당란... / 한국교육과정평가원에 있습니다` footer 가 포함되어 LLM 가이드에 노이즈.
+
+**원인**: `extract-suneung-question-images.ts` 의 `buildRects` 가 페이지 마지막 문제 영역을 `pageHeight - 30` (하단 30pt 여백) 까지 자름 → KICE 시험지 footer 가 그 안에 포함.
+
+**Fix**:
+- `extract-suneung-question-images.ts` — `extractFooterY()` 신설. KICE 표준 footer 키워드 4개 (`확인 사항` / `답안지의 해당란` / `한국교육과정평가원` / `이 문제지에 관한`) detect → 가장 위쪽 yFromBottom 를 cutoff. buildRects 에 footerYByPage 전달, 페이지 마지막 문제만 적용. 안전장치: footer 가 페이지 절반 위에 있으면 (= mis-detect) 무시하고 fallback 사용.
+- `EXTRACT_FORCE=true` env — 기존 PNG 무시하고 재추출.
+- `upload-suneung-questions.ts` — `UPLOAD_FORCE=true` env 추가. 기존 manifest 무시. blob 의 `allowOverwrite: true` 로 같은 pathname 덮어쓰기 (URL 변경 없음).
+
+**사용자 액션 (재추출 + 재업로드)**:
+```sh
+EXTRACT_FORCE=true npx tsx scripts/extract-suneung-question-images.ts
+UPLOAD_FORCE=true npx tsx scripts/upload-suneung-questions.ts
+```
+- 추출: 80 PDF × 20 문제 = 1600 PNG / ~30 분
+- 업로드: 1598 PNG × ~3 초 / ~80 분
+- URL 변경 없음 → manifest 갱신만 하면 production 즉시 반영. CDN 캐시는 자연 만료 또는 수동 invalidation.
 
 ### 19차에서 untracked 인계물
 

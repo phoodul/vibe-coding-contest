@@ -147,12 +147,15 @@ async function main() {
   const all = findAll();
   console.log(`[upload-q] 영역 PNG: ${all.length} (결측 ${MISSING.size}건 제외)`);
 
-  const existing = loadExisting();
+  // 20차 — UPLOAD_FORCE=true 시 기존 manifest 무시하고 모두 재업로드 (footer cutoff 갱신용).
+  // allowOverwrite: true 라 같은 pathname 에 새 PNG 가 덮어써짐 (URL 변경 없음).
+  const force = process.env.UPLOAD_FORCE === 'true';
+  const existing = force ? [] : loadExisting();
   const existingKeys = new Set(
     existing.map((e) => `${e.subject}_${e.variant}_${e.year}_${e.number}`),
   );
   const todo = all.filter((e) => !existingKeys.has(e.key));
-  console.log(`[upload-q] 신규: ${todo.length} / 기존: ${existing.length}`);
+  console.log(`[upload-q] 신규: ${todo.length} / 기존: ${existing.length}${force ? ' (force=true 무시)' : ''}`);
 
   const uploaded: Uploaded[] = [...existing];
   let count = 0;

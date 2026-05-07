@@ -231,6 +231,10 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
   // G06-33: 풀이 정리 인라인 카드 상태 (마지막 assistant 메시지 1개만 유지)
   const [inlineReport, setInlineReport] = useState<PerProblemReport | null>(null);
 
+  // 20차 — maestro 수능 영역 PNG preview (message id → image url 매핑).
+  // useChat 의 message.content 는 string 만 보존하므로 client UI 용 별도 state.
+  const [attachedByMsgId, setAttachedByMsgId] = useState<Record<string, string>>({});
+
   // Δ13 — 필기/사진 입력 채널 (EulerTutorPage 패턴 차용)
   const [handwriteOpen, setHandwriteOpen] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -425,12 +429,10 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
       const header = `[${sel.year}학년도 수능 ${subjectKo}${variant} ${sel.number}번]`;
 
       try {
-        // 19차 (2026-05-07) 사용자 결정 — vision only.
-        // 20차 (2026-05-07) fix — AI SDK v4 multimodal 은 content array 가 아닌
-        // append 두 번째 인자의 `experimental_attachments` 로 전달해야 함.
-        // 기존 `content: contentParts as unknown as string` 방식은 useChat 이
-        // string 으로 직렬화하지 못해 LLM 에 빈/잘못된 메시지가 전달되었음
-        // ("문제를 띄워도 가이드 없음" 베타 보고의 근본 원인).
+        // 20차 (2026-05-07) — useChat v4 의 experimental_attachments / content array
+        // 두 패턴이 모두 production 에서 LLM 까지 전달되지 않음. server 에서
+        // body.attached_image_url 받아 마지막 user message 에 vision part 합성하는
+        // 우회. (math 분기는 영향 없음, maestro 만 변경)
         const { getSuneungQuestionImage } = await import('@/lib/data/suneung-question-manifest');
         const imageUrl = getSuneungQuestionImage(sel.subject, sel.variant, sel.year, sel.number);
 
@@ -441,18 +443,14 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
           return;
         }
 
-        // AI SDK v4 표준 multimodal — experimental_attachments 옵션.
-        // SDK 가 자동으로 image/* mediaType 을 vision part 로 변환해 model 에 전달.
+        // 미리 message id 를 부여하여 append 전에 image preview state 등록 (race-free).
+        const msgId = `maestro-${sel.subject}-${sel.variant}-${sel.year}-${sel.number}-${Date.now()}`;
+        setAttachedByMsgId((prev) => ({ ...prev, [msgId]: imageUrl }));
         await append(
-          { role: 'user', content: requestText },
+          { id: msgId, role: 'user', content: requestText },
           {
-            experimental_attachments: [
-              {
-                name: `${sel.subject}_${sel.variant}_${sel.year}_${sel.number}.png`,
-                contentType: 'image/png',
-                url: imageUrl,
-              },
-            ],
+            // 두 번째 인자의 body 는 useChat 의 기본 body 와 머지되어 server 로 전송.
+            body: { attached_image_url: imageUrl },
           },
         );
       } catch {
@@ -769,7 +767,8 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
                         : 'bg-white/5 border border-white/10 text-white'
                     }`}
                   >
-                    {/* 19차 (2026-05-07): multimodal user 메시지 — 이미지 + 텍스트 모두 표시 */}
+                    {/* 19차 (2026-05-07): multimodal user 메시지 — 이미지 + 텍스트 모두 표시
+                        20차: attachedByMsgId 매핑이 있으면 user 메시지 카드 위에 image preview */}
                     {Array.isArray(m.content) ? (
                       <div className="space-y-2">
                         {(m.content as Array<{ type?: string; image?: string; text?: string }>).map(
@@ -802,6 +801,25 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
                             return null;
                           },
                         )}
+                      </div>
+                    ) : attachedByMsgId[m.id] ? (
+                      <div className="space-y-2">
+                        <a
+                          href={attachedByMsgId[m.id]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={attachedByMsgId[m.id]}
+                            alt="첨부 시험지"
+                            className="rounded-lg max-w-full h-auto border border-white/10"
+                          />
+                        </a>
+                        <div className="prose prose-invert prose-sm max-w-none">
+                          <StreamingMarkdown content={m.content} streaming={isStreamingNow} />
+                        </div>
                       </div>
                     ) : (
                       <div className="prose prose-invert prose-sm max-w-none">

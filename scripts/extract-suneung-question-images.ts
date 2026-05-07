@@ -66,6 +66,35 @@ function findTargets(filterSubject?: string): SplitTarget[] {
   return targets;
 }
 
+/**
+ * 20차 (2026-05-07) — KICE 시험지 footer 키워드 detect.
+ * 페이지 마지막 문제 영역이 footer 까지 침범하지 않도록 footer 텍스트의
+ * 가장 위쪽 yFromBottom 를 cutoff 로 사용. (page 별 footer 위치가 다를 수 있음)
+ */
+const FOOTER_KEYWORDS = [
+  '확인 사항',
+  '답안지의 해당란',
+  '한국교육과정평가원',
+  '이 문제지에 관한',
+];
+
+async function extractFooterY(
+  pdf: import('pdfjs-dist').PDFDocumentProxy,
+  pageNumber: number,
+): Promise<number | null> {
+  const page = await pdf.getPage(pageNumber);
+  const text = await page.getTextContent();
+  const items = text.items as Array<{ str: string; transform: number[] }>;
+  let maxY: number | null = null;
+  for (const it of items) {
+    const s = it.str;
+    if (!FOOTER_KEYWORDS.some((kw) => s.includes(kw))) continue;
+    const y = it.transform[5];
+    if (maxY === null || y > maxY) maxY = y;
+  }
+  return maxY;
+}
+
 async function extractQuestionPositions(
   pdf: import('pdfjs-dist').PDFDocumentProxy,
 ): Promise<QuestionPos[]> {
@@ -113,6 +142,7 @@ interface QuestionRect {
 function buildRects(
   positions: QuestionPos[],
   pageHeight: number,
+  footerYByPage: Map<number, number | null>,
 ): QuestionRect[] {
   const rects: QuestionRect[] = [];
   // 각 문제 영역 = same page + same column 의 다음 문제까지
@@ -132,8 +162,16 @@ function buildRects(
       );
       yBottom = pageHeight - next.yFromBottom - MARGIN_BOTTOM;
     } else {
-      // 페이지 마지막 — 페이지 bottom
-      yBottom = pageHeight - 30; // 하단 여백
+      // 페이지 마지막 — footer cutoff 우선, 없으면 페이지 bottom
+      // footer cutoff = footer 텍스트 가장 위쪽 yFromBottom 기준 + 위로 6pt 여백
+      // 안전장치: footer 가 페이지 절반 보다 위에 있으면 (= 잘못된 detect) 무시.
+      const footerY = footerYByPage.get(q.page) ?? null;
+      const footerYTop1x = footerY !== null ? pageHeight - footerY - 6 : null;
+      if (footerYTop1x !== null && footerYTop1x > pageHeight * 0.5) {
+        yBottom = footerYTop1x;
+      } else {
+        yBottom = pageHeight - 30; // 하단 여백 fallback
+      }
     }
 
     const left = q.column === 'L' ? COLUMN_LEFT_X : COLUMN_RIGHT_X;
@@ -197,11 +235,20 @@ async function extractTarget(
   const firstPage = await pdf.getPage(positions[0].page);
   const v1x = firstPage.getViewport({ scale: 1.0 });
   const pageHeight1x = v1x.height;
-  const rects = buildRects(positions, pageHeight1x);
 
+  // 20차 — 페이지별 footer Y 캐시. 마지막 문제 영역이 footer 까지 침범하지 않도록.
+  const footerYByPage = new Map<number, number | null>();
+  for (const p of pagesUsed) {
+    footerYByPage.set(p, await extractFooterY(pdf, p));
+  }
+
+  const rects = buildRects(positions, pageHeight1x, footerYByPage);
+
+  // 20차 — EXTRACT_FORCE=true 시 기존 PNG 도 덮어쓰기 (footer cutoff 재추출용)
+  const force = process.env.EXTRACT_FORCE === 'true';
   for (const r of rects) {
     const outFile = join(outDir, `q-${r.number}.png`);
-    if (existsSync(outFile)) {
+    if (!force && existsSync(outFile)) {
       skipped++;
       continue;
     }

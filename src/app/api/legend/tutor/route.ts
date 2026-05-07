@@ -1,7 +1,7 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { convertToCoreMessages, generateText, streamText, StreamData, type LanguageModelV1 } from "ai";
+import { generateText, streamText, StreamData, type LanguageModelV1 } from "ai";
 import { NextResponse } from "next/server";
 // 19차 — maestro top-level import (dynamic import 가 production cold start 에서 실패 가능성 회피)
 import { buildMaestroSystemPrompt } from "@/lib/maestro/system-prompts";
@@ -118,6 +118,8 @@ export async function POST(req: Request) {
       subject: maestroSubject,
       // 19차 — Maestro 4 인물 (wegener / galilei / hubble / sagan)
       selected_tutor: maestroTutor,
+      // 20차 — Maestro 수능 영역 PNG URL. server 에서 마지막 user message 에 vision part 합성.
+      attached_image_url: attachedImageUrl,
     } = await req.json();
     let area: string | null = clientArea ?? null;
     const subjectHintNote = buildSubjectHintNote(
@@ -186,6 +188,35 @@ export async function POST(req: Request) {
           ? maestroTutor
           : 'wegener';
 
+      // 20차 — 첫 user 메시지에서 수능 기출 메타 ([2026학년도 수능 지구과학 I 20번])
+      // 추출. examNote 가 system prompt 에 들어가야 LLM 이 첫 응답에서 페르소나 인사 +
+      // 5단계 1단계 (문제 파악) 를 시작.
+      function parseMaestroExamMeta(): { variant?: 'I' | 'II'; year?: number; number?: number } | undefined {
+        const firstUser = messages.find((m) => m.role === 'user');
+        if (!firstUser) return undefined;
+        const text = typeof firstUser.content === 'string' ? firstUser.content : '';
+        if (!text) return undefined;
+        const subjectKo =
+          maestroSubject === 'earth-science'
+            ? '지구과학'
+            : maestroSubject === 'biology'
+              ? '생명과학'
+              : maestroSubject === 'physics'
+                ? '물리학'
+                : maestroSubject === 'chemistry'
+                  ? '화학'
+                  : null;
+        if (!subjectKo) return undefined;
+        const re = new RegExp(
+          `\\[(\\d{4})학년도\\s*수능\\s*${subjectKo}\\s*(Ⅰ|Ⅱ|I|II)\\s*(\\d+)번`,
+        );
+        const m = text.match(re);
+        if (!m) return undefined;
+        const v = m[2] === 'Ⅰ' || m[2] === 'I' ? 'I' : 'II';
+        return { year: parseInt(m[1], 10), variant: v, number: parseInt(m[3], 10) };
+      }
+      const examMeta = parseMaestroExamMeta();
+
       // system prompt — 4 maestro 모두 자기 페르소나 (2026-05-07 Phase C-prompt 완료)
       const maestroSystem = buildMaestroSystemPrompt({
         subject: maestroSubject as 'earth-science' | 'biology' | 'physics' | 'chemistry',
@@ -194,6 +225,7 @@ export async function POST(req: Request) {
           | 'pasteur' | 'mendel' | 'watson' | 'darwin'
           | 'fermi' | 'einstein' | 'feynman' | 'newton'
           | 'curie' | 'lavoisier' | 'pauling' | 'mendeleev',
+        exam_meta: examMeta,
       });
 
       const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
@@ -217,24 +249,45 @@ export async function POST(req: Request) {
         maestroModel = googleClient(geminiId) as unknown as LanguageModelV1;
       }
 
-      // 20차 fix — useChat experimental_attachments 를 vision part 로 변환.
-      // convertToCoreMessages 를 거치지 않으면 첨부 이미지가 model 에 전달되지 않아
-      // "문제를 띄워도 가이드 없음" 결함 발생.
-      const coreMessages = convertToCoreMessages(
-        messages as Parameters<typeof convertToCoreMessages>[0],
+      // 20차 fix — body.attached_image_url 을 직접 vision part 로 합성.
+      // useChat v4 의 experimental_attachments / content-array 두 우회 모두 production
+      // 에서 LLM 까지 image 가 도달하지 않음. body 직접 전달이 가장 확실한 패턴.
+      const maestroMessages = (messages as Array<{ role: string; content: unknown }>).map(
+        (m) => ({ ...m }),
       );
+      if (
+        typeof attachedImageUrl === 'string' &&
+        attachedImageUrl.length > 0 &&
+        maestroMessages.length > 0
+      ) {
+        // 마지막 user message 를 찾아 vision part 합성.
+        for (let i = maestroMessages.length - 1; i >= 0; i--) {
+          const m = maestroMessages[i];
+          if (m.role !== 'user') continue;
+          const textContent = typeof m.content === 'string' ? m.content : '';
+          m.content = [
+            { type: 'image', image: attachedImageUrl },
+            { type: 'text', text: textContent || '이 문제를 함께 풀어주세요.' },
+          ] as unknown as string;
+          break;
+        }
+      }
       try {
-        const lastUser = [...coreMessages].reverse().find((m) => m.role === 'user');
+        const lastUser = [...maestroMessages].reverse().find((m) => m.role === 'user');
         const hasImage =
           Array.isArray(lastUser?.content) &&
-          (lastUser.content as Array<{ type?: string }>).some((p) => p.type === 'image');
-        console.log(`[maestro-tutor] coreMessages=${coreMessages.length} hasImage=${hasImage}`);
+          (lastUser.content as unknown as Array<{ type?: string }>).some(
+            (p) => p.type === 'image',
+          );
+        console.log(
+          `[maestro-tutor] subject=${maestroSubject} tutor=${tutorId} messages=${maestroMessages.length} hasImage=${hasImage} attachedUrl=${attachedImageUrl ? 'Y' : 'N'}`,
+        );
       } catch {}
 
       const resultM = streamText({
         model: maestroModel,
         system: maestroSystem,
-        messages: coreMessages,
+        messages: maestroMessages as Parameters<typeof streamText>[0]['messages'],
         onError: (event) => {
           console.error('[maestro-tutor] stream error:', event);
         },
