@@ -1,7 +1,7 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateText, streamText, StreamData, type LanguageModelV1 } from "ai";
+import { convertToCoreMessages, generateText, streamText, StreamData, type LanguageModelV1 } from "ai";
 import { NextResponse } from "next/server";
 // 19차 — maestro top-level import (dynamic import 가 production cold start 에서 실패 가능성 회피)
 import { buildMaestroSystemPrompt } from "@/lib/maestro/system-prompts";
@@ -217,10 +217,24 @@ export async function POST(req: Request) {
         maestroModel = googleClient(geminiId) as unknown as LanguageModelV1;
       }
 
+      // 20차 fix — useChat experimental_attachments 를 vision part 로 변환.
+      // convertToCoreMessages 를 거치지 않으면 첨부 이미지가 model 에 전달되지 않아
+      // "문제를 띄워도 가이드 없음" 결함 발생.
+      const coreMessages = convertToCoreMessages(
+        messages as Parameters<typeof convertToCoreMessages>[0],
+      );
+      try {
+        const lastUser = [...coreMessages].reverse().find((m) => m.role === 'user');
+        const hasImage =
+          Array.isArray(lastUser?.content) &&
+          (lastUser.content as Array<{ type?: string }>).some((p) => p.type === 'image');
+        console.log(`[maestro-tutor] coreMessages=${coreMessages.length} hasImage=${hasImage}`);
+      } catch {}
+
       const resultM = streamText({
         model: maestroModel,
         system: maestroSystem,
-        messages: messages as Parameters<typeof streamText>[0]['messages'],
+        messages: coreMessages,
         onError: (event) => {
           console.error('[maestro-tutor] stream error:', event);
         },

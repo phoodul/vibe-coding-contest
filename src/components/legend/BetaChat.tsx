@@ -426,9 +426,11 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
 
       try {
         // 19차 (2026-05-07) 사용자 결정 — vision only.
-        // markdown text part 제거 (Upstage parsing 부정확 → LLM 혼란 가능).
-        // LLM 의 vision 능력 만으로 한국어 시험지 풀이 충분 (Gemini 3.1 Pro · Opus 4.7 · GPT-5.5).
-        // markdown 은 향후 검색·trigger 매칭·OCR 정밀화 별도 용도 보존.
+        // 20차 (2026-05-07) fix — AI SDK v4 multimodal 은 content array 가 아닌
+        // append 두 번째 인자의 `experimental_attachments` 로 전달해야 함.
+        // 기존 `content: contentParts as unknown as string` 방식은 useChat 이
+        // string 으로 직렬화하지 못해 LLM 에 빈/잘못된 메시지가 전달되었음
+        // ("문제를 띄워도 가이드 없음" 베타 보고의 근본 원인).
         const { getSuneungQuestionImage } = await import('@/lib/data/suneung-question-manifest');
         const imageUrl = getSuneungQuestionImage(sel.subject, sel.variant, sel.year, sel.number);
 
@@ -439,15 +441,20 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
           return;
         }
 
-        // multimodal — image (영역 PNG) + 짧은 text 헤더만
-        const contentParts: Array<{ type: string; image?: string; text?: string }> = [
-          { type: 'image' as const, image: imageUrl },
-          { type: 'text' as const, text: requestText },
-        ];
-        await append({
-          role: 'user',
-          content: contentParts as unknown as string,
-        });
+        // AI SDK v4 표준 multimodal — experimental_attachments 옵션.
+        // SDK 가 자동으로 image/* mediaType 을 vision part 로 변환해 model 에 전달.
+        await append(
+          { role: 'user', content: requestText },
+          {
+            experimental_attachments: [
+              {
+                name: `${sel.subject}_${sel.variant}_${sel.year}_${sel.number}.png`,
+                contentType: 'image/png',
+                url: imageUrl,
+              },
+            ],
+          },
+        );
       } catch {
         await append({ role: 'user', content: header });
       }

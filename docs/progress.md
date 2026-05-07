@@ -117,6 +117,38 @@ production OAuth 로그인이 자동화 환경에서 어려워 다음 항목은 
 3. 사용자 본인 계정으로 비검증 항목 5건 점검
 4. trial 분기 추가 / 인증 redirect UX 결정
 
+### ⭐ 결정타 fix — multimodal 가이드 누락 근본 원인 (commit 4cffb43 직후)
+
+**사용자 보고**: "문제를 띄워도 아무런 가이드가 없어"
+
+**근본 원인** (AI SDK v4 패턴 미준수):
+
+기존 `BetaChat.handleSelectScienceExam` 가 multimodal image 를 다음과 같이 보냈음:
+```ts
+const contentParts = [{ type: 'image', image: imageUrl }, { type: 'text', text }];
+await append({ role: 'user', content: contentParts as unknown as string });
+```
+
+`useChat` v4 의 `Message.content` 는 **string 만** 받음. array 를 string cast 로 박으면
+JSON.stringify 직렬화로 raw JSON 텍스트가 user message 로 전달 → LLM 이 시험지를 못 보고
+일반 텍스트 ("이 문제를 풀어주세요") 만 인식 → 코칭 시작 트리거 누락.
+
+**v4 표준 multimodal 패턴** (AI SDK docs 검증):
+- client: `append(msg, { experimental_attachments: [{ name, contentType, url }] })`
+- server: `convertToCoreMessages(messages)` 로 attachment → CoreMessage vision part 자동 변환
+
+**Fix (2 파일)**:
+
+| 파일 | 변경 |
+|---|---|
+| `src/components/legend/BetaChat.tsx` | `handleSelectScienceExam` 의 hack 제거, `experimental_attachments` 옵션 사용 |
+| `src/app/api/legend/tutor/route.ts` | `convertToCoreMessages` import + maestro 분기에서 변환 후 streamText 에 전달. 진단 logging 추가 (`hasImage`). |
+
+**영향**: 4 maestro 의 수능 기출 번호 클릭 → 시험지 페이지 이미지가 vision LLM 에 도달
+→ 페르소나·5단계 cue·가이드 정상 응답.
+
+**검증**: typecheck 통과. production 검증은 사용자 본인 계정 필요.
+
 ### 19차에서 untracked 인계물
 
 - `scripts/extract-suneung-question-texts.ts` — 19차 (2026-05-07) 작성. PDF text layer → 문제 번호별 본문/보기 분리 → `src/lib/data/suneung-problem-texts-science.json`. 본 세션에서는 사용하지 않음. 다음 진행 시 입출력 검증 후 commit 또는 user_docs 로 이동.
