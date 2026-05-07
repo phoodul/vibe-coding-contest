@@ -272,9 +272,17 @@ export async function POST(req: Request) {
       } else {
         // Gemini — Legend callGemini 와 동일하게 safety BLOCK_NONE × 4
         // (수능 과학 false positive — 방사성·면역·핵분열·항원 등 차단 방지)
-        const googleClient = createGoogleGenerativeAI({
-          apiKey: process.env.GEMINI_API_KEY,
-        });
+        // 20차 v8 — apiKey 명시적 검증. process.env.GEMINI_API_KEY 가 falsy 면
+        // AI SDK 가 default GOOGLE_GENERATIVE_AI_API_KEY 로 fallback 찾고 그것도
+        // 없으면 AI_LoadAPIKeyError. 우리는 GEMINI_API_KEY 만 사용하므로
+        // 누락 시 즉시 명확한 에러로 진단.
+        const geminiApiKey = process.env.GEMINI_API_KEY;
+        if (!geminiApiKey || geminiApiKey.length === 0) {
+          throw new Error(
+            'GEMINI_API_KEY env 가 production 에 누락되어 있어요. Vercel Dashboard → Settings → Environment Variables 에서 GEMINI_API_KEY 를 Production 환경에 추가하고 재배포해주세요.',
+          );
+        }
+        const googleClient = createGoogleGenerativeAI({ apiKey: geminiApiKey });
         maestroModel = googleClient(geminiId, {
           safetySettings: [
             { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
