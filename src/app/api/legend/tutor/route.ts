@@ -313,19 +313,31 @@ export async function POST(req: Request) {
               ? lastUser.content
               : '이 문제를 함께 풀어주세요.';
 
-          // image fetch + base64 변환 (안정적 vision 입력 형식)
+          // 20차 v7 — Vercel Blob 403 진단 후 token 인증 fetch.
+          // 사용자 신고: AI_DownloadError 403 Forbidden = Blob 이 외부 hotlink
+          // 차단. anthropic/openai/google API 가 직접 download 못 함.
+          // server 에서 BLOB_READ_WRITE_TOKEN 으로 인증 fetch → base64 inline.
           let imageContent: string | URL = attachedImageUrl;
+          let imageFetchOk = false;
           try {
             const fetchT0 = Date.now();
-            const imgResp = await fetch(attachedImageUrl);
+            const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+            const imgResp = await fetch(attachedImageUrl, {
+              headers: blobToken
+                ? { Authorization: `Bearer ${blobToken}` }
+                : {},
+            });
             if (!imgResp.ok) {
-              throw new Error(`fetch status ${imgResp.status}`);
+              throw new Error(
+                `fetch status ${imgResp.status} (BLOB_TOKEN=${blobToken ? 'Y' : 'N'})`,
+              );
             }
             const arrayBuf = await imgResp.arrayBuffer();
             const base64 = Buffer.from(arrayBuf).toString('base64');
             imageContent = base64;
+            imageFetchOk = true;
             console.log(
-              `[maestro-tutor] image fetched ${Date.now() - fetchT0}ms — base64.length=${base64.length} (${(base64.length / 1024).toFixed(1)}KB)`,
+              `[maestro-tutor] image fetched ${Date.now() - fetchT0}ms — base64.length=${base64.length} (${(base64.length / 1024).toFixed(1)}KB) BLOB_TOKEN=${blobToken ? 'Y' : 'N'}`,
             );
           } catch (e) {
             console.warn(
@@ -337,13 +349,30 @@ export async function POST(req: Request) {
               // string URL fallback
             }
           }
+          // image fetch 실패 시 image part 제외 (모델이 텍스트만 보고 응답)
+          // — image 없이라도 페르소나 인사 + 학생에게 시험지 직접 입력 요청 가능
 
+          // image fetch 성공 → image + text. 실패 → text only + LLM 에 fallback 안내.
+          const partsList: Array<
+            | { type: 'image'; image: string | URL; mimeType?: string }
+            | { type: 'text'; text: string }
+          > = [];
+          if (imageFetchOk) {
+            partsList.push({
+              type: 'image',
+              image: imageContent,
+              mimeType: 'image/png',
+            });
+            partsList.push({ type: 'text', text: lastUserText });
+          } else {
+            partsList.push({
+              type: 'text',
+              text: `${lastUserText}\n\n(시스템: 시험지 이미지를 일시적으로 불러오지 못했어요. 학생에게 시험지를 직접 첨부하거나 문제를 텍스트로 알려달라고 안내해주세요.)`,
+            });
+          }
           const newLastUser = {
             role: 'user' as const,
-            content: [
-              { type: 'image' as const, image: imageContent, mimeType: 'image/png' },
-              { type: 'text' as const, text: lastUserText },
-            ],
+            content: partsList,
           };
           finalMessages = [
             ...rawMaestroMessages.slice(0, lastUserIdx),
