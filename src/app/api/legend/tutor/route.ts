@@ -1,7 +1,10 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText, streamText, StreamData, type LanguageModelV1 } from "ai";
 import { NextResponse } from "next/server";
+// 19차 — maestro top-level import (dynamic import 가 production cold start 에서 실패 가능성 회피)
+import { buildMaestroSystemPrompt } from "@/lib/maestro/system-prompts";
 import { EULER_SYSTEM_PROMPT } from "@/lib/ai/euler-prompt";
 import { getSolution } from "@/lib/solution-cache";
 import { runCritic } from "@/lib/euler/critic-client";
@@ -156,8 +159,11 @@ export async function POST(req: Request) {
     const isMaestro =
       typeof maestroSubject === 'string' && maestroSubject !== 'math';
     if (isMaestro) {
-      const { buildMaestroSystemPrompt } = await import('@/lib/maestro/system-prompts');
-
+      try {
+        console.log(
+          `[maestro-tutor] subject=${maestroSubject} tutor=${maestroTutor} messages=${messages.length}`,
+        );
+      } catch {}
       // 12 인물 → 4 모델 매핑 (4 maestro × 4 인물 = 위치별 동일 모델)
       // Sonnet:  wegener / darwin / newton / mendeleev
       // Gemini:  galilei / mendel / einstein / lavoisier
@@ -205,7 +211,6 @@ export async function POST(req: Request) {
         maestroModel = openai(gptId) as LanguageModelV1;
       } else {
         // Gemini — Legend 와 동일 GEMINI_API_KEY 재사용
-        const { createGoogleGenerativeAI } = await import('@ai-sdk/google');
         const googleClient = createGoogleGenerativeAI({
           apiKey: process.env.GEMINI_API_KEY,
         });
@@ -216,8 +221,17 @@ export async function POST(req: Request) {
         model: maestroModel,
         system: maestroSystem,
         messages: messages as Parameters<typeof streamText>[0]['messages'],
+        onError: (event) => {
+          console.error('[maestro-tutor] stream error:', event);
+        },
       });
-      return resultM.toDataStreamResponse();
+      return resultM.toDataStreamResponse({
+        getErrorMessage: (error) => {
+          console.error('[maestro-tutor] toDataStream error:', error);
+          const msg = error instanceof Error ? error.message : String(error);
+          return `[maestro] 모델 응답 실패 — ${msg.slice(0, 200)}`;
+        },
+      });
     }
 
     // C-12: Free 일일 한도 — 첫 user turn 일 때만 체크 (후속 코칭 턴은 통과)
