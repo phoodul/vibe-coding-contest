@@ -274,31 +274,29 @@ export async function POST(req: Request) {
         maestroModel = openai(gptId) as LanguageModelV1;
         actualProvider = 'gpt';
       } else if (isGeminiTutor) {
-        // Gemini — GEMINI_API_KEY 누락 시 Sonnet 자동 fallback (학생 경험 보장)
+        // Gemini — GEMINI_API_KEY 누락 시 명시적 visible error.
+        // 사용자 결정: Sonnet fallback X (Sonnet 인물 미사용 정책 준수).
         const geminiApiKey = process.env.GEMINI_API_KEY;
         if (!geminiApiKey || geminiApiKey.length === 0) {
-          console.warn(
-            `[maestro-tutor] GEMINI_API_KEY missing → Sonnet auto-fallback (tutor=${tutorId})`,
+          throw new Error(
+            'Gemini 인물은 GEMINI_API_KEY 가 필요해요. 다른 거장 (허블·세이건 등) 을 선택해 주세요. 관리자: Vercel env 추가 후 자동 활성화됩니다.',
           );
-          maestroModel = anthropic(sonnetId) as LanguageModelV1;
-          actualProvider = 'sonnet(gemini-fallback)';
-        } else {
-          const googleClient = createGoogleGenerativeAI({ apiKey: geminiApiKey });
-          maestroModel = googleClient(geminiId, {
-            safetySettings: [
-              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-            ],
-          }) as unknown as LanguageModelV1;
-          actualProvider = 'gemini';
         }
+        const googleClient = createGoogleGenerativeAI({ apiKey: geminiApiKey });
+        maestroModel = googleClient(geminiId, {
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+          ],
+        }) as unknown as LanguageModelV1;
+        actualProvider = 'gemini';
       } else {
-        // 알 수 없는 tutorId fallback
-        console.warn(`[maestro-tutor] unknown tutor=${tutorId} → Sonnet fallback`);
-        maestroModel = anthropic(sonnetId) as LanguageModelV1;
-        actualProvider = 'sonnet';
+        // 알 수 없는 tutorId — Opus 로 fallback (Sonnet 인물 미사용 정책)
+        console.warn(`[maestro-tutor] unknown tutor=${tutorId} → Opus fallback`);
+        maestroModel = anthropic(opusId) as LanguageModelV1;
+        actualProvider = 'opus';
       }
       console.log(`[maestro-tutor] tutor=${tutorId} → provider=${actualProvider}`);
 
