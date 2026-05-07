@@ -160,7 +160,27 @@ export async function POST(req: Request) {
     // / hubble=Opus 4.7 / sagan=GPT-5.5.
     const isMaestro =
       typeof maestroSubject === 'string' && maestroSubject !== 'math';
+
+    // 20차 — maestro 분기 fail 시 빈 응답 대신 visible error stream 송출 helper.
+    // AI SDK v4 의 stream protocol: `0:"..."\n` = text chunk, `2:[..]\n` = data, `3:"..."\n` = error.
+    // text chunk 로 보내야 useChat 이 message 에 표시. error chunk 는 onError 로만 가서 UI 에 안 보임.
+    function maestroErrorResponse(reason: string): Response {
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          const encoder = new TextEncoder();
+          const msg = `⚠️ Maestro 라우트 오류 — ${reason}\n\n관리자에게 이 메시지 그대로 전달해주세요. (debug)`;
+          controller.enqueue(encoder.encode(`0:${JSON.stringify(msg)}\n`));
+          controller.close();
+        },
+      });
+      return new Response(stream, {
+        status: 200,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
+    }
+
     if (isMaestro) {
+     try {
       try {
         console.log(
           `[maestro-tutor] subject=${maestroSubject} tutor=${maestroTutor} messages=${messages.length}`,
@@ -299,6 +319,13 @@ export async function POST(req: Request) {
           return `[maestro] 모델 응답 실패 — ${msg.slice(0, 200)}`;
         },
       });
+     } catch (e) {
+       // 20차 — maestro 분기 안 throw 모두 visible error stream 으로.
+       // (buildMaestroSystemPrompt / model 생성 / streamText 시작 전 throw 등)
+       const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+       console.error('[maestro-tutor] caught:', msg, e);
+       return maestroErrorResponse(msg.slice(0, 400));
+     }
     }
 
     // C-12: Free 일일 한도 — 첫 user turn 일 때만 체크 (후속 코칭 턴은 통과)
