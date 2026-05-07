@@ -193,7 +193,8 @@ export async function POST(req: Request) {
       const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
       const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7-20260201';
       const gptId = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
-      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3.1-pro';
+      // Legend (call-model.ts) 와 동일 ID — dash notation (Google API 실제 ID)
+      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3-1-pro';
 
       let maestroModel: LanguageModelV1;
       if (SONNET_TUTORS.includes(tutorId)) {
