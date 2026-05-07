@@ -446,13 +446,12 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
         // 미리 message id 를 부여하여 append 전에 image preview state 등록 (race-free).
         const msgId = `maestro-${sel.subject}-${sel.variant}-${sel.year}-${sel.number}-${Date.now()}`;
         setAttachedByMsgId((prev) => ({ ...prev, [msgId]: imageUrl }));
-        // v12 — useChat v4 cookbook 22 정확한 패턴: data 옵션 사용.
-        // body 옵션은 v4 일부 버전에서 무시되는 issue 알려져 있음.
-        // server route 는 req.json() 의 data field 에서 imageUrl 추출.
-        await append(
-          { id: msgId, role: 'user', content: requestText },
-          { data: { imageUrl } },
-        );
+        // v15 — useChat v4 의 body/data 옵션 둘 다 server 까지 안 도달.
+        // 가장 확실한 우회: message.content 자체에 image URL marker 포함.
+        // server 가 정규식으로 추출 후 multimodal part 합성.
+        // UI 에서는 attachedByMsgId state 로 image preview 표시 (marker 는 message text 에서 hide).
+        const contentWithMarker = `${requestText}\n\n[__MAESTRO_IMG__]${imageUrl}[/__MAESTRO_IMG__]`;
+        await append({ id: msgId, role: 'user', content: contentWithMarker });
       } catch {
         await append({ role: 'user', content: header });
       }
@@ -818,12 +817,26 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
                           />
                         </a>
                         <div className="prose prose-invert prose-sm max-w-none">
-                          <StreamingMarkdown content={m.content} streaming={isStreamingNow} />
+                          <StreamingMarkdown
+                            content={
+                              typeof m.content === 'string'
+                                ? m.content.replace(/\n*\[__MAESTRO_IMG__\][^[]*\[\/__MAESTRO_IMG__\]/g, '')
+                                : m.content
+                            }
+                            streaming={isStreamingNow}
+                          />
                         </div>
                       </div>
                     ) : (
                       <div className="prose prose-invert prose-sm max-w-none">
-                        <StreamingMarkdown content={m.content} streaming={isStreamingNow} />
+                        <StreamingMarkdown
+                          content={
+                            typeof m.content === 'string'
+                              ? m.content.replace(/\n*\[__MAESTRO_IMG__\][^[]*\[\/__MAESTRO_IMG__\]/g, '')
+                              : m.content
+                          }
+                          streaming={isStreamingNow}
+                        />
                       </div>
                     )}
                   </div>

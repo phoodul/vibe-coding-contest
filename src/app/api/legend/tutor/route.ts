@@ -121,15 +121,38 @@ export async function POST(req: Request) {
       selected_tutor: maestroTutor,
       // v12 — body 옵션 fallback (구버전 호환).
       attached_image_url: attachedImageUrlBody,
-      // v12 — useChat data 옵션 (cookbook 22 표준 패턴, 우선)
+      // v12 — useChat data 옵션 (cookbook 22 표준 패턴)
       data: chatData,
     } = reqBody;
+
+    // v15 — useChat body/data 옵션 모두 v4 에서 신뢰 X.
+    // 가장 확실한 우회: messages 마지막 user content 안의 marker 정규식 추출.
+    // 형식: [__MAESTRO_IMG__]<URL>[/__MAESTRO_IMG__]
+    let attachedImageUrlFromMarker: string | undefined;
+    const MAESTRO_IMG_RE = /\[__MAESTRO_IMG__\]([\s\S]*?)\[\/__MAESTRO_IMG__\]/;
+    if (Array.isArray(rawMessages)) {
+      for (let i = rawMessages.length - 1; i >= 0; i--) {
+        const m = rawMessages[i];
+        if (m?.role !== 'user') continue;
+        const c = typeof m.content === 'string' ? m.content : '';
+        const match = c.match(MAESTRO_IMG_RE);
+        if (match) {
+          attachedImageUrlFromMarker = match[1].trim();
+          // marker 를 message content 에서 제거 (LLM 에 raw URL 노출 X)
+          m.content = c.replace(MAESTRO_IMG_RE, '').trim();
+          break;
+        }
+      }
+    }
+
     const attachedImageUrl: string | undefined =
+      attachedImageUrlFromMarker ??
       (chatData && typeof chatData === 'object' && typeof chatData.imageUrl === 'string'
         ? chatData.imageUrl
-        : undefined) ?? attachedImageUrlBody;
+        : undefined) ??
+      attachedImageUrlBody;
     console.log(
-      `[maestro-tutor] attachedImageUrl source: data.imageUrl=${chatData?.imageUrl ? 'Y' : 'N'} body.attached_image_url=${attachedImageUrlBody ? 'Y' : 'N'} → ${attachedImageUrl ? 'Y' : 'N'}`,
+      `[maestro-tutor] attachedImageUrl source: marker=${attachedImageUrlFromMarker ? 'Y' : 'N'} data.imageUrl=${chatData?.imageUrl ? 'Y' : 'N'} body.attached_image_url=${attachedImageUrlBody ? 'Y' : 'N'} → ${attachedImageUrl ? 'Y' : 'N'}`,
     );
     let area: string | null = clientArea ?? null;
     const subjectHintNote = buildSubjectHintNote(
