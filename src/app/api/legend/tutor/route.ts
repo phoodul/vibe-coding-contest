@@ -254,7 +254,9 @@ export async function POST(req: Request) {
       const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
       const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7-20260201';
       const gptId = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
-      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3-1-pro';
+      // 'gemini-3-1-pro' (dash, no preview) 는 Google API 에 존재 X.
+      // AI SDK v4 @ai-sdk/google docs 검증 정확한 최신 ID = 'gemini-3.1-pro-preview' (dot + preview).
+      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3.1-pro-preview';
 
       // 환경변수 + model ID 진단 logging (값은 출력 X — 존재 여부만)
       console.log(
