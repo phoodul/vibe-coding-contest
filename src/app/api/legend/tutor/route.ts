@@ -262,36 +262,45 @@ export async function POST(req: Request) {
       );
 
       let maestroModel: LanguageModelV1;
-      const isGemini = GEMINI_TUTORS.includes(tutorId);
+      let actualProvider: 'sonnet' | 'opus' | 'gpt' | 'gemini' | 'sonnet(gemini-fallback)';
+      const isGeminiTutor = GEMINI_TUTORS.includes(tutorId);
       if (SONNET_TUTORS.includes(tutorId)) {
         maestroModel = anthropic(sonnetId) as LanguageModelV1;
+        actualProvider = 'sonnet';
       } else if (OPUS_TUTORS.includes(tutorId)) {
         maestroModel = anthropic(opusId) as LanguageModelV1;
+        actualProvider = 'opus';
       } else if (GPT_TUTORS.includes(tutorId)) {
         maestroModel = openai(gptId) as LanguageModelV1;
-      } else {
-        // Gemini — Legend callGemini 와 동일하게 safety BLOCK_NONE × 4
-        // (수능 과학 false positive — 방사성·면역·핵분열·항원 등 차단 방지)
-        // 20차 v8 — apiKey 명시적 검증. process.env.GEMINI_API_KEY 가 falsy 면
-        // AI SDK 가 default GOOGLE_GENERATIVE_AI_API_KEY 로 fallback 찾고 그것도
-        // 없으면 AI_LoadAPIKeyError. 우리는 GEMINI_API_KEY 만 사용하므로
-        // 누락 시 즉시 명확한 에러로 진단.
+        actualProvider = 'gpt';
+      } else if (isGeminiTutor) {
+        // Gemini — GEMINI_API_KEY 누락 시 Sonnet 자동 fallback (학생 경험 보장)
         const geminiApiKey = process.env.GEMINI_API_KEY;
         if (!geminiApiKey || geminiApiKey.length === 0) {
-          throw new Error(
-            'GEMINI_API_KEY env 가 production 에 누락되어 있어요. Vercel Dashboard → Settings → Environment Variables 에서 GEMINI_API_KEY 를 Production 환경에 추가하고 재배포해주세요.',
+          console.warn(
+            `[maestro-tutor] GEMINI_API_KEY missing → Sonnet auto-fallback (tutor=${tutorId})`,
           );
+          maestroModel = anthropic(sonnetId) as LanguageModelV1;
+          actualProvider = 'sonnet(gemini-fallback)';
+        } else {
+          const googleClient = createGoogleGenerativeAI({ apiKey: geminiApiKey });
+          maestroModel = googleClient(geminiId, {
+            safetySettings: [
+              { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+            ],
+          }) as unknown as LanguageModelV1;
+          actualProvider = 'gemini';
         }
-        const googleClient = createGoogleGenerativeAI({ apiKey: geminiApiKey });
-        maestroModel = googleClient(geminiId, {
-          safetySettings: [
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-          ],
-        }) as unknown as LanguageModelV1;
+      } else {
+        // 알 수 없는 tutorId fallback
+        console.warn(`[maestro-tutor] unknown tutor=${tutorId} → Sonnet fallback`);
+        maestroModel = anthropic(sonnetId) as LanguageModelV1;
+        actualProvider = 'sonnet';
       }
+      console.log(`[maestro-tutor] tutor=${tutorId} → provider=${actualProvider}`);
 
       // 20차 v6 — image 를 server 에서 fetch + base64 inline 으로 변환.
       // URL part 는 일부 모델/SDK 에서 fetch hang 가능 (특히 v4 google provider).
