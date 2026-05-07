@@ -9,7 +9,7 @@ import { BetaChat } from '@/components/legend/BetaChat';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Biology Maestro — 베게너·갈릴레이·허블·세이건',
+  title: 'Biology Maestro — 파스퇴르·멘델·왓슨·다윈',
   description: '4 거장과 함께 푸는 수능 생명과학Ⅰ·Ⅱ',
 };
 

@@ -9,7 +9,7 @@ import { BetaChat } from '@/components/legend/BetaChat';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Physics Maestro — 베게너·갈릴레이·허블·세이건',
+  title: 'Physics Maestro — 페르미·아인슈타인·파인만·뉴턴',
   description: '4 거장과 함께 푸는 수능 물리학Ⅰ·Ⅱ',
 };
 

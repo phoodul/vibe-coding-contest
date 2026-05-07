@@ -97,7 +97,7 @@ export default function GuidePage() {
             📖 사용 가이드
           </h1>
           <p className="text-muted mb-10">
-            EasyEdu AI의 16개 도구를 한눈에 살펴보고, 주요 기능의 사용법을 확인하세요.
+            EasyEdu AI의 21개 도구를 한눈에 살펴보고, 주요 기능의 사용법을 확인하세요.
           </p>
         </motion.div>
 

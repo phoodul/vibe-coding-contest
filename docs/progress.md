@@ -57,6 +57,72 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 20차 세션 진행 중 (2026-05-07) — production smoke + 메타데이터 fix
+
+19차 종료 후 첫 production smoke 검증. 4 maestro 페이지·페르소나·system-prompt·portrait 코드 일관성 검증과 메타데이터 결함 fix.
+
+### 검증 결과
+
+| 영역 | 결과 | 메모 |
+|---|---|---|
+| Landing (/) | ✅ PASS | 4 maestro 카드 + 17 학생 도구 카드 + 콘솔 에러 0 |
+| Dashboard (/dashboard) | ✅ PASS | 17 카드, 4 maestro URL 정상, 콘솔 에러 0 |
+| /earth-science | ⚠️ 인증 게이트 | 비로그인 → /login redirect (의도). 코드 검증 PASS. |
+| /biology | ⚠️ 인증 게이트 | 동일. metadata title **결함 발견** → fix |
+| /physics | ⚠️ 인증 게이트 | 동일. metadata title **결함 발견** → fix |
+| /chemistry | ⚠️ 인증 게이트 | 동일. metadata title **결함 발견** → fix |
+| 페르소나 portrait jpg 22장 | ✅ 모두 존재 | public/*-portrait.jpg |
+| lib/maestro system-prompts | ✅ 4 과목 PERSONAS 모두 활성화 | NOTATION_STANDARDS 단원별 표기 (`\ce{}`/`\vec{F}`/`\text{AaBb}`) |
+
+### 메타데이터 결함 (즉시 fix)
+
+3 maestro 페이지의 `metadata.title` 이 **모두 "베게너·갈릴레이·허블·세이건"** (Earth Science 페르소나) 로 잘못 적힘 — 복붙 오류:
+
+| 파일 | Before | After |
+|---|---|---|
+| `src/app/physics/page.tsx` | "Physics Maestro — 베게너·갈릴레이·허블·세이건" | **"Physics Maestro — 페르미·아인슈타인·파인만·뉴턴"** |
+| `src/app/biology/page.tsx` | "Biology Maestro — 베게너·갈릴레이·허블·세이건" | **"Biology Maestro — 파스퇴르·멘델·왓슨·다윈"** |
+| `src/app/chemistry/page.tsx` | "Chemistry Maestro — 베게너·갈릴레이·허블·세이건" | **"Chemistry Maestro — 마리 퀴리·라부아지에·폴링·멘델레예프"** |
+
+영향: SEO + 카카오/슬랙 등 OG 카드 + 브라우저 탭 제목에서 잘못된 페르소나명 노출.
+
+### 도구 카운트 mismatch (fix)
+
+학생 17 + 교사 4 = **21 도구**. landing/guide 의 hero "16개 도구" → "21개 도구" 갱신.
+
+| 파일 | Before | After |
+|---|---|---|
+| `src/app/page.tsx:574` | "16개 도구를 무료로 사용하세요" | **"21개 도구를 무료로 사용하세요"** |
+| `src/app/guide/page.tsx:100` | "16개 도구를 한눈에" | **"21개 도구를 한눈에"** |
+
+### 비검증 항목 (사용자 액션)
+
+production OAuth 로그인이 자동화 환경에서 어려워 다음 항목은 **본인 계정** 사용 검증으로 위임:
+
+1. **로그인 후 4 maestro 페이지 진입** — 페르소나 4 칩 노출 + 기본 페르소나 (Sonnet) 선택
+2. **수능 번호 클릭 → multimodal 자동 첨부** (4e793b5 / 251221f / ed69e50 fix 반영 확인)
+3. **mhchem `\ce{}` 렌더** (chemistry maestro에서 화학식 답변 시)
+4. **Vision LLM 도표 분석** (도표 포함 문제 풀이 시)
+5. **A5 SQL 마이그레이션 적용 여부** — `legend_*` 7 테이블에 subject 컬럼 존재 확인
+
+### UX 의문 (논의 필요)
+
+- **maestro trial 분기 누락**: Legend 는 비로그인 시 trial 분기로 사용 가능, 4 maestro 는 인증 필수 redirect. dashboard "로그인 없이 체험 가능" 안내와 충돌. → 의도된 설계인지 / trial 분기 추가 필요한지 결정 대기.
+- **Landing CountUp**: 초기 `0` 표시는 viewport 진입 시점에 카운트업 시작 (정상). `prefers-reduced-motion` 사용자에게 0 표기 그대로 노출 가능성 (별도 fix 후순위).
+
+### 다음 진행 (20차)
+
+1. 본 변경 commit + push (회귀 0)
+2. `task.md` Phase B/C 진행 상태 갱신 (Earth Science 페이지 + 페르소나 + system-prompt 모두 ✅)
+3. 사용자 본인 계정으로 비검증 항목 5건 점검
+4. trial 분기 추가 / 인증 redirect UX 결정
+
+### 19차에서 untracked 인계물
+
+- `scripts/extract-suneung-question-texts.ts` — 19차 (2026-05-07) 작성. PDF text layer → 문제 번호별 본문/보기 분리 → `src/lib/data/suneung-problem-texts-science.json`. 본 세션에서는 사용하지 않음. 다음 진행 시 입출력 검증 후 commit 또는 user_docs 로 이동.
+
+---
+
 ## 19차 세션 종료 (2026-05-06~07) — Maestro 4 과목 fully functional ⭐
 
 ### 누적 25 commits / 핵심 성과

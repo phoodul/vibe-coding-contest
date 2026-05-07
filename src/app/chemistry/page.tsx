@@ -9,7 +9,7 @@ import { BetaChat } from '@/components/legend/BetaChat';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Chemistry Maestro — 베게너·갈릴레이·허블·세이건',
+  title: 'Chemistry Maestro — 마리 퀴리·라부아지에·폴링·멘델레예프',
   description: '4 거장과 함께 푸는 수능 화학Ⅰ·Ⅱ',
 };
 
