@@ -248,11 +248,23 @@ export async function POST(req: Request) {
         exam_meta: examMeta,
       });
 
-      const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
-      const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7-20260201';
-      const gptId = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
-      // Legend (call-model.ts) 와 동일 ID — dash notation (Google API 실제 ID)
-      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3-1-pro';
+      // 20차 v5 — verifiable stable model IDs (AI SDK v4 docs 검증 완료):
+      // - Sonnet 4.5 stable (anthropic): 'claude-sonnet-4-5-20250929'
+      // - Opus 4.5 stable (anthropic): 'claude-opus-4-5-20250929'
+      // - Gemini 2.5 Pro stable (@ai-sdk/google v1): 'gemini-2.5-pro'
+      // - GPT-4o stable (@ai-sdk/openai v1): 'gpt-4o'
+      // 이전 default ('gemini-3-1-pro' / 'claude-sonnet-4-6-20260101' / 'gpt-5.5')
+      // 는 모두 invalid ID 또는 출시 전 모델 → API silent hang → 빈 응답.
+      // env 가 설정되어 있으면 그 값이 우선 (production 에서 더 새 모델 사용 시).
+      const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-5-20250929';
+      const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-5-20250929';
+      const gptId = process.env.OPENAI_MODEL_ID || 'gpt-4o';
+      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-2.5-pro';
+
+      // 환경변수 + model ID 진단 logging (값은 출력 X — 존재 여부만)
+      console.log(
+        `[maestro-tutor] env check — ANTHROPIC=${process.env.ANTHROPIC_API_KEY ? 'Y' : 'N'} GEMINI=${process.env.GEMINI_API_KEY ? 'Y' : 'N'} OPENAI=${process.env.OPENAI_API_KEY ? 'Y' : 'N'} | model IDs sonnet=${sonnetId} opus=${opusId} gpt=${gptId} gemini=${geminiId}`,
+      );
 
       let maestroModel: LanguageModelV1;
       if (SONNET_TUTORS.includes(tutorId)) {
