@@ -379,47 +379,44 @@ export async function POST(req: Request) {
               ? lastUser.content
               : '이 문제를 함께 풀어주세요.';
 
-          // v16 — Vercel Blob 공식 SDK 사용 (raw fetch() X).
-          // 공식 docs (context7 /vercel/storage 검증): public blob 은 internal
-          // routing 으로 fetch 해야 외부 hotlink protection 우회. raw fetch 는
-          // 같은 Vercel infra 안에서도 차단될 수 있음.
-          // fail 시 visible error throw 하여 사용자 화면에 정확한 사유 표시.
-          let imageContent: string;
+          // v17 — Vercel Blob SDK get() + 차단 시 image-less fallback.
+          // 사용자 진단: store "Your store is blocked" (Vercel 측 차단).
+          // 사용자가 dashboard 에서 해제 작업 동안 학생들이 completely 막히지 않게
+          // image fetch fail → image part 제외하고 text only 로 LLM 호출.
+          let imageContent: string = '';
+          let imageFetchOk = false;
           const fetchT0 = Date.now();
-          let result: Awaited<ReturnType<typeof blobGet>>;
           try {
-            result = await blobGet(attachedImageUrl, { access: 'public' });
-          } catch (sdkErr) {
-            throw new Error(
-              `Vercel Blob SDK get() fail: ${(sdkErr as Error).message} (URL=${attachedImageUrl.slice(0, 80)})`,
+            const result = await blobGet(attachedImageUrl, { access: 'public' });
+            if (!result || result.statusCode !== 200) {
+              throw new Error(`statusCode=${result?.statusCode ?? 'null'}`);
+            }
+            const reader = result.stream.getReader();
+            const chunks: Uint8Array[] = [];
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              if (value) chunks.push(value);
+            }
+            const totalLen = chunks.reduce((sum, c) => sum + c.length, 0);
+            const merged = new Uint8Array(totalLen);
+            let offset = 0;
+            for (const c of chunks) {
+              merged.set(c, offset);
+              offset += c.length;
+            }
+            const base64 = Buffer.from(merged).toString('base64');
+            imageContent = base64;
+            imageFetchOk = true;
+            console.log(
+              `[maestro-tutor] blob.get() OK ${Date.now() - fetchT0}ms — base64.length=${base64.length} (${(base64.length / 1024).toFixed(1)}KB)`,
             );
-          }
-          if (!result || result.statusCode !== 200) {
-            throw new Error(
-              `Vercel Blob get() statusCode=${result?.statusCode ?? 'null'} (URL=${attachedImageUrl.slice(0, 80)})`,
+          } catch (e) {
+            console.error(
+              `[maestro-tutor] blob.get() fail (image-less fallback): ${(e as Error).message} URL=${attachedImageUrl.slice(0, 80)}`,
             );
+            // imageFetchOk=false 그대로 → LLM 호출 시 image part 제외, 학생 안내 메시지 포함
           }
-          // ReadableStream → arrayBuffer → base64
-          const reader = result.stream.getReader();
-          const chunks: Uint8Array[] = [];
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            if (value) chunks.push(value);
-          }
-          const totalLen = chunks.reduce((sum, c) => sum + c.length, 0);
-          const merged = new Uint8Array(totalLen);
-          let offset = 0;
-          for (const c of chunks) {
-            merged.set(c, offset);
-            offset += c.length;
-          }
-          const base64 = Buffer.from(merged).toString('base64');
-          imageContent = base64;
-          const imageFetchOk = true;
-          console.log(
-            `[maestro-tutor] blob.get() OK ${Date.now() - fetchT0}ms — base64.length=${base64.length} (${(base64.length / 1024).toFixed(1)}KB)`,
-          );
 
           // image fetch 성공 → image + text. 실패 → text only + LLM 에 fallback 안내.
           const partsList: Array<
