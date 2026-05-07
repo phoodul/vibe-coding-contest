@@ -248,11 +248,12 @@ export async function POST(req: Request) {
         exam_meta: examMeta,
       });
 
-      // 20차 v6 — model ID 는 사용자 원래 값 (최신 모델) 복구. 이전 v5 의 stable
-      // 강등은 사용자 의도와 어긋나 revert. 진짜 원인은 model ID 가 아닌
-      // multimodal image 처리 + safetySettings 누락 (Legend 의 callGemini 패턴 비교).
-      const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6-20260101';
-      const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7-20260201';
+      // v11 정정: Anthropic 정확한 model ID = no dated suffix.
+      //   Opus 4.7  = 'claude-opus-4-7'   (이전 default '...-20260201' 는 invalid)
+      //   Sonnet 4.6 = 'claude-sonnet-4-6' (이전 default '...-20260101' 도 동일 문제)
+      //   GPT-5.5 = 'gpt-5.5' (확인 — 세이건 정상 작동)
+      const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6';
+      const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7';
       const gptId = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
       // 'gemini-3-1-pro' (dash, no preview) 는 Google API 에 존재 X.
       // AI SDK v4 @ai-sdk/google docs 검증 정확한 최신 ID = 'gemini-3.1-pro-preview' (dot + preview).
