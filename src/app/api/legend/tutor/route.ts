@@ -265,9 +265,21 @@ export async function POST(req: Request) {
       const sonnetId = process.env.ANTHROPIC_SONNET_MODEL_ID || 'claude-sonnet-4-6';
       const opusId = process.env.ANTHROPIC_OPUS_MODEL_ID || 'claude-opus-4-7';
       const gptId = process.env.OPENAI_MODEL_ID || 'gpt-5.5';
-      // 'gemini-3-1-pro' (dash, no preview) 는 Google API 에 존재 X.
-      // AI SDK v4 @ai-sdk/google docs 검증 정확한 최신 ID = 'gemini-3.1-pro-preview' (dot + preview).
-      const geminiId = process.env.GEMINI_MODEL_ID || 'gemini-3.1-pro-preview';
+      // v14 — production env GEMINI_MODEL_ID 가 invalid 값 ('gemini-3-1-pro')
+      // 으로 설정되어 있을 시 자동 정정. Google API docs 검증 ID 만 허용.
+      const rawGeminiId = process.env.GEMINI_MODEL_ID || 'gemini-3.1-pro-preview';
+      // invalid dash-only ID 들을 정확한 ID 로 정정
+      const geminiIdMap: Record<string, string> = {
+        'gemini-3-1-pro': 'gemini-3.1-pro-preview',
+        'gemini-3-pro': 'gemini-3-pro-preview',
+        'gemini-3.1-pro': 'gemini-3.1-pro-preview', // preview suffix 누락 정정
+      };
+      const geminiId = geminiIdMap[rawGeminiId] || rawGeminiId;
+      if (geminiId !== rawGeminiId) {
+        console.warn(
+          `[maestro-tutor] GEMINI_MODEL_ID env "${rawGeminiId}" → 자동 정정 "${geminiId}". Vercel env 직접 변경 권장.`,
+        );
+      }
 
       // 환경변수 + model ID 진단 logging (값은 출력 X — 존재 여부만)
       console.log(
