@@ -3,6 +3,9 @@ import { openai } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText, streamText, StreamData, type LanguageModelV1 } from "ai";
 import { NextResponse } from "next/server";
+// v16 — Vercel Blob 공식 SDK get() 사용. raw fetch() 는 외부 hotlink protection 으로
+// 차단될 수 있어 SDK 의 internal routing + 자동 인증이 안전.
+import { get as blobGet } from "@vercel/blob";
 // 19차 — maestro top-level import (dynamic import 가 production cold start 에서 실패 가능성 회피)
 import { buildMaestroSystemPrompt } from "@/lib/maestro/system-prompts";
 import { EULER_SYSTEM_PROMPT } from "@/lib/ai/euler-prompt";
@@ -376,44 +379,47 @@ export async function POST(req: Request) {
               ? lastUser.content
               : '이 문제를 함께 풀어주세요.';
 
-          // 20차 v7 — Vercel Blob 403 진단 후 token 인증 fetch.
-          // 사용자 신고: AI_DownloadError 403 Forbidden = Blob 이 외부 hotlink
-          // 차단. anthropic/openai/google API 가 직접 download 못 함.
-          // server 에서 BLOB_READ_WRITE_TOKEN 으로 인증 fetch → base64 inline.
-          let imageContent: string | URL = attachedImageUrl;
-          let imageFetchOk = false;
+          // v16 — Vercel Blob 공식 SDK 사용 (raw fetch() X).
+          // 공식 docs (context7 /vercel/storage 검증): public blob 은 internal
+          // routing 으로 fetch 해야 외부 hotlink protection 우회. raw fetch 는
+          // 같은 Vercel infra 안에서도 차단될 수 있음.
+          // fail 시 visible error throw 하여 사용자 화면에 정확한 사유 표시.
+          let imageContent: string;
+          const fetchT0 = Date.now();
+          let result: Awaited<ReturnType<typeof blobGet>>;
           try {
-            const fetchT0 = Date.now();
-            const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-            const imgResp = await fetch(attachedImageUrl, {
-              headers: blobToken
-                ? { Authorization: `Bearer ${blobToken}` }
-                : {},
-            });
-            if (!imgResp.ok) {
-              throw new Error(
-                `fetch status ${imgResp.status} (BLOB_TOKEN=${blobToken ? 'Y' : 'N'})`,
-              );
-            }
-            const arrayBuf = await imgResp.arrayBuffer();
-            const base64 = Buffer.from(arrayBuf).toString('base64');
-            imageContent = base64;
-            imageFetchOk = true;
-            console.log(
-              `[maestro-tutor] image fetched ${Date.now() - fetchT0}ms — base64.length=${base64.length} (${(base64.length / 1024).toFixed(1)}KB) BLOB_TOKEN=${blobToken ? 'Y' : 'N'}`,
+            result = await blobGet(attachedImageUrl, { access: 'public' });
+          } catch (sdkErr) {
+            throw new Error(
+              `Vercel Blob SDK get() fail: ${(sdkErr as Error).message} (URL=${attachedImageUrl.slice(0, 80)})`,
             );
-          } catch (e) {
-            console.warn(
-              `[maestro-tutor] image fetch fail, fallback to URL: ${(e as Error).message}`,
-            );
-            try {
-              imageContent = new URL(attachedImageUrl);
-            } catch {
-              // string URL fallback
-            }
           }
-          // image fetch 실패 시 image part 제외 (모델이 텍스트만 보고 응답)
-          // — image 없이라도 페르소나 인사 + 학생에게 시험지 직접 입력 요청 가능
+          if (!result || result.statusCode !== 200) {
+            throw new Error(
+              `Vercel Blob get() statusCode=${result?.statusCode ?? 'null'} (URL=${attachedImageUrl.slice(0, 80)})`,
+            );
+          }
+          // ReadableStream → arrayBuffer → base64
+          const reader = result.stream.getReader();
+          const chunks: Uint8Array[] = [];
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) chunks.push(value);
+          }
+          const totalLen = chunks.reduce((sum, c) => sum + c.length, 0);
+          const merged = new Uint8Array(totalLen);
+          let offset = 0;
+          for (const c of chunks) {
+            merged.set(c, offset);
+            offset += c.length;
+          }
+          const base64 = Buffer.from(merged).toString('base64');
+          imageContent = base64;
+          const imageFetchOk = true;
+          console.log(
+            `[maestro-tutor] blob.get() OK ${Date.now() - fetchT0}ms — base64.length=${base64.length} (${(base64.length / 1024).toFixed(1)}KB)`,
+          );
 
           // image fetch 성공 → image + text. 실패 → text only + LLM 에 fallback 안내.
           const partsList: Array<
