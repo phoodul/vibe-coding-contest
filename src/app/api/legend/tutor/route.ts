@@ -334,25 +334,39 @@ export async function POST(req: Request) {
         );
       } catch {}
 
-      const resultM = streamText({
+      // 20차 v4 — streamText silent hang 진단을 위해 generateText 로 단순화.
+      // streamText 의 stream lazy evaluation 이 production 에서 첫 chunk 전 hang
+      // 가능성. generateText 는 awaitable promise 라 정확한 success/throw 를 잡음.
+      // 결과 받은 후 manual ReadableStream 으로 stream protocol 0:"..." 송출.
+      console.log(
+        `[maestro-tutor] generateText 시작 — model=${SONNET_TUTORS.includes(tutorId) ? 'sonnet' : OPUS_TUTORS.includes(tutorId) ? 'opus' : GPT_TUTORS.includes(tutorId) ? 'gpt' : 'gemini'} system.length=${maestroSystem.length}`,
+      );
+      const t0 = Date.now();
+      const result = await generateText({
         model: maestroModel,
         system: maestroSystem,
-        messages: finalMessages as Parameters<typeof streamText>[0]['messages'],
-        onError: (event) => {
-          console.error('[maestro-tutor] stream error:', JSON.stringify(event));
-        },
-        onFinish: (result) => {
-          console.log(
-            `[maestro-tutor] onFinish — finishReason=${result.finishReason} text.length=${result.text?.length ?? 0} usage=${JSON.stringify(result.usage)}`,
-          );
+        messages: finalMessages as Parameters<typeof generateText>[0]['messages'],
+      });
+      const dt = Date.now() - t0;
+      console.log(
+        `[maestro-tutor] generateText 완료 — ${dt}ms finishReason=${result.finishReason} text.length=${result.text?.length ?? 0} usage=${JSON.stringify(result.usage)}`,
+      );
+      const responseText = result.text || '⚠️ 모델이 빈 응답을 반환했어요. 잠시 후 다시 시도해 주세요. (debug: empty text)';
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          const encoder = new TextEncoder();
+          // chunk 단위 송출 (대용량 응답 안전)
+          const CHUNK_SIZE = 200;
+          for (let i = 0; i < responseText.length; i += CHUNK_SIZE) {
+            const chunk = responseText.slice(i, i + CHUNK_SIZE);
+            controller.enqueue(encoder.encode(`0:${JSON.stringify(chunk)}\n`));
+          }
+          controller.close();
         },
       });
-      return resultM.toDataStreamResponse({
-        getErrorMessage: (error) => {
-          console.error('[maestro-tutor] toDataStream error:', error);
-          const msg = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
-          return `⚠️ Maestro 모델 응답 실패 — ${msg.slice(0, 300)}`;
-        },
+      return new Response(stream, {
+        status: 200,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
       });
      } catch (e) {
        // 20차 — maestro 분기 안 throw 모두 visible error stream 으로.
