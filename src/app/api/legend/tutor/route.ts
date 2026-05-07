@@ -108,6 +108,7 @@ export async function POST(req: Request) {
   try {
     // P0-01b: client 가 area 를 보내지 않거나 '자유 질문' 으로 보내면
     // Manager(Haiku) 자동 분류 결과로 갱신. 명시적 자유 질문 의도는 client 가 별도 플래그로 표현.
+    const reqBody = await req.json();
     const {
       messages: rawMessages,
       area: clientArea,
@@ -118,9 +119,18 @@ export async function POST(req: Request) {
       subject: maestroSubject,
       // 19차 — Maestro 4 인물 (wegener / galilei / hubble / sagan)
       selected_tutor: maestroTutor,
-      // 20차 — Maestro 수능 영역 PNG URL. server 에서 마지막 user message 에 vision part 합성.
-      attached_image_url: attachedImageUrl,
-    } = await req.json();
+      // v12 — body 옵션 fallback (구버전 호환).
+      attached_image_url: attachedImageUrlBody,
+      // v12 — useChat data 옵션 (cookbook 22 표준 패턴, 우선)
+      data: chatData,
+    } = reqBody;
+    const attachedImageUrl: string | undefined =
+      (chatData && typeof chatData === 'object' && typeof chatData.imageUrl === 'string'
+        ? chatData.imageUrl
+        : undefined) ?? attachedImageUrlBody;
+    console.log(
+      `[maestro-tutor] attachedImageUrl source: data.imageUrl=${chatData?.imageUrl ? 'Y' : 'N'} body.attached_image_url=${attachedImageUrlBody ? 'Y' : 'N'} → ${attachedImageUrl ? 'Y' : 'N'}`,
+    );
     let area: string | null = clientArea ?? null;
     const subjectHintNote = buildSubjectHintNote(
       typeof subjectHint === 'string' ? subjectHint : null,

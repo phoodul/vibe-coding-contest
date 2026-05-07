@@ -446,12 +446,12 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
         // 미리 message id 를 부여하여 append 전에 image preview state 등록 (race-free).
         const msgId = `maestro-${sel.subject}-${sel.variant}-${sel.year}-${sel.number}-${Date.now()}`;
         setAttachedByMsgId((prev) => ({ ...prev, [msgId]: imageUrl }));
+        // v12 — useChat v4 cookbook 22 정확한 패턴: data 옵션 사용.
+        // body 옵션은 v4 일부 버전에서 무시되는 issue 알려져 있음.
+        // server route 는 req.json() 의 data field 에서 imageUrl 추출.
         await append(
           { id: msgId, role: 'user', content: requestText },
-          {
-            // 두 번째 인자의 body 는 useChat 의 기본 body 와 머지되어 server 로 전송.
-            body: { attached_image_url: imageUrl },
-          },
+          { data: { imageUrl } },
         );
       } catch {
         await append({ role: 'user', content: header });
