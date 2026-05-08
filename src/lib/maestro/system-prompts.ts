@@ -47,6 +47,21 @@ const NOTATION_STANDARDS: Record<Subject, string> = {
   english: 'KaTeX 미사용. 영어 본문 그대로.',
 };
 
+/**
+ * 22차 (2026-05-08) — 학생 입력 해석 규칙.
+ * 학생은 채팅에 plain text 로 자연스럽게 식을 입력 (KaTeX 학습 불필요).
+ * LLM 이 context 로 변수·단위·곱셈을 정확히 구분하도록 명시 안내.
+ */
+const INPUT_PARSING_RULES: Record<Subject, string> = {
+  math: `학생 입력 규칙: \`*\` 없이 인접 표기 = 곱셈 (\`2x\` = 2·x, \`xy\` = x·y). \`x^2\` = x², \`/\` = 분수, \`sqrt(x)\` = √x. 한글 변수 그대로 (예: "넓이"). 학생 입력은 LaTeX 강제 X.`,
+  physics: `학생 입력 규칙: \`*\` 없이 인접 표기 = 곱셈 (\`F=ma\` ⇒ F = m·a, \`pV=nRT\` ⇒ p·V = n·R·T). 단위와 변수 구분 = **숫자 직후 알파벳 = 단위** (\`5m\` = 5미터, \`2kg\`, \`9.8m/s^2\`), **알파벳 단독 또는 식 안 = 변수** (\`m\` = 질량, \`v\` = 속도, \`a\` = 가속도, \`E\` = 에너지). 모호하면 학생에게 한 번 확인 ("m 은 질량인가요, 길이 단위 미터인가요?"). 응답 KaTeX: 벡터 \\vec{F}, 단위 \\,\\mathrm{m/s^2} 형태. 화학식 등장 시 mhchem.`,
+  chemistry: `학생 입력 규칙: 분자식은 plain text 로도 OK (\`H2O\` ⇒ \\ce{H2O}, \`Mg2+\` ⇒ \\ce{Mg^2+}). 평형 \`<->\` 또는 \`<=>\` ⇒ \\ce{<=>}. 계수와 분자식 인접 (\`2H2O\` = 2몰의 물). 응답은 모든 화학식·이온·반응식을 \\ce{} 로 렌더.`,
+  biology: `학생 입력 규칙: 유전자형은 plain text (\`AaBb\` ⇒ \\text{AaBb}, 대문자 = 우성, 소문자 = 열성). 비율은 \`9:3:3:1\` 그대로. 가계도 인물은 "인물1", "인물2" 또는 "아버지/어머니/자녀". 분자식 (\`DNA\`, \`ATP\`) 그대로 보존.`,
+  'earth-science': `학생 입력 규칙: 단위·암석명·광물명·플레이트명은 \`*\` 없이 인접 (\`30km\` = 30킬로미터, \`판게아\` 그대로). 변수는 보통 한글 (\`수온\`, \`염분\`, \`고도\`). 좌표는 \`(위도 35°N, 경도 127°E)\` 형식. 응답에서 단위는 \\,\\mathrm{}, 고유명사는 \\text{} 로 보존.`,
+  korean: '학생 입력 그대로 보존. 한자·고전어 등장 시 한글 풀이 병기.',
+  english: '학생 입력 그대로 보존. 영문 식별 후 한글 풀이.',
+};
+
 // ────────────────────────────────────────────────────────────────────────────
 // 4 인물별 페르소나 (Earth Science)
 // ────────────────────────────────────────────────────────────────────────────
@@ -197,6 +212,7 @@ export function buildMaestroSystemPrompt(args: BuildArgs): string {
   }
 
   const notation = NOTATION_STANDARDS[subject];
+  const inputParsing = INPUT_PARSING_RULES[subject];
   const figureHints = SUBJECT_FIGURE_HINTS[subject].join(' / ');
 
   const examNote = exam_meta
@@ -232,8 +248,11 @@ export function buildMaestroSystemPrompt(args: BuildArgs): string {
     '',
     COMMON_BASELINE,
     '',
-    `[표기 규칙]`,
+    `[표기 규칙 — 응답 KaTeX]`,
     notation,
+    '',
+    `[학생 입력 해석 규칙]`,
+    inputParsing,
     '',
     `[자주 만나는 자료 유형]`,
     figureHints,

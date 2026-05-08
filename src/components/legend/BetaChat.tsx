@@ -176,6 +176,19 @@ function extractFirstUserText(messages: Array<{ role: string; content: unknown }
 
 const SUBJECT_STORAGE_KEY = 'legend_selected_subject';
 
+/**
+ * 22차 (2026-05-08) — 과목별 입력 placeholder.
+ * 학생이 *없이 자연 표기 (F=ma, H2O 등) 가능함을 미리 안내. system prompt 의
+ * INPUT_PARSING_RULES 와 짝.
+ */
+const PLACEHOLDER_BY_SUBJECT: Record<string, string> = {
+  math: '문제 입력 · 필기(✏️) · 사진(📸) · Ctrl+V 스크린샷',
+  physics: '예: F=ma, v=20m/s, E=mc² · 필기(✏️) · 사진(📸)',
+  chemistry: '예: H2O, 2H2 + O2 -> 2H2O · 필기(✏️) · 사진(📸)',
+  biology: '예: AaBb × aabb, 9:3:3:1 · 필기(✏️) · 사진(📸)',
+  'earth-science': '예: 30km, 위도 35°N, 마그마 · 필기(✏️) · 사진(📸)',
+};
+
 interface BetaChatProps {
   user: User;
   betaMeta?: BetaMeta;
@@ -982,7 +995,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
                   onSubmit(e as unknown as React.FormEvent);
                 }
               }}
-              placeholder="문제 입력 · 필기(✏️) · 사진(📸) · Ctrl+V 스크린샷"
+              placeholder={PLACEHOLDER_BY_SUBJECT[subject] ?? PLACEHOLDER_BY_SUBJECT.math}
               rows={1}
               className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400/50 transition-colors text-sm resize-none"
               disabled={isLoading || parsing}

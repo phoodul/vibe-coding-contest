@@ -163,14 +163,16 @@ function buildRects(
       yBottom = pageHeight - next.yFromBottom - MARGIN_BOTTOM;
     } else {
       // 페이지 마지막 — footer cutoff 우선, 없으면 페이지 bottom
-      // footer cutoff = footer 텍스트 가장 위쪽 yFromBottom 기준 + 위로 6pt 여백
+      // footer cutoff = footer 텍스트 baseline (transform[5]) 기준 위로 30pt 여백.
+      // 22차 (2026-05-08) — 6pt 는 글자 높이(~12pt) 의 절반밖에 안 잘려 윗부분이
+      // 이미지 안에 남았다는 사용자 신고. baseline + ascent + 안전마진 ≈ 30pt 로 변경.
       // 안전장치: footer 가 페이지 절반 보다 위에 있으면 (= 잘못된 detect) 무시.
       const footerY = footerYByPage.get(q.page) ?? null;
-      const footerYTop1x = footerY !== null ? pageHeight - footerY - 6 : null;
+      const footerYTop1x = footerY !== null ? pageHeight - footerY - 30 : null;
       if (footerYTop1x !== null && footerYTop1x > pageHeight * 0.5) {
         yBottom = footerYTop1x;
       } else {
-        yBottom = pageHeight - 30; // 하단 여백 fallback
+        yBottom = pageHeight - 60; // 하단 여백 fallback (22차: 30→60pt)
       }
     }
 
