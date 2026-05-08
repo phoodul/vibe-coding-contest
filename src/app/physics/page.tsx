@@ -1,10 +1,10 @@
 /**
- * 19차 Phase C-Physics — Physics Maestro 메인 채팅.
- * Legend BetaChat 을 subject="physics" 로 재사용.
+ * 22차 (2026-05-09) — Physics Maestro 메인 채팅.
+ * MaestroChat (Maestro/Legend 분리 1단계 wrapper).
  */
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { BetaChat } from '@/components/legend/BetaChat';
+import { MaestroChat } from '@/components/maestro/MaestroChat';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,5 +20,5 @@ export default async function PhysicsMainPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect('/login?next=/physics');
 
-  return <BetaChat user={{ id: user.id, email: user.email ?? null }} subject="physics" />;
+  return <MaestroChat user={{ id: user.id, email: user.email ?? null }} subject="physics" />;
 }

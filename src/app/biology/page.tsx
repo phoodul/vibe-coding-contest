@@ -1,10 +1,10 @@
 /**
- * 19차 Phase C-Biology — Biology Maestro 메인 채팅.
- * Legend BetaChat 을 subject="biology" 로 재사용.
+ * 22차 (2026-05-09) — Biology Maestro 메인 채팅.
+ * MaestroChat (Maestro/Legend 분리 1단계 wrapper).
  */
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { BetaChat } from '@/components/legend/BetaChat';
+import { MaestroChat } from '@/components/maestro/MaestroChat';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,5 +20,5 @@ export default async function BiologyMainPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect('/login?next=/biology');
 
-  return <BetaChat user={{ id: user.id, email: user.email ?? null }} subject="biology" />;
+  return <MaestroChat user={{ id: user.id, email: user.email ?? null }} subject="biology" />;
 }
