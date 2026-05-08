@@ -57,6 +57,59 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 22차 세션 (2026-05-08) — Maestro production 검증 시작 + 인계물 정리
+
+### 시작 신호
+사용자: `/resume-project` → 21차 fix 사슬 (5 root causes) 마무리 후 production 검증 단계.
+
+### 22차 자동 검증 결과 (코드/manifest/배포 레벨, OAuth 미필요)
+
+| 항목 | 결과 | 근거 |
+|---|---|---|
+| 최신 production deployment | ✅ READY | `dpl_BK1TRjUhrnf8Bao5NW5B7SfxPXvN` = `2356f1c` (21차 docs commit) — 21차 19 fix commits 모두 build PASS |
+| footer-cropped PNG CDN 반영 | ✅ 새 etag | `q-20.png` Last-Modified `2026-05-07 21:54 GMT` (KST 5/8 06:54) → 21차 재업로드가 CDN 에 도달. URL 동일 (`allowOverwrite:true`). |
+| manifest 갱신 vs 동일 | ✅ git diff 0 | URL 변경 없으므로 manifest 동일 (mtime 5/8 13:10 = 재실행만, 내용 동일). |
+| 모델 alias ID 코드 반영 | ✅ | `route.ts:291-303` — Sonnet `claude-sonnet-4-6` / Opus `claude-opus-4-7` / GPT `gpt-5.5` / Gemini `gemini-3.1-pro-preview` + invalid env 자동 정정 (5 mapping). |
+| portrait 자산 일관성 | ✅ 22장 모두 존재 | `public/*-portrait.jpg` × 22 (16 maestro + Legend 5 + Socrates) ↔ `portraits.ts` `src` 매핑 일치. |
+| portraits.ts label ↔ 코드 호출 | ✅ | `model_short` 라벨 (Sonnet 4.6 / Gemini 3.1 Pro / Opus 4.7 / GPT-5.5) ↔ 실제 alias 호출 ID 동기. |
+
+### 22차 인계물 정리 (commit `d2a55e0`)
+
+19차 untracked 산출물 처리 — 사용자 결정 = user_docs 이동:
+
+| 변경 | 이유 |
+|---|---|
+| D `src/lib/data/suneung-problem-texts-science.json` (1.8MB) | production import 0 + cMap 일부 한국어 깨짐. repo bloat 회피. |
+| → `user_docs/suneung_science/problem-texts-extract.json` (gitignored) | 향후 LLM context augmentation 실험 시 로컬 활용. |
+| A `scripts/extract-suneung-question-texts.ts` (9KB) | 19차 작성. OUT_PATH 를 user_docs 로 변경 + 헤더 주석 갱신. |
+
+향후 Upstage parse 또는 PDF text layer 보강 통합 시 user_docs 산출물 재사용. `parse-suneung-upstage.ts` 는 OUT_PATH 미변경 (현재 src/lib/data/ 가리킴) — 다음 실행 시 재생성 + 다시 결정.
+
+### 22차 사용자 위임 (OAuth 시각 검증)
+
+`docs/qa/maestro-22-checklist.md` 작성. 16 페르소나 × 4 maestro 페이지 × footer/streaming/visible-error 검증. 결과를 progress.md 22차 검증 섹션에 표 형식으로 기록.
+
+핵심 미검증 (21차 종료 시 ⏳):
+- 허블 (Opus 4.7) — alias `claude-opus-4-7` 적용 후 처음 시도
+- /biology /physics /chemistry 12 페르소나 — 한 번도 실사용 검증 X (Earth Science 패턴 회귀 점검)
+- mhchem `\ce{}` 렌더 (chemistry 응답 시)
+
+### 22차 상태 요약
+
+- ✅ 자동 검증 6/6 PASS — production 배포 + manifest + 모델 ID + portrait 모두 일관
+- ✅ 19차 인계물 정리 commit `d2a55e0`
+- ✅ 사용자 검증 체크리스트 `docs/qa/maestro-22-checklist.md` 작성
+- ⏳ 사용자 본인 계정 시각 검증 (16 페르소나 클릭) — 위임
+- ⏳ Pro plan bandwidth 모니터링 (1TB/월 한도)
+
+### 다음 진행 (사용자 액션 후)
+
+1. 검증 FAIL 발견 시 → 23차 fix
+2. 모든 페르소나 PASS 시 → Phase C (Biology PoC quality 검토) 또는 Phase 0 P0-01b (Legend area 하드코딩 fix) 로 이동
+3. maestro trial 분기 결정 (현재 인증 redirect = dashboard "로그인 없이 체험 가능" 문구 충돌)
+
+---
+
 ## 21차 세션 (2026-05-07~08) — Maestro multimodal 디버깅 사슬 ⭐ 해결
 
 ### 시작 신호
