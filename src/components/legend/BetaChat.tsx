@@ -536,7 +536,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               </span>
             )}
             <Link
-              href="/legend/triggers"
+              href={isMaestro ? `/maestro/${subject}/triggers` : '/legend/triggers'}
               className="text-[11px] px-2.5 py-1 rounded-full border border-violet-400/40 bg-violet-400/10 text-violet-200 hover:bg-violet-400/20 transition-colors font-semibold"
             >
               🎯 Trigger
