@@ -48,6 +48,11 @@ import { StreamingMarkdown } from './StreamingMarkdown';
 import { MATH_AREAS } from '@/lib/ai/euler-prompt';
 import { PastExamPanel } from './PastExamPanel';
 import { ScienceExamPanel, type ExamSelection } from '@/components/maestro/ScienceExamPanel';
+import {
+  MaestroSolutionSummaryButton,
+  type MaestroSummaryResponse,
+} from '@/components/maestro/MaestroSolutionSummaryButton';
+import { MaestroSummaryCard } from '@/components/maestro/MaestroSummaryCard';
 import problemTexts from '@/lib/data/problem-texts.json';
 import type { MathProblem } from '@/lib/data/math-problems';
 
@@ -243,6 +248,8 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
 
   // G06-33: 풀이 정리 인라인 카드 상태 (마지막 assistant 메시지 1개만 유지)
   const [inlineReport, setInlineReport] = useState<PerProblemReport | null>(null);
+  // 22차 — Maestro 풀이 정리 (legend 의 inlineReport 와 분리. 데이터 구조 다름)
+  const [maestroSummary, setMaestroSummary] = useState<MaestroSummaryResponse | null>(null);
 
   // 20차 — maestro 수능 영역 PNG preview (message id → image url 매핑).
   // useChat 의 message.content 는 string 만 보존하므로 client UI 용 별도 state.
@@ -544,7 +551,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               </Link>
             )}
             <Link
-              href="/legend/report"
+              href={isMaestro ? `/maestro/${subject}/report` : '/legend/report'}
               className="text-[11px] px-2.5 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors font-semibold"
             >
               📊 리포트
@@ -886,7 +893,7 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
           {/* G06-35b — selectedTutor 전달: 채팅 튜터와 정리 튜터 일관성 강제 */}
           {/* Δ13 — firstUserText (원문제) 전달: 짧은 마지막 user → 난이도 1 오판정 fix */}
           {/* Δ14 — conversation 전달: 학생 막힘 5 차원 (stuck_step·trigger·AI hint·resolution) */}
-          {/* maestro 는 SolutionSummaryButton 미사용 (수학 전용 인프라). math 만 노출. */}
+          {/* 22차 — math = legend 분기 (ToT 트리), maestro = subject 별 가벼운 정리 */}
           {!isMaestro && canShowSummaryButton && firstUserText && !inlineReport && (
             <SolutionSummaryButton
               problemText={firstUserText}
@@ -895,9 +902,37 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
               onSummaryReady={(report) => setInlineReport(report)}
             />
           )}
+          {isMaestro && canShowSummaryButton && firstUserText && !maestroSummary && (
+            <MaestroSolutionSummaryButton
+              subject={subject}
+              tutor={selectedTutor as MaestroTutorName}
+              problemText={firstUserText}
+              conversation={messages}
+              onSummaryReady={(response) => {
+                setMaestroSummary(response);
+                // 22차 — /maestro/[subject]/report 의 "최근 풀이 정리" 카드용
+                // localStorage 누적. 5건 limit. DB 누적은 다음 commit.
+                try {
+                  const key = 'maestro_recent_summaries';
+                  const raw = localStorage.getItem(key);
+                  const arr = raw ? (JSON.parse(raw) as Array<unknown>) : [];
+                  const next = [
+                    {
+                      date: new Date().toISOString().slice(0, 10),
+                      subject: response.subject,
+                      tutor: response.tutor_label,
+                      takeaway: response.summary.persona_takeaway,
+                    },
+                    ...(Array.isArray(arr) ? arr : []),
+                  ].slice(0, 20);
+                  localStorage.setItem(key, JSON.stringify(next));
+                } catch {}
+              }}
+            />
+          )}
 
-          {/* G06-33 — 인라인 PerProblemReportCard (ToT + AI 어려움 + 떠올린 이유) */}
-          {inlineReport && (
+          {/* G06-33 — 인라인 PerProblemReportCard (math 전용, ToT + AI 어려움 + 떠올린 이유) */}
+          {!isMaestro && inlineReport && (
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -906,6 +941,12 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
             >
               <PerProblemReportCard report={inlineReport} />
             </motion.div>
+          )}
+          {/* 22차 — Maestro 풀이 정리 카드 (subject 별) */}
+          {isMaestro && maestroSummary && (
+            <div className="mt-4">
+              <MaestroSummaryCard data={maestroSummary} />
+            </div>
           )}
 
           <div ref={messagesEndRef} />
