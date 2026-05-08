@@ -268,7 +268,8 @@ export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatPr
   // selectedSubject 는 사용자가 명시적으로 선택한 학년/과목 hint — 'free' 면 백엔드 자동분류.
   const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
-      api: '/api/legend/tutor',
+      // 22차 — Maestro/Legend 분리. maestro subject 면 전용 라우트.
+      api: isMaestro ? `/api/maestro/${subject}/tutor` : '/api/legend/tutor',
       body: {
         useGpt,
         input_mode: 'text',
