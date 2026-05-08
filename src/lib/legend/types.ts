@@ -8,52 +8,16 @@
  */
 
 // ────────────────────────────────────────────────────────────────────────────
-// Subject — 19차 (2026-05-06) maestro 4과목 일반화 도입
+// Subject — 22차 (2026-05-09) maestro/legend 분리로 lib/types/subject.ts 이전.
+// 호환성을 위해 re-export. 새 코드는 @/lib/types/subject 에서 직접 import 권장.
 // ────────────────────────────────────────────────────────────────────────────
 
-/**
- * Maestro subject — 4 maestro (물리·화학·생물·지구과학) + 미래 확장 (국어·영어).
- * Legend Tutor = `subject='math'` 인스턴스. 19차 이전 모든 코드는 'math' 가정.
- */
-export type Subject =
-  | 'math'
-  | 'physics'
-  | 'chemistry'
-  | 'biology'
-  | 'earth-science'
-  | 'korean'    // Phase 5+ (세종·정약용·이이)
-  | 'english';  // Phase 5+ (셰익스피어·처칠·촘스키)
-
-/** Phase 1~Phase D 에서 활성화된 subject */
-export const ACTIVE_SUBJECTS: readonly Subject[] = [
-  'math',
-  'physics',
-  'chemistry',
-  'biology',
-  'earth-science',
-] as const;
-
-/** subject → 한글 라벨 (학생 화면) */
-export const SUBJECT_LABEL_KO: Record<Subject, string> = {
-  math: '수학',
-  physics: '물리',
-  chemistry: '화학',
-  biology: '생명과학',
-  'earth-science': '지구과학',
-  korean: '국어',
-  english: '영어',
-};
-
-/** subject → URL slug ( `/legend` · `/physics` 등 ) */
-export const SUBJECT_URL_SLUG: Record<Subject, string> = {
-  math: 'legend',          // 기존 URL 보존 (/legend)
-  physics: 'physics',
-  chemistry: 'chemistry',
-  biology: 'biology',
-  'earth-science': 'earth-science',
-  korean: 'korean',
-  english: 'english',
-};
+export type { Subject } from '@/lib/types/subject';
+export {
+  ACTIVE_SUBJECTS,
+  SUBJECT_LABEL_KO,
+  SUBJECT_URL_SLUG,
+} from '@/lib/types/subject';
 
 // ────────────────────────────────────────────────────────────────────────────
 // 튜터 · tier · 영역
@@ -69,39 +33,32 @@ export type MathTutorName =
   | 'leibniz';         // Tier 2: Sonnet 4.6 agentic
 
 /**
- * 19차 Phase B/C — 4 maestro 페르소나 (각 4 인물).
- *
- * 영역 매칭 X — 모든 인물이 모든 단원 답변 가능. 모델 차이만.
- * 4 인물 = 4 모델 1:1 매핑 (모든 maestro 동일 위치 순서):
- *   - 1번 (Sonnet 4.6, 기본 사용량 ↑)
- *   - 2번 (Gemini 3.1 Pro, 거장)
- *   - 3번 (Opus 4.7, 거장)
- *   - 4번 (GPT-5.5, 거장)
- */
-export type EarthScienceTutorName = 'wegener' | 'galilei' | 'hubble' | 'sagan';
-export type BiologyTutorName = 'darwin' | 'mendel' | 'watson' | 'pasteur';
-export type PhysicsTutorName = 'newton' | 'einstein' | 'feynman' | 'fermi';
-export type ChemistryTutorName = 'mendeleev' | 'lavoisier' | 'pauling' | 'curie';
-
-/**
  * Legend (수학) 페르소나 alias.
  *
  * 기존 코드 다수가 `TutorName` 을 import 하고 있어 호환성 위해 alias 유지.
- * Maestro 4 과목 페르소나는 EarthScienceTutorName / BiologyTutorName / ... 별도 type
- * + 별도 Record (예: EARTH_SCIENCE_PORTRAITS) 로 분리.
  */
 export type TutorName = MathTutorName;
 
+// ────────────────────────────────────────────────────────────────────────────
+// Maestro 4 과목 페르소나 — 22차에 lib/maestro/types.ts 로 이전.
+// 호환성 re-export. 새 코드는 @/lib/maestro/types 에서 직접 import 권장.
+// ────────────────────────────────────────────────────────────────────────────
+
+export type {
+  EarthScienceTutorName,
+  BiologyTutorName,
+  PhysicsTutorName,
+  ChemistryTutorName,
+} from '@/lib/maestro/types';
+
+import type { MaestroTutorName as MaestroOnlyTutorName } from '@/lib/maestro/types';
+
 /**
- * 모든 maestro 페르소나의 union — PERSONAS_BY_SUBJECT 매핑·UI(TutorPickerModal) 용.
- * 추가 maestro (Biology / Physics / Chemistry / Korean / English) 진입 시 union 확장.
+ * 22차 — MaestroTutorName 은 19차에 MathTutorName 까지 union 으로 포함했으나
+ * 의미상 maestro 페르소나만 가리켜야 함. 기존 동작 보존을 위해 union 유지하되
+ * 점진 migration 후 MathTutorName 제거 예정.
  */
-export type MaestroTutorName =
-  | MathTutorName
-  | EarthScienceTutorName
-  | BiologyTutorName
-  | PhysicsTutorName
-  | ChemistryTutorName;
+export type MaestroTutorName = MathTutorName | MaestroOnlyTutorName;
 
 export type Tier = 0 | 1 | 2;
 
