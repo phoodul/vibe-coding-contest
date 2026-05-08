@@ -57,6 +57,70 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 21차 세션 (2026-05-07~08) — Maestro multimodal 디버깅 사슬 ⭐ 해결
+
+### 시작 신호
+사용자: "여전히 가이드는 전혀 없어. 튜터가 아무런 답도 하지 않아."
+**5가지 독립 root causes 가 동시에 차단막** → 하나씩 깨야 다음 진단이 보이는 구조.
+누적 19 fix commits (`407a6cb` ~ `0db1844`).
+
+### 진짜 Root Causes (해결 순서)
+
+| # | 원인 | 진단 단서 | 해결 |
+|---|---|---|---|
+| 1 | useChat v4 의 `body`/`data`/`experimental_attachments` 옵션 production server 미도달 | logs 의 `marker=Y` vs `data.imageUrl=N` | message content marker 패턴: `[__MAESTRO_IMG__]URL[/__MAESTRO_IMG__]` (`d737b15`) |
+| 2 | `GEMINI_MODEL_ID = 'gemini-3-1-pro'` invalid (Vercel env 사용자 등록 값) | visible error: `models/gemini-3-1-pro is not found` | Vercel env 직접 변경 (`gemini-3.1-pro-preview`) + 코드 자동 정정 (`c283033`) |
+| 3 | `GEMINI_API_KEY` production env 누락 | visible error: `AI_LoadAPIKeyError: GOOGLE_GENERATIVE_AI_API_KEY missing` | 사용자 Vercel env 추가 (`8ab08d7`) |
+| 4 | Anthropic model ID dated suffix invalid (`claude-opus-4-7-20260201`) | visible error: `model: claude-opus-4-7-20260201` | alias ID (`claude-opus-4-7`) — system 안내된 정확한 형식 (`f0a1ee2`) |
+| 5 | **Vercel Hobby plan Blob bandwidth 한도 초과 → store 차단** (진짜 결정타) | "Your store is blocked / Access resumes on 2026-06-06" | **Pro plan upgrade** ($20/월) — 즉시 access 복구 |
+
+### 결정적 단서들 (사용자가 짚어준 사실)
+
+1. **"Legend Tutor 가 정상 작동하는데 같은 모델"** → 사용자가 model ID 추측 fix 거부. 다시 비교 분석 시작.
+   진실: Legend의 가우스는 라벨만 "Gemini 3.1 Pro", **실제로는 OpenAI 호출** (`portraits.ts` `model_short` ≠ 코드 동작). Maestro 가 **첫 진짜 Gemini provider 사용 코드**.
+2. **"낡은 모델 X. 최신 모델만"** → stable 강등 (v5 `93b9342`) revert. 사용자 의지 존중.
+3. **"Sonnet 인물은 사용 X"** → Gemini→Sonnet auto-fallback (v9) revert. 최고 모델 정책.
+4. **"GEMINI_API_KEY 가 .env 가 아니라 .env 에 있어"** → `.env`는 git ignore + Vercel 미인식. dashboard 직접 등록 필요.
+5. **"`Your store is blocked` 메시지가 떠"** → Vercel UI 직접 확인이 진짜 root cause 즉시 노출. 추측 사슬 끊음.
+6. **"Hobby plan usage limits reached. Access resumes on 2026-06-06"** → bandwidth 초과. Pro upgrade 결정.
+
+### 부수 fix (production 가치 영구 유지)
+
+| Commit | 내용 | 이유 |
+|---|---|---|
+| `7513042` | visible error stream (`0:"..."` chunk) | useChat 의 error chunk(`3:"..."`) 는 onError 만 가서 UI 미노출. text chunk 로 표시 |
+| `ed6be8d` | Gemini `safetySettings: BLOCK_NONE × 4` | 수능 과학 (방사성·핵분열·면역·항원) false positive 차단 방지. Legend `callGemini` 동일 |
+| `51ebd7b` | Vercel Blob 공식 SDK `get()` 사용 | context7 `/vercel/storage` docs 검증. raw fetch 차단 우회 |
+| `ed6be8d` | base64 inline image part | 모든 vision 모델 (Sonnet/Opus/GPT/Gemini) 가장 안정 형식 |
+| `78eea54` | image-less fallback (visible error throw 제거) | store 또 차단 시 학생 빈 응답 X. LLM 안내 텍스트로 대체 |
+| `0db1844` | streamText 복귀 (generateText 폐기) | 첫 token 즉시 stream 송출. 사용자 무진행 체감 ↓ |
+
+### 핵심 교훈
+
+1. **추측 fix 사슬 회피** — 사용자가 "검색해서 다시 수정해" 라고 짚어준 시점에 `context7` 공식 docs 검증 → SDK get() 패턴 확보. 추측 fix 그만 하고 docs 검증해야 정확한 진단.
+2. **production logs + Vercel UI 조합 진단** — Vercel Functions stream runtime 의 console capture 가 truncate 됨. logs 만으로는 fail 사유 진단 불가. **사용자가 화면에서 직접 본 visible error / browser URL 직접 테스트** 가 결정타.
+3. **plan limits 가 silent hang 의 1순위 의심** — 16-fix 사슬 중 11개가 코드 fix 였는데 진짜 원인은 **Hobby plan bandwidth 초과**. plan/quota 점검을 첫 단계에 추가.
+4. **Legend 비교 무용** — Legend(math)는 Gemini 라벨만, 실제는 OpenAI. maestro 가 **첫 진짜 Gemini provider 사용**. 동일 코드 베이스 안에서도 분기마다 실제 호출 모델이 다를 수 있음.
+5. **useChat v4 의 외부 field 머지 신뢰 X** — body / data / experimental_attachments 모두 production fetch body 미머지. **message content 자체에 marker 포함이 가장 확실**.
+
+### 21차 세션 끝 상태
+
+- ✅ 갈릴레이 (Gemini 3.1 Pro) image vision + 가이드 응답 정상
+- ✅ 세이건 (GPT-5.5) image vision 작동 (사용자 확인)
+- ⏳ 허블 (Opus 4.7) — model ID `claude-opus-4-7` alias 적용 후 미검증
+- ❌ 베게너 (Sonnet 4.6) — client disabled 유지 (사용자 정책)
+- ✅ Vercel Pro plan — Blob bandwidth 1TB/월 + 모든 maestro storage 여유
+- ✅ footer cutoff 1598 PNG 재추출 + 재업로드 완료 (background task `bjxm5vzn4`)
+
+### 다음 진행 (22차)
+
+1. footer 잘라낸 1598 PNG production 검증 (image preview + 이미지 안에 footer 잘림 확인)
+2. 허블/멘델/아인슈타인/라부아지에/파스퇴르/페르미/마리퀴리 등 다른 인물 작동 검증
+3. Pro plan bandwidth 모니터링 (1TB/월 한도 추적)
+4. 베타 테스터 모집 시 maestro 이용 가이드 작성
+
+---
+
 ## 20차 세션 진행 중 (2026-05-07) — production smoke + 메타데이터 fix
 
 19차 종료 후 첫 production smoke 검증. 4 maestro 페이지·페르소나·system-prompt·portrait 코드 일관성 검증과 메타데이터 결함 fix.
