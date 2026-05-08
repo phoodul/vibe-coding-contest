@@ -286,6 +286,22 @@ ${conversationText}
       maxRetries: 1,
     });
 
+    // 22차 Phase 5 — maestro_summaries 누적. SQL 적용 전 silent fail.
+    try {
+      await supabase.from('maestro_summaries').insert({
+        user_id: user.id,
+        subject,
+        tutor,
+        problem_text: problemText.slice(0, 4000),
+        summary: object,
+      });
+    } catch (e) {
+      console.warn(
+        '[maestro/build-summary] insert 실패 (SQL 미적용?):',
+        (e as Error).message,
+      );
+    }
+
     return Response.json({
       subject,
       tutor,

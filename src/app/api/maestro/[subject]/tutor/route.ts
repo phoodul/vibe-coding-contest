@@ -33,6 +33,7 @@ import {
   type MaestroTutorName,
 } from '@/lib/maestro/types';
 import { isMaestroSubject } from '@/lib/types/subject';
+import { createClient as createSupabaseServer } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -76,6 +77,13 @@ export async function POST(
     if (!Array.isArray(rawMessages) || rawMessages.length === 0) {
       return maestroErrorResponse('messages 가 비어있습니다.');
     }
+
+    // 22차 — Phase 5: 인증 + maestro_tutor_sessions 누적 (SQL 적용 후 활성).
+    const supabase = await createSupabaseServer();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    // user 없어도 stream 은 진행 (기존 행동 보존). DB insert 만 skip.
 
     // marker 추출 ([__MAESTRO_IMG__]<URL>[/__MAESTRO_IMG__])
     let attachedImageUrlFromMarker: string | undefined;
@@ -301,6 +309,24 @@ export async function POST(
       `[maestro/tutor:${maestroSubject}] streamText 시작 — provider=${actualProvider} system.length=${maestroSystem.length}`,
     );
     const streamT0 = Date.now();
+    // 22차 Phase 5 — 첫 user 메시지 + has_image 추출. onFinish 에서 누적 insert.
+    const firstUser = messages.find((m) => m.role === 'user');
+    const firstUserText =
+      firstUser && typeof firstUser.content === 'string'
+        ? firstUser.content.slice(0, 4000)
+        : null;
+    const hasImagePart =
+      Array.isArray(finalMessages[finalMessages.length - 1]) ||
+      ((): boolean => {
+        const last = finalMessages[finalMessages.length - 1] as { content?: unknown };
+        return (
+          Array.isArray(last?.content) &&
+          (last.content as Array<{ type?: string }>).some((p) => p.type === 'image')
+        );
+      })();
+    const isFirstAssistantTurn =
+      messages.filter((m) => m.role === 'assistant').length === 0;
+
     const resultStream = streamText({
       model: maestroModel,
       system: maestroSystem,
@@ -308,10 +334,38 @@ export async function POST(
       onError: (event) => {
         console.error(`[maestro/tutor:${maestroSubject}] streamText onError:`, JSON.stringify(event));
       },
-      onFinish: (result) => {
+      onFinish: async (result) => {
         console.log(
           `[maestro/tutor:${maestroSubject}] streamText onFinish ${Date.now() - streamT0}ms — finishReason=${result.finishReason} text.length=${result.text?.length ?? 0} usage=${JSON.stringify(result.usage)}`,
         );
+        // 22차 Phase 5 — maestro_tutor_sessions 누적.
+        // 첫 turn = 새 session row insert. 이후 turn = message_count·last_message_at 만 update.
+        // SQL 마이그레이션 적용 전 호출 시 silent fail (try-catch).
+        if (!user) return;
+        try {
+          if (isFirstAssistantTurn) {
+            await supabase.from('maestro_tutor_sessions').insert({
+              user_id: user.id,
+              subject: maestroSubject,
+              tutor: tutorId,
+              problem_text: firstUserText,
+              exam_year: examMeta?.year ?? null,
+              exam_variant: examMeta?.variant ?? null,
+              exam_number: examMeta?.number ?? null,
+              message_count: messages.length + 1, // +1 = 이번 assistant 응답
+              has_image: hasImagePart,
+              first_response_at: new Date().toISOString(),
+              last_message_at: new Date().toISOString(),
+            });
+          }
+          // 후속 turn 의 update 는 Phase 5b 에서 (session_id client 관리 필요).
+          // 1차 = 첫 turn 만 누적. 리포트 페이지의 "최근 풀이 정리" 카드에 충분.
+        } catch (e) {
+          console.warn(
+            `[maestro/tutor:${maestroSubject}] DB insert 실패 (SQL 미적용?):`,
+            (e as Error).message,
+          );
+        }
       },
     });
     return resultStream.toDataStreamResponse({
