@@ -35,6 +35,7 @@ import { buildWolframQuery } from "@/lib/euler/wolfram-query-builder";
 import { reportTools } from "@/lib/euler/tool-reporter";
 import { logSolve } from "@/lib/euler/solve-logger";
 import { checkFreeQuota } from "@/lib/euler/usage-quota";
+import { checkAndIncrementQuota } from "@/lib/payment/quota";
 import { createClient as createSupabaseServer } from "@/lib/supabase/server";
 import { EULER_EVENTS, trackServerEvent } from "@/lib/analytics/events";
 import { tryParseJson } from "@/lib/euler/json";
@@ -502,9 +503,44 @@ export async function POST(req: Request) {
      }
     }
 
-    // C-12: Free 일일 한도 — 첫 user turn 일 때만 체크 (후속 코칭 턴은 통과)
+    // 첫 user turn 판정 — free + paid quota 양쪽에서 사용
     const isFirstUserTurn = messages.filter((m: { role: string }) => m.role === "assistant").length === 0;
-    if (isFirstUserTurn) {
+
+    // 22차 — Paid quota (subscriptions.monthly_quota). NEXT_PUBLIC_PAYMENT_ACTIVE=true
+    // 일 때만 동작. 베타 동안은 skip → 기존 free quota 흐름 유지.
+    // legend_problem counter 만 +1 (maestro 는 별도 라우트에서 maestro_problem +1).
+    let hasPaidSub = false;
+    if (isFirstUserTurn && process.env.NEXT_PUBLIC_PAYMENT_ACTIVE === "true") {
+      try {
+        const supa = await createSupabaseServer();
+        const {
+          data: { user },
+        } = await supa.auth.getUser();
+        if (user) {
+          const result = await checkAndIncrementQuota(supa, user.id, "legend_problem");
+          if (!result.allowed) {
+            return NextResponse.json(
+              {
+                error: "quota_exceeded",
+                reason: result.reason,
+                used: result.used,
+                limit: result.limit,
+                message:
+                  result.message ??
+                  "이번 달 한도를 모두 사용했어요. /pricing 에서 추가 충전 가능합니다.",
+              },
+              { status: 429 },
+            );
+          }
+          hasPaidSub = !!result.plan_code;
+        }
+      } catch (e) {
+        console.warn("[euler-tutor] paid quota check 실패 (silent):", (e as Error).message);
+      }
+    }
+
+    // C-12: Free 일일 한도 — 첫 user turn + paid 미가입자만. paid 사용자는 무제한·100회 한도 적용.
+    if (isFirstUserTurn && !hasPaidSub) {
       const quota = await checkFreeQuota();
       if (quota && !quota.allowed) {
         return NextResponse.json(
