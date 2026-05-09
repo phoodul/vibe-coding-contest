@@ -74,6 +74,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               기여자
             </Link>
             <Link
+              href="/admin/billing"
+              className="text-white/70 hover:text-white transition-colors"
+            >
+              결제·환불
+            </Link>
+            <Link
               href="/dashboard"
               className="ml-2 rounded-full border border-white/15 px-2.5 py-0.5 text-white/60 hover:text-white hover:border-white/30 transition-colors"
             >
