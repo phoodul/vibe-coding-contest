@@ -19,7 +19,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getUserAccessTier, getBetaInviteMeta } from '@/lib/legend/access-tier';
 import { TrialChat } from '@/components/legend/TrialChat';
-import { BetaChat } from '@/components/legend/BetaChat';
+import { LegendChat } from '@/components/legend/LegendChat';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,7 +45,7 @@ export default async function LegendMainPage() {
   if (tier === 'beta') {
     // Δ28 — 30일 만료 정책. days_left 가 ≤ 7 이면 헤더에서 안내.
     const betaMeta = await getBetaInviteMeta(user.id);
-    return <BetaChat user={userProp} betaMeta={betaMeta ?? undefined} />;
+    return <LegendChat user={userProp} betaMeta={betaMeta ?? undefined} />;
   }
   return <TrialChat user={userProp} />;
 }

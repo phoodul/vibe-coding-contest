@@ -18,6 +18,7 @@
 | **22차 추가 — Maestro/Legend 분리** | 5 phase | 5 | ✅ 모두 완료 (commits 6754b55 / 85c2412 / 36f91aa / 9b12504 / 1cda757) |
 | **22차 추가 — Maestro 기능 확장** | 풀이정리·트리거·리포트 | 3 | ✅ 모두 완료 (966c56c / 30e49a3 / 1cda757) |
 | **22차 추가 — 결제 시스템** | DB·약관·SDK·API·UI·quota | 7 | ✅ 모두 완료 (febdb7c / 99fd491) |
+| **23차 — 결제 활성화 정비 + Chat 추출** | A1~A5 + B1a~B2 | 8 | 🔄 5/8 완료 (A1·A2·A3·A4·A5 ✅ A5=cancel route 검증 skip 결정) |
 
 ---
 

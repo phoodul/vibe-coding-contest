@@ -194,17 +194,21 @@ const PLACEHOLDER_BY_SUBJECT: Record<string, string> = {
   'earth-science': '예: 30km, 위도 35°N, 마그마 · 필기(✏️) · 사진(📸)',
 };
 
-interface BetaChatProps {
+interface LegendChatProps {
   user: User;
   betaMeta?: BetaMeta;
   /**
    * 19차 — Maestro 4 과목 (math / earth-science / biology / physics / chemistry).
    * 미지정 시 'math' (Legend = 기본 동작, 회귀 0).
+   *
+   * 23차 (2026-05-10) 메모: 이 컴포넌트는 maestro 분기를 그대로 들고 있다 (BetaChat
+   * 시절 1072 줄 그대로). 본 commit 은 rename only. 진짜 분리(BetaChat 의 maestro
+   * 분기 코드를 MaestroChat 으로 이동)는 다음 세션 사용자 manual smoke 후.
    */
   subject?: Subject;
 }
 
-export function BetaChat({ user: _user, betaMeta, subject = 'math' }: BetaChatProps) {
+export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendChatProps) {
   const isMaestro = subject !== 'math';
   const maestroTutorList = isMaestro ? (MAESTRO_TUTORS_BY_SUBJECT[subject] ?? []) : [];
   const [useGpt, setUseGpt] = useState(false);
