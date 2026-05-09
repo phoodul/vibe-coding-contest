@@ -1,8 +1,11 @@
 /**
- * 22차 (2026-05-09) — 결제 성공 redirect (/billing/success).
+ * 22차 (2026-05-09) 신설 → 23차 (2026-05-10) A2: 빌링키 분기 추가.
  *
- * 토스 결제 위젯이 paymentKey · orderId · amount 를 query param 으로 전달.
- * client 가 받아서 /api/payment/confirm POST → 결제 승인.
+ * 두 흐름 분기:
+ *   1) 단발 결제 (topup_100): query = ?paymentKey=...&orderId=...&amount=...
+ *      → POST /api/payment/confirm
+ *   2) 정기결제 빌링키 등록 (Basic/Standard/Premium): query = ?authKey=...&customerKey=...&_flow=billing&order_id=...
+ *      → POST /api/payment/billing-key (빌링키 발급 + 첫 결제 charge)
  */
 'use client';
 
@@ -13,6 +16,10 @@ import { motion } from 'framer-motion';
 
 export default function PaymentSuccessPage() {
   const sp = useSearchParams();
+  const flow = sp.get('_flow');
+  const authKey = sp.get('authKey');
+  const customerKey = sp.get('customerKey');
+  const orderIdFromBilling = sp.get('order_id');
   const paymentKey = sp.get('paymentKey');
   const orderId = sp.get('orderId');
   const amount = sp.get('amount');
@@ -24,12 +31,37 @@ export default function PaymentSuccessPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!paymentKey || !orderId || !amount) {
-        setStatus('fail');
-        setError('결제 정보가 누락되었습니다.');
-        return;
-      }
       try {
+        // 정기결제 빌링키 등록 흐름
+        if (flow === 'billing' && authKey) {
+          const res = await fetch('/api/payment/billing-key', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              authKey,
+              customerKey,
+              order_id: orderIdFromBilling,
+            }),
+          });
+          if (cancelled) return;
+          if (!res.ok) {
+            const err = (await res.json().catch(() => ({}))) as { message?: string };
+            setStatus('fail');
+            setError(err.message ?? '빌링키 등록에 실패했습니다.');
+            return;
+          }
+          const data = (await res.json()) as { receipt_url?: string };
+          setReceiptUrl(data.receipt_url ?? null);
+          setStatus('ok');
+          return;
+        }
+
+        // 단발 결제 흐름 (topup_100)
+        if (!paymentKey || !orderId || !amount) {
+          setStatus('fail');
+          setError('결제 정보가 누락되었습니다.');
+          return;
+        }
         const res = await fetch('/api/payment/confirm', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
@@ -58,7 +90,7 @@ export default function PaymentSuccessPage() {
     return () => {
       cancelled = true;
     };
-  }, [paymentKey, orderId, amount]);
+  }, [flow, authKey, customerKey, orderIdFromBilling, paymentKey, orderId, amount]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white px-4">

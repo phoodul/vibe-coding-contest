@@ -1,8 +1,17 @@
 /**
- * 22차 (2026-05-09) — 가격 카드 + 결제 시작 버튼.
+ * 22차 (2026-05-09) 신설 → 23차 (2026-05-10) A2: 토스 V2 SDK 결제 위젯 연동.
  *
  * paymentActive=false (베타 동안): 버튼 disabled + "베타 종료 후 활성화" 안내.
- * paymentActive=true: /api/payment/checkout POST → toss 결제 페이지 redirect.
+ * paymentActive=true:
+ *   1. /api/payment/checkout POST → orderId / customerKey / amount / success_url / fail_url 받음
+ *   2. recurring=true (Basic/Standard/Premium) → payment.requestBillingAuth (카드 등록)
+ *      → /billing/success?authKey=... → /api/payment/billing-key (빌링키 발급 + 첫 결제)
+ *   3. recurring=false (topup_100) → payment.requestPayment (단발 결제)
+ *      → /billing/success?paymentKey=... → /api/payment/confirm (결제 승인)
+ *
+ * env 의존:
+ *   NEXT_PUBLIC_TOSS_CLIENT_KEY — 토스 가맹점 client key (live/test 분리)
+ *   NEXT_PUBLIC_PAYMENT_ACTIVE  — 'true' 일 때만 결제 활성
  */
 'use client';
 
@@ -23,14 +32,32 @@ const ACCENT_BY_PLAN: Record<PlanCode, string> = {
   topup_100: '',
 };
 
+interface CheckoutResponse {
+  order_id: string;
+  customer_key: string;
+  plan_code: string;
+  plan_label: string;
+  amount_krw: number;
+  is_recurring: boolean;
+  success_url: string;
+  fail_url: string;
+}
+
 export function PricingClient({ paymentActive }: { paymentActive: boolean }) {
   const router = useRouter();
   const [loadingPlan, setLoadingPlan] = useState<PlanCode | null>(null);
 
   async function handleSubscribe(plan: PlanCode) {
     if (!paymentActive) return;
+    const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY;
+    if (!clientKey) {
+      alert('결제 키가 설정되지 않았습니다. 관리자에게 문의해 주세요.');
+      return;
+    }
+
     setLoadingPlan(plan);
     try {
+      // 1. server 가 pending payment row 생성 + orderId / customerKey 발급
       const res = await fetch('/api/payment/checkout', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -45,12 +72,44 @@ export function PricingClient({ paymentActive }: { paymentActive: boolean }) {
         alert(err.message ?? '결제를 시작할 수 없습니다.');
         return;
       }
-      const data = (await res.json()) as { redirect_url?: string };
-      if (data.redirect_url) {
-        window.location.href = data.redirect_url;
+      const checkout = (await res.json()) as CheckoutResponse;
+
+      // 2. 토스 V2 SDK 동적 import (번들 사이즈 최소화)
+      const { loadTossPayments } = await import('@tosspayments/tosspayments-sdk');
+      const tossPayments = await loadTossPayments(clientKey);
+      const payment = tossPayments.payment({ customerKey: checkout.customer_key });
+
+      const orderName = `${checkout.plan_label} (월 ₩${checkout.amount_krw.toLocaleString('ko-KR')})`;
+
+      if (checkout.is_recurring) {
+        // 정기결제: 빌링키 등록창. success url 에 authKey + customerKey 가 query 로 자동 추가됨.
+        // /billing/success 가 authKey 분기로 /api/payment/billing-key 호출.
+        await payment.requestBillingAuth({
+          method: 'CARD',
+          successUrl: `${checkout.success_url}?_flow=billing&order_id=${encodeURIComponent(checkout.order_id)}`,
+          failUrl: checkout.fail_url,
+        });
+      } else {
+        // 단발 결제 (topup_100). success url 에 paymentKey + orderId + amount 가 query 로 자동 추가됨.
+        await payment.requestPayment({
+          method: 'CARD',
+          amount: { currency: 'KRW', value: checkout.amount_krw },
+          orderId: checkout.order_id,
+          orderName,
+          successUrl: checkout.success_url,
+          failUrl: checkout.fail_url,
+        });
       }
+      // requestPayment / requestBillingAuth 는 Redirect 방식 → window.location 이동
+      // 여기 도달 시 사용자가 결제창 닫음 (UserCancelError) 또는 SDK 내부 오류
     } catch (e) {
-      alert((e as Error).message);
+      const err = e as { code?: string; message?: string };
+      // 사용자가 결제창 닫음 — alert 안 함 (다시 시도 자연스러움)
+      if (err.code === 'USER_CANCEL') {
+        return;
+      }
+      console.error('[PricingClient] subscribe failed:', err);
+      alert(err.message ?? '결제 진행 중 오류가 발생했습니다.');
     } finally {
       setLoadingPlan(null);
     }
@@ -103,7 +162,7 @@ export function PricingClient({ paymentActive }: { paymentActive: boolean }) {
               }`}
             >
               {loadingPlan === code
-                ? '준비 중...'
+                ? '결제창 여는 중...'
                 : paymentActive
                   ? '결제하고 시작하기'
                   : '베타 종료 후 활성화'}
