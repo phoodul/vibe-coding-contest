@@ -34,6 +34,7 @@ import {
 } from '@/lib/maestro/types';
 import { isMaestroSubject } from '@/lib/types/subject';
 import { createClient as createSupabaseServer } from '@/lib/supabase/server';
+import { checkAndIncrementQuota } from '@/lib/payment/quota';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300;
@@ -84,6 +85,32 @@ export async function POST(
       data: { user },
     } = await supabase.auth.getUser();
     // user 없어도 stream 은 진행 (기존 행동 보존). DB insert 만 skip.
+
+    // 22차 — quota check (첫 user turn 일 때만, 결제 활성화 후).
+    // 베타 동안 NEXT_PUBLIC_PAYMENT_ACTIVE !== 'true' = quota check skip.
+    const isFirstAssistantTurnEarly =
+      Array.isArray(rawMessages) &&
+      rawMessages.filter((m) => m?.role === 'assistant').length === 0;
+    if (
+      user &&
+      process.env.NEXT_PUBLIC_PAYMENT_ACTIVE === 'true' &&
+      isFirstAssistantTurnEarly
+    ) {
+      try {
+        const result = await checkAndIncrementQuota(
+          supabase,
+          user.id,
+          'maestro_problem',
+        );
+        if (!result.allowed) {
+          return maestroErrorResponse(
+            result.message ?? '이번 달 한도를 모두 사용했어요. /pricing 에서 추가 충전 가능합니다.',
+          );
+        }
+      } catch (e) {
+        console.warn(`[maestro/tutor:${maestroSubject}] quota check 실패:`, (e as Error).message);
+      }
+    }
 
     // marker 추출 ([__MAESTRO_IMG__]<URL>[/__MAESTRO_IMG__])
     let attachedImageUrlFromMarker: string | undefined;
