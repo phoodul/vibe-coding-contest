@@ -118,6 +118,60 @@
 
 ---
 
+## 23차 세션 (2026-05-10) — 결제 활성화 정비 + Chat rename ⭐
+
+### 종료 상태 (2026-05-10)
+**누적 6 commits** (23차 plan 포함). production 자동 배포. SQL 마이그레이션 추가 없음.
+
+### 핵심 산출물 (트랙 A — 결제 활성화 정비)
+
+| commit | 영역 | 변경 |
+|---|---|---|
+| `377cc7c` | A1 | `/api/legend/tutor` 첫 user turn 에 `legend_problem` quota check 통합. NEXT_PUBLIC_PAYMENT_ACTIVE=true 일 때만, paid 사용자는 free 한도 skip. |
+| `4365a2e` | A2 | PricingClient 가 토스 V2 SDK 동적 import. recurring → requestBillingAuth, single → requestPayment. /billing/success 가 authKey/paymentKey 분기. /api/payment/billing-key 가 빌링키 발급 + 첫 결제 charge + subscriptions/payments 일괄 처리. |
+| `1d5ddb2` | A3 | /admin/billing 신설 (이번 달 통계 + pending 환불 승인/반려 + 최근 결제 50건). service role + isAdminEmail 가드. admin nav 에 "결제·환불" 추가. |
+| `f35da91` | A4 | /api/cron/billing-recurring (매일 KST 09시 = UTC 0시). 24h 안 만료 active 구독 일괄 chargeBilling. 실패 시 past_due 로 다음 cron 재시도. vercel.json crons 추가. |
+| - | A5 | /api/billing/cancel 검증만 — 기존 코드(`cancel_at_period_end=true` set) + A4 cron 의 `eq(.., false)` 필터로 자동 skip. 별도 commit 불필요. |
+
+### 핵심 산출물 (트랙 B — Chat rename)
+
+| commit | 영역 | 변경 |
+|---|---|---|
+| `24bd744` | B2 | git mv `BetaChat.tsx` → `LegendChat.tsx`. interface/function/export rename. `/legend/page.tsx` + `MaestroChat` (thin wrapper) 호출자 2곳 갱신. |
+
+### Pending Decisions (B1a · B1b — 다음 세션 사용자 검토)
+
+- **B1a**: LegendChat (1072 줄) 안에서 maestro-specific 분기 코드 추출 → MaestroChat
+  안으로 진짜 이동 (현재는 thin wrapper). 회귀 위험 ↑ 영역:
+  - 페르소나 4 카드 + ScienceExamPanel + 수능 번호 클릭 multimodal 첨부
+  - useChat api 분기 (이미 isMaestro 분기 존재)
+  - INPUT_PARSING_RULES placeholder
+  - MaestroSolutionSummaryButton + MaestroSummaryCard
+  - Trigger / 리포트 링크 maestro 분기
+- **B1b**: B1a 후 LegendChat 에서 maestro 분기 코드 삭제. /legend smoke 1 turn 검증.
+- **manual smoke 시점**: 사용자가 4 maestro 페이지 (earth-science / biology / physics /
+  chemistry) + /legend 모두 1 turn 정상 동작 확인 후 B1a → B1b 진행.
+
+### 사용자 결정 (23차 신규)
+
+1. **Night mode 자율 진행**: 사용자 manual smoke 없이 typecheck + 코드 검증으로 회귀
+   회피. 위험 task (B1a/B1b) 만 Pending 큐로 이월.
+2. **A2 결제 흐름 분기 확정**: recurring = 빌링키 발급 + 즉시 첫 결제. single = 단발
+   결제. /billing/success 가 두 흐름 분기 처리.
+3. **legacy `/legend/billing` 폐기 결정**: V1 SDK 가격(12K/19K/5K) 은 22차 표준
+   (₩29/49/99K) 으로 대체. `/legend/billing` 자체는 한동안 dead route.
+
+### 다음 세션 후보 (24차)
+
+- **B1a → B1b**: LegendChat 에서 maestro 분기 진짜 추출 (Pending Decisions 참조)
+- **결제 흐름 실서비스 검증**: 토스 가맹점 가입 후 test 환경에서 결제 흐름 1회 완주.
+  `/admin/billing` pending 환불 처리 확인.
+- **Phase C quality**: Biology / Physics / Chemistry 사용자 검토 → 베타 게이트
+- **Phase 0 GTM**: P0-01b (Legend area 하드코딩 fix), P0-05~09 (영어 문법 trigger PoC),
+  1-pager / 후기 SEO
+
+---
+
 ## (구) 22차 세션 시작 — 검증 단계 (2026-05-08)
 
 ### 시작 신호

@@ -94,6 +94,61 @@ Maestro 4 과목 신설 — Earth Science / Biology / Physics / Chemistry. 16 �
 
 ---
 
+## 23차 세션 (2026-05-10) — 결제 활성화 정비 + Chat rename
+
+### D23-01. Legend tutor 100회 quota check 통합
+- **결정**: `/api/legend/tutor` 첫 user turn 에 `checkAndIncrementQuota('legend_problem')`
+  호출. `NEXT_PUBLIC_PAYMENT_ACTIVE=true` 일 때만 작동, 베타 동안 무중단.
+- **paid 사용자 처리**: free 일일 한도 skip (월 100회 quota 가 상위 게이트).
+- **maestro 분기**: 이미 새 라우트 `/api/maestro/[subject]/tutor` 가 `maestro_problem`
+  카운트 → legend route 는 legend_problem 만 책임.
+- **commit**: `377cc7c`.
+
+### D23-02. PricingClient 토스 V2 SDK 결제 위젯 연결
+- **결정**: `@tosspayments/tosspayments-sdk` 동적 import. recurring/single 분기.
+  - recurring (Basic/Standard/Premium) → `payment.requestBillingAuth(CARD)` → 카드 등록 →
+    `/billing/success?_flow=billing&authKey=...` → `/api/payment/billing-key` (빌링키 발급
+    + 첫 결제 즉시 charge + subscriptions/payments insert)
+  - single (topup_100) → `payment.requestPayment(CARD)` → `/billing/success?paymentKey=...`
+    → `/api/payment/confirm`
+- **legacy `/legend/billing` 폐기**: V1 SDK 12K/19K/5K 가격은 22차 표준 (₩29/49/99K) 으로
+  대체. `/legend/billing` 페이지 자체는 한동안 dead route 로 유지.
+- **commit**: `4365a2e`.
+
+### D23-03. /admin/billing 환불 검토 페이지
+- **결정**: 7일 초과 환불 신청은 `refunds.status='pending'` 으로 적재 → admin 이 본
+  페이지에서 승인/반려 처리. service role 클라이언트로 cross-cutting 조회 (RLS bypass).
+- **API**: `GET /api/admin/billing/refunds?tab=pending|all` (통계+목록) +
+  `POST /api/admin/billing/refund-action {refund_id, action, admin_note}`.
+- **이메일 조회**: `supabase.auth.admin.listUsers` + `getUserById` 로 user_id → email 매핑.
+- **commit**: `1d5ddb2`.
+
+### D23-04. 정기결제 자동 청구 cron
+- **결정**: `/api/cron/billing-recurring` (GET, Vercel Cron) 매일 KST 09시(UTC 0시).
+  24시간 안에 만료될 active+!cancel_at_period_end 구독 일괄 처리.
+- **흐름**: pending payments insert → `chargeBilling` → 성공 시 paid + period 갱신
+  / 실패 시 `subscription.status='past_due'` (다음 cron 자동 재시도).
+- **인증**: `Authorization: Bearer ${CRON_SECRET}`. `NEXT_PUBLIC_PAYMENT_ACTIVE != true`
+  면 skip (베타 동안 무중단).
+- **vercel.json**: schedule `"0 0 * * *"` 추가. **사용자 액션**: 베타 종료 후 Vercel
+  Cron dashboard 에서 등록 확인.
+- **commit**: `f35da91`.
+
+### D23-05. /api/billing/cancel 검증 skip
+- **검증**: `cancel_at_period_end=true` 만 설정 → A4 cron 의 `eq(.., false)` 필터로
+  자동 skip. 추가 fix 불필요.
+- **별도 commit 없음** (A5 = 검증만).
+
+### D23-06. BetaChat → LegendChat rename
+- **결정**: 컴포넌트 도메인 정리. 22차 Phase 4 thin wrapper 의 다음 단계.
+- **rename 만**: 내부 maestro 분기 코드는 그대로 유지 (회귀 0).
+- **호출자 2곳 갱신**: `MaestroChat` (thin wrapper) + `/legend/page.tsx`.
+- **진짜 분리(B1a/B1b)는 다음 세션 사용자 manual smoke 후 진행**. LegendChat 1072 줄
+  안에서 maestro-specific 영역을 MaestroChat 으로 진짜 추출.
+- **commit**: `24bd744`.
+
+---
+
 ## 미확정 / 사용자 액션 대기
 
 ### 사업자 등록 + PG 가입
