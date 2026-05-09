@@ -57,7 +57,68 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
-## 22차 세션 (2026-05-08) — Maestro production 검증 시작 + 인계물 정리
+## 22차 세션 (2026-05-08~09) — Maestro production 검증 + Maestro/Legend 5 phase 분리 + 결제 시스템 ⭐⭐⭐
+
+### 종료 상태 (2026-05-09)
+**누적 12 commits**. production 배포 자동. SQL 마이그레이션 2건 사용자 적용 대기.
+
+### 핵심 산출물
+
+#### A. Maestro 안정화 (3 commits)
+| commit | 변경 |
+|---|---|
+| `d2a55e0` | 19차 인계물 user_docs 이동 (1.8MB JSON repo bloat 회피) |
+| `c36f645` | 22차 시작 + `docs/qa/maestro-22-checklist.md` 검증 체크리스트 |
+| `d6ffd54` | footer cutoff 6→30pt + 과목별 INPUT_PARSING_RULES + placeholder 동적화 |
+
+#### B. Maestro 기능 확장 (2 commits)
+| commit | 변경 |
+|---|---|
+| `966c56c` | `/api/maestro/build-summary` 신규 (generateObject + zod) + `MaestroSolutionSummaryButton` + `MaestroSummaryCard` + `/maestro/[subject]/report` 1차 (localStorage) |
+| `30e49a3` | `/maestro/[subject]/triggers` 신설 — `data/seeds/*.json` 시드 4 과목 × 30 도구 카드 (Layer 1~3 색상) |
+
+#### C. Maestro/Legend 5 phase 분리 (5 commits)
+| Phase | commit | 변경 |
+|---|---|---|
+| 1 | `6754b55` | Subject + maestro 페르소나 타입 분리 (`lib/types/subject.ts` + `lib/maestro/types.ts`) |
+| 2 | `85c2412` | `/api/maestro/[subject]/tutor` 신설 (285줄 분기 추출) |
+| 3 | `36f91aa` | SQL 마이그레이션 — `maestro_tutor_sessions` + `maestro_summaries` (RLS + 인덱스 + view) |
+| 4 | `9b12504` | `MaestroChat` wrapper + 4 페이지 import 통일 |
+| 5 | `1cda757` | DB insert 활성화 + `/api/maestro/[subject]/report` + 리포트 차트 실 데이터 |
+
+#### D. 결제 시스템 (2 commits) ⭐
+| commit | 변경 |
+|---|---|
+| `febdb7c` | 결제 DB 스키마 (subscriptions·payments·refunds·usage_counters·webhooks_log) + 약관 4종 (terms·privacy·refund·business-info) |
+| `99fd491` | 토스페이먼츠 SDK + 6 API endpoints + 100회 quota + `/pricing` + `/billing` + 정기결제·환불 흐름 |
+
+### 사용자 결정 (22차 신규)
+1. **가격**: Basic ₩29K (50회) / Standard ₩49K (100회) ⭐ 메인 / Premium ₩99K (무제한). Top-up 100회 ₩14.9K. (이전 Phase 1 가격 유지 + 100회 한도 명시)
+2. **1회 정의**: 1 problem (한 세션 = 여러 turn 포함). 라마누잔·부속 도구 무제한.
+3. **Maestro/Legend 분리**: 5 phase (타입 → API → SQL → Chat wrapper → DB). 점진 패턴 — Chat 진짜 추출은 다음 세션.
+4. **결제 활성화 시점**: 베타 종료 후 env 추가만으로 즉시 활성. 코드·약관·UI 다 준비.
+5. **untracked 정리**: 19차 PDF text 추출 산출물 user_docs 이동 (production import 0).
+
+### 사용자 액션 대기 (다음 세션 진입 전)
+1. **SQL 마이그레이션 2건 적용** (Supabase Dashboard SQL Editor):
+   - `supabase/migrations/20260509_maestro_dedicated_tables.sql` (maestro_*)
+   - `supabase/migrations/20260509_payment_system.sql` (결제)
+2. **Footer 재추출 + 재업로드** (commit `d6ffd54` 후속):
+   ```sh
+   EXTRACT_FORCE=true npx tsx scripts/extract-suneung-question-images.ts
+   UPLOAD_FORCE=true npx tsx scripts/upload-suneung-questions.ts
+   ```
+3. **시각 검증** (`docs/qa/maestro-22-checklist.md` 16 페르소나)
+
+### 다음 세션 후보 (23차)
+- **결제 활성화 직전 작업**: legend tutor route quota check 통합 / 토스 결제 위젯 client 실제 호출 / `/admin/billing` 환불 검토 / 정기결제 cron
+- **Chat 진짜 추출**: BetaChat 1500+ 줄에서 maestro 코드 → MaestroChat 안으로 이동 + BetaChat → LegendChat rename
+- **검증 결과 후 Phase C**: Biology / Physics / Chemistry quality 검토
+- **Phase 0 GTM**: P0-01b (Legend area 하드코딩 fix), P0-05~09 (영어 문법 trigger PoC), 1-pager / 후기 SEO
+
+---
+
+## (구) 22차 세션 시작 — 검증 단계 (2026-05-08)
 
 ### 시작 신호
 사용자: `/resume-project` → 21차 fix 사슬 (5 root causes) 마무리 후 production 검증 단계.

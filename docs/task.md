@@ -11,10 +11,13 @@
 
 | Phase | 영역 | Task 수 | Status |
 |---|---|---|---|
-| **A** | 인프라 일반화 (`lib/legend` → `lib/maestro`) + Vision LLM | 11 | 🔄 6/11 핵심 완료 (A6/A7/A10 = Phase B 와 통합) |
-| **B** | Earth Science PoC ⭐ | 5 | 🔜 시작 |
-| **C** | Biology / Physics / Chemistry 확장 | 15 | ⏳ |
-| **D** | 대시보드 통합 + 출시 | 3 | ⏳ |
+| **A** | 인프라 일반화 (`lib/legend` → `lib/maestro`) + Vision LLM | 11 | ✅ 6/11 핵심 완료 + 22차 5 phase 분리로 A6/A7/A10 의미 변경 |
+| **B** | Earth Science PoC ⭐ | 5 | ✅ production 작동 (21차 multimodal 사슬 fix 후) |
+| **C** | Biology / Physics / Chemistry 확장 | 15 | 🔄 페이지·portrait·시드 완료 / 사용자 quality 검토 대기 |
+| **D** | 대시보드 통합 + 출시 | 3 | ✅ 17 도구 카드 활성 / production live |
+| **22차 추가 — Maestro/Legend 분리** | 5 phase | 5 | ✅ 모두 완료 (commits 6754b55 / 85c2412 / 36f91aa / 9b12504 / 1cda757) |
+| **22차 추가 — Maestro 기능 확장** | 풀이정리·트리거·리포트 | 3 | ✅ 모두 완료 (966c56c / 30e49a3 / 1cda757) |
+| **22차 추가 — 결제 시스템** | DB·약관·SDK·API·UI·quota | 7 | ✅ 모두 완료 (febdb7c / 99fd491) |
 
 ---
 
