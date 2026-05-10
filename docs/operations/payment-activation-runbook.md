@@ -46,19 +46,27 @@ SELECT tablename FROM pg_tables WHERE schemaname='public'
 
 ```sh
 # ⚠️ 실제 값을 채팅에 붙여넣지 말 것. vercel CLI 또는 dashboard 에서 직접 입력.
-vercel env add TOSS_SECRET_KEY preview     # test_sk_...
-vercel env add TOSS_WEBHOOK_SECRET preview # 토스 dashboard 발급
-vercel env add NEXT_PUBLIC_TOSS_CLIENT_KEY preview # test_ck_...
-vercel env add NEXT_PUBLIC_PAYMENT_ACTIVE preview  # true
-vercel env add CRON_SECRET preview         # openssl rand -hex 32
-# 사업자 정보
-vercel env add NEXT_PUBLIC_BUSINESS_NAME preview
-vercel env add NEXT_PUBLIC_BUSINESS_REGISTRATION preview
-vercel env add NEXT_PUBLIC_BUSINESS_REPRESENTATIVE preview
-vercel env add NEXT_PUBLIC_BUSINESS_ADDRESS preview
-vercel env add NEXT_PUBLIC_BUSINESS_PHONE preview
-vercel env add NEXT_PUBLIC_BUSINESS_EMAIL preview
-vercel env add NEXT_PUBLIC_BUSINESS_TELE_REGISTRATION preview
+# env 변수명은 src/lib/legal/meta.ts + src/app/api/payment/checkout/route.ts 의
+# 실제 사용처와 정확히 일치해야 함.
+
+# 토스 결제
+vercel env add TOSS_SECRET_KEY preview              # test_sk_...
+vercel env add TOSS_WEBHOOK_SECRET preview          # 토스 dashboard 발급
+vercel env add NEXT_PUBLIC_TOSS_CLIENT_KEY preview  # test_ck_...
+vercel env add NEXT_PUBLIC_PAYMENT_ACTIVE preview   # true
+vercel env add CRON_SECRET preview                  # openssl rand -hex 32
+vercel env add NEXT_PUBLIC_APP_URL preview          # https://<preview-url>.vercel.app (또는 production = easyedu.ai)
+
+# 사업자 정보 (lib/legal/meta.ts:24-40 매핑)
+vercel env add NEXT_PUBLIC_BUSINESS_NAME preview              # 상호
+vercel env add NEXT_PUBLIC_BUSINESS_REP preview               # 대표자명
+vercel env add NEXT_PUBLIC_BUSINESS_REG_NO preview            # 사업자등록번호
+vercel env add NEXT_PUBLIC_BUSINESS_ECOMMERCE_NO preview      # 통신판매업 신고번호
+vercel env add NEXT_PUBLIC_BUSINESS_ADDRESS preview           # 사업장 주소
+vercel env add NEXT_PUBLIC_BUSINESS_PHONE preview             # CS 전화
+vercel env add NEXT_PUBLIC_BUSINESS_EMAIL preview             # CS 이메일
+vercel env add NEXT_PUBLIC_PRIVACY_OFFICER preview            # 개인정보 보호책임자명
+vercel env add NEXT_PUBLIC_PRIVACY_OFFICER_EMAIL preview      # 개인정보 보호책임자 이메일
 ```
 
 > 본 단계에서는 **production 에는 추가하지 말 것**. preview deploy URL 에서
@@ -179,13 +187,22 @@ FROM payment_webhooks_log ORDER BY created_at DESC LIMIT 5;
 
 ```sh
 # test_ → live_ 로 토스 keys 교체
-vercel env add TOSS_SECRET_KEY production       # live_sk_...
-vercel env add TOSS_WEBHOOK_SECRET production   # live webhook secret
-vercel env add NEXT_PUBLIC_TOSS_CLIENT_KEY production # live_ck_...
-vercel env add NEXT_PUBLIC_PAYMENT_ACTIVE production  # true
-vercel env add CRON_SECRET production           # 새 32 byte
-# 사업자 정보 (preview 와 동일)
-vercel env add NEXT_PUBLIC_BUSINESS_* production ...
+vercel env add TOSS_SECRET_KEY production              # live_sk_...
+vercel env add TOSS_WEBHOOK_SECRET production          # live webhook secret
+vercel env add NEXT_PUBLIC_TOSS_CLIENT_KEY production  # live_ck_...
+vercel env add NEXT_PUBLIC_PAYMENT_ACTIVE production   # true
+vercel env add CRON_SECRET production                  # 새 32 byte
+vercel env add NEXT_PUBLIC_APP_URL production          # https://easyedu.ai
+# 사업자 정보 9개 (1.1 와 동일 변수명)
+vercel env add NEXT_PUBLIC_BUSINESS_NAME production
+vercel env add NEXT_PUBLIC_BUSINESS_REP production
+vercel env add NEXT_PUBLIC_BUSINESS_REG_NO production
+vercel env add NEXT_PUBLIC_BUSINESS_ECOMMERCE_NO production
+vercel env add NEXT_PUBLIC_BUSINESS_ADDRESS production
+vercel env add NEXT_PUBLIC_BUSINESS_PHONE production
+vercel env add NEXT_PUBLIC_BUSINESS_EMAIL production
+vercel env add NEXT_PUBLIC_PRIVACY_OFFICER production
+vercel env add NEXT_PUBLIC_PRIVACY_OFFICER_EMAIL production
 ```
 
 ### 2.2 Vercel Cron Jobs 등록 확인

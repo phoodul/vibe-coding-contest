@@ -38,7 +38,16 @@
 
 ### Pending 후속 작업 (사용자)
 - B1a/B1b manual smoke (Legend 1 turn + 4 maestro 페이지 1 turn) — 분리 회귀 0 검증
-- 결제 활성화 1.1 단계: vercel env preview 환경에 7개 추가 후 test mode 전체 검증
+- 결제 활성화 1.1 단계: vercel env preview 환경에 추가 후 test mode 전체 검증
+
+### 결제 활성화 진행 (24차 세션 끝):
+- ✅ Step 0.1 — Maestro + Payment 마이그레이션 production DB 적용 (7 테이블)
+- ⏸ Step 0.2 — 토스 onboarding service-type 단계에서 "기본 결제 패키지" 단일 신청 후
+  심사 제출. 빌링(정기결제) 우리 매출 핵심인데 함께 신청 못 함 → **내일 토스 고객센터
+  1544-7772 통화로 빌링 추가 신청 절차 확인 예정**
+- runbook env 변수명을 lib/legal/meta.ts 실제 코드와 일치하도록 수정 (REGISTRATION → REG_NO,
+  REPRESENTATIVE → REP, TELE_REGISTRATION → ECOMMERCE_NO, NEXT_PUBLIC_APP_URL +
+  NEXT_PUBLIC_PRIVACY_OFFICER 2종 추가)
 
 ---
 
