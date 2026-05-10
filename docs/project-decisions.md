@@ -149,6 +149,64 @@ Maestro 4 과목 신설 — Earth Science / Biology / Physics / Chemistry. 16 �
 
 ---
 
+## 24차 세션 (2026-05-10) — Chat 진짜 분리 + 결제 시스템 점검·보강
+
+### D24-01. B1a/B1b — Maestro/Legend Chat 진짜 분리 ⭐
+- **결정**: 23차 Pending 큐였던 B1a/B1b 를 24차에 진행. LegendChat 1076 줄에 산재한
+  maestro 분기 30+ 군데를 MaestroChat 으로 진짜 추출 → MaestroChat thin wrapper(47줄)
+  → 전용 컴포넌트(839줄). LegendChat 은 math 전용으로 단순화 (1076 → 735).
+- **분리 효과**: maestro/legend 코드 차원 완전 독립. 향후 system prompt · UI · 풀이
+  정리 카드 발산 자유.
+- **호출자 변경 0**: prop 호환 유지 (4 maestro 페이지 + /legend page).
+- **commit**: `36adb4a` B1a / `7fb77ee` B1b / `b625746` docs1.
+
+### D24-02. legacy /legend/billing 308 redirect (Critical fix) ⭐
+- **결정**: 23차 메모는 "dead route" 였으나 실제 코드는 V1 SDK + 옛 가격 (12K
+  student/19K family/5K academy) 으로 활성. NEXT_PUBLIC_TOSS_CLIENT_KEY 추가 시
+  두 개의 가격 시스템이 동시 활성화될 위험.
+- **처리**: /legend/billing → server redirect /pricing / /api/billing/toss/confirm
+  POST 410 Gone + GET 308 redirect / middleware /euler/billing → /pricing 직접 매핑.
+- **사용자 옵션 4 중 1 선택**: "/pricing 으로 308 redirect (추천)".
+- **commit**: `0b7ae71`.
+
+### D24-03. 결제 활성화 runbook 신설
+- **결정**: `docs/operations/payment-activation-runbook.md` 신규 — 5 단계 (선결조건 →
+  test mode 검증 → live 활성화 → 장애 비활성화 → 알려진 결함 4건 운영). 검증 SQL +
+  cron 수동 트리거 + 15 항목 체크리스트.
+- **commit**: `a02b4ab` runbook / `6d42d22` env 변수명 코드 일치 (REGISTRATION→REG_NO 등).
+
+### D24-04. 결제 Medium 결함 보강 (A+B+C 자율 진행) ⭐
+- **결정**: 사용자 옵션 4 중 "A + B + C 전부 자율" 선택. 토스 통화 결과 기다리는
+  동안 결제 시스템 안정성 ↑.
+
+| commit | 보강 |
+|---|---|
+| `174bc50` | A1 — subscriptions active 1개 partial unique index. user 1명당 active 1개 강제 (race 방지). 사용자 SQL 적용 필요 (`20260510_payment_hardening.sql`) |
+| `b95560b` | A2+A3+B — /billing past_due amber 안내 + /pricing redirect / refund 0원 시 토스 cancel 차단 + /refund 약관 명시 / PricingClient Top-up ₩14,900 카드 추가 |
+| `d754c68` | C — 결제 단위 테스트 34건 (plans 14 + toss 14 + quota 6, supabase fluent chain mock + sequential queue) |
+
+### D24-05. A4 webhook signature 헤더 표준화 보류
+- **결정**: 토스 dashboard 명세 (정확한 헤더 명 + 알고리즘) 확인 시점에 fix.
+  현재 코드는 `toss-signature` + `TossPayments-Signature` 두 헤더 fallback +
+  HMAC-SHA256 base64 + timing-safe 패턴 — production 검증 시점에 실제 명세 반영.
+
+### D24-06. 토스 onboarding "기본 결제 패키지" 단일 신청 (되돌리기 어려움)
+- **상황**: 사용자가 onboarding service-type 화면에서 단일 선택만 가능 → "기본 결제
+  패키지" 만 신청 후 심사 제출 (되돌리기 어려움).
+- **영향**: 빌링(정기결제) = 우리 매출 핵심인데 함께 신청 못 함. Top-up 단발만 가능.
+- **다음 액션**: **2026-05-11 (내일) 토스 고객센터 1544-7772 통화** — 가입 후 빌링
+  추가 신청 절차 + 심사 기간 확인. 결과에 따라 1.x 검증 단계 일정 조정.
+
+### D24-07. SQL 마이그레이션 7 테이블 production 적용 ✅
+- **사용자 액션 완료** (2026-05-10): Supabase Dashboard SQL Editor 에 마이그레이션
+  2 건 직접 붙여넣어 Run.
+  - `20260509_maestro_dedicated_tables.sql` → maestro_tutor_sessions, maestro_summaries
+  - `20260509_payment_system.sql` → subscriptions, payments, refunds, usage_counters,
+    payment_webhooks_log
+- **남은 적용**: `20260510_payment_hardening.sql` (A1 unique index) — 17줄.
+
+---
+
 ## 미확정 / 사용자 액션 대기
 
 ### 사업자 등록 + PG 가입
@@ -156,9 +214,10 @@ Maestro 4 과목 신설 — Earth Science / Biology / Physics / Chemistry. 16 �
 - 결정일 2026-05-03 (메모리 `project_payment_infra`). 진행 상태 미확인.
 
 ### SQL 마이그레이션 적용 (사용자 액션)
-1. `supabase/migrations/20260509_maestro_dedicated_tables.sql` (Phase 3)
-2. `supabase/migrations/20260509_payment_system.sql` (결제 시스템)
-3. (이전) `supabase/migrations/20260506_maestro_subject_columns.sql` 적용 여부 미확인 — A5
+1. ✅ `supabase/migrations/20260509_maestro_dedicated_tables.sql` (24차 적용 완료)
+2. ✅ `supabase/migrations/20260509_payment_system.sql` (24차 적용 완료)
+3. ⏸ `supabase/migrations/20260510_payment_hardening.sql` (A1 unique index — 24차 작성, 사용자 적용 대기)
+4. (이전) `supabase/migrations/20260506_maestro_subject_columns.sql` 적용 여부 미확인 — A5
 
 ### maestro trial 분기 결정
 - 현재: 인증 필수 redirect.
