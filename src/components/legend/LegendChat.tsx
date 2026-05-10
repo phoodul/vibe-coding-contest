@@ -1,21 +1,19 @@
 'use client';
 
 /**
- * Phase G-06 G06-32 (Δ9) + G06-33 (Δ10) — Beta (베타 사용자) 메인 채팅.
+ * Legend Tutor (수학 전용) 메인 채팅.
  *
- * 베타 사용자 진입 화면. 5 거장 카드 활성화 + R1/R2 리포트 + Δ1 5종 quota.
+ * 24차 (2026-05-10) B1b — Maestro 4 과목 분기를 MaestroChat 으로 진짜 추출 후
+ * 본 컴포넌트는 math 전용으로 단순화. (이전 23차까지 BetaChat 시절부터 maestro
+ * 분기를 들고 있던 1076 줄 → 약 600 줄로 축소.)
+ *
+ * 5 거장 카드 (라마누잔 · 가우스 · 폰 노이만 · 오일러 · 라이프니츠) + R1/R2 리포트
+ * + Δ1 5종 quota + ToT 풀이 정리 (PerProblemReportCard) + 수능 기출 PastExamPanel.
  *
  * G06-33 추가:
  *   - 마지막 assistant 메시지 직후 SolutionSummaryButton (📝 풀이 정리 보기)
  *   - 클릭 → /api/legend/build-summary POST → 인라인 PerProblemReportCard
  *   - LaTeX 스트리밍 깜빡임 fix (rehypeKatex throwOnError:false + errorColor 회색)
- *   - 홀수 $ 감지 시 KaTeX 렌더 보류 (incomplete LaTeX raw 출력)
- *
- * 본 컴포넌트는 베타 사용자 우선 진입점이지만, 본격적인 5튜터 SSE + 라우팅 분기 통합은
- * G-07 callTutor 위임 시점에 진입한다 (architecture §8.1, G06-26 코멘트).
- *
- * 현재 단계: 기존 /euler-tutor 채팅을 베이스로 하되 5 거장 카드 + 베타 indicator 표시.
- * 향후: TutorChoicePrompt + callTutor SSE 통합 (G-07).
  */
 import { useChat } from 'ai/react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,36 +21,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import 'katex/dist/katex.min.css';
-import {
-  PORTRAITS,
-  EARTH_SCIENCE_PORTRAITS,
-  BIOLOGY_PORTRAITS,
-  PHYSICS_PORTRAITS,
-  CHEMISTRY_PORTRAITS,
-  getMaestroPortrait,
-} from '@/lib/legend/portraits';
-import type {
-  PerProblemReport,
-  TutorName,
-  EarthScienceTutorName,
-  BiologyTutorName,
-  PhysicsTutorName,
-  ChemistryTutorName,
-  MaestroTutorName,
-  Subject,
-} from '@/lib/legend/types';
+import { PORTRAITS } from '@/lib/legend/portraits';
+import type { PerProblemReport, TutorName } from '@/lib/legend/types';
 import { InlineHandwritePanel } from '@/components/legend/InlineHandwritePanel';
 import { SolutionSummaryButton } from './SolutionSummaryButton';
 import { PerProblemReportCard } from './PerProblemReportCard';
 import { StreamingMarkdown } from './StreamingMarkdown';
 import { MATH_AREAS } from '@/lib/ai/euler-prompt';
 import { PastExamPanel } from './PastExamPanel';
-import { ScienceExamPanel, type ExamSelection } from '@/components/maestro/ScienceExamPanel';
-import {
-  MaestroSolutionSummaryButton,
-  type MaestroSummaryResponse,
-} from '@/components/maestro/MaestroSolutionSummaryButton';
-import { MaestroSummaryCard } from '@/components/maestro/MaestroSummaryCard';
 import problemTexts from '@/lib/data/problem-texts.json';
 import type { MathProblem } from '@/lib/data/math-problems';
 
@@ -75,85 +51,9 @@ const ALL_TUTORS: TutorName[] = [
   'leibniz',
 ];
 
-/** subject 별 4 인물 순서 — UI 카드 위치 + 모델 매핑 (1번=Sonnet, 2번=Gemini, 3번=Opus, 4번=GPT-5.5) */
-const MAESTRO_TUTORS_BY_SUBJECT: Record<string, readonly MaestroTutorName[]> = {
-  'earth-science': ['wegener', 'galilei', 'hubble', 'sagan'],
-  biology: ['pasteur', 'mendel', 'watson', 'darwin'],
-  physics: ['fermi', 'einstein', 'feynman', 'newton'],
-  chemistry: ['curie', 'lavoisier', 'pauling', 'mendeleev'],
-};
+const SUBJECT_STORAGE_KEY = 'legend_selected_subject';
 
-function getPortraitFor(subject: Subject, tutor: MaestroTutorName) {
-  if (subject === 'math') return PORTRAITS[tutor as TutorName];
-  if (subject === 'earth-science') return EARTH_SCIENCE_PORTRAITS[tutor as EarthScienceTutorName];
-  if (subject === 'biology') return BIOLOGY_PORTRAITS[tutor as BiologyTutorName];
-  if (subject === 'physics') return PHYSICS_PORTRAITS[tutor as PhysicsTutorName];
-  if (subject === 'chemistry') return CHEMISTRY_PORTRAITS[tutor as ChemistryTutorName];
-  return PORTRAITS.ramanujan_intuit;
-}
-
-const SUBJECT_VARIANT_LABEL: Record<string, { label: string; icon: string }> = {
-  'earth-science-I': { label: '지구과학Ⅰ', icon: '🌍' },
-  'earth-science-II': { label: '지구과학Ⅱ', icon: '🌌' },
-  'biology-I': { label: '생명과학Ⅰ', icon: '🧬' },
-  'biology-II': { label: '생명과학Ⅱ', icon: '🧪' },
-  'physics-I': { label: '물리학Ⅰ', icon: '⚛️' },
-  'physics-II': { label: '물리학Ⅱ', icon: '🔬' },
-  'chemistry-I': { label: '화학Ⅰ', icon: '🧫' },
-  'chemistry-II': { label: '화학Ⅱ', icon: '⚗️' },
-};
-
-/**
- * 19차 (2026-05-07) — Upstage Document Parse markdown cleanup.
- *
- * 사용자 보고:
- *   - footer ("* 확인 사항", "이 문제지에 관한 저작권은 한국교육과정평가원에 있습니다") 노출
- *   - 보기 ①~⑤ 깨짐 ("① 」 □ ④ ㄱ, □ ⑤ ㄴ, □")
- *   - 페이지 헤더·번호 노출
- *   - "![image](/image/placeholder)" 가짜 이미지 링크
- *
- * 이미지가 별도 첨부되므로 markdown 은 본문·보기 텍스트만 깔끔하게.
- */
-function cleanupSuneungMarkdown(md: string): string {
-  if (!md) return md;
-  let s = md;
-  // 1. markdown heading prefix 제거 (# / ## / ### 등) — 학생 화면에 큰 글씨로 렌더되는 원인
-  s = s.replace(/^#{1,6}\s+/gm, '');
-  // 2. footer "* 확인 사항" 이후 끝까지 모두 제거 (multiline)
-  s = s.replace(/\*\s*확인\s*사항[\s\S]*$/g, '');
-  s = s.replace(/이 문제지에 관한 저작권[\s\S]*$/g, '');
-  s = s.replace(/한국교육과정평가원.*?(?:\n|$)/g, '');
-  // 3. ○ 안내 (답안지 기입·확인 등)
-  s = s.replace(/^\s*[○●]\s+답안지.*$/gm, '');
-  s = s.replace(/^\s*[○●]\s+.*기입.*$/gm, '');
-  // 4. 페이지 헤더 (대학수학능력시험·과학탐구 영역·교시·홀짝)
-  s = s.replace(/\d+학년도\s*대학수학능력시험.*?(?:\n|$)/g, '');
-  s = s.replace(/과학탐구\s*영역.*?(?:\n|$)/g, '');
-  s = s.replace(/제\s*\d+\s*교시.*?(?:\n|$)/g, '');
-  s = s.replace(/^\s*문제지\s*$/gm, '');
-  s = s.replace(/홀수형|짝수형/g, '');
-  // 5. 페이지 번호 (단독 숫자 라인)
-  s = s.replace(/^\s*\d+\s*$/gm, '');
-  s = s.replace(/^\s*\d+\s*\/\s*\d+\s*$/gm, '');
-  // 6. 가짜 image placeholder (Upstage 가 자주 생성)
-  s = s.replace(/!\[[^\]]*\]\([^)]*placeholder[^)]*\)/g, '');
-  // 7. 깨진 보기 line — ①~⑤ + □·「」·말줄임 동시 등장 라인 제거
-  s = s.replace(/^.*[①②③④⑤].*[□「」].*$/gm, '');
-  // 8. 빈 줄 정리 (3개+ → 2개)
-  s = s.replace(/\n{3,}/g, '\n\n');
-  return s.trim();
-}
-
-function getMaestroVariants(subject: Subject): Array<{ id: string; label: string; icon: string }> {
-  if (subject === 'math') return [];
-  const out: Array<{ id: string; label: string; icon: string }> = [];
-  for (const v of ['I', 'II']) {
-    const key = `${subject}-${v}`;
-    const meta = SUBJECT_VARIANT_LABEL[key];
-    if (meta) out.push({ id: key, ...meta });
-  }
-  return out;
-}
+const PLACEHOLDER = '문제 입력 · 필기(✏️) · 사진(📸) · Ctrl+V 스크린샷';
 
 /**
  * G06-33a (Δ10) — build-summary 입력용 problem_text 추출.
@@ -166,7 +66,6 @@ function extractFirstUserText(messages: Array<{ role: string; content: unknown }
   for (const m of messages) {
     if (m.role !== 'user') continue;
     if (typeof m.content === 'string') return m.content;
-    // multimodal (필기/사진) — text 부분만 합치기
     if (Array.isArray(m.content)) {
       const parts = m.content as { type?: string; text?: string }[];
       const text = parts
@@ -179,85 +78,38 @@ function extractFirstUserText(messages: Array<{ role: string; content: unknown }
   return '';
 }
 
-const SUBJECT_STORAGE_KEY = 'legend_selected_subject';
-
-/**
- * 22차 (2026-05-08) — 과목별 입력 placeholder.
- * 학생이 *없이 자연 표기 (F=ma, H2O 등) 가능함을 미리 안내. system prompt 의
- * INPUT_PARSING_RULES 와 짝.
- */
-const PLACEHOLDER_BY_SUBJECT: Record<string, string> = {
-  math: '문제 입력 · 필기(✏️) · 사진(📸) · Ctrl+V 스크린샷',
-  physics: '예: F=ma, v=20m/s, E=mc² · 필기(✏️) · 사진(📸)',
-  chemistry: '예: H2O, 2H2 + O2 -> 2H2O · 필기(✏️) · 사진(📸)',
-  biology: '예: AaBb × aabb, 9:3:3:1 · 필기(✏️) · 사진(📸)',
-  'earth-science': '예: 30km, 위도 35°N, 마그마 · 필기(✏️) · 사진(📸)',
-};
-
 interface LegendChatProps {
   user: User;
   betaMeta?: BetaMeta;
-  /**
-   * 19차 — Maestro 4 과목 (math / earth-science / biology / physics / chemistry).
-   * 미지정 시 'math' (Legend = 기본 동작, 회귀 0).
-   *
-   * 23차 (2026-05-10) 메모: 이 컴포넌트는 maestro 분기를 그대로 들고 있다 (BetaChat
-   * 시절 1072 줄 그대로). 본 commit 은 rename only. 진짜 분리(BetaChat 의 maestro
-   * 분기 코드를 MaestroChat 으로 이동)는 다음 세션 사용자 manual smoke 후.
-   */
-  subject?: Subject;
 }
 
-export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendChatProps) {
-  const isMaestro = subject !== 'math';
-  const maestroTutorList = isMaestro ? (MAESTRO_TUTORS_BY_SUBJECT[subject] ?? []) : [];
+export function LegendChat({ user: _user, betaMeta }: LegendChatProps) {
   const [useGpt, setUseGpt] = useState(false);
-  // 19차 (2026-05-07) 사용자 결정:
-  // - Sonnet 인물 (index 0) = "곧 출시" disabled. 향후 vision 강화 후 활성.
-  // - Gemini 인물 (index 1) = default + "추천" badge.
-  // - Opus (index 2) / GPT-5.5 (index 3) = 거장.
-  const [selectedTutor, setSelectedTutor] = useState<MaestroTutorName>(
-    isMaestro ? (maestroTutorList[1] ?? maestroTutorList[0] ?? 'galilei') : 'ramanujan_intuit',
-  );
-  const [selectedSubject, setSelectedSubject] = useState<string>(
-    isMaestro ? `${subject}-I` : 'free',
-  );
+  const [selectedTutor, setSelectedTutor] = useState<TutorName>('ramanujan_intuit');
+  const [selectedSubject, setSelectedSubject] = useState<string>('free');
   const [activeView, setActiveView] = useState<'chat' | 'past-exam'>('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // portrait lookup — subject 분기 (math / earth-science / biology / physics / chemistry)
-  const currentPortrait = useMemo(() => {
-    return getPortraitFor(subject, selectedTutor);
-  }, [subject, selectedTutor]);
+  const currentPortrait = useMemo(() => PORTRAITS[selectedTutor], [selectedTutor]);
 
-  // 학년/과목 선택 localStorage hydration (math 만 적용)
+  // 학년/과목 선택 localStorage hydration
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (isMaestro) return;
     const saved = window.localStorage.getItem(SUBJECT_STORAGE_KEY);
     if (saved && MATH_AREAS.some((a) => a.id === saved)) {
       setSelectedSubject(saved);
     }
-  }, [isMaestro]);
+  }, []);
 
-  const handleSubjectClick = useCallback(
-    (id: string) => {
-      setSelectedSubject(id);
-      if (typeof window !== 'undefined' && !isMaestro) {
-        window.localStorage.setItem(SUBJECT_STORAGE_KEY, id);
-      }
-    },
-    [isMaestro],
-  );
+  const handleSubjectClick = useCallback((id: string) => {
+    setSelectedSubject(id);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(SUBJECT_STORAGE_KEY, id);
+    }
+  }, []);
 
   // G06-33: 풀이 정리 인라인 카드 상태 (마지막 assistant 메시지 1개만 유지)
   const [inlineReport, setInlineReport] = useState<PerProblemReport | null>(null);
-  // 22차 — Maestro 풀이 정리 (legend 의 inlineReport 와 분리. 데이터 구조 다름)
-  const [maestroSummary, setMaestroSummary] = useState<MaestroSummaryResponse | null>(null);
-
-  // 20차 — maestro 수능 영역 PNG preview (message id → image url 매핑).
-  // useChat 의 message.content 는 string 만 보존하므로 client UI 용 별도 state.
-  const [attachedByMsgId, setAttachedByMsgId] = useState<Record<string, string>>({});
 
   // Δ13 — 필기/사진 입력 채널 (EulerTutorPage 패턴 차용)
   const [handwriteOpen, setHandwriteOpen] = useState(false);
@@ -267,21 +119,15 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
 
   // 라마누잔 (Tier 1) = useGpt=false → Sonnet 4.6 (G-05 격상 적용)
   // 가우스 / 폰 노이만 등 거장 = useGpt=true → GPT-5.5 (G-05 격상 적용)
-  // 본격적 5튜터 분기는 G-07 callTutor 위임에서 처리 — 현 단계는 binary toggle.
-  // P0-01b: area 자동분류는 backend Manager 가 problem_text 분석으로 처리 (보존).
+  // P0-01b: area 자동분류는 backend Manager 가 problem_text 분석으로 처리.
   // selectedSubject 는 사용자가 명시적으로 선택한 학년/과목 hint — 'free' 면 백엔드 자동분류.
   const { messages, input, handleInputChange, handleSubmit, isLoading, status, append } =
     useChat({
-      // 22차 — Maestro/Legend 분리. maestro subject 면 전용 라우트.
-      api: isMaestro ? `/api/maestro/${subject}/tutor` : '/api/legend/tutor',
+      api: '/api/legend/tutor',
       body: {
         useGpt,
         input_mode: 'text',
         subject_hint: selectedSubject === 'free' ? null : selectedSubject,
-        // 19차 — maestro subject. 'math' (default) 면 기존 Legend 흐름.
-        subject,
-        // 19차 — maestro 일 때 4 인물 페르소나 ID 전달
-        selected_tutor: isMaestro ? selectedTutor : undefined,
       },
     });
 
@@ -324,7 +170,7 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
     !isLoading &&
     status !== 'streaming' &&
     status !== 'submitted';
-  // Δ13 — 첫 user 메시지(원문제) 를 build-summary 에 전달 (마지막 user 짧은 계산 단계 회피)
+  // Δ13 — 첫 user 메시지(원문제) 를 build-summary 에 전달
   const firstUserText = useMemo(() => extractFirstUserText(messages), [messages]);
 
   // Δ13 — 필기 OCR 결과를 채팅에 append
@@ -341,7 +187,6 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
     [append, messages.length],
   );
 
-  // Δ13 — 이미지 업로드 핸들러
   const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -350,7 +195,6 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
     reader.readAsDataURL(file);
   }, []);
 
-  // Δ13 — 클립보드 paste 이미지 (스크린샷 → Ctrl+V)
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
     if (!items) return;
@@ -426,63 +270,15 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
     [imagePreview, sendImage, handleSubmit],
   );
 
-  function handleTutorClick(tutor: MaestroTutorName) {
+  function handleTutorClick(tutor: TutorName) {
     setSelectedTutor(tutor);
-    // math (Legend) 토글 매핑 — gauss/von_neumann = GPT
+    // gauss/von_neumann = GPT-5.5, 나머지 = Sonnet 4.6
     if (tutor === 'gauss' || tutor === 'von_neumann') {
       setUseGpt(true);
     } else {
       setUseGpt(false);
     }
-    // maestro 4 인물 = useGpt 무시. selected_tutor 가 모델 결정 (API 라우트).
   }
-
-  // ScienceExamPanel onSelect 핸들러 — maestro past-exam 선택
-  // 19차 (2026-05-07): question 단위 image + Upstage markdown 자동 첨부 (multimodal)
-  const handleSelectScienceExam = useCallback(
-    async (sel: ExamSelection) => {
-      setActiveView('chat');
-      const subjectKo =
-        sel.subject === 'earth-science'
-          ? '지구과학'
-          : sel.subject === 'biology'
-            ? '생명과학'
-            : sel.subject === 'physics'
-              ? '물리학'
-              : '화학';
-      const variant = sel.variant === 'I' ? 'Ⅰ' : 'Ⅱ';
-      const header = `[${sel.year}학년도 수능 ${subjectKo}${variant} ${sel.number}번]`;
-
-      try {
-        // 20차 (2026-05-07) — useChat v4 의 experimental_attachments / content array
-        // 두 패턴이 모두 production 에서 LLM 까지 전달되지 않음. server 에서
-        // body.attached_image_url 받아 마지막 user message 에 vision part 합성하는
-        // 우회. (math 분기는 영향 없음, maestro 만 변경)
-        const { getSuneungQuestionImage } = await import('@/lib/data/suneung-question-manifest');
-        const imageUrl = getSuneungQuestionImage(sel.subject, sel.variant, sel.year, sel.number);
-
-        const requestText = `${header} 이 문제를 함께 풀어주세요.`;
-
-        if (!imageUrl) {
-          await append({ role: 'user', content: requestText });
-          return;
-        }
-
-        // 미리 message id 를 부여하여 append 전에 image preview state 등록 (race-free).
-        const msgId = `maestro-${sel.subject}-${sel.variant}-${sel.year}-${sel.number}-${Date.now()}`;
-        setAttachedByMsgId((prev) => ({ ...prev, [msgId]: imageUrl }));
-        // v15 — useChat v4 의 body/data 옵션 둘 다 server 까지 안 도달.
-        // 가장 확실한 우회: message.content 자체에 image URL marker 포함.
-        // server 가 정규식으로 추출 후 multimodal part 합성.
-        // UI 에서는 attachedByMsgId state 로 image preview 표시 (marker 는 message text 에서 hide).
-        const contentWithMarker = `${requestText}\n\n[__MAESTRO_IMG__]${imageUrl}[/__MAESTRO_IMG__]`;
-        await append({ id: msgId, role: 'user', content: contentWithMarker });
-      } catch {
-        await append({ role: 'user', content: header });
-      }
-    },
-    [append],
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 text-white flex flex-col">
@@ -505,15 +301,7 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
             />
             <div className="text-center leading-tight">
               <h1 className="text-sm font-bold bg-gradient-to-r from-amber-300 to-orange-300 bg-clip-text text-transparent">
-                {isMaestro
-                  ? subject === 'earth-science'
-                    ? 'Earth Science Maestro'
-                    : subject === 'biology'
-                      ? 'Biology Maestro'
-                      : subject === 'physics'
-                        ? 'Physics Maestro'
-                        : 'Chemistry Maestro'
-                  : 'Legend Tutor — 베타'}
+                Legend Tutor — 베타
               </h1>
               <p className="text-[10px] text-white/50">
                 {currentPortrait.label_ko} · {currentPortrait.tier_label}
@@ -521,8 +309,8 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            {/* Δ28 — 베타 만료 카운트다운 (math 베타 만 적용) */}
-            {!isMaestro && betaMeta?.is_active && betaMeta.days_left !== null && (
+            {/* Δ28 — 베타 만료 카운트다운 */}
+            {betaMeta?.is_active && betaMeta.days_left !== null && (
               <span
                 className={`text-[11px] px-2.5 py-1 rounded-full border font-semibold ${
                   betaMeta.days_left <= 0
@@ -541,22 +329,19 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
               </span>
             )}
             <Link
-              href={isMaestro ? `/maestro/${subject}/triggers` : '/legend/triggers'}
+              href="/legend/triggers"
               className="text-[11px] px-2.5 py-1 rounded-full border border-violet-400/40 bg-violet-400/10 text-violet-200 hover:bg-violet-400/20 transition-colors font-semibold"
             >
               🎯 Trigger
             </Link>
-            {/* 후기 — math (Legend 베타) 만 노출. Maestro 는 베타테스트 X (사용자 결정 2026-05-06) */}
-            {!isMaestro && (
-              <Link
-                href="/legend/beta/review"
-                className="text-[11px] px-2.5 py-1 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 transition-colors font-semibold"
-              >
-                📝 후기
-              </Link>
-            )}
             <Link
-              href={isMaestro ? `/maestro/${subject}/report` : '/legend/report'}
+              href="/legend/beta/review"
+              className="text-[11px] px-2.5 py-1 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-200 hover:bg-amber-400/20 transition-colors font-semibold"
+            >
+              📝 후기
+            </Link>
+            <Link
+              href="/legend/report"
               className="text-[11px] px-2.5 py-1 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors font-semibold"
             >
               📊 리포트
@@ -574,118 +359,65 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
             <span className="text-[10px] text-white/40">선택하면 그 과목 맞춤 코칭으로 진행돼요</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
-            {isMaestro
-              ? getMaestroVariants(subject).map((v) => {
-                  const active = selectedSubject === v.id;
-                  return (
-                    <button
-                      key={v.id}
-                      type="button"
-                      onClick={() => handleSubjectClick(v.id)}
-                      className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                        active
-                          ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/40'
-                          : 'border-white/10 bg-white/5 text-white/70 hover:border-cyan-300/30 hover:bg-cyan-400/5'
-                      }`}
-                      data-testid={`maestro-subject-${v.id}`}
-                    >
-                      <span className="mr-1">{v.icon}</span>
-                      {v.label}
-                    </button>
-                  );
-                })
-              : MATH_AREAS.map((a) => {
-                  const active = selectedSubject === a.id;
-                  return (
-                    <button
-                      key={a.id}
-                      type="button"
-                      onClick={() => handleSubjectClick(a.id)}
-                      title={a.desc}
-                      className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                        active
-                          ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/40'
-                          : 'border-white/10 bg-white/5 text-white/70 hover:border-cyan-300/30 hover:bg-cyan-400/5'
-                      }`}
-                      data-testid={`beta-subject-${a.id}`}
-                    >
-                      <span className="mr-1">{a.icon}</span>
-                      {a.name}
-                    </button>
-                  );
-                })}
+            {MATH_AREAS.map((a) => {
+              const active = selectedSubject === a.id;
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => handleSubjectClick(a.id)}
+                  title={a.desc}
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
+                    active
+                      ? 'border-cyan-300/60 bg-cyan-400/15 text-cyan-100 ring-1 ring-cyan-300/40'
+                      : 'border-white/10 bg-white/5 text-white/70 hover:border-cyan-300/30 hover:bg-cyan-400/5'
+                  }`}
+                  data-testid={`beta-subject-${a.id}`}
+                >
+                  <span className="mr-1">{a.icon}</span>
+                  {a.name}
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* 거장 선택 카드 (math = 5명 / maestro = 4명) */}
+      {/* 거장 선택 카드 (5명) */}
       <section className="max-w-4xl mx-auto w-full px-4 pt-2 pb-3">
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4">
           <div className="mb-3 flex items-center gap-2">
             <span className="text-amber-300/90">⭐</span>
-            <span className="text-sm font-bold text-white">
-              {isMaestro
-                ? '4 명의 거장 — 자유롭게 선택하세요'
-                : '5 명의 거장 — 자유롭게 선택하세요'}
-            </span>
+            <span className="text-sm font-bold text-white">5 명의 거장 — 자유롭게 선택하세요</span>
           </div>
-          <div className={`grid gap-2 ${isMaestro ? 'grid-cols-4' : 'grid-cols-5'}`}>
-            {(isMaestro ? maestroTutorList : ALL_TUTORS).map((t, idx) => {
-              const p = isMaestro
-                ? getPortraitFor(subject, t as MaestroTutorName)
-                : PORTRAITS[t as TutorName];
+          <div className="grid gap-2 grid-cols-5">
+            {ALL_TUTORS.map((t) => {
+              const p = PORTRAITS[t];
               const active = selectedTutor === t;
-              // 19차 (2026-05-07): maestro 첫 인물 (Sonnet) 은 "곧 출시" disabled.
-              // 둘째 인물 (Gemini) 은 "추천" badge.
-              const isComingSoon = isMaestro && idx === 0;
-              const isRecommended = isMaestro && idx === 1;
               return (
                 <motion.button
                   key={t}
-                  whileHover={isComingSoon ? undefined : { y: -2 }}
-                  whileTap={isComingSoon ? undefined : { scale: 0.97 }}
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.97 }}
                   type="button"
-                  disabled={isComingSoon}
-                  onClick={() => !isComingSoon && handleTutorClick(t as MaestroTutorName)}
+                  onClick={() => handleTutorClick(t)}
                   className={`group relative flex flex-col items-center gap-1.5 rounded-xl border p-2.5 transition-colors ${
-                    isComingSoon
-                      ? 'cursor-not-allowed border-white/5 bg-white/5 opacity-50'
-                      : active
-                        ? 'border-amber-300/60 bg-amber-400/10 ring-2 ring-amber-300/30'
-                        : 'border-white/10 bg-white/5 hover:border-amber-300/40 hover:bg-amber-400/5'
+                    active
+                      ? 'border-amber-300/60 bg-amber-400/10 ring-2 ring-amber-300/30'
+                      : 'border-white/10 bg-white/5 hover:border-amber-300/40 hover:bg-amber-400/5'
                   }`}
                   data-testid={`tutor-${t}`}
-                  title={
-                    isComingSoon
-                      ? `${p.label_ko} — 곧 출시 (모델 준비 중)`
-                      : isRecommended
-                        ? `${p.label_ko} — 추천`
-                        : p.label_ko
-                  }
+                  title={p.label_ko}
                 >
-                  {isComingSoon && (
-                    <span className="absolute right-1 top-1 rounded-full bg-slate-700/80 px-1.5 py-0.5 text-[8px] font-semibold text-white/70">
-                      곧
-                    </span>
-                  )}
-                  {isRecommended && (
-                    <span className="absolute right-1 top-1 rounded-full bg-emerald-500/80 px-1.5 py-0.5 text-[8px] font-semibold text-white">
-                      추천
-                    </span>
-                  )}
                   <Image
                     src={p.src}
                     alt={p.alt}
                     width={44}
                     height={44}
-                    className={`rounded-full object-cover ring-2 ${
-                      isComingSoon ? 'ring-white/5 grayscale' : 'ring-white/10'
-                    }`}
+                    className="rounded-full object-cover ring-2 ring-white/10"
                   />
                   <span className="text-xs font-medium text-white">{p.label_ko}</span>
-                  <span className="text-[9px] leading-tight text-white/50">
-                    {isComingSoon ? '곧 출시' : p.tier_label}
-                  </span>
+                  <span className="text-[9px] leading-tight text-white/50">{p.tier_label}</span>
                 </motion.button>
               );
             })}
@@ -723,58 +455,126 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
 
       {activeView === 'past-exam' ? (
         <section className="max-w-4xl mx-auto w-full flex-1 px-4 pb-6">
-          {isMaestro ? (
-            <ScienceExamPanel subject={subject} onSelect={handleSelectScienceExam} />
-          ) : (
-            <PastExamPanel onSelectProblem={handleSelectExamProblem} />
-          )}
+          <PastExamPanel onSelectProblem={handleSelectExamProblem} />
         </section>
       ) : (
         <>
-      {/* 메시지 영역 */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="max-w-4xl mx-auto space-y-4">
-          {messages.length === 0 && !isLoading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-8"
-            >
-              <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border border-amber-400/30 ring-2 ring-amber-400/10">
-                <Image
-                  src={currentPortrait.src}
-                  alt={currentPortrait.alt}
-                  width={64}
-                  height={64}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <p className="text-sm text-white/70 mb-1">
-                안녕하세요. {currentPortrait.label_ko}이에요. 어떤 문제를 같이 풀어볼까요?
-              </p>
-              <p className="text-xs text-white/40">
-                위에서 다른 튜터를 선택할 수도 있어요.
-              </p>
-            </motion.div>
-          )}
-
-          <AnimatePresence initial={false}>
-            {messages.map((m, idx) => {
-              // 스트리밍 중인 마지막 assistant 메시지에만 deferred 렌더 (typewriter throttle)
-              const isLast = idx === messages.length - 1;
-              const isStreamingNow =
-                isLast &&
-                m.role === 'assistant' &&
-                (status === 'streaming' || status === 'submitted');
-              return (
+          {/* 메시지 영역 */}
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            <div className="max-w-4xl mx-auto space-y-4">
+              {messages.length === 0 && !isLoading && (
                 <motion.div
-                  key={m.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start gap-2'}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-8"
                 >
-                  {m.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400/30 flex-shrink-0 mt-1">
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-full overflow-hidden border border-amber-400/30 ring-2 ring-amber-400/10">
+                    <Image
+                      src={currentPortrait.src}
+                      alt={currentPortrait.alt}
+                      width={64}
+                      height={64}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <p className="text-sm text-white/70 mb-1">
+                    안녕하세요. {currentPortrait.label_ko}이에요. 어떤 문제를 같이 풀어볼까요?
+                  </p>
+                  <p className="text-xs text-white/40">위에서 다른 튜터를 선택할 수도 있어요.</p>
+                </motion.div>
+              )}
+
+              <AnimatePresence initial={false}>
+                {messages.map((m, idx) => {
+                  const isLast = idx === messages.length - 1;
+                  const isStreamingNow =
+                    isLast &&
+                    m.role === 'assistant' &&
+                    (status === 'streaming' || status === 'submitted');
+                  return (
+                    <motion.div
+                      key={m.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start gap-2'}`}
+                    >
+                      {m.role === 'assistant' && (
+                        <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400/30 flex-shrink-0 mt-1">
+                          <Image
+                            src={currentPortrait.src}
+                            alt={currentPortrait.alt}
+                            width={32}
+                            height={32}
+                            className="object-cover w-full h-full"
+                          />
+                        </div>
+                      )}
+                      <div
+                        className={`max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                          m.role === 'user'
+                            ? 'bg-amber-500/20 border border-amber-400/30 text-white'
+                            : 'bg-white/5 border border-white/10 text-white'
+                        }`}
+                      >
+                        {/* multimodal user 메시지 — 이미지 + 텍스트 모두 표시 */}
+                        {Array.isArray(m.content) ? (
+                          <div className="space-y-2">
+                            {(
+                              m.content as Array<{ type?: string; image?: string; text?: string }>
+                            ).map((p, i) => {
+                              if (p.type === 'image' && typeof p.image === 'string') {
+                                return (
+                                  <a
+                                    key={i}
+                                    href={p.image}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block"
+                                  >
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                      src={p.image}
+                                      alt={`첨부 ${i + 1}`}
+                                      className="rounded-lg max-w-full h-auto border border-white/10"
+                                    />
+                                  </a>
+                                );
+                              }
+                              if (p.type === 'text' && typeof p.text === 'string') {
+                                return (
+                                  <div key={i} className="prose prose-invert prose-sm max-w-none">
+                                    <StreamingMarkdown
+                                      content={p.text}
+                                      streaming={isStreamingNow}
+                                    />
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
+                          </div>
+                        ) : (
+                          <div className="prose prose-invert prose-sm max-w-none">
+                            <StreamingMarkdown
+                              content={typeof m.content === 'string' ? m.content : m.content}
+                              streaming={isStreamingNow}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+
+              {(status === 'streaming' || status === 'submitted') &&
+                messages[messages.length - 1]?.role !== 'assistant' && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex justify-start gap-2"
+                  >
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400/30 flex-shrink-0">
                       <Image
                         src={currentPortrait.src}
                         alt={currentPortrait.alt}
@@ -783,292 +583,151 @@ export function LegendChat({ user: _user, betaMeta, subject = 'math' }: LegendCh
                         className="object-cover w-full h-full"
                       />
                     </div>
-                  )}
-                  <div
-                    className={`max-w-[85%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                      m.role === 'user'
-                        ? 'bg-amber-500/20 border border-amber-400/30 text-white'
-                        : 'bg-white/5 border border-white/10 text-white'
-                    }`}
-                  >
-                    {/* 19차 (2026-05-07): multimodal user 메시지 — 이미지 + 텍스트 모두 표시
-                        20차: attachedByMsgId 매핑이 있으면 user 메시지 카드 위에 image preview */}
-                    {Array.isArray(m.content) ? (
-                      <div className="space-y-2">
-                        {(m.content as Array<{ type?: string; image?: string; text?: string }>).map(
-                          (p, i) => {
-                            if (p.type === 'image' && typeof p.image === 'string') {
-                              return (
-                                <a
-                                  key={i}
-                                  href={p.image}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="block"
-                                >
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
-                                    src={p.image}
-                                    alt={`첨부 ${i + 1}`}
-                                    className="rounded-lg max-w-full h-auto border border-white/10"
-                                  />
-                                </a>
-                              );
-                            }
-                            if (p.type === 'text' && typeof p.text === 'string') {
-                              return (
-                                <div key={i} className="prose prose-invert prose-sm max-w-none">
-                                  <StreamingMarkdown content={p.text} streaming={isStreamingNow} />
-                                </div>
-                              );
-                            }
-                            return null;
-                          },
-                        )}
-                      </div>
-                    ) : attachedByMsgId[m.id] ? (
-                      <div className="space-y-2">
-                        <a
-                          href={attachedByMsgId[m.id]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={attachedByMsgId[m.id]}
-                            alt="첨부 시험지"
-                            className="rounded-lg max-w-full h-auto border border-white/10"
-                          />
-                        </a>
-                        <div className="prose prose-invert prose-sm max-w-none">
-                          <StreamingMarkdown
-                            content={
-                              typeof m.content === 'string'
-                                ? m.content.replace(/\n*\[__MAESTRO_IMG__\][^[]*\[\/__MAESTRO_IMG__\]/g, '')
-                                : m.content
-                            }
-                            streaming={isStreamingNow}
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="prose prose-invert prose-sm max-w-none">
-                        <StreamingMarkdown
-                          content={
-                            typeof m.content === 'string'
-                              ? m.content.replace(/\n*\[__MAESTRO_IMG__\][^[]*\[\/__MAESTRO_IMG__\]/g, '')
-                              : m.content
-                          }
-                          streaming={isStreamingNow}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+                    <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl">
+                      <span className="text-sm text-white/60 animate-pulse">
+                        문제를 분석하고 있어요...
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
 
-          {(status === 'streaming' || status === 'submitted') &&
-            messages[messages.length - 1]?.role !== 'assistant' && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex justify-start gap-2"
-              >
-                <div className="w-8 h-8 rounded-full overflow-hidden border border-amber-400/30 flex-shrink-0">
-                  <Image
-                    src={currentPortrait.src}
-                    alt={currentPortrait.alt}
-                    width={32}
-                    height={32}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <div className="bg-white/5 border border-white/10 px-4 py-3 rounded-2xl">
-                  <span className="text-sm text-white/60 animate-pulse">
-                    문제를 분석하고 있어요...
-                  </span>
-                </div>
-              </motion.div>
-            )}
-
-          {/* G06-33 — 풀이 정리 버튼 (마지막 assistant 직후, 스트리밍 종료 시) */}
-          {/* G06-35b — selectedTutor 전달: 채팅 튜터와 정리 튜터 일관성 강제 */}
-          {/* Δ13 — firstUserText (원문제) 전달: 짧은 마지막 user → 난이도 1 오판정 fix */}
-          {/* Δ14 — conversation 전달: 학생 막힘 5 차원 (stuck_step·trigger·AI hint·resolution) */}
-          {/* 22차 — math = legend 분기 (ToT 트리), maestro = subject 별 가벼운 정리 */}
-          {!isMaestro && canShowSummaryButton && firstUserText && !inlineReport && (
-            <SolutionSummaryButton
-              problemText={firstUserText}
-              selectedTutor={selectedTutor as TutorName}
-              conversation={messages}
-              onSummaryReady={(report) => setInlineReport(report)}
-            />
-          )}
-          {isMaestro && canShowSummaryButton && firstUserText && !maestroSummary && (
-            <MaestroSolutionSummaryButton
-              subject={subject}
-              tutor={selectedTutor as MaestroTutorName}
-              problemText={firstUserText}
-              conversation={messages}
-              onSummaryReady={(response) => {
-                setMaestroSummary(response);
-                // 22차 — /maestro/[subject]/report 의 "최근 풀이 정리" 카드용
-                // localStorage 누적. 5건 limit. DB 누적은 다음 commit.
-                try {
-                  const key = 'maestro_recent_summaries';
-                  const raw = localStorage.getItem(key);
-                  const arr = raw ? (JSON.parse(raw) as Array<unknown>) : [];
-                  const next = [
-                    {
-                      date: new Date().toISOString().slice(0, 10),
-                      subject: response.subject,
-                      tutor: response.tutor_label,
-                      takeaway: response.summary.persona_takeaway,
-                    },
-                    ...(Array.isArray(arr) ? arr : []),
-                  ].slice(0, 20);
-                  localStorage.setItem(key, JSON.stringify(next));
-                } catch {}
-              }}
-            />
-          )}
-
-          {/* G06-33 — 인라인 PerProblemReportCard (math 전용, ToT + AI 어려움 + 떠올린 이유) */}
-          {!isMaestro && inlineReport && (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-4"
-            >
-              <PerProblemReportCard report={inlineReport} />
-            </motion.div>
-          )}
-          {/* 22차 — Maestro 풀이 정리 카드 (subject 별) */}
-          {isMaestro && maestroSummary && (
-            <div className="mt-4">
-              <MaestroSummaryCard data={maestroSummary} />
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
-
-      {/* 입력 */}
-      <div className="sticky bottom-0 border-t border-white/10 bg-slate-950/70 backdrop-blur-xl px-4 py-3">
-        <div className="max-w-4xl mx-auto">
-          {/* Δ13 — 필기 패널 (handwriteOpen 시 펼침) */}
-          <InlineHandwritePanel
-            open={handwriteOpen}
-            onClose={() => setHandwriteOpen(false)}
-            onConfirm={(text) => {
-              handleHandwriteResult(text);
-              setHandwriteOpen(false);
-            }}
-          />
-
-          {/* Δ13 — 이미지 미리보기 */}
-          {imagePreview && (
-            <div className="mb-2 rounded-xl border border-amber-400/30 bg-amber-400/5 p-2">
-              <div className="flex items-start gap-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imagePreview}
-                  alt="문제 이미지"
-                  className="max-h-32 rounded-lg object-contain"
+              {/* G06-33 — 풀이 정리 버튼 (마지막 assistant 직후, 스트리밍 종료 시) */}
+              {/* G06-35b — selectedTutor 전달: 채팅 튜터와 정리 튜터 일관성 강제 */}
+              {/* Δ13 — firstUserText (원문제) 전달 / Δ14 — conversation 전달 */}
+              {canShowSummaryButton && firstUserText && !inlineReport && (
+                <SolutionSummaryButton
+                  problemText={firstUserText}
+                  selectedTutor={selectedTutor}
+                  conversation={messages}
+                  onSummaryReady={(report) => setInlineReport(report)}
                 />
+              )}
+
+              {/* G06-33 — 인라인 PerProblemReportCard (ToT + AI 어려움 + 떠올린 이유) */}
+              {inlineReport && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-4"
+                >
+                  <PerProblemReportCard report={inlineReport} />
+                </motion.div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {/* 입력 */}
+          <div className="sticky bottom-0 border-t border-white/10 bg-slate-950/70 backdrop-blur-xl px-4 py-3">
+            <div className="max-w-4xl mx-auto">
+              {/* Δ13 — 필기 패널 */}
+              <InlineHandwritePanel
+                open={handwriteOpen}
+                onClose={() => setHandwriteOpen(false)}
+                onConfirm={(text) => {
+                  handleHandwriteResult(text);
+                  setHandwriteOpen(false);
+                }}
+              />
+
+              {/* Δ13 — 이미지 미리보기 */}
+              {imagePreview && (
+                <div className="mb-2 rounded-xl border border-amber-400/30 bg-amber-400/5 p-2">
+                  <div className="flex items-start gap-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={imagePreview}
+                      alt="문제 이미지"
+                      className="max-h-32 rounded-lg object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImagePreview(null);
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }}
+                      className="text-xs text-white/60 hover:text-white"
+                      aria-label="이미지 제거"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <p className="mt-1 text-[10px] text-amber-200/70">
+                    {parsing ? '이미지 인식 중...' : '전송 버튼을 누르면 거장이 분석합니다.'}
+                  </p>
+                </div>
+              )}
+
+              <form onSubmit={onSubmit} className="flex gap-2 items-end">
                 <button
                   type="button"
-                  onClick={() => {
-                    setImagePreview(null);
-                    if (fileInputRef.current) fileInputRef.current.value = '';
-                  }}
-                  className="text-xs text-white/60 hover:text-white"
-                  aria-label="이미지 제거"
+                  onClick={() => setHandwriteOpen((v) => !v)}
+                  disabled={isLoading || parsing}
+                  className="px-3 py-3 rounded-xl border border-emerald-400/40 bg-emerald-400/10 text-emerald-200 hover:bg-emerald-400/20 transition-colors disabled:opacity-40 flex-shrink-0"
+                  title="필기로 입력"
+                  aria-label="필기로 입력"
                 >
-                  ✕
+                  ✏️
                 </button>
-              </div>
-              <p className="mt-1 text-[10px] text-amber-200/70">
-                {parsing ? '이미지 인식 중...' : '전송 버튼을 누르면 거장이 분석합니다.'}
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isLoading || parsing}
+                  className="px-3 py-3 rounded-xl border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors disabled:opacity-40 flex-shrink-0"
+                  title="사진·스크린샷 업로드 (Ctrl+V 도 가능)"
+                  aria-label="사진 업로드"
+                >
+                  📸
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+
+                <textarea
+                  value={input}
+                  onChange={handleInputChange}
+                  onPaste={handlePaste}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      onSubmit(e as unknown as React.FormEvent);
+                    }
+                  }}
+                  placeholder={PLACEHOLDER}
+                  rows={1}
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400/50 transition-colors text-sm resize-none"
+                  disabled={isLoading || parsing}
+                  onInput={(e) => {
+                    const t = e.currentTarget;
+                    t.style.height = 'auto';
+                    t.style.height = Math.min(t.scrollHeight, 160) + 'px';
+                  }}
+                />
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  disabled={isLoading || parsing || (!input.trim() && !imagePreview)}
+                  className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-medium text-sm disabled:opacity-40 transition-all flex-shrink-0"
+                >
+                  전송
+                </motion.button>
+              </form>
+              <p className="mt-2 text-center text-[10px] text-white/40">
+                베타 한도: 일 5문제 + 거장 일 3회 (자정 KST 리셋) · 입력{' '}
+                <Link href="/legend/help" className="underline hover:text-white/70">
+                  가이드
+                </Link>
               </p>
             </div>
-          )}
-
-          <form onSubmit={onSubmit} className="flex gap-2 items-end">
-            {/* Δ13 — 필기 버튼 */}
-            <button
-              type="button"
-              onClick={() => setHandwriteOpen((v) => !v)}
-              disabled={isLoading || parsing}
-              className="px-3 py-3 rounded-xl border border-emerald-400/40 bg-emerald-400/10 text-emerald-200 hover:bg-emerald-400/20 transition-colors disabled:opacity-40 flex-shrink-0"
-              title="필기로 입력"
-              aria-label="필기로 입력"
-            >
-              ✏️
-            </button>
-
-            {/* Δ13 — 사진 업로드 버튼 */}
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isLoading || parsing}
-              className="px-3 py-3 rounded-xl border border-cyan-400/40 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20 transition-colors disabled:opacity-40 flex-shrink-0"
-              title="사진·스크린샷 업로드 (Ctrl+V 도 가능)"
-              aria-label="사진 업로드"
-            >
-              📸
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-
-            <textarea
-              value={input}
-              onChange={handleInputChange}
-              onPaste={handlePaste}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  onSubmit(e as unknown as React.FormEvent);
-                }
-              }}
-              placeholder={PLACEHOLDER_BY_SUBJECT[subject] ?? PLACEHOLDER_BY_SUBJECT.math}
-              rows={1}
-              className="flex-1 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-amber-400/50 transition-colors text-sm resize-none"
-              disabled={isLoading || parsing}
-              onInput={(e) => {
-                const t = e.currentTarget;
-                t.style.height = 'auto';
-                t.style.height = Math.min(t.scrollHeight, 160) + 'px';
-              }}
-            />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              type="submit"
-              disabled={isLoading || parsing || (!input.trim() && !imagePreview)}
-              className="px-5 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-medium text-sm disabled:opacity-40 transition-all flex-shrink-0"
-            >
-              전송
-            </motion.button>
-          </form>
-          <p className="mt-2 text-center text-[10px] text-white/40">
-            베타 한도: 일 5문제 + 거장 일 3회 (자정 KST 리셋) · 입력{' '}
-            <Link href="/legend/help" className="underline hover:text-white/70">
-              가이드
-            </Link>
-          </p>
-        </div>
-      </div>
+          </div>
         </>
       )}
     </div>
