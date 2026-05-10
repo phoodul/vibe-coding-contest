@@ -118,6 +118,38 @@
 
 ---
 
+## 24차 세션 (2026-05-10) — Chat 진짜 분리 ⭐
+
+### 종료 상태 (2026-05-10)
+**누적 2 commits** — 23차 Pending 이월 작업 (B1a/B1b) 모두 완료.
+
+### 핵심 산출물
+
+| commit | 영역 | 변경 |
+|---|---|---|
+| `36adb4a` | B1a | MaestroChat 진짜 분리 — thin wrapper(47줄) → 전용 컴포넌트(839줄). LegendChat 의 maestro 분기(4 인물 카드 / ScienceExamPanel / `__MAESTRO_IMG__` marker / I·II variant chip / MaestroSolutionSummaryButton + MaestroSummaryCard / placeholder by subject / Trigger·리포트 링크 분기) 모두 추출. |
+| `7fb77ee` | B1b | LegendChat math 전용 단순화 — 1076 → 735 줄(341 감소). subject prop / isMaestro 분기 / maestro-only import·상수·함수·state 모두 제거. /legend/page.tsx 호출자 prop 호환. |
+
+### 분리 효과
+- maestro/legend 가 코드 차원에서 완전 독립 — 향후 system prompt, UI, 풀이 정리 구조의
+  발산 자유.
+- LegendChat = 5 거장 + ToT + PastExamPanel(수학 수능) 단일 책임.
+- MaestroChat = 4 인물(subject별) + ScienceExamPanel(수능 multimodal) + 가벼운 정리 카드.
+
+### Pending (사용자 manual smoke)
+- /legend 1 turn (5 거장 토글 + 풀이 정리 카드)
+- /earth-science · /biology · /physics · /chemistry 각 1 turn (수능 첨부 multimodal 포함)
+- 회귀 0 = production 배포 진행
+
+### 다음 세션 후보 (25차)
+- **결제 흐름 실서비스 검증**: 토스 가맹점 가입 후 test 환경 결제 흐름 완주
+- **Phase C quality**: Biology / Physics / Chemistry 사용자 검토
+- **Phase 0 GTM**: P0-01b (Legend area 하드코딩 fix) / P0-05~09 (영어 문법 trigger PoC)
+- **system prompt 발산 시작**: 분리 후 자유로워진 코드를 활용하여 maestro 4과목 system
+  prompt 차별화 + Legend ToT 정리 카드 강화
+
+---
+
 ## 23차 세션 (2026-05-10) — 결제 활성화 정비 + Chat rename ⭐
 
 ### 종료 상태 (2026-05-10)

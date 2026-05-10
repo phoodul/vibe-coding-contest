@@ -3,6 +3,31 @@
 > 세션별 주요 변경 이력. 상세 진행 상태는 `docs/progress.md`, 결정 사항은
 > `docs/project-decisions.md` 참조.
 
+## 24차 세션 (2026-05-10) — Chat 진짜 분리
+
+**테마**: 23차 종료 시 이월된 B1a/B1b — LegendChat 의 maestro 분기를 MaestroChat
+으로 진짜 추출.
+
+### 누적 2 commits
+| 시각 | commit | 영역 | 변경 |
+|---|---|---|---|
+| 5/10 | `36adb4a` | maestro | B1a — MaestroChat 진짜 분리 (+822 −30, thin wrapper → 전용 컴포넌트 822 줄) |
+| 5/10 | `7fb77ee` | legend | B1b — LegendChat math 전용 단순화 (+321 −662, 1076 → 735 줄) |
+
+### 변경 통계
+- 코드: maestro 분기 30+ 군데 (헤더 라벨 / Trigger·리포트 링크 / I·II variant chip /
+  4 인물 카드 / ScienceExamPanel / MaestroSolutionSummaryButton / `__MAESTRO_IMG__`
+  marker / placeholder by subject / 후기 링크 conditional) 모두 추출 후 LegendChat
+  에서 제거.
+- 호출자 변경 0 (4 maestro 페이지 + /legend page 모두 prop 호환).
+- 라인 수: LegendChat 1076 → 735 / MaestroChat 47 → 839. 합 1574.
+
+### Pending 후속 작업
+- 사용자 manual smoke (Legend 1 turn + 4 maestro 페이지 1 turn) — 분리 회귀 0 검증.
+- B1a/B1b 분리 효과 = 향후 maestro/legend 발산 자유 (system prompt · UI · 풀이 정리 분기 독립).
+
+---
+
 ## 23차 세션 (2026-05-10) — Night mode
 
 **테마**: 결제 활성화 직전 정비 (트랙 A) + Chat rename (트랙 B)
