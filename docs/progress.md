@@ -134,10 +134,20 @@
 - **양호 12건**: quota / toss / 6 결제 API / 1 cron / 2 admin API / PricingClient / DB RLS
 
 ### 사용자 액션 (베타 → live 전환)
-- vercel env preview 환경에 7개 추가 (TOSS_*, NEXT_PUBLIC_*, CRON_SECRET, BUSINESS_*)
+- vercel env preview 환경에 추가 (TOSS_*, NEXT_PUBLIC_*, CRON_SECRET, BUSINESS_*)
 - 토스 dashboard test mode webhook URL + signature 알고리즘 확인
 - runbook 1.4 ~ 1.9 단계 검증 후 production env 갱신
 - 첫 1주 매일 /admin/billing 모니터링
+
+### 24차 후반 — 결제 Medium 보강 자율 진행
+
+| commit | 내용 |
+|---|---|
+| `174bc50` | A1 — subscriptions active 1개 unique constraint SQL migration. 사용자 직접 적용 필요 (재실행 안전) |
+| `b95560b` | A2+A3+B — /billing past_due amber 안내 배너 + /pricing redirect / refund 0원 시 토스 cancel 호출 전 400 차단 + /refund 약관 명시 / PricingClient Top-up ₩14,900 카드 추가 (cyan 별도 섹션) |
+| `d754c68` | C — 결제 단위 테스트 34건. supabase fluent chain mock + sequential queue. 옛 가격 (student/family/academy) 22차 표준 부재 검증으로 legacy 차단 보강 |
+
+A4 webhook signature 헤더 표준화는 토스 dashboard 명세 확인 시점 fix 예정.
 
 ---
 

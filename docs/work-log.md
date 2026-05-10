@@ -45,9 +45,16 @@
 - ⏸ Step 0.2 — 토스 onboarding service-type 단계에서 "기본 결제 패키지" 단일 신청 후
   심사 제출. 빌링(정기결제) 우리 매출 핵심인데 함께 신청 못 함 → **내일 토스 고객센터
   1544-7772 통화로 빌링 추가 신청 절차 확인 예정**
-- runbook env 변수명을 lib/legal/meta.ts 실제 코드와 일치하도록 수정 (REGISTRATION → REG_NO,
-  REPRESENTATIVE → REP, TELE_REGISTRATION → ECOMMERCE_NO, NEXT_PUBLIC_APP_URL +
-  NEXT_PUBLIC_PRIVACY_OFFICER 2종 추가)
+- runbook env 변수명을 lib/legal/meta.ts 실제 코드와 일치하도록 수정
+
+### 24차 후반 — 결제 Medium 보강 자율 진행 (3 commits)
+| commit | 내용 |
+|---|---|
+| `174bc50` | A1 — subscriptions active 1개 unique constraint SQL migration (race 방지) |
+| `b95560b` | A2+A3+B — past_due 재시도 UI / refund 0원 차단 + 안내 / Top-up 카드 노출 |
+| `d754c68` | C — 결제 단위 테스트 34건 (plans 14 + toss 14 + quota 6, 모두 pass) |
+
+A4 (webhook signature 헤더 표준화) 는 토스 dashboard 명세 확인 시점에 fix 예정.
 
 ---
 

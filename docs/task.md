@@ -21,6 +21,7 @@
 | **23차 — 결제 활성화 정비 + Chat 추출** | A1~A5 + B1a~B2 | 8 | ✅ 6/8 완료 (A1 `377cc7c` · A2 `4365a2e` · A3 `1d5ddb2` · A4 `f35da91` · A5=skip · B2 `24bd744`) / 🔄 B1a·B1b = 24차로 이월 |
 | **24차 — Chat 진짜 분리** | B1a + B1b | 2 | ✅ 모두 완료 (B1a `36adb4a` MaestroChat 진짜 추출 / B1b `7fb77ee` LegendChat math 전용 단순화) |
 | **24차 — 결제 시스템 점검 + runbook** | C1~C2 | 2 | ✅ 모두 완료 (C1 `0b7ae71` legacy /legend/billing 옛 가격 차단 / C2 runbook 작성 `docs/operations/payment-activation-runbook.md`) |
+| **24차 — 결제 Medium 보강 + UX + 테스트** | A1~A3 + B + C | 5 | ✅ 모두 완료 (A1 `174bc50` active unique constraint / A2+A3+B `b95560b` past_due UI + refund 0원 차단 + Top-up 카드 / C `d754c68` 단위 테스트 34건) |
 
 ---
 
