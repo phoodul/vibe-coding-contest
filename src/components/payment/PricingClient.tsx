@@ -115,61 +115,108 @@ export function PricingClient({ paymentActive }: { paymentActive: boolean }) {
     }
   }
 
+  const topup = PLANS.topup_100;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {TIER_ORDER.map((code, i) => {
-        const plan = PLANS[code];
-        return (
-          <motion.div
-            key={code}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06 }}
-            className={`rounded-2xl border p-6 transition-colors ${ACCENT_BY_PLAN[code]} ${
-              plan.recommended ? 'md:scale-105' : ''
-            }`}
-          >
-            {plan.recommended && (
-              <div className="inline-block px-2.5 py-1 mb-3 rounded-full bg-violet-400/20 border border-violet-300/40 text-[10px] font-bold text-violet-100 tracking-wide">
-                추천 ⭐
-              </div>
-            )}
-            <h2 className="text-xl font-bold mb-1">{plan.label_ko}</h2>
-            <p className="text-xs text-white/55 mb-4">{plan.tagline}</p>
-            <div className="mb-5">
-              <span className="text-3xl font-bold tabular-nums">
-                ₩{plan.price_krw.toLocaleString('ko-KR')}
-              </span>
-              <span className="text-sm text-white/50 ml-1">/ 월</span>
-              <p className="text-[10px] text-white/40 mt-0.5">VAT 10% 포함</p>
-            </div>
-            <ul className="space-y-2 mb-6 text-sm text-white/85">
-              {plan.highlights.map((h, j) => (
-                <li key={j} className="flex items-start gap-2">
-                  <span className="text-emerald-400/80 mt-0.5">✓</span>
-                  <span className="flex-1">{h}</span>
-                </li>
-              ))}
-            </ul>
-            <button
-              type="button"
-              onClick={() => handleSubscribe(code)}
-              disabled={!paymentActive || loadingPlan === code}
-              className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors ${
-                plan.recommended
-                  ? 'bg-violet-500 hover:bg-violet-400 text-white disabled:bg-violet-500/30'
-                  : 'bg-white/10 hover:bg-white/15 text-white disabled:opacity-40'
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {TIER_ORDER.map((code, i) => {
+          const plan = PLANS[code];
+          return (
+            <motion.div
+              key={code}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06 }}
+              className={`rounded-2xl border p-6 transition-colors ${ACCENT_BY_PLAN[code]} ${
+                plan.recommended ? 'md:scale-105' : ''
               }`}
             >
-              {loadingPlan === code
-                ? '결제창 여는 중...'
-                : paymentActive
-                  ? '결제하고 시작하기'
-                  : '베타 종료 후 활성화'}
-            </button>
-          </motion.div>
-        );
-      })}
-    </div>
+              {plan.recommended && (
+                <div className="inline-block px-2.5 py-1 mb-3 rounded-full bg-violet-400/20 border border-violet-300/40 text-[10px] font-bold text-violet-100 tracking-wide">
+                  추천 ⭐
+                </div>
+              )}
+              <h2 className="text-xl font-bold mb-1">{plan.label_ko}</h2>
+              <p className="text-xs text-white/55 mb-4">{plan.tagline}</p>
+              <div className="mb-5">
+                <span className="text-3xl font-bold tabular-nums">
+                  ₩{plan.price_krw.toLocaleString('ko-KR')}
+                </span>
+                <span className="text-sm text-white/50 ml-1">/ 월</span>
+                <p className="text-[10px] text-white/40 mt-0.5">VAT 10% 포함</p>
+              </div>
+              <ul className="space-y-2 mb-6 text-sm text-white/85">
+                {plan.highlights.map((h, j) => (
+                  <li key={j} className="flex items-start gap-2">
+                    <span className="text-emerald-400/80 mt-0.5">✓</span>
+                    <span className="flex-1">{h}</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                onClick={() => handleSubscribe(code)}
+                disabled={!paymentActive || loadingPlan === code}
+                className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors ${
+                  plan.recommended
+                    ? 'bg-violet-500 hover:bg-violet-400 text-white disabled:bg-violet-500/30'
+                    : 'bg-white/10 hover:bg-white/15 text-white disabled:opacity-40'
+                }`}
+              >
+                {loadingPlan === code
+                  ? '결제창 여는 중...'
+                  : paymentActive
+                    ? '결제하고 시작하기'
+                    : '베타 종료 후 활성화'}
+              </button>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* 24차 — Top-up 100회 단발 충전 카드 (한도 소진 시 사용) */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.24 }}
+        className="mt-6 rounded-2xl border border-cyan-400/30 bg-cyan-500/5 p-5 flex flex-col md:flex-row items-start md:items-center gap-4"
+      >
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-base font-bold">{topup.label_ko}</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-400/20 border border-cyan-300/30 text-cyan-100 font-mono">
+              단발
+            </span>
+          </div>
+          <p className="text-xs text-white/65 mb-2">{topup.tagline}</p>
+          <ul className="text-xs text-white/70 space-y-0.5">
+            {topup.highlights.map((h, j) => (
+              <li key={j} className="flex items-start gap-1.5">
+                <span className="text-cyan-400/70 mt-0.5">·</span>
+                <span>{h}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex flex-col items-stretch md:items-end gap-2 w-full md:w-auto">
+          <span className="text-xl font-bold tabular-nums">
+            ₩{topup.price_krw.toLocaleString('ko-KR')}
+          </span>
+          <button
+            type="button"
+            onClick={() => handleSubscribe('topup_100')}
+            disabled={!paymentActive || loadingPlan === 'topup_100'}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-300/30 text-cyan-100 disabled:opacity-40 transition-colors whitespace-nowrap"
+          >
+            {loadingPlan === 'topup_100'
+              ? '결제창 여는 중...'
+              : paymentActive
+                ? '100회 충전하기'
+                : '베타 종료 후 활성화'}
+          </button>
+        </div>
+      </motion.div>
+    </>
   );
 }

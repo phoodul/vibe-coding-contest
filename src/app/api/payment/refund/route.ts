@@ -108,6 +108,22 @@ export async function POST(req: Request) {
   }
   // Premium = 7일 이내 무조건 전액 (사용 무관)
 
+  // 24차 보강: 한도 초과 사용 시 환불액 0원이면 토스 cancel 호출 무의미 + 사용자
+  // 혼란 야기. /refund 약관에도 명시. 환불 신청 거절 (refunds row 미생성).
+  if (refundAmount <= 0) {
+    return NextResponse.json(
+      {
+        ok: false,
+        auto: false,
+        refund_amount_krw: 0,
+        used_count: usedCount,
+        message:
+          '사용 횟수가 결제 한도에 도달하여 일할 차감 후 환불액이 ₩0 입니다. 다음 결제일까지 라마누잔·부속 도구는 정상 이용 가능합니다. /refund 환불 정책을 확인해 주세요.',
+      },
+      { status: 400 },
+    );
+  }
+
   // 토스 cancel
   let cancelResp;
   try {

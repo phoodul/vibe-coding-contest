@@ -196,6 +196,35 @@ export default function BillingPage() {
           </motion.div>
         ) : (
           <>
+            {/* 24차 — past_due 안내 배너 (정기결제 자동 청구 실패 시) */}
+            {sub.status === 'past_due' && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl border border-amber-400/40 bg-amber-500/10 p-5 mb-4"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">⚠️</span>
+                  <div className="flex-1">
+                    <h3 className="text-base font-bold text-amber-100 mb-1">
+                      정기결제 자동 청구가 실패했어요
+                    </h3>
+                    <p className="text-sm text-amber-100/80 mb-3 leading-relaxed">
+                      카드 잔액 부족 · 한도 초과 · 만료 등으로 자동 결제가 처리되지 않았습니다.
+                      카드를 다시 등록하면 즉시 이용 재개돼요. 매일 자동 재시도 중이지만 직접
+                      등록하시는 게 가장 빠릅니다.
+                    </p>
+                    <Link
+                      href="/pricing"
+                      className="inline-block px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold transition-colors"
+                    >
+                      카드 다시 등록하고 결제하기 →
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* 현재 구독 카드 */}
             <motion.section
               initial={{ opacity: 0, y: 8 }}
