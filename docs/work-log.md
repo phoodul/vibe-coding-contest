@@ -3,16 +3,18 @@
 > 세션별 주요 변경 이력. 상세 진행 상태는 `docs/progress.md`, 결정 사항은
 > `docs/project-decisions.md` 참조.
 
-## 24차 세션 (2026-05-10) — Chat 진짜 분리
+## 24차 세션 (2026-05-10) — Chat 진짜 분리 + 결제 검증
 
-**테마**: 23차 종료 시 이월된 B1a/B1b — LegendChat 의 maestro 분기를 MaestroChat
-으로 진짜 추출.
+**테마**: 23차 종료 시 이월된 B1a/B1b 처리 + 결제 시스템 코드 점검 + 활성화 runbook
+작성. 토스 test mode keys 보유 상태에서 베타 → live 전환 준비.
 
-### 누적 2 commits
+### 누적 4 commits + 1 docs (예상)
 | 시각 | commit | 영역 | 변경 |
 |---|---|---|---|
 | 5/10 | `36adb4a` | maestro | B1a — MaestroChat 진짜 분리 (+822 −30, thin wrapper → 전용 컴포넌트 822 줄) |
 | 5/10 | `7fb77ee` | legend | B1b — LegendChat math 전용 단순화 (+321 −662, 1076 → 735 줄) |
+| 5/10 | `b625746` | docs | 24차 세션 정리 (1차) — task.md / progress.md / work-log.md |
+| 5/10 | `0b7ae71` | payment | Critical fix — legacy /legend/billing 옛 가격 차단 (V1 SDK 제거, 308 redirect, /api/billing/toss/confirm 410 Gone) |
 
 ### 변경 통계
 - 코드: maestro 분기 30+ 군데 (헤더 라벨 / Trigger·리포트 링크 / I·II variant chip /
@@ -22,9 +24,21 @@
 - 호출자 변경 0 (4 maestro 페이지 + /legend page 모두 prop 호환).
 - 라인 수: LegendChat 1076 → 735 / MaestroChat 47 → 839. 합 1574.
 
-### Pending 후속 작업
-- 사용자 manual smoke (Legend 1 turn + 4 maestro 페이지 1 turn) — 분리 회귀 0 검증.
-- B1a/B1b 분리 효과 = 향후 maestro/legend 발산 자유 (system prompt · UI · 풀이 정리 분기 독립).
+### 결제 점검 결과 (24차 후반)
+- **Critical 1건**: legacy `/legend/billing` 페이지가 옛 가격 (12K/19K/5K) + V1 SDK
+  로 활성 → 308 redirect 로 차단 (`0b7ae71`)
+- **Medium 4건** (운영 중 모니터링): webhook signature 알고리즘 미검증 / quota race
+  condition / subscriptions active unique constraint 부재 / refund 일할 차감 0원 안내
+- **Minor 3건**: subscriptions.toss_customer_key NOT NULL 호환 / refunds 고아 / Premium 무조건 전액 정책
+- **양호 12건**: quota / toss / 6 결제 API / 1 cron / 2 admin API / PricingClient / DB RLS
+
+### Runbook 산출물
+- `docs/operations/payment-activation-runbook.md` 신규 — test mode 검증 → live 활성화 →
+  장애 비활성화 3 단계, 결제 흐름 1회 완주 + DB 검증 SQL + cron 수동 트리거 + 알려진 결함
+
+### Pending 후속 작업 (사용자)
+- B1a/B1b manual smoke (Legend 1 turn + 4 maestro 페이지 1 turn) — 분리 회귀 0 검증
+- 결제 활성화 1.1 단계: vercel env preview 환경에 7개 추가 후 test mode 전체 검증
 
 ---
 

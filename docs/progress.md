@@ -118,6 +118,29 @@
 
 ---
 
+## 24차 세션 (2026-05-10) — Chat 진짜 분리 + 결제 시스템 점검 ⭐⭐
+
+### 결제 점검 (트랙 C)
+
+| commit | 영역 | 변경 |
+|---|---|---|
+| `0b7ae71` | C1 — Critical fix | legacy `/legend/billing` 옛 가격 (V1 SDK + 12K/19K/5K) 차단. /legend/billing → 308 → /pricing. /api/billing/toss/confirm → POST 410 Gone, GET 308 redirect. middleware 의 /euler/billing → /pricing 직접 매핑. -253 +51 줄. |
+| (docs) | C2 — Runbook | `docs/operations/payment-activation-runbook.md` 신규 작성 — test mode 검증 → live 활성화 → 장애 비활성화 3 단계, 검증 SQL + cron 수동 트리거 + 알려진 결함 4건 운영 가이드. |
+
+#### 점검 결과 분류
+- **Critical 1건** (즉시 수정 ✅): legacy /legend/billing
+- **Medium 4건** (운영 중 모니터링): webhook signature / quota race / active unique / refund 일할 0원
+- **Minor 3건**: 영향 미미
+- **양호 12건**: quota / toss / 6 결제 API / 1 cron / 2 admin API / PricingClient / DB RLS
+
+### 사용자 액션 (베타 → live 전환)
+- vercel env preview 환경에 7개 추가 (TOSS_*, NEXT_PUBLIC_*, CRON_SECRET, BUSINESS_*)
+- 토스 dashboard test mode webhook URL + signature 알고리즘 확인
+- runbook 1.4 ~ 1.9 단계 검증 후 production env 갱신
+- 첫 1주 매일 /admin/billing 모니터링
+
+---
+
 ## 24차 세션 (2026-05-10) — Chat 진짜 분리 ⭐
 
 ### 종료 상태 (2026-05-10)
