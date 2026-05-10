@@ -4,12 +4,15 @@ import { updateSession } from "@/lib/supabase/middleware";
 /**
  * /euler* → /legend* 301 영구 redirect 매핑. SEO·외부 링크·즐겨찾기 보존.
  * /api/euler-tutor/** 는 /api/legend/tutor/** 로 이전됨 (16차 D1).
+ *
+ * 24차 — `/euler/billing` 는 `/pricing` 으로 직접 매핑 (legend/billing 자체가
+ * 24차에 /pricing redirect 로 폐기 처리되었으므로 chained redirect 회피).
  */
 const EULER_TO_LEGEND: Record<string, string> = {
   "/euler": "/legend",
   "/euler-tutor": "/legend",
   "/euler/canvas": "/legend/canvas",
-  "/euler/billing": "/legend/billing",
+  "/euler/billing": "/pricing",
   "/euler/family": "/legend/family",
   "/euler/beta": "/legend/beta",
   "/euler/report": "/legend/report",
