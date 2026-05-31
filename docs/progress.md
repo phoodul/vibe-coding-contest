@@ -13,10 +13,10 @@
 
 | 영역 | 상태 | 메모 |
 |---|---|---|
-| Web (Vercel) | ✅ Live | https://vibe-coding-contest.vercel.app (도메인 추후 정정) |
+| Web (Vercel) | ✅ Live | https://easyedu.ai (2026-05-03 확정 도메인) |
 | DB (Supabase) | ✅ 운영 | RLS · 가드레일 · 30일 만료 정책 |
 | 인증 | ✅ Google / GitHub / Kakao OAuth | |
-| 결제 | ⏸ 보류 (추후 Toss / Stripe 결정) | 베타 검증 후 진입 |
+| 결제 | 🔄 코드 100% 완성 / 토스 단독 확정 (Stripe 폐기) | env 추가 시 활성. 토스 가맹점 심사 + 빌링 신청 대기 (D24-06) |
 | 분석 | ✅ Vercel Analytics + Supabase usage_events 이중 추적 | |
 | 가드레일 | ✅ 9 카테고리 + 위기 상담 ("혼자가 아닙니다") | |
 | 베타 게이트 | ✅ 50명 cap + 30일 만료 정책 | |
@@ -60,7 +60,7 @@
 ## 25차 세션 (2026-05-31) — 라텍스 노출 방어 + 스크린샷 즉시 첨부
 
 ### 종료 상태
-**1 commit (`8cfdda6`)**. 베타 피드백 2건 fix. push 보류 (정책).
+**2 commits (`8cfdda6` fix + `66f0689` docs)**. 베타 피드백 2건 fix. origin/main push 완료.
 
 - 라텍스: `wrapOrphanLatex`(A) + `safeStreamMarkdown` 미완성 구분자 절단(B) + 프롬프트 강화.
 - 스크린샷: textarea `onPaste` → document 전역 paste 리스너 (Legend/Maestro) + 안내 문구.

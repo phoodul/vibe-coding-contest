@@ -59,7 +59,7 @@ Trigger 라이브러리 일반화 ──┘                  │
 **2주 (2026-05-02 ~ 2026-05-16)**
 
 ### 의존성
-- 현재 production 운영 중 (https://vibe-coding-contest.vercel.app)
+- 현재 production 운영 중 (https://easyedu.ai · 구 vibe-coding-contest.vercel.app 301 redirect)
 - 13차 세션 베타 운영 인프라 (30일 만료 + admin 가드 + 가드레일 9)
 - 13차 세션 G-05 KPI 89.5% 결과
 

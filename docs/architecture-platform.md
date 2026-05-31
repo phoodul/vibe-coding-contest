@@ -34,7 +34,7 @@
 | Storage | Supabase Storage (이미지 + PDF) |
 | AI | Vercel AI SDK + Anthropic (Haiku/Sonnet/Opus) + OpenAI (GPT-5.x) + Google (Gemini 3.1) |
 | OCR | Mathpix → Upstage → Vision (3단계 fallback) |
-| 배포 | Vercel (Production: vibe-coding-contest.vercel.app) |
+| 배포 | Vercel (Production: easyedu.ai · 구 vibe-coding-contest.vercel.app 은 301 redirect) |
 | 모니터링 | Vercel Analytics + Supabase usage_events |
 
 ### 1-3. 모델 라우팅 (현재)
