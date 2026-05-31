@@ -212,20 +212,27 @@ export function MaestroChat({ user: _user, subject }: MaestroChatProps) {
     reader.readAsDataURL(file);
   }, []);
 
-  const handlePaste = useCallback((e: React.ClipboardEvent) => {
-    const items = e.clipboardData?.items;
-    if (!items) return;
-    for (const item of Array.from(items)) {
-      if (item.type.startsWith('image/')) {
-        e.preventDefault();
-        const file = item.getAsFile();
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => setImagePreview(reader.result as string);
-        reader.readAsDataURL(file);
-        return;
+  // 2026-05-31 — 스크린샷 즉시 첨부. textarea 포커스와 무관하게 페이지 어디서든
+  // (PrintScreen / ⊞+Shift+S 캡처 직후) Ctrl+V 하면 클립보드 이미지를 바로 미리보기.
+  // document 전역 리스너 — paste 이벤트는 버블링되므로 textarea 안 paste 도 함께 처리.
+  useEffect(() => {
+    const onDocPaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of Array.from(items)) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => setImagePreview(reader.result as string);
+          reader.readAsDataURL(file);
+          return;
+        }
       }
-    }
+    };
+    document.addEventListener('paste', onDocPaste);
+    return () => document.removeEventListener('paste', onDocPaste);
   }, []);
 
   // Δ13 — 이미지 전송 (Upstage parse → fallback Vision)
@@ -797,7 +804,6 @@ export function MaestroChat({ user: _user, subject }: MaestroChatProps) {
                 <textarea
                   value={input}
                   onChange={handleInputChange}
-                  onPaste={handlePaste}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -825,7 +831,8 @@ export function MaestroChat({ user: _user, subject }: MaestroChatProps) {
                 </motion.button>
               </form>
               <p className="mt-2 text-center text-[10px] text-white/40">
-                입력{' '}
+                📋 화면 캡처 후 <kbd className="rounded bg-white/10 px-1">Ctrl</kbd>+
+                <kbd className="rounded bg-white/10 px-1">V</kbd> 로 바로 첨부 · 입력{' '}
                 <Link href="/legend/help" className="underline hover:text-white/70">
                   가이드
                 </Link>

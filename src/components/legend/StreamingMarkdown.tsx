@@ -76,12 +76,61 @@ export function normalizeMathDelimiters(content: string): string {
 }
 
 /**
+ * 2026-05-31 — 구분자 없는 raw LaTeX 명령 방어.
+ *
+ * 배경: 모델이 대화가 길어지면 표기 규칙을 이탈해 `$` 없이 `\frac{1}{2}`,
+ * `\sqrt{x}`, `\le` 같은 명령을 평문에 그대로 출력 → 채팅창에 raw backslash 노출.
+ * `\(..\)` 정규화로는 잡히지 않는다 (변환할 구분자가 애초에 없음).
+ *
+ * 전략: `$..$` / `$$..$$` **바깥(non-math)** 세그먼트에서만 backslash 명령 atom
+ * (`\frac{}{}`, `\sqrt{}`, `\sum_{}^{}`, `\pi`, `\le` ...) 을 찾아 `$..$` 로 감싼다.
+ * 한국어 산문에는 `\command` 가 등장하지 않으므로 false-positive 위험은 사실상 0.
+ *
+ * 한계: leaked 라텍스를 atom 단위로 감싸므로 다항식 spacing 이 약간 비최적일 수
+ * 있으나, raw backslash 노출보다는 항상 우월하다. `normalizeMathDelimiters` 이후
+ * (= 완성된 `\(..\)` 가 이미 `$..$` 로 바뀐 뒤) 호출해야 이중 래핑이 없다.
+ */
+const LATEX_ATOM =
+  /\\[a-zA-Z]+\*?(?:\{[^{}]*\}|\[[^\[\]]*\])*(?:[_^](?:\{[^{}]*\}|[A-Za-z0-9]))*/g;
+// `$$..$$` (display) 를 `$..$` (inline) 보다 먼저 매칭해야 통째로 보존된다.
+const MATH_SEGMENT = /\$\$[\s\S]*?\$\$|\$[^$\n]*?\$/g;
+
+export function wrapOrphanLatex(content: string): string {
+  const str = coerceToString(content);
+  if (!str || str.indexOf('\\') < 0) return str;
+
+  // 기존 math 세그먼트는 건드리지 않고, 그 사이의 평문만 변환한다.
+  let out = '';
+  let last = 0;
+  MATH_SEGMENT.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  const wrapPlain = (plain: string) =>
+    plain.replace(LATEX_ATOM, (atom) => `$${atom}$`);
+
+  while ((m = MATH_SEGMENT.exec(str)) !== null) {
+    out += wrapPlain(str.slice(last, m.index));
+    out += m[0]; // math 세그먼트 원본 보존
+    last = m.index + m[0].length;
+  }
+  out += wrapPlain(str.slice(last));
+  return out;
+}
+
+/**
  * 스트리밍 도중 incomplete `$...$` (홀수 $) 감지 시 마지막 $ escape.
  * 다음 chunk 도착 시 자동 정상 LaTeX 복귀.
  */
 export function safeStreamMarkdown(content: string): string {
-  const str = coerceToString(content);
+  let str = coerceToString(content);
   if (!str) return str;
+
+  // 2026-05-31 — 미완성 `\(` / `\[` 깜빡임 방어.
+  // normalizeMathDelimiters 이후 남아있는 `\(` / `\[` 는 닫는 짝이 아직 도착하지
+  // 않은 incomplete open 이다. 그 지점부터 끝까지 숨겨 raw 구분자 노출을 막는다.
+  // 다음 chunk 에서 짝이 도착하면 normalize 가 `$..$` 로 바꿔 정상 복원된다.
+  const openIdx = Math.max(str.lastIndexOf('\\('), str.lastIndexOf('\\['));
+  if (openIdx >= 0) str = str.slice(0, openIdx);
+
   const stripped = str.replace(/\$\$/g, '').replace(/\\\$/g, '');
   const dollarCount = (stripped.match(/\$/g) ?? []).length;
   if (dollarCount % 2 === 0) return str;
@@ -107,8 +156,8 @@ export function StreamingMarkdown({
   const deferred = useDeferredValue(safeStr);
   const safeContent = useMemo(() => {
     const base = streaming ? deferred : safeStr;
-    const normalized = normalizeMathDelimiters(base);
-    return streaming ? safeStreamMarkdown(normalized) : normalized;
+    const wrapped = wrapOrphanLatex(normalizeMathDelimiters(base));
+    return streaming ? safeStreamMarkdown(wrapped) : wrapped;
   }, [deferred, safeStr, streaming]);
 
   return (

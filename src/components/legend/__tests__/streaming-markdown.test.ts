@@ -9,6 +9,7 @@ import { describe, it, expect } from 'vitest';
 import {
   normalizeMathDelimiters,
   safeStreamMarkdown,
+  wrapOrphanLatex,
 } from '../StreamingMarkdown';
 
 describe('normalizeMathDelimiters', () => {
@@ -71,5 +72,53 @@ describe('safeStreamMarkdown', () => {
 
   it('빈 입력', () => {
     expect(safeStreamMarkdown('')).toBe('');
+  });
+
+  it('스트리밍 중 미완성 `\\(` 는 그 지점부터 숨김', () => {
+    // 닫는 `\)` 가 아직 안 온 상태 → raw `\(` 깜빡임 방지
+    expect(safeStreamMarkdown('값은 \\(x^2')).toBe('값은 ');
+  });
+
+  it('스트리밍 중 미완성 `\\[` 도 숨김', () => {
+    expect(safeStreamMarkdown('결과:\n\\[\\sum')).toBe('결과:\n');
+  });
+});
+
+describe('wrapOrphanLatex', () => {
+  it('백슬래시 없는 텍스트는 그대로', () => {
+    expect(wrapOrphanLatex('안녕하세요 정답은 3번')).toBe('안녕하세요 정답은 3번');
+  });
+
+  it('구분자 없는 \\frac 를 $..$ 로 감쌈', () => {
+    expect(wrapOrphanLatex('그러면 \\frac{1}{2} 이 돼요')).toBe(
+      '그러면 $\\frac{1}{2}$ 이 돼요',
+    );
+  });
+
+  it('단독 명령(\\le, \\pi)도 감쌈', () => {
+    expect(wrapOrphanLatex('x \\le 5')).toBe('x $\\le$ 5');
+    expect(wrapOrphanLatex('넓이는 \\pi r^2')).toBe('넓이는 $\\pi$ r^2');
+  });
+
+  it('이미 $..$ 안의 수식은 이중 래핑하지 않음', () => {
+    expect(wrapOrphanLatex('값 $\\frac{a}{b}$ 입니다')).toBe(
+      '값 $\\frac{a}{b}$ 입니다',
+    );
+  });
+
+  it('$$..$$ display 세그먼트 보존', () => {
+    expect(wrapOrphanLatex('식 $$\\sum_{k=1}^{n} k$$ 끝')).toBe(
+      '식 $$\\sum_{k=1}^{n} k$$ 끝',
+    );
+  });
+
+  it('math 세그먼트 밖의 orphan 만 선택적으로 감쌈', () => {
+    expect(wrapOrphanLatex('$x$ 그리고 \\sqrt{2} 비교')).toBe(
+      '$x$ 그리고 $\\sqrt{2}$ 비교',
+    );
+  });
+
+  it('첨자 포함 명령 \\sum_{k=1}^{n} 통째 감쌈', () => {
+    expect(wrapOrphanLatex('합 \\sum_{k=1}^{n} k')).toBe('합 $\\sum_{k=1}^{n}$ k');
   });
 });
