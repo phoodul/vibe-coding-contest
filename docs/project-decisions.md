@@ -205,6 +205,18 @@ Maestro 4 과목 신설 — Earth Science / Biology / Physics / Chemistry. 16 �
     payment_webhooks_log
 - **남은 적용**: `20260510_payment_hardening.sql` (A1 unique index) — 17줄.
 
+### D25-01. 라텍스 raw 노출 2중 방어 + 스크린샷 전역 paste ⭐
+- **결정일** 2026-05-31 (25차). 베타 피드백 2건 fix.
+- **라텍스**: 프롬프트 규칙(모델 행동)만으로는 긴 대화에서 이탈이 반복되므로
+  렌더러 심층 방어를 추가한다.
+  - `wrapOrphanLatex()` — `$..$` 바깥 평문의 orphan backslash 명령을 `$..$`로 래핑 (경로 A).
+  - `safeStreamMarkdown` — 스트리밍 중 미완성 `\(`/`\[` 절단 (경로 B).
+  - 프롬프트(euler/maestro)는 근본 원인 측면에서 규칙 강화로 병행.
+- **스크린샷**: paste 핸들러는 **document 전역 리스너**가 표준. textarea `onPaste`는
+  포커스 필요 → 캡처 직후 첨부 불가였음. 향후 다른 chat 컴포넌트도 전역 paste 패턴 따름.
+- 커밋 `8cfdda6`. 테스트 21건(신규 9) / tsc 0 / eslint 0.
+- ⏸ **사용자 수동 확인**: 캡처→클릭 없이 Ctrl+V→즉시 미리보기 (clipboard headless 불가).
+
 ---
 
 ## 미확정 / 사용자 액션 대기

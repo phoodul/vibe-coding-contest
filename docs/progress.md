@@ -57,6 +57,22 @@
 
 총 **20 task** / 14일. 상세 의존성·일정·검증 KPI: `docs/implementation_plan_phase0.md` 참조.
 
+## 25차 세션 (2026-05-31) — 라텍스 노출 방어 + 스크린샷 즉시 첨부
+
+### 종료 상태
+**1 commit (`8cfdda6`)**. 베타 피드백 2건 fix. push 보류 (정책).
+
+- 라텍스: `wrapOrphanLatex`(A) + `safeStreamMarkdown` 미완성 구분자 절단(B) + 프롬프트 강화.
+- 스크린샷: textarea `onPaste` → document 전역 paste 리스너 (Legend/Maestro) + 안내 문구.
+- 검증: streaming-markdown 테스트 21건(신규 9) / tsc 0 / eslint 0.
+- 결정: D25-01. 상세: work-log 25차 / implementation_plan.md.
+
+### 다음 세션 예정
+- ⏸ 사용자 수동 smoke: 캡처→Ctrl+V 즉시 첨부 / 긴 대화 라텍스 재관찰.
+- 이월(24차): 토스 빌링 추가 신청(1544-7772), 결제 활성화 Step 1.1, A1 unique index 마이그레이션 적용, A4 webhook signature.
+
+---
+
 ## 22차 세션 (2026-05-08~09) — Maestro production 검증 + Maestro/Legend 5 phase 분리 + 결제 시스템 ⭐⭐⭐
 
 ### 종료 상태 (2026-05-09)

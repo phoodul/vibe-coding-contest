@@ -22,6 +22,7 @@
 | **24차 — Chat 진짜 분리** | B1a + B1b | 2 | ✅ 모두 완료 (B1a `36adb4a` MaestroChat 진짜 추출 / B1b `7fb77ee` LegendChat math 전용 단순화) |
 | **24차 — 결제 시스템 점검 + runbook** | C1~C2 | 2 | ✅ 모두 완료 (C1 `0b7ae71` legacy /legend/billing 옛 가격 차단 / C2 runbook 작성 `docs/operations/payment-activation-runbook.md`) |
 | **24차 — 결제 Medium 보강 + UX + 테스트** | A1~A3 + B + C | 5 | ✅ 모두 완료 (A1 `174bc50` active unique constraint / A2+A3+B `b95560b` past_due UI + refund 0원 차단 + Top-up 카드 / C `d754c68` 단위 테스트 34건) |
+| **25차 — 라텍스 노출 방어 + 스크린샷 즉시 첨부** | 2 fix | 1 | ✅ 완료 (`8cfdda6` wrapOrphanLatex + safeStreamMarkdown 미완성 구분자 + document 전역 paste / 테스트 21건) |
 
 ---
 
