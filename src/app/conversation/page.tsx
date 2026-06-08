@@ -113,6 +113,22 @@ export default function ConversationPage() {
     setMouthOpen(0);
   }, []);
 
+  // AudioContext 는 반드시 사용자 제스처(클릭/키) 콜스택 안에서 생성·resume 해야
+  // running 상태가 된다. AI-first 모드는 사용자가 인사를 기다리며 수동적이라,
+  // 시작 클릭 시점에 미리 unlock 하지 않으면 onFinish→playTTS 의 context 가
+  // suspended 로 남아 음성이 무음 처리된다 (createMediaElementSource 경유 출력).
+  const unlockAudio = useCallback(() => {
+    try {
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!audioCtxRef.current) audioCtxRef.current = new Ctx();
+      if (audioCtxRef.current.state === "suspended") {
+        audioCtxRef.current.resume().catch(() => {});
+      }
+    } catch {
+      /* AudioContext 미지원 — 재생은 시도되며 입모양만 멈춘 상태 */
+    }
+  }, []);
+
   const playTTS = useCallback(
     async (text: string): Promise<void> => {
       try {
@@ -206,6 +222,8 @@ export default function ConversationPage() {
       stopAudio();
     }
 
+    unlockAudio(); // 키 제스처에서 AudioContext 선점 (첫 응답 무음 방지)
+
     shouldListenRef.current = true;
     pendingTranscriptRef.current = "";
 
@@ -254,7 +272,7 @@ export default function ConversationPage() {
     recognition.start();
     setMicActive(true);
     setAiState("listening");
-  }, [stopAudio]);
+  }, [stopAudio, unlockAudio]);
 
   // 마이크 끄기 + 축적된 텍스트 AI에 전송
   const stopMicAndSend = useCallback(() => {
@@ -338,6 +356,7 @@ export default function ConversationPage() {
 
   // --- Start Conversation ---
   function startConversation() {
+    unlockAudio(); // 클릭 제스처에서 AudioContext 선점 — AI-first 무음 방지
     setPhase("conversation");
     if (starter === "ai") {
       let greeting: string;
